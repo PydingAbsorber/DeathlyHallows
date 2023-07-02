@@ -1,44 +1,533 @@
-[23:12:34] [main/INFO]: Setting user: Player815
-[23:12:37] [Client thread/INFO]: LWJGL Version: 2.9.1
-[23:12:51] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Baubles, FMLFileResourcePack:Witchery, FMLFileResourcePack:Forge Microblocks, FMLFileResourcePack:Forge Multipart, FMLFileResourcePack:Minecraft Multipart Plugin, FMLFileResourcePack:Deathly Hallows
-[23:12:57] [Sound Library Loader/INFO]: Sound engine started
-[23:12:59] [Client thread/INFO]: Created: 16x16 textures/blocks-atlas
-[23:12:59] [Client thread/INFO]: Created: 16x16 textures/items-atlas
-[23:13:01] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Baubles, FMLFileResourcePack:Witchery, FMLFileResourcePack:Forge Microblocks, FMLFileResourcePack:Forge Multipart, FMLFileResourcePack:Minecraft Multipart Plugin, FMLFileResourcePack:Deathly Hallows
-[23:13:02] [Client thread/INFO]: Created: 512x512 textures/blocks-atlas
-[23:13:02] [Client thread/INFO]: Created: 2048x1024 textures/items-atlas
-[23:13:03] [Sound Library Loader/INFO]: Sound engine started
-[23:14:18] [Server thread/INFO]: Starting integrated minecraft server version 1.7.10
-[23:14:18] [Server thread/INFO]: Generating keypair
-[23:14:19] [Server thread/INFO]: Preparing start region for level 0
-[23:14:20] [Server thread/INFO]: Changing view distance to 12, from 10
-[23:14:21] [Server thread/INFO]: Player815[local:E:f9113a5f] logged in with entity id 88 at (-246.0675280808729, 65.0, 115.47567758221001)
-[23:14:21] [Server thread/INFO]: Player815 ïðèñîåäèíèëñÿ ê èãðå
-[23:14:25] [Server thread/INFO]: Saving and pausing game...
-[23:14:25] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
-[23:14:25] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
-[23:14:25] [Server thread/INFO]: Saving chunks for level 'New World'/The End
-[23:14:25] [Server thread/INFO]: Saving chunks for level 'New World'/Spirit World
-[23:14:25] [Server thread/INFO]: Saving chunks for level 'New World'/Torment
-[23:14:25] [Server thread/INFO]: Saving chunks for level 'New World'/Mirror
-[23:14:26] [Client thread/INFO]: [CHAT] Version 1.0.7.48 of CodeChickenCore is available
-[23:14:26] [Client thread/INFO]: [CHAT] Version 1.0.5.120 of NotEnoughItems is available
-[23:14:28] [Server thread/INFO]: Player815 çàðàáîòàë äîñòèæåíèå [Ïðîâåðèòü êàðìàíû]
-[23:14:29] [Client thread/INFO]: [CHAT] Player815 çàðàáîòàë äîñòèæåíèå [Ïðîâåðèòü êàðìàíû]
-[23:14:31] [Server thread/INFO]: Saving and pausing game...
-[23:14:31] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
-[23:14:31] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
-[23:14:31] [Server thread/INFO]: Saving chunks for level 'New World'/The End
-[23:14:31] [Server thread/INFO]: Saving chunks for level 'New World'/Spirit World
-[23:14:31] [Server thread/INFO]: Saving chunks for level 'New World'/Torment
-[23:14:31] [Server thread/INFO]: Saving chunks for level 'New World'/Mirror
-[23:18:19] [Client thread/INFO]: Stopping!
-[23:18:19] [Server thread/INFO]: Stopping server
-[23:18:19] [Server thread/INFO]: Saving players
-[23:18:19] [Server thread/INFO]: Saving worlds
-[23:18:19] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
-[23:18:19] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
-[23:18:19] [Server thread/INFO]: Saving chunks for level 'New World'/The End
-[23:18:19] [Server thread/INFO]: Saving chunks for level 'New World'/Spirit World
-[23:18:19] [Server thread/INFO]: Saving chunks for level 'New World'/Torment
-[23:18:19] [Server thread/INFO]: Saving chunks for level 'New World'/Mirror
+[07:03:14] [main/INFO]: Setting user: Player474
+[07:03:17] [Client thread/INFO]: LWJGL Version: 2.9.1
+[07:03:31] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Baubles, FMLFileResourcePack:Witchery, FMLFileResourcePack:Forge Microblocks, FMLFileResourcePack:Forge Multipart, FMLFileResourcePack:Minecraft Multipart Plugin, FMLFileResourcePack:Deathly Hallows
+[07:03:37] [Sound Library Loader/INFO]: Sound engine started
+[07:03:39] [Client thread/INFO]: Created: 16x16 textures/blocks-atlas
+[07:03:39] [Client thread/INFO]: Created: 16x16 textures/items-atlas
+[07:03:41] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Baubles, FMLFileResourcePack:Witchery, FMLFileResourcePack:Forge Microblocks, FMLFileResourcePack:Forge Multipart, FMLFileResourcePack:Minecraft Multipart Plugin, FMLFileResourcePack:Deathly Hallows
+[07:03:42] [Client thread/INFO]: Created: 512x512 textures/blocks-atlas
+[07:03:42] [Client thread/INFO]: Created: 2048x1024 textures/items-atlas
+[07:03:43] [Sound Library Loader/INFO]: Sound engine started
+[07:05:12] [Server thread/INFO]: Starting integrated minecraft server version 1.7.10
+[07:05:12] [Server thread/INFO]: Generating keypair
+[07:05:12] [Server thread/INFO]: Preparing start region for level 0
+[07:05:13] [Server thread/INFO]: Changing view distance to 12, from 10
+[07:05:14] [Server thread/INFO]: Player474[local:E:de57ffc8] logged in with entity id 97 at (-247.73374038799594, 66.0, 127.63279153904146)
+[07:05:14] [Server thread/INFO]: Player474 ïðèñîåäèíèëñÿ ê èãðå
+[07:05:19] [Server thread/INFO]: Saving and pausing game...
+[07:05:19] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[07:05:19] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[07:05:19] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[07:05:19] [Server thread/INFO]: Saving chunks for level 'New World'/Spirit World
+[07:05:19] [Server thread/INFO]: Saving chunks for level 'New World'/Torment
+[07:05:19] [Server thread/INFO]: Saving chunks for level 'New World'/Mirror
+[07:05:20] [Client thread/INFO]: [CHAT] Version 1.0.7.48 of CodeChickenCore is available
+[07:05:20] [Client thread/INFO]: [CHAT] Version 1.0.5.120 of NotEnoughItems is available
+[07:05:21] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:21] [Server thread/INFO]: Amount: §50.1
+[07:05:21] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:21] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:21] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:21] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:26] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:26] [Server thread/INFO]: Amount: §50.1
+[07:05:26] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:26] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:26] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:26] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:27] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:27] [Server thread/INFO]: Amount: §50.1
+[07:05:27] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:27] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:27] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:27] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:28] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:28] [Server thread/INFO]: Amount: §50.1
+[07:05:28] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:28] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:28] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:28] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:28] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:28] [Server thread/INFO]: Amount: §50.1
+[07:05:28] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:28] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:28] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:28] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:29] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:29] [Server thread/INFO]: Amount: §50.1
+[07:05:29] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:29] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:29] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:29] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:30] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:30] [Server thread/INFO]: Amount: §50.1
+[07:05:30] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:30] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:30] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:30] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:30] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:30] [Server thread/INFO]: Amount: §50.1
+[07:05:30] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:30] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:30] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:30] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:31] [Server thread/INFO]: Saving and pausing game...
+[07:05:31] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[07:05:31] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[07:05:31] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[07:05:31] [Server thread/INFO]: Saving chunks for level 'New World'/Spirit World
+[07:05:31] [Server thread/INFO]: Saving chunks for level 'New World'/Torment
+[07:05:31] [Server thread/INFO]: Saving chunks for level 'New World'/Mirror
+[07:05:33] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:33] [Server thread/INFO]: Amount: §50.1
+[07:05:33] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:33] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:33] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:33] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:33] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:33] [Server thread/INFO]: Amount: §50.1
+[07:05:33] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:33] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:33] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:33] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:34] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:34] [Server thread/INFO]: Amount: §50.1
+[07:05:34] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:34] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:34] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:34] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:34] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:34] [Server thread/INFO]: Amount: §50.1
+[07:05:34] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:34] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:34] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:34] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:35] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:35] [Server thread/INFO]: Amount: §50.1
+[07:05:35] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:35] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:35] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:35] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:35] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:35] [Server thread/INFO]: Amount: §50.1
+[07:05:35] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:35] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:35] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:35] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:36] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:36] [Server thread/INFO]: Amount: §50.1
+[07:05:36] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:36] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:36] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:36] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:37] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:37] [Server thread/INFO]: Amount: §50.1
+[07:05:37] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:37] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:37] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:37] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:37] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:37] [Server thread/INFO]: Amount: §50.1
+[07:05:37] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:37] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:37] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:37] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:38] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:38] [Server thread/INFO]: Amount: §50.1
+[07:05:38] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:38] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:38] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:38] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:38] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:38] [Server thread/INFO]: Amount: §50.1
+[07:05:38] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:38] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:38] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:38] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:39] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:39] [Server thread/INFO]: Amount: §50.1
+[07:05:39] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:39] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:39] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:39] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:40] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:40] [Server thread/INFO]: Amount: §50.1
+[07:05:40] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:40] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:40] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:40] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:40] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:40] [Server thread/INFO]: Amount: §50.1
+[07:05:40] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:40] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:40] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:40] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:41] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:41] [Server thread/INFO]: Amount: §50.1
+[07:05:41] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:41] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:41] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:41] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:42] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:42] [Server thread/INFO]: Amount: §50.1
+[07:05:42] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:42] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:42] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:42] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:42] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:42] [Server thread/INFO]: Amount: §50.1
+[07:05:42] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:42] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:42] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:42] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:43] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:43] [Server thread/INFO]: Amount: §50.1
+[07:05:43] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:43] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:43] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:43] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:44] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:44] [Server thread/INFO]: Amount: §50.1
+[07:05:44] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:44] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:44] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:44] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:44] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:44] [Server thread/INFO]: Amount: §50.1
+[07:05:44] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:44] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:44] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:44] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:45] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:45] [Server thread/INFO]: Amount: §50.1
+[07:05:45] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:45] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:45] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:45] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:45] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:45] [Server thread/INFO]: Amount: §50.1
+[07:05:45] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:45] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:45] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:45] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:46] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:46] [Server thread/INFO]: Amount: §50.1
+[07:05:46] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:46] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:46] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:46] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:46] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:46] [Server thread/INFO]: Amount: §50.1
+[07:05:46] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:46] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:46] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:46] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:47] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:47] [Server thread/INFO]: Amount: §50.1
+[07:05:47] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:47] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:47] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:47] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:48] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:48] [Server thread/INFO]: Amount: §50.1
+[07:05:48] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:48] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:48] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:48] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:48] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:48] [Server thread/INFO]: Amount: §50.1
+[07:05:48] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:48] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:48] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:48] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:49] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:49] [Server thread/INFO]: Amount: §50.1
+[07:05:49] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:49] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:49] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:49] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:49] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:49] [Server thread/INFO]: Amount: §50.1
+[07:05:49] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:49] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:49] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:49] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:50] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:50] [Server thread/INFO]: Amount: §50.1
+[07:05:50] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:50] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:50] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:50] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:51] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:51] [Server thread/INFO]: Amount: §50.1
+[07:05:51] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:51] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:51] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:51] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:51] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:51] [Server thread/INFO]: Amount: §50.1
+[07:05:51] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:51] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:51] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:51] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:52] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:52] [Server thread/INFO]: Amount: §50.1
+[07:05:52] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:52] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:52] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:52] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:53] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:53] [Server thread/INFO]: Amount: §50.1
+[07:05:53] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:53] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:53] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:53] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:53] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:53] [Server thread/INFO]: Amount: §50.1
+[07:05:53] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:53] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:53] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:53] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:54] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:54] [Server thread/INFO]: Amount: §50.1
+[07:05:54] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:54] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:54] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:54] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:55] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:55] [Server thread/INFO]: Amount: §50.1
+[07:05:55] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:55] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:55] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:55] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:55] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:55] [Server thread/INFO]: Amount: §50.1
+[07:05:55] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:55] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:55] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:55] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:56] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:56] [Server thread/INFO]: Amount: §50.1
+[07:05:56] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:56] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:56] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:56] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:57] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:57] [Server thread/INFO]: Amount: §50.1
+[07:05:57] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:57] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:57] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:57] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:57] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:57] [Server thread/INFO]: Amount: §50.1
+[07:05:57] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:57] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:57] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:57] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:58] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:58] [Server thread/INFO]: Amount: §50.1
+[07:05:58] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:58] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:58] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:58] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:58] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:58] [Server thread/INFO]: Amount: §50.1
+[07:05:58] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:58] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:58] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:58] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:59] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:59] [Server thread/INFO]: Amount: §50.1
+[07:05:59] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:59] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:59] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:59] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:05:59] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:05:59] [Server thread/INFO]: Amount: §50.1
+[07:05:59] [Server thread/INFO]: Amount after absorption: §50.1
+[07:05:59] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:05:59] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:05:59] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:06:00] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:00] [Server thread/INFO]: Amount: §50.1
+[07:06:00] [Server thread/INFO]: Amount after absorption: §50.1
+[07:06:00] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:00] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:06:00] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:06:00] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:00] [Server thread/INFO]: Amount: §50.1
+[07:06:00] [Server thread/INFO]: Amount after absorption: §50.1
+[07:06:00] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:00] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:06:00] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:06:01] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:01] [Server thread/INFO]: Amount: §50.1
+[07:06:01] [Server thread/INFO]: Amount after absorption: §50.1
+[07:06:01] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:01] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:06:01] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:06:01] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:01] [Server thread/INFO]: Amount: §50.1
+[07:06:01] [Server thread/INFO]: Amount after absorption: §50.1
+[07:06:01] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:01] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:06:01] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:06:02] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:02] [Server thread/INFO]: Amount: §50.1
+[07:06:02] [Server thread/INFO]: Amount after absorption: §50.1
+[07:06:02] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:02] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:06:02] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:06:03] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:03] [Server thread/INFO]: Amount: §50.1
+[07:06:03] [Server thread/INFO]: Amount after absorption: §50.1
+[07:06:03] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:03] [Client thread/INFO]: [CHAT] Amount: §50.1
+[07:06:03] [Client thread/INFO]: [CHAT] Amount after absorption: §50.1
+[07:06:04] [Server thread/INFO]: Player474 çàðàáîòàë äîñòèæåíèå [Ïðîâåðèòü êàðìàíû]
+[07:06:04] [Client thread/INFO]: [CHAT] Player474 çàðàáîòàë äîñòèæåíèå [Ïðîâåðèòü êàðìàíû]
+[07:06:12] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:12] [Server thread/INFO]: Amount: §50.7
+[07:06:12] [Server thread/INFO]: Amount after absorption: §50.7
+[07:06:12] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:12] [Client thread/INFO]: [CHAT] Amount: §50.7
+[07:06:12] [Client thread/INFO]: [CHAT] Amount after absorption: §50.7
+[07:06:13] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:13] [Server thread/INFO]: Amount: §50.7
+[07:06:13] [Server thread/INFO]: Amount after absorption: §50.7
+[07:06:13] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:13] [Client thread/INFO]: [CHAT] Amount: §50.7
+[07:06:13] [Client thread/INFO]: [CHAT] Amount after absorption: §50.7
+[07:06:13] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:13] [Server thread/INFO]: Amount: §50.7
+[07:06:13] [Server thread/INFO]: Amount after absorption: §50.7
+[07:06:13] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:13] [Client thread/INFO]: [CHAT] Amount: §50.7
+[07:06:13] [Client thread/INFO]: [CHAT] Amount after absorption: §50.7
+[07:06:14] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:14] [Server thread/INFO]: Amount: §50.7
+[07:06:14] [Server thread/INFO]: Amount after absorption: §50.7
+[07:06:14] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:14] [Client thread/INFO]: [CHAT] Amount: §50.7
+[07:06:14] [Client thread/INFO]: [CHAT] Amount after absorption: §50.7
+[07:06:15] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:15] [Server thread/INFO]: Amount: §50.7
+[07:06:15] [Server thread/INFO]: Amount after absorption: §50.7
+[07:06:15] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:15] [Client thread/INFO]: [CHAT] Amount: §50.7
+[07:06:15] [Client thread/INFO]: [CHAT] Amount after absorption: §50.7
+[07:06:16] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:16] [Server thread/INFO]: Amount: §50.7
+[07:06:16] [Server thread/INFO]: Amount after absorption: §50.7
+[07:06:16] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:16] [Client thread/INFO]: [CHAT] Amount: §50.7
+[07:06:16] [Client thread/INFO]: [CHAT] Amount after absorption: §50.7
+[07:06:16] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:16] [Server thread/INFO]: Amount: §50.7
+[07:06:16] [Server thread/INFO]: Amount after absorption: §50.7
+[07:06:16] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:16] [Client thread/INFO]: [CHAT] Amount: §50.7
+[07:06:16] [Client thread/INFO]: [CHAT] Amount after absorption: §50.7
+[07:06:17] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:17] [Server thread/INFO]: Amount: §50.7
+[07:06:17] [Server thread/INFO]: Amount after absorption: §50.7
+[07:06:17] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:17] [Client thread/INFO]: [CHAT] Amount: §50.7
+[07:06:17] [Client thread/INFO]: [CHAT] Amount after absorption: §50.7
+[07:06:17] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:17] [Server thread/INFO]: Amount: §50.7
+[07:06:17] [Server thread/INFO]: Amount after absorption: §50.7
+[07:06:17] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:17] [Client thread/INFO]: [CHAT] Amount: §50.7
+[07:06:17] [Client thread/INFO]: [CHAT] Amount after absorption: §50.7
+[07:06:22] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:22] [Server thread/INFO]: Amount: §50.7
+[07:06:22] [Server thread/INFO]: Amount after absorption: §50.7
+[07:06:22] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:22] [Client thread/INFO]: [CHAT] Amount: §50.7
+[07:06:22] [Client thread/INFO]: [CHAT] Amount after absorption: §50.7
+[07:06:23] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:23] [Server thread/INFO]: Amount: §50.7
+[07:06:23] [Server thread/INFO]: Amount after absorption: §50.7
+[07:06:23] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:23] [Client thread/INFO]: [CHAT] Amount: §50.7
+[07:06:23] [Client thread/INFO]: [CHAT] Amount after absorption: §50.7
+[07:06:23] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:23] [Server thread/INFO]: Amount: §50.7
+[07:06:23] [Server thread/INFO]: Amount after absorption: §50.7
+[07:06:23] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:23] [Client thread/INFO]: [CHAT] Amount: §50.7
+[07:06:23] [Client thread/INFO]: [CHAT] Amount after absorption: §50.7
+[07:06:37] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:37] [Server thread/INFO]: Amount: §50.7
+[07:06:37] [Server thread/INFO]: Amount after absorption: §50.7
+[07:06:37] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:37] [Client thread/INFO]: [CHAT] Amount: §50.7
+[07:06:37] [Client thread/INFO]: [CHAT] Amount after absorption: §50.7
+[07:06:38] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:38] [Server thread/INFO]: Amount: §50.7
+[07:06:38] [Server thread/INFO]: Amount after absorption: §50.7
+[07:06:38] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:38] [Client thread/INFO]: [CHAT] Amount: §50.7
+[07:06:38] [Client thread/INFO]: [CHAT] Amount after absorption: §50.7
+[07:06:38] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:06:38] [Server thread/INFO]: Amount: §50.7
+[07:06:38] [Server thread/INFO]: Amount after absorption: §50.7
+[07:06:38] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:06:38] [Client thread/INFO]: [CHAT] Amount: §50.7
+[07:06:38] [Client thread/INFO]: [CHAT] Amount after absorption: §50.7
+[07:07:12] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:07:12] [Server thread/INFO]: Amount: §50.7
+[07:07:12] [Server thread/INFO]: Amount after absorption: §50.7
+[07:07:12] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:07:12] [Client thread/INFO]: [CHAT] Amount: §50.7
+[07:07:12] [Client thread/INFO]: [CHAT] Amount after absorption: §50.7
+[07:07:17] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:07:17] [Server thread/INFO]: Amount: §53.0000001E10
+[07:07:17] [Server thread/INFO]: Amount after absorption: §53.0000001E10
+[07:07:17] [Server thread/INFO]: Player474 âûïàë èç ìèðà
+[07:07:17] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:07:17] [Client thread/INFO]: [CHAT] Amount: §53.0000001E10
+[07:07:17] [Client thread/INFO]: [CHAT] Amount after absorption: §53.0000001E10
+[07:07:17] [Client thread/INFO]: [CHAT] Player474 âûïàë èç ìèðà
+[07:07:25] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:07:25] [Server thread/INFO]: Amount: §53.0000001E10
+[07:07:25] [Server thread/INFO]: Amount after absorption: §53.0000001E10
+[07:07:25] [Server thread/INFO]: Player474 âûïàë èç ìèðà
+[07:07:25] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:07:25] [Client thread/INFO]: [CHAT] Amount: §53.0000001E10
+[07:07:25] [Client thread/INFO]: [CHAT] Amount after absorption: §53.0000001E10
+[07:07:25] [Client thread/INFO]: [CHAT] Player474 âûïàë èç ìèðà
+[07:07:35] [Server thread/INFO]: Damage Source: outOfWorld §7Victim: Player474
+[07:07:35] [Server thread/INFO]: Amount: §53.4028235E38
+[07:07:35] [Server thread/INFO]: Amount after absorption: §53.4028235E38
+[07:07:35] [Server thread/INFO]: Player474 âûïàë èç ìèðà
+[07:07:35] [Client thread/INFO]: [CHAT] Damage Source: outOfWorld §7Victim: Player474
+[07:07:35] [Client thread/INFO]: [CHAT] Amount: §53.4028235E38
+[07:07:35] [Client thread/INFO]: [CHAT] Amount after absorption: §53.4028235E38
+[07:07:35] [Client thread/INFO]: [CHAT] Player474 âûïàë èç ìèðà
+[07:07:35] [Client thread/INFO]: [CHAT] Îé! Ïîõîæå, ýòî áûëî áîëüíî
+[07:08:39] [Client thread/INFO]: [CHAT] Òåïåðü Âû èãðàåòå â ðåæèìå òâîð÷åñòâî
+[07:08:42] [Client thread/INFO]: [CHAT] Type amount of damage in chat:
+[07:08:47] [Server thread/INFO]: <Player474> 1
+[07:08:47] [Client thread/INFO]: [CHAT] Damage set to: §51
+[07:08:47] [Client thread/INFO]: [CHAT] <Player474> 1
+[07:08:52] [Server thread/INFO]: Saving and pausing game...
+[07:08:52] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[07:08:52] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[07:08:52] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[07:08:52] [Server thread/INFO]: Saving chunks for level 'New World'/Spirit World
+[07:08:52] [Server thread/INFO]: Saving chunks for level 'New World'/Torment
+[07:08:52] [Server thread/INFO]: Saving chunks for level 'New World'/Mirror
+[07:18:24] [Client thread/INFO]: Stopping!
+[07:18:24] [Server thread/INFO]: Stopping server
+[07:18:24] [Server thread/INFO]: Saving players
+[07:18:24] [Server thread/INFO]: Saving worlds
+[07:18:24] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[07:18:24] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[07:18:24] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[07:18:24] [Server thread/INFO]: Saving chunks for level 'New World'/Spirit World
+[07:18:24] [Server thread/INFO]: Saving chunks for level 'New World'/Torment
+[07:18:24] [Server thread/INFO]: Saving chunks for level 'New World'/Mirror
+[07:18:24] [Client Shutdown Thread/INFO]: Stopping server
+[07:18:24] [Client Shutdown Thread/INFO]: Saving players

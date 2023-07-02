@@ -462,13 +462,17 @@ public class EventHandler {
     public float getBlock(EntityLivingBase entity, String name, float damage){
         return damage-(damage*((float)entity.getEntityData().getInteger(name)/100));
     }
+
+    public boolean damageLog = false;
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void highestHit(LivingHurtEvent event){
         if(event.entity instanceof EntityPlayer){
-            if(event.source.getEntity() != null)
-                MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentText("Damage Source: "+ event.source.damageType + " §7Victim: "+ event.entity.getCommandSenderName() + " Dealer: " + event.source.getEntity().getCommandSenderName()));
-            else MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentText("Damage Source: "+ event.source.damageType + " §7Victim: "+ event.entity.getCommandSenderName()));
-            MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentText("Amount: §5" + event.ammount));
+            if(damageLog){
+                if(event.source.getEntity() != null)
+                    MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentText("Damage Source: "+ event.source.damageType + " §7Victim: "+ event.entity.getCommandSenderName() + " Dealer: " + event.source.getEntity().getCommandSenderName()));
+                else MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentText("Damage Source: "+ event.source.damageType + " §7Victim: "+ event.entity.getCommandSenderName()));
+                MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentText("Amount: §5" + event.ammount));
+            }
         }
     }
 
@@ -634,7 +638,7 @@ public class EventHandler {
     }
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void lowestHit(LivingHurtEvent event){
-        if(event.entity instanceof EntityPlayer){
+        if(event.entity instanceof EntityPlayer && damageLog){
                 MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentText("Amount after absorption: §5" + event.ammount));
         }
     }

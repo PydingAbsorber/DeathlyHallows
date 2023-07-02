@@ -55,45 +55,49 @@ public class DeadlyPrism extends Item {
     }
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
-        if(!player.worldObj.isRemote){
-            switch (damage){
-                case 0:{
-                    player.attackEntityFrom(DamageSource.outOfWorld,damageAmount);
-                }
-                case 1:{
-                    player.attackEntityFrom(DamageSource.magic,damageAmount);
-                }
-                case 2:{
-                    player.attackEntityFrom(DamageSource.generic,damageAmount);
-                }
-                case 3:{
-                    player.attackEntityFrom(new DamageSource("adaptive").setDamageBypassesArmor(),damageAmount);
-                }
-                case 4:{
-                    player.attackEntityFrom(new DamageSource("adaptive").setFireDamage(),damageAmount);
-                }
-                case 5:{
-                    player.attackEntityFrom(new DamageSource("adaptive").setExplosion(),damageAmount);
-                }
-                case 6:{
-                    player.attackEntityFrom(new DamageSource("adaptive").setDamageAllowedInCreativeMode(),damageAmount);
-                }
-                case 7:{
-                    player.attackEntityFrom(new DamageSource("adaptive").setProjectile(),damageAmount);
-                }
-                case 8:{
-                    player.attackEntityFrom(new DamageSource("adaptive").setDamageIsAbsolute(),damageAmount);
-                }
-                case 9:{
-                    player.attackEntityFrom(DamageSource.anvil,damageAmount);
-                }
-                case 10:{
-                    player.attackEntityFrom(DamageSource.wither,damageAmount);
-                }
-                case 11:{
-                    player.attackEntityFrom(DamageSource.lava,damageAmount);
+        try{
+            if(!player.worldObj.isRemote){
+                switch (damage){
+                    case 0:{
+                        player.attackEntityFrom(DamageSource.outOfWorld,damageAmount);
+                    }
+                    case 1:{
+                        player.attackEntityFrom(DamageSource.magic,damageAmount);
+                    }
+                    case 2:{
+                        player.attackEntityFrom(DamageSource.generic,damageAmount);
+                    }
+                    case 3:{
+                        player.attackEntityFrom(new DamageSource("adaptive").setDamageBypassesArmor(),damageAmount);
+                    }
+                    case 4:{
+                        player.attackEntityFrom(new DamageSource("adaptive").setFireDamage(),damageAmount);
+                    }
+                    case 5:{
+                        player.attackEntityFrom(new DamageSource("adaptive").setExplosion(),damageAmount);
+                    }
+                    case 6:{
+                        player.attackEntityFrom(new DamageSource("adaptive").setDamageAllowedInCreativeMode(),damageAmount);
+                    }
+                    case 7:{
+                        player.attackEntityFrom(new DamageSource("adaptive").setProjectile(),damageAmount);
+                    }
+                    case 8:{
+                        player.attackEntityFrom(new DamageSource("adaptive").setDamageIsAbsolute(),damageAmount);
+                    }
+                    case 9:{
+                        player.attackEntityFrom(DamageSource.anvil,damageAmount);
+                    }
+                    case 10:{
+                        player.attackEntityFrom(DamageSource.wither,damageAmount);
+                    }
+                    case 11:{
+                        player.attackEntityFrom(DamageSource.lava,damageAmount);
+                    }
                 }
             }
+        } catch(Exception e){
+            e.printStackTrace();
         }
         return super.onItemRightClick(stack,world,player);
     }
