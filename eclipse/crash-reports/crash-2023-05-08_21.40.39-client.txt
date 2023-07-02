@@ -1,0 +1,106 @@
+---- Minecraft Crash Report ----
+// Surprise! Haha. Well, this is awkward.
+
+Time: 08.05.23 21:40
+Description: Unexpected error
+
+java.lang.NullPointerException: Unexpected error
+	at com.pyding.deathlyhallows.items.ElderWand.onItemUse(ElderWand.java:23)
+	at net.minecraft.item.ItemStack.tryPlaceItemIntoWorld(ItemStack.java:143)
+	at net.minecraft.client.multiplayer.PlayerControllerMP.onPlayerRightClick(PlayerControllerMP.java:403)
+	at net.minecraft.client.Minecraft.func_147121_ag(Minecraft.java:1529)
+	at net.minecraft.client.Minecraft.runTick(Minecraft.java:2044)
+	at net.minecraft.client.Minecraft.runGameLoop(Minecraft.java:1039)
+	at net.minecraft.client.Minecraft.run(Minecraft.java:962)
+	at net.minecraft.client.main.Main.main(Main.java:164)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at net.minecraft.launchwrapper.Launch.launch(Launch.java:135)
+	at net.minecraft.launchwrapper.Launch.main(Launch.java:28)
+	at net.minecraftforge.gradle.GradleStartCommon.launch(Unknown Source)
+	at GradleStart.main(Unknown Source)
+
+
+A detailed walkthrough of the error, its code path and all known details is as follows:
+---------------------------------------------------------------------------------------
+
+-- Head --
+Stacktrace:
+	at com.pyding.deathlyhallows.items.ElderWand.onItemUse(ElderWand.java:23)
+	at net.minecraft.item.ItemStack.tryPlaceItemIntoWorld(ItemStack.java:143)
+	at net.minecraft.client.multiplayer.PlayerControllerMP.onPlayerRightClick(PlayerControllerMP.java:403)
+	at net.minecraft.client.Minecraft.func_147121_ag(Minecraft.java:1529)
+
+-- Affected level --
+Details:
+	Level name: MpServer
+	All players: 1 total; [EntityClientPlayerMP['Player207'/690, l='MpServer', x=-223,68, y=70,62, z=148,50]]
+	Chunk stats: MultiplayerChunkCache: 410, 410
+	Level seed: 0
+	Level generator: ID 00 - default, ver 1. Features enabled: false
+	Level generator options: 
+	Level spawn location: World: (-248,64,132), Chunk: (at 8,4,4 in -16,8; contains blocks -256,0,128 to -241,255,143), Region: (-1,0; contains chunks -32,0 to -1,31, blocks -512,0,0 to -1,255,511)
+	Level time: 156950 game time, 163641 day time
+	Level dimension: 0
+	Level storage version: 0x00000 - Unknown?
+	Level weather: Rain time: 0 (now: false), thunder time: 0 (now: false)
+	Level game mode: Game mode: creative (ID 1). Hardcore: false. Cheats: false
+	Forced entities: 34 total; [EntityCow['Cow'/585, l='MpServer', x=-270,75, y=63,00, z=89,38], EntityCow['Cow'/590, l='MpServer', x=-246,41, y=63,00, z=79,47], EntityBat['Bat'/591, l='MpServer', x=-252,34, y=60,10, z=121,31], EntityBat['Bat'/592, l='MpServer', x=-253,28, y=59,10, z=131,50], EntityCow['Cow'/594, l='MpServer', x=-233,97, y=66,00, z=93,13], EntityBat['Bat'/595, l='MpServer', x=-230,46, y=24,00, z=102,72], EntityBat['Bat'/596, l='MpServer', x=-228,41, y=24,10, z=110,75], EntityBat['Bat'/597, l='MpServer', x=-229,23, y=22,26, z=109,39], EntityBat['Bat'/598, l='MpServer', x=-222,60, y=26,75, z=98,94], EntityBat['Bat'/599, l='MpServer', x=-229,58, y=24,72, z=106,93], EntityBat['Bat'/600, l='MpServer', x=-230,41, y=24,10, z=113,25], EntityCow['Cow'/601, l='MpServer', x=-236,03, y=64,00, z=114,94], EntityBat['Bat'/604, l='MpServer', x=-211,83, y=14,78, z=108,55], EntityBat['Bat'/605, l='MpServer', x=-211,43, y=15,47, z=117,89], EntityBat['Bat'/611, l='MpServer', x=-207,55, y=32,77, z=106,49], EntityBat['Bat'/612, l='MpServer', x=-197,49, y=36,73, z=154,32], EntitySquid['Squid'/613, l='MpServer', x=-204,30, y=57,36, z=180,50], EntitySquid['Squid'/614, l='MpServer', x=-203,60, y=58,41, z=187,53], EntityCow['Cow'/619, l='MpServer', x=-179,31, y=63,00, z=78,47], EntityCow['Cow'/620, l='MpServer', x=-187,50, y=68,00, z=91,63], EntityCow['Cow'/621, l='MpServer', x=-177,53, y=62,00, z=141,31], EntityClientPlayerMP['Player207'/690, l='MpServer', x=-223,68, y=70,62, z=148,50], EntityCow['Cow'/630, l='MpServer', x=-165,40, y=73,00, z=84,08], EntityCow['Cow'/566, l='MpServer', x=-288,23, y=67,00, z=135,20], EntityCow['Cow'/631, l='MpServer', x=-174,47, y=69,00, z=80,31], EntityChicken['Chicken'/632, l='MpServer', x=-161,63, y=65,00, z=156,56], EntityItem['item.item.egg'/633, l='MpServer', x=-162,66, y=65,13, z=156,81], EntityCow['Cow'/634, l='MpServer', x=-160,63, y=65,00, z=161,38], EntityHorse['Horse'/635, l='MpServer', x=-166,92, y=64,00, z=203,96], EntityChicken['Chicken'/573, l='MpServer', x=-287,66, y=64,00, z=114,53], EntityChicken['Chicken'/638, l='MpServer', x=-148,59, y=69,00, z=134,56], EntityBat['Bat'/574, l='MpServer', x=-278,41, y=33,17, z=137,16], EntityBat['Bat'/639, l='MpServer', x=-159,95, y=11,71, z=197,56], EntityBat['Bat'/575, l='MpServer', x=-278,25, y=33,10, z=213,13]]
+	Retry entities: 0 total; []
+	Server brand: fml,forge
+	Server type: Integrated singleplayer server
+Stacktrace:
+	at net.minecraft.client.multiplayer.WorldClient.addWorldInfoToCrashReport(WorldClient.java:415)
+	at net.minecraft.client.Minecraft.addGraphicsAndWorldToCrashReport(Minecraft.java:2566)
+	at net.minecraft.client.Minecraft.run(Minecraft.java:991)
+	at net.minecraft.client.main.Main.main(Main.java:164)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at net.minecraft.launchwrapper.Launch.launch(Launch.java:135)
+	at net.minecraft.launchwrapper.Launch.main(Launch.java:28)
+	at net.minecraftforge.gradle.GradleStartCommon.launch(Unknown Source)
+	at GradleStart.main(Unknown Source)
+
+-- System Details --
+Details:
+	Minecraft Version: 1.7.10
+	Operating System: Windows 10 (amd64) version 10.0
+	Java Version: 1.8.0_181, Oracle Corporation
+	Java VM Version: Java HotSpot(TM) 64-Bit Server VM (mixed mode), Oracle Corporation
+	Memory: 1114338944 bytes (1062 MB) / 1579155456 bytes (1506 MB) up to 3683647488 bytes (3513 MB)
+	JVM Flags: 0 total; 
+	AABB Pool Size: 0 (0 bytes; 0 MB) allocated, 0 (0 bytes; 0 MB) used
+	IntCache: cache: 0, tcache: 0, allocated: 13, tallocated: 95
+	FML: MCP v9.05 FML v7.10.99.99 Minecraft Forge 10.13.4.1614 11 mods loaded, 11 mods active
+	States: 'U' = Unloaded 'L' = Loaded 'C' = Constructed 'H' = Pre-initialized 'I' = Initialized 'J' = Post-initialized 'A' = Available 'D' = Disabled 'E' = Errored
+	UCHIJAAAAAAAAA	mcp{9.05} [Minecraft Coder Pack] (minecraft.jar) 
+	UCHIJAAAAAAAAA	FML{7.10.99.99} [Forge Mod Loader] (forgeSrc-1.7.10-10.13.4.1614-1.7.10.jar) 
+	UCHIJAAAAAAAAA	Forge{10.13.4.1614} [Minecraft Forge] (forgeSrc-1.7.10-10.13.4.1614-1.7.10.jar) 
+	UCHIJAAAAAAAAA	NotEnoughItems{1.0.3.74} [Not Enough Items] (NotEnoughItems-1.7.10-1.0.2.15-dev.jar) 
+	UCHIJAAAAAAAAA	CodeChickenCore{1.0.4.29} [CodeChicken Core] (minecraft.jar) 
+	UCHIJAAAAAAAAA	Baubles{1.0.1.10} [Baubles] (Baubles-1.7.10-1.0.1.10.jar) 
+	UCHIJAAAAAAAAA	ForgeMultipart{1.1.1.320} [Forge Multipart] (ForgeMultipart-1.7.10-1.1.1.320-dev.jar) 
+	UCHIJAAAAAAAAA	witchery{0.24.1} [Witchery] (witchery-deobf.jar) 
+	UCHIJAAAAAAAAA	McMultipart{1.1.1.320} [Minecraft Multipart Plugin] (ForgeMultipart-1.7.10-1.1.1.320-dev.jar) 
+	UCHIJAAAAAAAAA	dh{1.0} [Deathly Hallows] (deathlyhallows-1.0.0.jar) 
+	UCHIJAAAAAAAAA	ForgeMicroblock{1.1.1.320} [Forge Microblocks] (ForgeMultipart-1.7.10-1.1.1.320-dev.jar) 
+	GL info: ' Vendor: 'NVIDIA Corporation' Version: '4.6.0 NVIDIA 531.41' Renderer: 'NVIDIA GeForce GTX 1650/PCIe/SSE2'
+	Launched Version: 1.7.10
+	LWJGL: 2.9.1
+	OpenGL: NVIDIA GeForce GTX 1650/PCIe/SSE2 GL version 4.6.0 NVIDIA 531.41, NVIDIA Corporation
+	GL Caps: Using GL 1.3 multitexturing.
+Using framebuffer objects because OpenGL 3.0 is supported and separate blending is supported.
+Anisotropic filtering is supported and maximum anisotropy is 16.
+Shaders are available because OpenGL 2.1 is supported.
+
+	Is Modded: Definitely; Client brand changed to 'fml,forge'
+	Type: Client (map_client.txt)
+	Resource Packs: []
+	Current Language: English (US)
+	Profiler Position: N/A (disabled)
+	Vec3 Pool Size: 0 (0 bytes; 0 MB) allocated, 0 (0 bytes; 0 MB) used
+	Anisotropic Filtering: Off (1)

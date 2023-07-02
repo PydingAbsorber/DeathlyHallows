@@ -1,0 +1,83 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "forge"
+            url = "https://maven.minecraftforge.net/"
+        }
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+    dependencies {
+        classpath ('com.anatawa12.forge:ForgeGradle:1.2-1.0.+') {
+                       changing = true
+                  }
+    }
+}
+
+apply plugin: 'forge'
+
+
+version = "1.0.0"
+group = "com.pyding.deathlyhallows"
+archivesBaseName = "deathlyhallows"
+
+compileJava.options.encoding = 'UTF-8'
+sourceCompatibility = targetCompatibility = '1.8'
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+
+
+minecraft {
+    version = "1.7.10-10.13.4.1614-1.7.10"
+    runDir = "eclipse"
+}
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+    maven {
+        name = "chickenbones"
+        url = "http://chickenbones.net/maven/"
+    }
+}
+
+dependencies {
+    compile fileTree(dir: "libs", include: "*.jar")
+    compile "codechicken:CodeChickenLib:1.7.10-1.1.1.109:dev"
+    compile "codechicken:CodeChickenCore:1.7.10-1.0.2.9:dev"
+    compile "codechicken:NotEnoughItems:1.7.10-1.0.2.15:dev"
+    compile "codechicken:ForgeMultipart:1.7.10-1.1.1.320:dev"
+    compile files("/libs/Baubles-deobf-1.7.10-1.0.1.10.jar")
+}
+
+processResources
+{
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+task devJar(type: Jar) {
+    classifier = 'dev'
+    from sourceSets.main.output
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives devJar
+    archives sourcesJar
+}

@@ -1,0 +1,128 @@
+{
+  "mantle.1": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "dh:mantle/1",
+        "stream": true
+      }
+    ]
+  },
+  "mantle.2": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "dh:mantle/2",
+        "stream": true
+      }
+    ]
+  },
+  "mantle.3": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "dh:mantle/3",
+        "stream": true
+      }
+    ]
+  },
+  "ring.1": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "dh:ring/1",
+        "stream": true
+      }
+    ]
+  },
+  "spell.explode1": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "dh:spell/explode1",
+        "stream": true
+      }
+    ]
+  },
+  "spell.explode2": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "dh:spell/explode2",
+        "stream": true
+      }
+    ]
+  },
+  "spell.anima1": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "dh:spell/anima1",
+        "stream": true
+      }
+    ]
+  },
+  "spell.anima2": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "dh:spell/anima2",
+        "stream": true
+      }
+    ]
+  },
+  "spell.anima3": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "dh:spell/anima3",
+        "stream": true
+      }
+    ]
+  },
+  "spell.death1": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "dh:spell/death1",
+        "stream": true
+      }
+    ]
+  },
+  "spell.death2": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "dh:spell/death2",
+        "stream": true
+      }
+    ]
+  },
+  "spell.sectum1": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "dh:spell/sectum1",
+        "stream": true
+      }
+    ]
+  },
+  "spell.sectum2": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "dh:spell/sectum2",
+        "stream": true
+      }
+    ]
+  },
+  "mobs.sonido": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "dh:mobs/sonido",
+        "stream": true
+      }
+    ]
+  }
+}

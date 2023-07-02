@@ -1,0 +1,81 @@
+---- Minecraft Crash Report ----
+// Who set us up the TNT?
+
+Time: 18.05.23 15:07
+Description: Ticking memory connection
+
+java.lang.NullPointerException: Ticking memory connection
+	at com.pyding.deathlyhallows.network.PacketSender.sendTo(PacketSender.java:33)
+	at com.pyding.deathlyhallows.common.properties.ExtendedPlayer.sync(ExtendedPlayer.java:81)
+	at com.pyding.deathlyhallows.common.properties.ExtendedPlayer.setElfLvl(ExtendedPlayer.java:146)
+	at com.pyding.deathlyhallows.items.CreativeItem.onItemRightClick(CreativeItem.java:23)
+	at net.minecraft.item.ItemStack.useItemRightClick(ItemStack.java:164)
+	at net.minecraft.server.management.ItemInWorldManager.tryUseItem(ItemInWorldManager.java:345)
+	at net.minecraft.network.NetHandlerPlayServer.processPlayerBlockPlacement(NetHandlerPlayServer.java:576)
+	at net.minecraft.network.play.client.C08PacketPlayerBlockPlacement.processPacket(C08PacketPlayerBlockPlacement.java:74)
+	at net.minecraft.network.play.client.C08PacketPlayerBlockPlacement.processPacket(C08PacketPlayerBlockPlacement.java:122)
+	at net.minecraft.network.NetworkManager.processReceivedPackets(NetworkManager.java:241)
+	at net.minecraft.network.NetworkSystem.networkTick(NetworkSystem.java:182)
+	at net.minecraft.server.MinecraftServer.updateTimeLightAndEntities(MinecraftServer.java:726)
+	at net.minecraft.server.MinecraftServer.tick(MinecraftServer.java:614)
+	at net.minecraft.server.integrated.IntegratedServer.tick(IntegratedServer.java:118)
+	at net.minecraft.server.MinecraftServer.run(MinecraftServer.java:485)
+	at net.minecraft.server.MinecraftServer$2.run(MinecraftServer.java:752)
+
+
+A detailed walkthrough of the error, its code path and all known details is as follows:
+---------------------------------------------------------------------------------------
+
+-- Head --
+Stacktrace:
+	at com.pyding.deathlyhallows.network.PacketSender.sendTo(PacketSender.java:33)
+	at com.pyding.deathlyhallows.common.properties.ExtendedPlayer.sync(ExtendedPlayer.java:81)
+	at com.pyding.deathlyhallows.common.properties.ExtendedPlayer.setElfLvl(ExtendedPlayer.java:146)
+	at com.pyding.deathlyhallows.items.CreativeItem.onItemRightClick(CreativeItem.java:23)
+	at net.minecraft.item.ItemStack.useItemRightClick(ItemStack.java:164)
+	at net.minecraft.server.management.ItemInWorldManager.tryUseItem(ItemInWorldManager.java:345)
+	at net.minecraft.network.NetHandlerPlayServer.processPlayerBlockPlacement(NetHandlerPlayServer.java:576)
+	at net.minecraft.network.play.client.C08PacketPlayerBlockPlacement.processPacket(C08PacketPlayerBlockPlacement.java:74)
+	at net.minecraft.network.play.client.C08PacketPlayerBlockPlacement.processPacket(C08PacketPlayerBlockPlacement.java:122)
+	at net.minecraft.network.NetworkManager.processReceivedPackets(NetworkManager.java:241)
+
+-- Ticking connection --
+Details:
+	Connection: net.minecraft.network.NetworkManager@86b2803
+Stacktrace:
+	at net.minecraft.network.NetworkSystem.networkTick(NetworkSystem.java:182)
+	at net.minecraft.server.MinecraftServer.updateTimeLightAndEntities(MinecraftServer.java:726)
+	at net.minecraft.server.MinecraftServer.tick(MinecraftServer.java:614)
+	at net.minecraft.server.integrated.IntegratedServer.tick(IntegratedServer.java:118)
+	at net.minecraft.server.MinecraftServer.run(MinecraftServer.java:485)
+	at net.minecraft.server.MinecraftServer$2.run(MinecraftServer.java:752)
+
+-- System Details --
+Details:
+	Minecraft Version: 1.7.10
+	Operating System: Windows 10 (amd64) version 10.0
+	Java Version: 1.8.0_181, Oracle Corporation
+	Java VM Version: Java HotSpot(TM) 64-Bit Server VM (mixed mode), Oracle Corporation
+	Memory: 384807912 bytes (366 MB) / 1563951104 bytes (1491 MB) up to 3683647488 bytes (3513 MB)
+	JVM Flags: 0 total; 
+	AABB Pool Size: 0 (0 bytes; 0 MB) allocated, 0 (0 bytes; 0 MB) used
+	IntCache: cache: 0, tcache: 0, allocated: 12, tallocated: 94
+	FML: MCP v9.05 FML v7.10.99.99 Minecraft Forge 10.13.4.1614 11 mods loaded, 11 mods active
+	States: 'U' = Unloaded 'L' = Loaded 'C' = Constructed 'H' = Pre-initialized 'I' = Initialized 'J' = Post-initialized 'A' = Available 'D' = Disabled 'E' = Errored
+	UCHIJAAAA	mcp{9.05} [Minecraft Coder Pack] (minecraft.jar) 
+	UCHIJAAAA	FML{7.10.99.99} [Forge Mod Loader] (forgeSrc-1.7.10-10.13.4.1614-1.7.10.jar) 
+	UCHIJAAAA	Forge{10.13.4.1614} [Minecraft Forge] (forgeSrc-1.7.10-10.13.4.1614-1.7.10.jar) 
+	UCHIJAAAA	NotEnoughItems{1.0.3.74} [Not Enough Items] (NotEnoughItems-1.7.10-1.0.2.15-dev.jar) 
+	UCHIJAAAA	CodeChickenCore{1.0.4.29} [CodeChicken Core] (minecraft.jar) 
+	UCHIJAAAA	Baubles{1.0.1.10} [Baubles] (Baubles-1.7.10-1.0.1.10.jar) 
+	UCHIJAAAA	ForgeMultipart{1.1.1.320} [Forge Multipart] (ForgeMultipart-1.7.10-1.1.1.320-dev.jar) 
+	UCHIJAAAA	witchery{0.24.1} [Witchery] (witchery-deobf.jar) 
+	UCHIJAAAA	McMultipart{1.1.1.320} [Minecraft Multipart Plugin] (ForgeMultipart-1.7.10-1.1.1.320-dev.jar) 
+	UCHIJAAAA	dh{1.0} [Deathly Hallows] (deathlyhallows-1.0.0.jar) 
+	UCHIJAAAA	ForgeMicroblock{1.1.1.320} [Forge Microblocks] (ForgeMultipart-1.7.10-1.1.1.320-dev.jar) 
+	GL info: ~~ERROR~~ RuntimeException: No OpenGL context found in the current thread.
+	Profiler Position: N/A (disabled)
+	Vec3 Pool Size: 0 (0 bytes; 0 MB) allocated, 0 (0 bytes; 0 MB) used
+	Player Count: 1 / 8; [EntityPlayerMP['Player968'/137, l='New World', x=-187,14, y=72,00, z=185,90]]
+	Type: Integrated Server (map_client.txt)
+	Is Modded: Definitely; Client brand changed to 'fml,forge'

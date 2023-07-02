@@ -1,0 +1,44 @@
+[23:12:34] [main/INFO]: Setting user: Player815
+[23:12:37] [Client thread/INFO]: LWJGL Version: 2.9.1
+[23:12:51] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Baubles, FMLFileResourcePack:Witchery, FMLFileResourcePack:Forge Microblocks, FMLFileResourcePack:Forge Multipart, FMLFileResourcePack:Minecraft Multipart Plugin, FMLFileResourcePack:Deathly Hallows
+[23:12:57] [Sound Library Loader/INFO]: Sound engine started
+[23:12:59] [Client thread/INFO]: Created: 16x16 textures/blocks-atlas
+[23:12:59] [Client thread/INFO]: Created: 16x16 textures/items-atlas
+[23:13:01] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Baubles, FMLFileResourcePack:Witchery, FMLFileResourcePack:Forge Microblocks, FMLFileResourcePack:Forge Multipart, FMLFileResourcePack:Minecraft Multipart Plugin, FMLFileResourcePack:Deathly Hallows
+[23:13:02] [Client thread/INFO]: Created: 512x512 textures/blocks-atlas
+[23:13:02] [Client thread/INFO]: Created: 2048x1024 textures/items-atlas
+[23:13:03] [Sound Library Loader/INFO]: Sound engine started
+[23:14:18] [Server thread/INFO]: Starting integrated minecraft server version 1.7.10
+[23:14:18] [Server thread/INFO]: Generating keypair
+[23:14:19] [Server thread/INFO]: Preparing start region for level 0
+[23:14:20] [Server thread/INFO]: Changing view distance to 12, from 10
+[23:14:21] [Server thread/INFO]: Player815[local:E:f9113a5f] logged in with entity id 88 at (-246.0675280808729, 65.0, 115.47567758221001)
+[23:14:21] [Server thread/INFO]: Player815 присоединился к игре
+[23:14:25] [Server thread/INFO]: Saving and pausing game...
+[23:14:25] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[23:14:25] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[23:14:25] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[23:14:25] [Server thread/INFO]: Saving chunks for level 'New World'/Spirit World
+[23:14:25] [Server thread/INFO]: Saving chunks for level 'New World'/Torment
+[23:14:25] [Server thread/INFO]: Saving chunks for level 'New World'/Mirror
+[23:14:26] [Client thread/INFO]: [CHAT] Version 1.0.7.48 of CodeChickenCore is available
+[23:14:26] [Client thread/INFO]: [CHAT] Version 1.0.5.120 of NotEnoughItems is available
+[23:14:28] [Server thread/INFO]: Player815 заработал достижение [Проверить карманы]
+[23:14:29] [Client thread/INFO]: [CHAT] Player815 заработал достижение [Проверить карманы]
+[23:14:31] [Server thread/INFO]: Saving and pausing game...
+[23:14:31] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[23:14:31] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[23:14:31] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[23:14:31] [Server thread/INFO]: Saving chunks for level 'New World'/Spirit World
+[23:14:31] [Server thread/INFO]: Saving chunks for level 'New World'/Torment
+[23:14:31] [Server thread/INFO]: Saving chunks for level 'New World'/Mirror
+[23:18:19] [Client thread/INFO]: Stopping!
+[23:18:19] [Server thread/INFO]: Stopping server
+[23:18:19] [Server thread/INFO]: Saving players
+[23:18:19] [Server thread/INFO]: Saving worlds
+[23:18:19] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[23:18:19] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[23:18:19] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[23:18:19] [Server thread/INFO]: Saving chunks for level 'New World'/Spirit World
+[23:18:19] [Server thread/INFO]: Saving chunks for level 'New World'/Torment
+[23:18:19] [Server thread/INFO]: Saving chunks for level 'New World'/Mirror
