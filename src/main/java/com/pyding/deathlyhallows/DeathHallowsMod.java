@@ -13,6 +13,7 @@ import com.emoniph.witchery.ritual.rites.RiteSummonCreature;
 import com.pyding.deathlyhallows.client.handler.KeyHandler;
 import com.pyding.deathlyhallows.client.render.entity.RenderAbsoluteDeath;
 import com.pyding.deathlyhallows.client.render.item.EldenWandRender;
+import com.pyding.deathlyhallows.commands.DamageLog;
 import com.pyding.deathlyhallows.common.handler.EventHandler;
 import com.pyding.deathlyhallows.entity.AbsoluteDeath;
 import com.pyding.deathlyhallows.entity.ModEntity;
@@ -24,7 +25,10 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraft.command.CommandHandler;
+import net.minecraft.command.ICommand;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntitySkeleton;
@@ -33,6 +37,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -116,6 +121,11 @@ public class DeathHallowsMod {
         meth.invoke(WitcheryBrewRegistry.INSTANCE,brewAction);
         brewAction = new BrewActionRitualRecipe(new BrewItemKey(Blocks.iron_bars), new AltarPower(17000), new BrewActionRitualRecipe.Recipe[]{new BrewActionRitualRecipe.Recipe(new ItemStack(hobgoblinChains),new ItemStack[]{new ItemStack(Blocks.iron_block,64),Witchery.Items.GENERIC.itemKobolditeNugget.createStack(2),Witchery.Items.GENERIC.itemKobolditeDust.createStack(4)})});
         meth.invoke(WitcheryBrewRegistry.INSTANCE,brewAction);
+    }
+
+    @Mod.EventHandler
+    public void serverStarting(FMLServerStartingEvent event) {
+        event.registerServerCommand(new DamageLog());
     }
 
     public static CreativeTabs tabDeathlyHallows = new CreativeTabs("tabDeathlyHallows") {

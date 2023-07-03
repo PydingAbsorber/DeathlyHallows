@@ -463,11 +463,16 @@ public class EventHandler {
         return damage-(damage*((float)entity.getEntityData().getInteger(name)/100));
     }
 
-    public boolean damageLog = false;
+    public boolean damageLog(EntityPlayer player){
+        ExtendedPlayer props = ExtendedPlayer.get(player);
+        if(props.getDamageLog())
+            return true;
+        return false;
+    }
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void highestHit(LivingHurtEvent event){
         if(event.entity instanceof EntityPlayer){
-            if(damageLog){
+            if(damageLog((EntityPlayer) event.entity)){
                 if(event.source.getEntity() != null)
                     MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentText("Damage Source: "+ event.source.damageType + " §7Victim: "+ event.entity.getCommandSenderName() + " Dealer: " + event.source.getEntity().getCommandSenderName()));
                 else MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentText("Damage Source: "+ event.source.damageType + " §7Victim: "+ event.entity.getCommandSenderName()));
@@ -638,7 +643,7 @@ public class EventHandler {
     }
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void lowestHit(LivingHurtEvent event){
-        if(event.entity instanceof EntityPlayer && damageLog){
+        if(event.entity instanceof EntityPlayer && damageLog((EntityPlayer) event.entity)){
                 MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentText("Amount after absorption: §5" + event.ammount));
         }
     }

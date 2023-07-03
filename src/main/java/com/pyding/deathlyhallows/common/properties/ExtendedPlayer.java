@@ -30,6 +30,7 @@ public class ExtendedPlayer implements IExtendedEntityProperties
     private boolean choice;
 
     private int mobsFed;
+    private boolean damageLog;
     public ExtendedPlayer(EntityPlayer player)
     {
         this.player = player;
@@ -66,6 +67,7 @@ public class ExtendedPlayer implements IExtendedEntityProperties
         properties.setInteger("FoodEaten",this.foodEaten);
         properties.setBoolean("Choice",this.choice);
         properties.setInteger("MobsFed",this.mobsFed);
+        properties.setBoolean("Logs",this.damageLog);
         compound.setTag(EXT_PROP_NAME, properties);
     }
 
@@ -87,6 +89,7 @@ public class ExtendedPlayer implements IExtendedEntityProperties
             this.foodEaten = properties.getInteger("FoodEaten");
             this.choice = properties.getBoolean("Choice");
             this.mobsFed = properties.getInteger("MobsFed");
+            this.damageLog = properties.getBoolean("Logs");
         }
     }
     public void setAllNull(){
@@ -109,6 +112,12 @@ public class ExtendedPlayer implements IExtendedEntityProperties
         if(source != null)
         EntityUtil.instantDeath(target,source);
         else EntityUtil.instantDeath(target,player);
+    }
+    public boolean getDamageLog(){
+        return this.damageLog;
+    }
+    public void setDamageLog(boolean choice2){
+        this.damageLog = choice2;
     }
     public int getMobsFed(){
         return mobsFed;
