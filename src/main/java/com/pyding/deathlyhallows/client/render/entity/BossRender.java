@@ -19,8 +19,8 @@ public class BossRender extends RenderLiving {
     @Override
     public void doRender(Entity entity, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_, float p_76986_9_) {
         if(entity instanceof AbsoluteDeath){
-            bindTexture(generic_block);
-            drawTexturedModalRect(entity.serverPosX, entity.serverPosY+2, 0, 0, 64, 64);
+            /*bindTexture(generic_block);
+            drawTexturedModalRect(entity.serverPosX, entity.serverPosY+2, 0, 0, 64, 64);*/
         }
         super.doRender(entity, p_76986_2_, p_76986_4_, p_76986_6_, p_76986_8_, p_76986_9_);
     }

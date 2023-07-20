@@ -23,13 +23,13 @@ public class CreativeItem extends Item {
             props.setAllNull();
             if(!player.isSneaking()){
                 if(props.getElfLvl() < 10)
-                    props.setElfLvl(props.getElfLvl()+1);
-                else props.setElfLvl(0);
+                    props.increaseElfLvl();
+                else props.nullifyElfLvl();
             }
             else {
                 if(props.getElfLvl() > 0)
-                    props.setElfLvl(props.getElfLvl()-1);
-                else props.setElfLvl(10);
+                    props.decreaseElfLvl();
+                else props.maxElfLvl();
             }
             if(I18n.format("dh.util.language").equals("Ru")){
                 player.addChatComponentMessage(new ChatComponentText("§9Твой уровень Эльфа сейчас " + props.getElfLvl()));

@@ -68,22 +68,22 @@ public class DeadlyPrism extends Item {
                         player.attackEntityFrom(DamageSource.generic,damageAmount);
                     }
                     case 3:{
-                        player.attackEntityFrom(new DamageSource("adaptive").setDamageBypassesArmor(),damageAmount);
+                        player.attackEntityFrom(new DamageSource("bypass").setDamageBypassesArmor(),damageAmount);
                     }
                     case 4:{
-                        player.attackEntityFrom(new DamageSource("adaptive").setFireDamage(),damageAmount);
+                        player.attackEntityFrom(new DamageSource("fire").setFireDamage(),damageAmount);
                     }
                     case 5:{
-                        player.attackEntityFrom(new DamageSource("adaptive").setExplosion(),damageAmount);
+                        player.attackEntityFrom(new DamageSource("explosion").setExplosion(),damageAmount);
                     }
                     case 6:{
-                        player.attackEntityFrom(new DamageSource("adaptive").setDamageAllowedInCreativeMode(),damageAmount);
+                        player.attackEntityFrom(new DamageSource("creative").setDamageAllowedInCreativeMode(),damageAmount);
                     }
                     case 7:{
-                        player.attackEntityFrom(new DamageSource("adaptive").setProjectile(),damageAmount);
+                        player.attackEntityFrom(new DamageSource("projectile").setProjectile(),damageAmount);
                     }
                     case 8:{
-                        player.attackEntityFrom(new DamageSource("adaptive").setDamageIsAbsolute(),damageAmount);
+                        player.attackEntityFrom(new DamageSource("absolute").setDamageIsAbsolute(),damageAmount);
                     }
                     case 9:{
                         player.attackEntityFrom(DamageSource.anvil,damageAmount);

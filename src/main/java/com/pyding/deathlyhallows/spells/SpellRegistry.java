@@ -351,7 +351,7 @@ public class SpellRegistry {
                                     EntityLivingBase target = (EntityLivingBase) o;
                                     if (target.isEntityAlive()) {
                                         world.addWeatherEffect(new EntityLightningBolt(world, target.posX, target.posY, target.posZ));
-                                        target.attackEntityFrom(DamageSource.magic, (baseDamage + damage)*spellPower);
+                                        target.attackEntityFrom(DamageSource.causePlayerDamage(player).setMagicDamage(), (baseDamage + damage)*spellPower);
                                         target.setLastAttacker(player);
                                         count++;
                                     }
@@ -380,7 +380,7 @@ public class SpellRegistry {
                                     }
                                     EntityLivingBase target = (EntityLivingBase) o;
                                     if(target.isEntityAlive())
-                                        target.attackEntityFrom(DamageSource.setExplosionSource(new Explosion(world, null, endX, endY, endZ, 3F)), (baseDamage*3+damage)*spellPower);
+                                        target.attackEntityFrom(DamageSource.causePlayerDamage(player).setExplosionSource(new Explosion(world, null, endX, endY, endZ, 3F)), (baseDamage*3+damage)*spellPower);
                                 }
                             }
                             world.createExplosion(player, x, y, z, 15*spellPower, true);
@@ -450,14 +450,14 @@ public class SpellRegistry {
                                     if(o instanceof EntityLivingBase && !(o instanceof EntityPlayer)){
                                         Entity entity = (Entity) o;
                                         entity.motionY = -10F;
-                                        entity.attackEntityFrom(DamageSource.fall.setDamageBypassesArmor(),(baseDamage*10*(props1.getElfLvl()+1))*damage);
+                                        entity.attackEntityFrom(DamageSource.causePlayerDamage(player).fall.setDamageBypassesArmor(),(baseDamage*10*(props1.getElfLvl()+1))*damage);
                                     }
                                     if(o instanceof EntityPlayer){
                                         EntityPlayer targetPlayer = (EntityPlayer) o;
                                         NetworkHandler.sendToPlayer(new CPacketDisableFlight(),targetPlayer);
                                         targetPlayer.capabilities.isFlying = false;
                                         targetPlayer.motionY = -10F;
-                                        targetPlayer.attackEntityFrom(DamageSource.fall.setDamageBypassesArmor(),(baseDamage*10*(props1.getElfLvl()+1))*damage);
+                                        targetPlayer.attackEntityFrom(DamageSource.causePlayerDamage(player).fall.setDamageBypassesArmor(),(baseDamage*10*(props1.getElfLvl()+1))*damage);
                                     }
                                 }
                             }

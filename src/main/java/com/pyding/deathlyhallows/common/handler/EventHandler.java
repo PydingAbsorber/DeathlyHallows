@@ -2,19 +2,23 @@ package com.pyding.deathlyhallows.common.handler;
 
 import baubles.api.BaublesApi;
 import com.emoniph.witchery.Witchery;
-import com.emoniph.witchery.brewing.WitcheryBrewRegistry;
-import com.emoniph.witchery.brewing.action.BrewAction;
+import com.emoniph.witchery.brewing.potions.PotionFortune;
+import com.emoniph.witchery.brewing.potions.WitcheryPotions;
 import com.emoniph.witchery.entity.EntityGoblin;
 import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.item.ItemDeathsClothes;
 import com.emoniph.witchery.util.ChatUtil;
 import com.emoniph.witchery.util.EntityDamageSourceIndirectSilver;
 import com.emoniph.witchery.util.EntityUtil;
+import com.emoniph.witchery.util.ParticleEffect;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.pyding.deathlyhallows.DeathHallowsMod;
 import com.pyding.deathlyhallows.client.handler.KeyHandler;
 import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
 import com.pyding.deathlyhallows.entity.AbsoluteDeath;
 import com.pyding.deathlyhallows.items.DeadlyPrism;
+import com.pyding.deathlyhallows.items.Nimbus3000;
 import com.pyding.deathlyhallows.items.ResurrectionStone;
 import com.pyding.deathlyhallows.network.RenderPacket;
 import com.pyding.deathlyhallows.network.NetworkHandler;
@@ -23,47 +27,38 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
-import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.ai.EntityAITasks;
-import net.minecraft.entity.ai.EntityAITempt;
-import net.minecraft.entity.ai.attributes.IAttribute;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityItemFrame;
-import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.passive.EntityCow;
-import net.minecraft.entity.passive.EntityPig;
-import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemAppleGold;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
+import net.minecraftforge.event.world.BlockEvent;
 
-import javax.annotation.Nonnull;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.*;
 
 import static com.emoniph.witchery.infusion.Infusion.getNBT;
@@ -129,6 +124,11 @@ public class EventHandler {
             }
             cmp.setTag(TAG_PLAYER_KEPT_DROPS, new NBTTagCompound());
         }
+        Multimap<String, AttributeModifier> attributes = HashMultimap.create();
+        ExtendedPlayer props = ExtendedPlayer.get(event.player);
+        float hpBoost = 4*props.getElfLvl();
+        attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier( "DH HP", hpBoost, 0));
+        event.player.getAttributeMap().applyAttributeModifiers(attributes);
     }
 
     @SubscribeEvent
@@ -251,7 +251,7 @@ public class EventHandler {
                     }
                     if(props.getElfCount() >= 20 && !witchProps.isVampire() && witchProps.getWerewolfLevel() == 0) {
                         props.setElfCount(0);
-                        props.setElfLvl(1);
+                        props.increaseElfLvl();
                         ChatUtil.sendTranslated(EnumChatFormatting.BLUE, player, "dh.chat.elf2", new Object[0]);
                     }
                 } else {
@@ -267,37 +267,37 @@ public class EventHandler {
                 switch (props.getElfLvl()) {
                     case 1: {
                         if(player.experienceLevel >= 1000){
-                            props.setElfLvl(2);
+                            props.increaseElfLvl();
                             ChatUtil.sendTranslated(EnumChatFormatting.BLUE, player, "dh.chat.elflvl1", new Object[0]);
                         }
                     }
                     case 2: {
                         if(player.posY <= -1000){
-                            props.setElfLvl(3);
+                            props.increaseElfLvl();
                             ChatUtil.sendTranslated(EnumChatFormatting.BLUE, player, "dh.chat.elflvl1", new Object[0]);
                         }
                     }
                     case 3: {
                         if(totalLvl(player) >= 1000){
-                            props.setElfLvl(4);
+                            props.increaseElfLvl();
                             ChatUtil.sendTranslated(EnumChatFormatting.BLUE, player, "dh.chat.elflvl1", new Object[0]);
                         }
                     }
                     case 4: {
                         if(props.getMobsKilled() >= 1000){
-                            props.setElfLvl(5);
+                            props.increaseElfLvl();
                             ChatUtil.sendTranslated(EnumChatFormatting.BLUE, player, "dh.chat.elflvl1", new Object[0]);
                         }
                     }
                     case 5: {
                         if(props.getFoodEaten() >= 64){
-                            props.setElfLvl(6);
+                            props.increaseElfLvl();
                             ChatUtil.sendTranslated(EnumChatFormatting.BLUE, player, "dh.chat.elflvl1", new Object[0]);
                         }
                     }
                     case 6: {
                         if(props.getMobsFed() >= 1000){
-                            props.setElfLvl(7);
+                            props.increaseElfLvl();
                             ChatUtil.sendTranslated(EnumChatFormatting.BLUE, player, "dh.chat.elflvl1", new Object[0]);
                         }
                     }
@@ -310,7 +310,7 @@ public class EventHandler {
                     case 9: {
                         if(props.getSpellsUsed() >= 1000){
                             props.setAllNull();
-                            props.setElfLvl(10);
+                            props.increaseElfLvl();
                             ChatUtil.sendTranslated(EnumChatFormatting.BLUE, player, "dh.chat.elflvl1", new Object[0]);
                         }
                     }
@@ -318,7 +318,7 @@ public class EventHandler {
                 if(witchProps.isVampire() && witchProps.getWerewolfLevel() > 0 && Math.random() < 1.0 / 2592000) {
                     ChatUtil.sendTranslated(EnumChatFormatting.AQUA, player, "dh.chat.prikol", new Object[0]);
                 }
-                if(props.getElfLvl() == 10) {
+                if(props.getElfLvl() == 10 && Infusion.getInfusionID(player) > 0) {
                     NBTTagCompound nbt = getNBT(player);
                     nbt.setInteger("witcheryInfusionChargesMax", 400);
                 }
@@ -369,7 +369,7 @@ public class EventHandler {
         if(!event.entityLiving.worldObj.isRemote && !event.isCanceled() && event.entityLiving instanceof EntityPlayer)
         {
             EntityPlayer player = (EntityPlayer)event.entityLiving;
-            if(player.getEntityData().getBoolean("mantleActive") && event.source.getEntity() != null) {
+            if(player.getEntityData().getBoolean("mantleActive") && (event.source.getEntity() != null || event.source == DamageSource.inWall)) {
                 event.setCanceled(true);
                 return;
             }
@@ -463,20 +463,24 @@ public class EventHandler {
         return damage-(damage*((float)entity.getEntityData().getInteger(name)/100));
     }
 
-    public boolean damageLog(EntityPlayer player){
-        ExtendedPlayer props = ExtendedPlayer.get(player);
-        if(props.getDamageLog())
-            return true;
-        return false;
-    }
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void highestHit(LivingHurtEvent event){
         if(event.entity instanceof EntityPlayer){
-            if(damageLog((EntityPlayer) event.entity)){
+            EntityPlayer player = (EntityPlayer) event.entity;
+            ExtendedPlayer props = ExtendedPlayer.get(player);
+            if(props.getDamageLog()){
                 if(event.source.getEntity() != null)
-                    MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentText("Damage Source: "+ event.source.damageType + " §7Victim: "+ event.entity.getCommandSenderName() + " Dealer: " + event.source.getEntity().getCommandSenderName()));
-                else MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentText("Damage Source: "+ event.source.damageType + " §7Victim: "+ event.entity.getCommandSenderName()));
-                MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentText("Amount: §5" + event.ammount));
+                    player.addChatMessage(new ChatComponentText("Damage Source: "+ event.source.damageType + " §7Victim: "+ event.entity.getCommandSenderName() + " Dealer: " + event.source.getEntity().getCommandSenderName()));
+                else player.addChatMessage(new ChatComponentText("Damage Source: "+ event.source.damageType + " §7Victim: "+ event.entity.getCommandSenderName()));
+                player.addChatMessage(new ChatComponentText("Amount: §5" + event.ammount));
+            }
+        }
+        if(event.source.getEntity() != null && event.source.getEntity() instanceof EntityPlayer){
+            EntityPlayer playerSource = (EntityPlayer) event.source.getEntity();
+            ExtendedPlayer props = ExtendedPlayer.get(playerSource);
+            if(props.getDamageLog()){
+                playerSource.addChatMessage(new ChatComponentText("Damage Source: "+ event.source.damageType + " §7Victim: "+ event.entity.getCommandSenderName() + " Dealer: " + event.source.getEntity().getCommandSenderName()));
+                playerSource.addChatMessage(new ChatComponentText("Amount: §5" + event.ammount));
             }
         }
     }
@@ -503,14 +507,12 @@ public class EventHandler {
                             event.ammount = event.ammount*props.getElfLvl();
                         if(props.getElfLvl() >= 3)
                             event.source.setMagicDamage();
-                        if(props.getElfLvl() >= 6){
+                        if(props.getElfLvl() >= 6 && !event.source.isDamageAbsolute()){
                             for(Object o : entities){
-                                if(!(o == attacker)){
+                                if(o != attacker && o != event.entity){
                                     EntityLiving target = (EntityLiving) o;
                                     target.setLastAttacker(attacker);
-                                    if(aoeCD+1000 < System.currentTimeMillis() || aoeCD == 0)
-                                    target.attackEntityFrom(event.source,event.ammount*damageAoe);
-                                    aoeCD = System.currentTimeMillis();
+                                    target.attackEntityFrom(DamageSource.causePlayerDamage(attacker).setDamageIsAbsolute().setProjectile(),event.ammount*damageAoe);
                                 }
                             }
                         }
@@ -525,7 +527,6 @@ public class EventHandler {
                                 target.attackEntityFrom(EntityUtil.DamageSourceVampireFire.magic,event.ammount*10);
                             }
                             if(wprops.getWerewolfLevel() > 0){
-                                wprops.setBloodReserve(0);
                                 if(Math.random() < 0.05) {
                                     wprops.setWerewolfLevel(wprops.getWerewolfLevel() - 1);
                                 }
@@ -643,8 +644,18 @@ public class EventHandler {
     }
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void lowestHit(LivingHurtEvent event){
-        if(event.entity instanceof EntityPlayer && damageLog((EntityPlayer) event.entity)){
-                MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentText("Amount after absorption: §5" + event.ammount));
+        if(event.entity instanceof EntityPlayer){
+            EntityPlayer player = (EntityPlayer) event.entity;
+            ExtendedPlayer props = ExtendedPlayer.get(player);
+            if (props.getDamageLog())
+            player.addChatMessage(new ChatComponentText("Amount after absorption: §5" + event.ammount));
+        }
+        if(event.source.getEntity() != null && event.source.getEntity() instanceof EntityPlayer){
+            EntityPlayer playerSource = (EntityPlayer) event.source.getEntity();
+            ExtendedPlayer props = ExtendedPlayer.get(playerSource);
+            if(props.getDamageLog()){
+                playerSource.addChatMessage(new ChatComponentText("Amount after absorption: §5" + event.ammount));
+            }
         }
     }
     @SubscribeEvent
@@ -749,6 +760,10 @@ public class EventHandler {
                 }
             }
         }
+        if(event.entity instanceof EntityGoblin){
+            if(Math.random() < 0.01)
+            event.entity.entityDropItem(new ItemStack(DeathHallowsMod.hobgoblinSoul),1);
+        }
     }
     @SubscribeEvent
     public void onFoodEaten(PlayerUseItemEvent.Finish event){
@@ -773,8 +788,39 @@ public class EventHandler {
         }
     }
     @SubscribeEvent
+    public void blockBreak(BlockEvent.BreakEvent event){
+        EntityPlayer player = event.getPlayer();
+        if(!player.capabilities.isCreativeMode && player.getHeldItem() != null && player.getHeldItem().getItem() == Witchery.Items.KOBOLDITE_PICKAXE && !event.world.isRemote && !player.worldObj.isRemote && hasDeathlyHallow(player) && (event.block.getUnlocalizedName().toLowerCase().contains("ore"))){
+            ItemStack stack = player.getHeldItem();
+            double chance = 1;
+            chance += EnchantmentHelper.getEnchantmentLevel(Enchantment.fortune.effectId, stack);
+            for(Object o : player.getActivePotionEffects()){
+                PotionEffect potion = (PotionEffect) o;
+                if(potion.getPotionID() == Witchery.Potions.FORTUNE.id){
+                    chance *= 2;
+                }
+            }
+            chance /= 1000;
+            if(Math.random() < chance){
+                if(Math.random() > chance)
+                player.entityDropItem(Witchery.Items.GENERIC.itemKobolditeDust.createStack(), 1);
+                else {
+                    if(Math.random() > chance)
+                        player.entityDropItem(Witchery.Items.GENERIC.itemKobolditeNugget.createStack(), 1);
+                    else player.entityDropItem(Witchery.Items.GENERIC.itemKobolditeIngot.createStack(), 1);
+                }
+                event.world.setBlock(event.x,event.y,event.z, Blocks.air);
+            }
+            /*if(FurnaceRecipes.smelting().getSmeltingResult(new ItemStack(event.block)) != null){
+                ItemStack smelt = FurnaceRecipes.smelting().getSmeltingResult(new ItemStack(event.block,2));
+                EntityItem entityItem = new EntityItem(event.world, event.x, event.y, event.z, smelt);
+                event.world.spawnEntityInWorld(entityItem);
+            }*/
+        }
+    }
+    @SubscribeEvent
     public void playerInteract(PlayerInteractEvent event) {
-        EntityPlayer player = event.entityPlayer;
+        /*EntityPlayer player = event.entityPlayer;
         ExtendedPlayer props = ExtendedPlayer.get(player);
         for(Object o: getEntities(1, EntityAnimal.class,player)){
             if(o instanceof EntityAnimal){
@@ -784,9 +830,9 @@ public class EventHandler {
                     privateField.setAccessible(true);
                     List entries = entity.tasks.taskEntries;
                     for(int i = 0;i < entries.size();i++){
-                        /*if(entries.get(i) == new EntityAITasks.EntityAITaskEntry(3,null)){
+                        *//*if(entries.get(i) == new EntityAITasks.EntityAITaskEntry(3,null)){
 
-                        }*/
+                        }*//*
                     }
                     Item item = (Item) privateField.get(entity.tasks.taskEntries.get(3));
                     System.out.println(item.getUnlocalizedName());
@@ -798,13 +844,14 @@ public class EventHandler {
                     e.printStackTrace();
                 }
             }
-        }
+        }*/
     }
     public boolean isHallow(ItemStack stack) {
         if(stack.getItem() == DeathHallowsMod.resurrectionStone || stack.getItem() == DeathHallowsMod.elderWand || stack.getItem() == DeathHallowsMod.invisibilityMantle)
             return true;
         else return false;
     }
+
 
     private void removeDuplicatesFromInventory(EntityPlayer player) {
         int count = 0;
@@ -841,6 +888,18 @@ public class EventHandler {
                         }
                     }
                 }
+                if(stack.getItem() == DeathHallowsMod.nimbus && stack.getTagCompound() != null){
+                    if(stack.getTagCompound().getInteger("NimbusCooldown") > 0)
+                    stack.getTagCompound().setInteger("NimbusCooldown",stack.getTagCompound().getInteger("NimbusCooldown")-1);
+                    else {
+                        KeyHandler keyHandler = new KeyHandler();
+                        if(keyHandler.isKeyPressed2){
+                            Nimbus3000 nimbus3000 = (Nimbus3000) stack.getItem();
+                            nimbus3000.onItemRightClick(stack, player.worldObj, player);
+                            keyHandler.setKeyPressed2(false);
+                        }
+                    }
+                }
             }
         }
         for (int i=1; i<4; i++) {
@@ -862,6 +921,46 @@ public class EventHandler {
                 }
             }
         }
+    }
+    public boolean hasDeathlyHallow(EntityPlayer player){
+        int count = 0;
+        for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+            if(player.inventory.getStackInSlot(i) != null)
+            {
+                ItemStack stack = player.inventory.getStackInSlot(i);
+                if(isHallow(stack))
+                {
+                    if (!stack.hasTagCompound()) {
+                        NBTTagCompound nbt = new NBTTagCompound();
+                        nbt.setString("dhowner", player.getDisplayName());
+                        stack.setTagCompound(nbt);
+                    }
+                    else if(stack.hasTagCompound() && !(stack.getTagCompound().hasKey("dhowner")))
+                    {
+                        NBTTagCompound nbt = stack.getTagCompound();
+                        nbt.setString("dhowner", player.getDisplayName());
+                        stack.setTagCompound(nbt);
+                    }
+                    else if (stack.hasTagCompound() && stack.getTagCompound().hasKey("dhowner")) {
+                        String dhowner = stack.getTagCompound().getString("dhowner");
+                        count++;
+                    }
+                }
+            }
+        }
+        for (int i=1; i<4; i++) {
+            if(BaublesApi.getBaubles(player).getStackInSlot(i) != null) {
+                ItemStack stack = BaublesApi.getBaubles(player).getStackInSlot(i);
+                if(isHallow(stack)){
+                    if(stack.hasTagCompound() && stack.getTagCompound().hasKey("dhowner")){
+                        count++;
+                    }
+                }
+            }
+        }
+        if(count > 0)
+            return true;
+        else return false;
     }
 
     public short totalLvl(EntityPlayer player){

@@ -12,14 +12,16 @@ import java.util.List;
 public class ModEntity {
     private final ArrayList entities = new ArrayList();
     public final ModEntity.EntityRef ABSOLUTE_DEATH;
-    public List getEntites() {
+    public final ModEntity.EntityRef NIMBUS;
+    public List getEntities() {
         return this.entities;
     }
 
     public void init() {}
 
     public ModEntity(){
-        this.ABSOLUTE_DEATH = (new ModEntity.LivingRef(92, AbsoluteDeath.class, "death", this.entities)).setEgg(9502720, 11430927);
+        this.ABSOLUTE_DEATH = (new ModEntity.LivingRef(666, AbsoluteDeath.class, "death", this.entities)).setEgg(9502720, 11430927);
+        this.NIMBUS = (new ModEntity.EntityRef(100, Nimbus.class,"Nimbus3000",this.entities)).setEgg(666,666);
     }
 
     public static class EntityRef {

@@ -30,7 +30,7 @@ public class InvisibilityMantle extends Item implements IBauble {
     }
 
     @Override
-    public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) {
+    public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) { 
         if(!entityLiving.worldObj.isRemote){
         }
         return super.onEntitySwing(entityLiving, stack);

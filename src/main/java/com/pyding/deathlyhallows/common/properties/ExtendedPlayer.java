@@ -1,8 +1,13 @@
 package com.pyding.deathlyhallows.common.properties;
 
 import com.emoniph.witchery.util.EntityUtil;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -196,20 +201,41 @@ public class ExtendedPlayer implements IExtendedEntityProperties
         return this.elfLvl;
     }
 
-    public void setElfLvl(int lvl) {
-        this.elfLvl = lvl;
-        this.sync();
+    Multimap<String, AttributeModifier> attributes = HashMultimap.create();
+    public float hpPerLvl = 4;
+    public void increaseElfLvl() {
+        this.elfLvl = elfLvl+1;
+        attributes.clear();
+        attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier( "DH HP", hpPerLvl, 0));
+        player.getAttributeMap().applyAttributeModifiers(attributes);
+    }
+
+    public void maxElfLvl(){
+        attributes.clear();
+        attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier( "DH HP", hpPerLvl*10, 0));
+        player.getAttributeMap().applyAttributeModifiers(attributes);
+        this.elfLvl = 10;
+    }
+    public void decreaseElfLvl() {
+        this.elfLvl = elfLvl-1;
+        attributes.clear();
+        attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier( "DH HP", -hpPerLvl, 0));
+        player.getAttributeMap().applyAttributeModifiers(attributes);
+    }
+    public void nullifyElfLvl(){
+        attributes.clear();
+        attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier( "DH HP", -this.elfLvl*hpPerLvl, 0));
+        player.getAttributeMap().applyAttributeModifiers(attributes);
+        this.elfLvl = 0;
     }
 
     public int getTrigger() {return this.trigger;}
     public void setTrigger(int number) {
         this.trigger = number;
-        this.sync();
     }
 
     public int getElfCount() {return this.elfCount;}
     public void setElfCount(int number) {
         this.elfCount = number;
-        this.sync();
     }
 }
