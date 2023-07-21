@@ -66,10 +66,6 @@ public class Nimbus extends EntityBroom {
     }
 
     @Override
-    protected void entityInit() {
-    }
-
-    @Override
     protected void readEntityFromNBT(NBTTagCompound p_70037_1_) {
 
     }

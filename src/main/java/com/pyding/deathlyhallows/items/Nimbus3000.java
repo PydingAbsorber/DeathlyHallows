@@ -18,6 +18,7 @@ import java.util.List;
 public class Nimbus3000 extends Item {
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
+        if(!world.isRemote) return super.onItemRightClick(stack,world,player);
         NBTTagCompound nbt = null;
         if(!stack.hasTagCompound() || stack.getTagCompound() == null){
             nbt = new NBTTagCompound();
