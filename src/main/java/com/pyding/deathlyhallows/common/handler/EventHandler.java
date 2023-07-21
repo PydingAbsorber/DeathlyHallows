@@ -67,6 +67,7 @@ public class EventHandler {
     private static final String TAG_PLAYER_KEPT_DROPS = "Dh_playerKeptDrops";
     private static final String TAG_DROP_COUNT = "Dh_dropCount";
     private static final String TAG_DROP_PREFIX = "Dh_dropPrefix";
+    Multimap<String, AttributeModifier> attributes = HashMultimap.create();
 
     @SubscribeEvent
     public void onPlayerDrops(PlayerDropsEvent event) {
@@ -124,11 +125,13 @@ public class EventHandler {
             }
             cmp.setTag(TAG_PLAYER_KEPT_DROPS, new NBTTagCompound());
         }
-        Multimap<String, AttributeModifier> attributes = HashMultimap.create();
-        ExtendedPlayer props = ExtendedPlayer.get(event.player);
-        float hpBoost = 4*props.getElfLvl();
-        attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier( "DH HP", hpBoost, 0));
-        event.player.getAttributeMap().applyAttributeModifiers(attributes);
+        if(event.player.getEntityData().getInteger("Horcrux") == 0){
+            Multimap<String, AttributeModifier> attributes = HashMultimap.create();
+            ExtendedPlayer props = ExtendedPlayer.get(event.player);
+            float hpBoost = 4*props.getElfLvl();
+            attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier( "DH HP", hpBoost, 0));
+            event.player.getAttributeMap().applyAttributeModifiers(attributes);
+        }
     }
 
     @SubscribeEvent
@@ -330,6 +333,9 @@ public class EventHandler {
                 }
                 if(Infusion.getMaxEnergy(player) < Infusion.getCurrentEnergy(player))
                     Infusion.setCurrentEnergy(player,Infusion.getMaxEnergy(player));
+                if(!(player.getMaxHealth() > 0) || player.getHealth() != player.getHealth()){
+                    props.deadInside(player);
+                }
             }
         }
         if(event.entity instanceof EntityCreature){
@@ -359,6 +365,18 @@ public class EventHandler {
                     if(death.getLastAttacker() != null && death.getLastAttacker() instanceof EntityPlayer)
                     ChatUtil.sendTranslated(EnumChatFormatting.RED, (EntityPlayer)death.getLastAttacker(), "dh.chat.sethealth", new Object[0]);
                 }
+            }
+        }
+        if (event.entity instanceof EntityLiving){
+            EntityLiving entity = (EntityLiving) event.entity;
+            if(entity.getEntityData().getInteger("SectumTime") > 0){
+                if(entity.getEntityData().getInteger("SectumTime")==1){
+                    attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier( "SectumHPAttribute", entity.getEntityData().getFloat("SectumHp"), 0));
+                    entity.getAttributeMap().applyAttributeModifiers(attributes);
+                    attributes.clear();
+                    entity.getEntityData().setFloat("SectumHp",0);
+                }
+                entity.getEntityData().setInteger("SectumTime",entity.getEntityData().getInteger("SectumTime")-1);
             }
         }
     }
@@ -540,6 +558,7 @@ public class EventHandler {
                         }
                     } else {
                         if(props.getElfLvl() >= 1){
+                            if(attacker.getHeldItem() != null && attacker.getHeldItem().getItem() != DeathHallowsMod.elderWand)
                             event.ammount = event.ammount * 0.05F;
                         }
                     }
@@ -548,6 +567,7 @@ public class EventHandler {
             if(event.entityLiving instanceof EntityPlayer){
                 EntityPlayer player = (EntityPlayer)event.entityLiving;
                 if(event.source == DamageSource.outOfWorld && player.getEntityData().getInteger("DopVoid")>0){
+                    if(event.ammount*10 < Float.MAX_VALUE)
                     event.ammount = event.ammount*10;
                 }
                 if(BaublesApi.getBaubles(player).getStackInSlot(3) != null) {
@@ -574,7 +594,10 @@ public class EventHandler {
                 if(props.getElfLvl() >= 1){
                     if(event.source.isMagicDamage())
                         event.ammount = event.ammount * 0.1F;
-                    else event.ammount = event.ammount * 2;
+                    else {
+                        if(event.ammount*10 < Float.MAX_VALUE)
+                        event.ammount = event.ammount * 2;
+                    }
                 }
                 if(player.getEntityData().getBoolean("adaptiveDamage")){
                     player.getEntityData().setBoolean("adaptiveDamage",false);
@@ -716,7 +739,7 @@ public class EventHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void death(LivingDeathEvent event)  {
-        if(event.entity instanceof EntityPlayer){
+        if(event.entity instanceof EntityPlayer && !event.entity.worldObj.isRemote){
             EntityPlayer player = (EntityPlayer) event.entityLiving;
             if(ExtendedPlayer.get(player) != null) {
                 ExtendedPlayer props = ExtendedPlayer.get(player);
@@ -749,6 +772,20 @@ public class EventHandler {
                 }
             }
             catch(NullPointerException e) {
+            }
+            int lifes = player.getEntityData().getInteger("Horcrux");
+            if(lifes > 0){
+                player.getEntityData().setInteger("Horcrux",lifes-1);
+                event.setCanceled(true);
+                attributes.clear();
+                attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier( "HorcruxBonusHp", player.getMaxHealth(), 0));
+                player.getAttributeMap().applyAttributeModifiers(attributes);
+                player.setHealth(player.getMaxHealth());
+                attributes.clear();
+                if(Math.random() > 0.5 && !player.worldObj.isRemote) {
+                    player.worldObj.playSoundAtEntity(player,"dh:spell.death1",1F,1F);
+                }
+                else player.worldObj.playSoundAtEntity(player,"dh:spell.death2",1F,1F);
             }
         }
         if(event.entity instanceof Entity){

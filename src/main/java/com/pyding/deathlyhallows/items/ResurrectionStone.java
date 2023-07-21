@@ -174,7 +174,7 @@ public class ResurrectionStone extends Item implements IBauble {
 
         if (I18n.format("dh.util.language").equals("Ru")) {
             if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-                list.add("Нажми §ashift+ПКМ §7с кольком в руке, чтобы выбрать игрока");
+                list.add("Нажми §ashift+ПКМ §7с кольцом в руке, чтобы выбрать игрока");
                 list.add("Нажми §aПКМ §7чтобы найти выбранного игрока за §a1 заряд воскрешения");
                 list.add("§aВоскрешения работают только когда кольцо надето");
             } else {

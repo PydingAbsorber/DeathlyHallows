@@ -116,7 +116,7 @@ public class DeathHallowsMod {
         network.init();
         MinecraftForgeClient.registerItemRenderer(elderWand, new EldenWandRender());
         RenderingRegistry.registerEntityRenderingHandler(AbsoluteDeath.class,new RenderAbsoluteDeath());
-        RenderingRegistry.registerEntityRenderingHandler(Nimbus.class,new RenderBroom());
+        RenderingRegistry.registerEntityRenderingHandler(Nimbus.class,new RenderNimbus());
         KeyHandler keyHandler = new KeyHandler();
         keyHandler.register();
         Entities.init();

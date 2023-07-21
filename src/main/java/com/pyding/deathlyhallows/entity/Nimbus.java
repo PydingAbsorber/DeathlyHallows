@@ -13,7 +13,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-public class Nimbus extends Entity {
+public class Nimbus extends EntityBroom {
     boolean riderHasOwlFamiliar;
     boolean riderHasSoaringBrew;
     public float speedModifier(){
@@ -45,6 +45,17 @@ public class Nimbus extends Entity {
             }
         }
     }
+
+    @Override
+    public void setBrushColor(int color) {
+        super.setBrushColor(color);
+    }
+
+    @Override
+    public int getBrushColor() {
+        return super.getBrushColor();
+    }
+
     protected boolean canTriggerWalking() {
         return false;
     }

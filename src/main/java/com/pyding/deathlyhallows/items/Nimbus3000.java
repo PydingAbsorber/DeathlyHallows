@@ -25,6 +25,8 @@ public class Nimbus3000 extends Item {
         if(nbt.getInteger("NimbusCooldown") == 0){
             nbt.setInteger("NimbusCooldown",12000);
             Nimbus nimbus = new Nimbus(world);
+            nimbus.setBrushColor(666);
+            nimbus.setPosition(player.posX,player.posY,player.posZ);
             world.spawnEntityInWorld(nimbus);
             nimbus.interactFirst(player);
         } else {

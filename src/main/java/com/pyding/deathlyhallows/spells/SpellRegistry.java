@@ -5,14 +5,18 @@ import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.infusion.infusions.symbols.EffectRegistry;
 import com.emoniph.witchery.infusion.infusions.symbols.SymbolEffect;
 import com.emoniph.witchery.util.ChatUtil;
+import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.emoniph.witchery.util.TimeUtil;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
 import com.pyding.deathlyhallows.network.CPacketDisableFlight;
 import com.pyding.deathlyhallows.network.RenderPacket;
 import com.pyding.deathlyhallows.network.NetworkHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import net.minecraft.entity.*;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -205,6 +209,7 @@ public class SpellRegistry {
     public static float baseDamage = 1000;
     public static int discount = 1;
     public static EntityPlayer player;
+    Multimap<String, AttributeModifier> attributes = HashMultimap.create();
     public void performEffect(EntityPlayer player2, World world, int spellId) {
         player = player2;
         ItemStack stack = player.getHeldItem();
@@ -234,7 +239,7 @@ public class SpellRegistry {
                 float damage = (float) player.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
                 switch (spellId) {
                     case 48: {
-                        if(Infusion.getInfusionID(player) == 4)
+                        if(Infusion.getInfusionID(player) == 4 && props1.getElfLvl() > 0)
                         {
                             int cursedCount = 0;
                             int elfBonus = 1 + props1.getElfLvl()/5;
@@ -295,12 +300,13 @@ public class SpellRegistry {
                             }
                         } else {
                             ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.infernalrequired", new Object[0]);
+                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "elf required", new Object[0]);
                             SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                         }
                         break;
                     }
                     case 49: {
-                        if(Infusion.getInfusionID(player) == 4) {
+                        if(Infusion.getInfusionID(player) == 4 && props1.getElfLvl() > 0) {
                             if(!player.capabilities.isCreativeMode && Infusion.getNBT(player).getInteger("witcheryInfusionCharges") < cost) {
                                 ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges", new Object[0]);
                                 SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
@@ -309,12 +315,25 @@ public class SpellRegistry {
                                     Infusion.setCurrentEnergy(player, Infusion.getNBT(player).getInteger("witcheryInfusionCharges") - cost);
                                 }
                                 props1.setSpellsUsed(props1.getSpellsUsed()+1);
+                                int lifes = player.getEntityData().getInteger("Horcrux");
+                                float hpCost = player.getMaxHealth()/2;
+                                if(player.getMaxHealth()-hpCost > 5){
+                                    attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier( "HorcruxHP", -hpCost, 0));
+                                    player.getAttributeMap().applyAttributeModifiers(attributes);
+                                    attributes.clear();
+                                    player.getEntityData().setInteger("Horcrux",lifes+1);
+                                    this.cd = 20000*(1-props1.getElfLvl()/20);
+                                } else {
+                                    ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "temptation is high but you seem to look back", new Object[0]);
+                                    SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
+                                }
                                 if(Math.random() > 0.5)
                                     world.playSoundAtEntity(player,"dh:spell.death1",1F,1F);
                                 else world.playSoundAtEntity(player,"dh:spell.death2",1F,1F);
                             }
                         } else {
                             ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.infernalrequired", new Object[0]);
+                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "elf required", new Object[0]);
                             SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                         }
                         break;
@@ -328,6 +347,26 @@ public class SpellRegistry {
                                 Infusion.setCurrentEnergy(player, Infusion.getNBT(player).getInteger("witcheryInfusionCharges") - sectumCost);
                             }
                             props1.setSpellsUsed(props1.getSpellsUsed()+1);
+                            AxisAlignedBB boundingBox = AxisAlignedBB.getBoundingBox(
+                                    player.posX - 6 / 2, player.posY - 2 / 2, player.posZ - 6 / 2,
+                                    player.posX + 6 / 2, player.posY + 2 / 2, player.posZ + 6 / 2
+                            );
+                            List entities = player.worldObj.getEntitiesWithinAABB(EntityLiving.class,boundingBox);
+                            for (Object o : entities){
+                                if(o != player && o instanceof EntityLiving){
+                                    EntityLiving entity = (EntityLiving) o;
+                                    entity.getEntityData().setInteger("SectumTime",666);
+                                    float hpLower = (float) (entity.getMaxHealth()*(0.15*(1+ props1.getElfLvl()/10)));
+                                    if(entity.getMaxHealth()-hpLower > 5){
+                                        entity.getEntityData().setFloat("SectumHp",entity.getEntityData().getInteger("SectumHp")+hpLower);
+                                        attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier( "SectumHPAttribute", -hpLower, 0));
+                                        entity.getAttributeMap().applyAttributeModifiers(attributes);
+                                        attributes.clear();
+                                        entity.setHealth(entity.getMaxHealth());
+                                    }
+                                }
+                            }
+                            ParticleEffect.FLAME.send(SoundEffect.FIRE_FIRE,player,6.0D, 2.0D, 16);
                             if(Math.random() > 0.5)
                                 world.playSoundAtEntity(player,"dh:spell.sectum1",1F,1F);
                             else world.playSoundAtEntity(player,"dh:spell.sectum2",1F,1F);
@@ -380,7 +419,7 @@ public class SpellRegistry {
                                     }
                                     EntityLivingBase target = (EntityLivingBase) o;
                                     if(target.isEntityAlive())
-                                        target.attackEntityFrom(DamageSource.causePlayerDamage(player).setExplosionSource(new Explosion(world, null, endX, endY, endZ, 3F)), (baseDamage*3+damage)*spellPower);
+                                        target.attackEntityFrom(DamageSource.causePlayerDamage(player).setExplosion(), (baseDamage*3+damage)*spellPower);
                                 }
                             }
                             world.createExplosion(player, x, y, z, 15*spellPower, true);
