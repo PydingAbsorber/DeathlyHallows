@@ -41,10 +41,18 @@ public class KeyHandler {
         this.isKeyPressed2 = set;
     }
     private static KeyBinding binding = new KeyBinding("dh.key.wand1", Keyboard.KEY_V, "dh.key.wand");
-    private static KeyBinding binding2 = new KeyBinding("dh.key.broom", Keyboard.KEY_C, "dh.key.broom");
+    private static KeyBinding binding2 = new KeyBinding("dh.key.broom", Keyboard.KEY_C, "dh.key.wand");
+
+    public static String getKeyDescription(){
+        return binding.getKeyDescription();
+    }
+    public static String getKey2Description(){
+        return binding2.getKeyDescription();
+    }
 
     public void register() {
         ClientRegistry.registerKeyBinding(binding);
+        ClientRegistry.registerKeyBinding(binding2);
         FMLCommonHandler.instance().bus().register(this);
     }
     @SubscribeEvent

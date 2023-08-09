@@ -95,7 +95,7 @@ public class SpellRegistry {
             case 47:
                 return "§eAttraho";
             case 48:
-                return "§5Anima§cIteritus";
+                return "§5Anima§cInteritus";
             case 49:
                 return "§5Hor§ccrux";
             case 50:
@@ -177,7 +177,7 @@ public class SpellRegistry {
                 return 46;
             case ("Attraho"):
                 return 47;
-            case ("AnimaIteritus"):
+            case ("AnimaInteritus"):
                 return 48;
             case ("Horcrux"):
                 return 49;
@@ -277,11 +277,13 @@ public class SpellRegistry {
                                                 props.setSource(player);
                                                 target.setLastAttacker(player);
                                                 props.setCoordinates(targetPlayer.posX,targetPlayer.posY,targetPlayer.posZ,targetPlayer.dimension);
+                                                props1.setCoordinates(targetPlayer.posX,targetPlayer.posY,targetPlayer.posZ,targetPlayer.dimension);
                                             } else {
                                                 target.setLastAttacker(player);
                                                 ((EntityLiving) target).setAttackTarget(player);
                                             }
                                             target.getEntityData().setInteger("dhcurse",1200);
+                                            player.getEntityData().setInteger("casterCurse",1200);
                                             RenderPacket packet = new RenderPacket(target.getEntityData(),target.getEntityId());
                                             NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(target.dimension,target.posX,target.posY,target.posZ,radius*1.2);
                                             NetworkHandler.sendToAllAround(packet, targetPoint);

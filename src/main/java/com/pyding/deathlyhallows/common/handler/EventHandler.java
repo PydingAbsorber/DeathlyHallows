@@ -7,16 +7,14 @@ import com.emoniph.witchery.brewing.potions.WitcheryPotions;
 import com.emoniph.witchery.entity.EntityGoblin;
 import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.item.ItemDeathsClothes;
-import com.emoniph.witchery.util.ChatUtil;
-import com.emoniph.witchery.util.EntityDamageSourceIndirectSilver;
-import com.emoniph.witchery.util.EntityUtil;
-import com.emoniph.witchery.util.ParticleEffect;
+import com.emoniph.witchery.util.*;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.pyding.deathlyhallows.DeathHallowsMod;
 import com.pyding.deathlyhallows.client.handler.KeyHandler;
 import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
 import com.pyding.deathlyhallows.entity.AbsoluteDeath;
+import com.pyding.deathlyhallows.integration.Integration;
 import com.pyding.deathlyhallows.items.DeadlyPrism;
 import com.pyding.deathlyhallows.items.Nimbus3000;
 import com.pyding.deathlyhallows.items.ResurrectionStone;
@@ -27,6 +25,7 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -38,6 +37,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemAppleGold;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
@@ -54,6 +54,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
@@ -155,6 +156,9 @@ public class EventHandler {
                 MinecraftServer.getServer().getConfigurationManager().sendChatMsg(new ChatComponentText("§5Да здравствует Пудинг! Добро пожаловать на сервер!"));
             }
         }
+        if(!Integration.thaumcraft){
+            player.addChatMessage(new ChatComponentText("§5Deathly Hallows has Thaumcraft integration! Bet you didn't know..."));
+        }
     }
 
     public static boolean shouldRemove = true;
@@ -223,21 +227,24 @@ public class EventHandler {
                         if(Math.random() > 0.5)
                             world.playSoundAtEntity(player,"dh:spell.anima2",1F,1F);
                         else world.playSoundAtEntity(player,"dh:spell.anima1",1F,1F);
+                        ParticleEffect.PORTAL.send(SoundEffect.MOB_ENDERMEN_PORTAL,player,6.0D, 6.0D, 16);
                     }
                     if(player.dimension != props.getDimension())
                         player.travelToDimension(props.getDimension());
-                    //same for caster
-                    EntityPlayer caster = props.getSource();
-                    if(Math.abs(caster.posX - props.getX()) >= 25 ||
-                            Math.abs(caster.posY - props.getY()) >= 25||
-                            Math.abs(caster.posZ - props.getZ()) >= 25) {
-                        caster.setPositionAndUpdate(props.getX(), props.getY(), props.getZ());
+                }
+                if(player.getEntityData().getInteger("casterCurse") > 0){
+                    player.getEntityData().setInteger("casterCurse",player.getEntityData().getInteger("casterCurse")-1);
+                    if(Math.abs(player.posX - props.getX()) >= 25 ||
+                            Math.abs(player.posY - props.getY()) >= 25||
+                            Math.abs(player.posZ - props.getZ()) >= 25) {
+                        player.setPositionAndUpdate(props.getX(), props.getY(), props.getZ());
                         if(Math.random() > 0.5)
                             world.playSoundAtEntity(player,"dh:spell.anima2",1F,1F);
                         else world.playSoundAtEntity(player,"dh:spell.anima1",1F,1F);
+                        ParticleEffect.PORTAL.send(SoundEffect.MOB_ENDERMEN_PORTAL,player,6.0D, 6.0D, 16);
                     }
-                    if(caster.dimension != props.getDimension())
-                        caster.travelToDimension(props.getDimension());
+                    if(player.dimension != props.getDimension())
+                        player.travelToDimension(props.getDimension());
                 }
                 com.emoniph.witchery.common.ExtendedPlayer witchProps = com.emoniph.witchery.common.ExtendedPlayer.get(player);
                 if(props.getElfLvl() == 0)
@@ -338,15 +345,21 @@ public class EventHandler {
                 }
             }
         }
-        if(event.entity instanceof EntityCreature){
-            EntityCreature entity = (EntityCreature) event.entity;
+        if(event.entity instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) event.entity;
+            if (player.getEntityData().getInteger("dhcurse") > 0) {
+                player.getEntityData().setInteger("dhcurse", player.getEntityData().getInteger("dhcurse") - 1);
+            }
+        }
+        if(event.entity instanceof EntityLiving){
+            EntityLiving entity = (EntityLiving) event.entityLiving;
             if(entity.getEntityData().getInteger("dhcurse") > 0)
             {
-                if(entity.getEntityData().getInteger("dhcurse")==1)
+                if(entity.getEntityData().getInteger("dhcurse") == 1)
                     EntityUtil.instantDeath(entity,entity.getLastAttacker());
                 entity.getEntityData().setInteger("dhcurse",entity.getEntityData().getInteger("dhcurse")-1);
             }
-            if(entity.getEntityData().getDouble("chainX") != 0){
+            if(entity.getEntityData().getDouble("chainX") != 0 && entity instanceof EntityCreature){
                 if(entity.getDistance(entity.getEntityData().getDouble("chainX"),entity.getEntityData().getDouble("chainY"),entity.getEntityData().getDouble("chainZ"))>16)
                 entity.setPositionAndUpdate(entity.getEntityData().getDouble("chainX"),entity.getEntityData().getDouble("chainY"),entity.getEntityData().getDouble("chainZ"));
             }
@@ -743,9 +756,17 @@ public class EventHandler {
             EntityPlayer player = (EntityPlayer) event.entityLiving;
             if(ExtendedPlayer.get(player) != null) {
                 ExtendedPlayer props = ExtendedPlayer.get(player);
-                if(props.getCurrentDuration() > 0)
-                {
-                    props.setCurrentDuration(0);
+                props.setCurrentDuration(0);
+                props.setSource(null);
+                for(Object o : getEntities(64,EntityPlayer.class,player)){
+                    if(o instanceof EntityPlayer){
+                        EntityPlayer playerIterator = (EntityPlayer) o;
+                        ExtendedPlayer props2 = ExtendedPlayer.get(playerIterator);
+                        if(props2.getSource() == player){
+                            props2.setSource(null);
+                            props2.setCurrentDuration(0);
+                        }
+                    }
                 }
             }
             ResurrectionStone rs = new ResurrectionStone();
@@ -821,6 +842,21 @@ public class EventHandler {
                 com.emoniph.witchery.common.ExtendedPlayer witcheryProps = com.emoniph.witchery.common.ExtendedPlayer.get(player);
                 if(props.getElfLvl() > 0 && witcheryProps.isVampire())
                     event.setCanceled(false);
+            }
+        }
+    }
+    @SubscribeEvent
+    public void tooltipEvent(ItemTooltipEvent event){
+        Item item = event.itemStack.getItem();
+        if(item.getUnlocalizedName().equals("tile.visconverter")){
+            if (I18n.format("dh.util.language").equals("Ru")) {
+                event.toolTip.add("Если поставить на Алтарь, даст максимальную базовую энергию!");
+                event.toolTip.add("Бонус: +10 к базе за каждый сантивис в ближайшем узле");
+                event.toolTip.add("Если поставить на маг. верстак, будет заряжать палку 10 вис в секунду за 100 энергии");
+            } else {
+                event.toolTip.add("Place on the Altar to get maximum base energy!");
+                event.toolTip.add("Bonus: +10 to base energy for each santi vis in nearest aura");
+                event.toolTip.add("Place on magic workbench to get 10 vis per sec for your wand in cost of 100 energy");
             }
         }
     }
@@ -926,11 +962,18 @@ public class EventHandler {
                     }
                 }
                 if(stack.getItem() == DeathHallowsMod.nimbus && stack.getTagCompound() != null){
-                    if(stack.getTagCompound().getInteger("NimbusCooldown") > 0)
-                    stack.getTagCompound().setInteger("NimbusCooldown",stack.getTagCompound().getInteger("NimbusCooldown")-1);
+                    KeyHandler keyHandler = new KeyHandler();
+                    if(stack.getTagCompound().getInteger("NimbusCooldown") > 0) {
+                        stack.getTagCompound().setInteger("NimbusCooldown", stack.getTagCompound().getInteger("NimbusCooldown") - 1);
+                        if(KeyHandler.isKeyPressed2){
+                            keyHandler.setKeyPressed2(false);
+                        }
+                    }
+                    else if (stack.getTagCompound().getInteger("NimbusCooldown") < 0) {
+                        stack.getTagCompound().setInteger("NimbusCooldown",0);
+                    }
                     else {
-                        KeyHandler keyHandler = new KeyHandler();
-                        if(keyHandler.isKeyPressed2){
+                        if(KeyHandler.isKeyPressed2){
                             Nimbus3000 nimbus3000 = (Nimbus3000) stack.getItem();
                             nimbus3000.onItemRightClick(stack, player.worldObj, player);
                             keyHandler.setKeyPressed2(false);

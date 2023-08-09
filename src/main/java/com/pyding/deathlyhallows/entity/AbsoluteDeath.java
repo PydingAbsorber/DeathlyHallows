@@ -434,6 +434,7 @@ public class AbsoluteDeath extends EntityMob implements IBossDisplayData,IHandle
     public void onDeath(DamageSource par1DamageSource) {
         super.onDeath(par1DamageSource);
         dropDeathlyHallows();
+        this.dropItem(DeathHallowsMod.deathShard,1);
         if(!super.worldObj.isRemote) {
             ParticleEffect.PORTAL.send(SoundEffect.MOB_ENDERMEN_PORTAL, this, 1.0D, 2.0D, 16);
         }

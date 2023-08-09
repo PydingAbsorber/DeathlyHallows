@@ -54,7 +54,7 @@ public class ElderWand extends ItemBase {
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
         String currentLanguage = StatCollector.translateToLocal("language.name");
         if (I18n.format("dh.util.language").equals("Ru")) {
-            list.add("Листай список заклинаний на §cshift+ПКМ/ЛКМ §7и кастуй одной кнопкой");
+            list.add("Листай список заклинаний на §cshift+ЛКМ/ЛКМ §7и кастуй одной кнопкой");
             list.add("Получи доступ к §c8 §7новым мощнейшим заклинаниям");
             list.add("Все заклинания описаны в книге заклинаний, кнопку можно настроить в настройках управления");
             if(stack.hasTagCompound()){
@@ -64,7 +64,7 @@ public class ElderWand extends ItemBase {
             } else list.add("Владелец §9Смерть");
             list.add("Возможно иметь лишь один дар у себя в инвентаре");
         } else {
-            list.add("Scroll list of spells by §cshift+RMB/LMB §7and cast by one button");
+            list.add("Scroll list of spells by §cshift+LMB/LMB §7and cast by one button");
             list.add("Get access to §c8 §7new powerful spells");
             list.add("All spells are described in the spell book, you can change button in settings");
             if(stack.hasTagCompound()){

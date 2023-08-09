@@ -1,8 +1,15 @@
 package com.pyding.deathlyhallows.entity;
 
+import com.emoniph.witchery.Witchery;
+import com.emoniph.witchery.WitcheryItems;
 import com.emoniph.witchery.entity.EntityBroom;
 import com.emoniph.witchery.familiar.Familiar;
 import com.emoniph.witchery.infusion.InfusedBrewEffect;
+import com.emoniph.witchery.util.ParticleEffect;
+import com.emoniph.witchery.util.SoundEffect;
+import com.pyding.deathlyhallows.DeathHallowsMod;
+import com.pyding.deathlyhallows.client.handler.KeyHandler;
+import com.pyding.deathlyhallows.items.Nimbus3000;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.Entity;
@@ -19,33 +26,57 @@ public class Nimbus extends EntityBroom {
     public float speedModifier(){
         float modifier = 1;
         if(riderHasOwlFamiliar)
-            modifier += 0.5;
+            modifier += 0.7;
         if(riderHasSoaringBrew)
-            modifier += 0.2;
+            modifier += 0.6;
         return modifier;
     }
     public Nimbus(World world) {
         super(world);
         this.setSize(1.2F, 0.5F);
     }
-    public void onUpdate() {
-        if(ticksExisted > 12000*speedModifier())
+    private EntityPlayer rider = null;
+
+    @Override
+    public void onEntityUpdate() {
+        super.onEntityUpdate();
+        if(ticksExisted > 4000*speedModifier())
+            this.setDead();
         if(this.riddenByEntity != null){
             if(this.riddenByEntity instanceof EntityPlayer) {
                 EntityPlayer player = (EntityPlayer) this.riddenByEntity;
+                if(rider == null)
+                    rider = player;
                 float yaw = player.rotationYaw;
                 float pitch = player.rotationPitch;
                 double speed = 0.7 * speedModifier();
-                if (player.isSprinting())
+                if (player.isSprinting() || this.isSprinting())
                     speed *= 2;
                 double motionX = -Math.sin(Math.toRadians(yaw)) * speed;
                 double motionZ = Math.cos(Math.toRadians(yaw)) * speed;
-                double motionY = Math.sin(Math.toRadians(-pitch)) * speed;
-                this.setVelocity(motionX, motionY, motionZ);
+                double motionY = Math.sin(Math.toRadians(-pitch)) * speed*2;
+                this.motionX = motionX;
+                this.motionY = motionY;
+                this.motionZ = motionZ;
+                this.rotationYaw = (float) (yaw-90);
+                ParticleEffect.FLAME.send(SoundEffect.NONE,player,1,1,2);
+            }
+        } else {
+            if(rider != null){
+                int count = 0;
+                for (int i = 0; i < rider.inventory.getSizeInventory(); i++) {
+                    if(rider.inventory.getStackInSlot(i) != null && count == 0) {
+                        ItemStack stack = rider.inventory.getStackInSlot(i);
+                        if(stack.getItem() == DeathHallowsMod.nimbus && stack.getTagCompound() != null){
+                            stack.getTagCompound().setInteger("NimbusCooldown",ticksExisted);
+                            count++;
+                        }
+                    }
+                }
+                this.setDead();
             }
         }
     }
-
     @Override
     public void setBrushColor(int color) {
         super.setBrushColor(color);

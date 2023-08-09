@@ -1,83 +1,54 @@
-[17:40:01] [main/INFO]: Setting user: Player550
-[17:40:05] [Client thread/INFO]: LWJGL Version: 2.9.1
-[17:40:19] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Baubles, FMLFileResourcePack:Thaumcraft, FMLFileResourcePack:Witchery, FMLFileResourcePack:Forge Microblocks, FMLFileResourcePack:Forge Multipart, FMLFileResourcePack:Minecraft Multipart Plugin, FMLFileResourcePack:Deathly Hallows
-[17:40:26] [Sound Library Loader/INFO]: Sound engine started
-[17:40:28] [Client thread/INFO]: Created: 16x16 textures/blocks-atlas
-[17:40:28] [Client thread/INFO]: Created: 16x16 textures/items-atlas
-[17:40:30] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Baubles, FMLFileResourcePack:Thaumcraft, FMLFileResourcePack:Witchery, FMLFileResourcePack:Forge Microblocks, FMLFileResourcePack:Forge Multipart, FMLFileResourcePack:Minecraft Multipart Plugin, FMLFileResourcePack:Deathly Hallows
-[17:40:31] [Client thread/INFO]: Created: 1024x512 textures/blocks-atlas
-[17:40:32] [Client thread/INFO]: Created: 4096x2048 textures/items-atlas
-[17:40:33] [Sound Library Loader/INFO]: Sound engine started
-[17:40:43] [Server thread/INFO]: Starting integrated minecraft server version 1.7.10
-[17:40:43] [Server thread/INFO]: Generating keypair
-[17:40:43] [Server thread/INFO]: Preparing start region for level 0
-[17:40:44] [Server thread/INFO]: Preparing spawn area: 30%
-[17:40:45] [Server thread/INFO]: Changing view distance to 12, from 10
-[17:40:46] [Server thread/INFO]: Player550[local:E:3c18aad7] logged in with entity id 236 at (240.5, 63.0, 243.5)
-[17:40:46] [Server thread/INFO]: Player550 присоединился к игре
-[17:40:50] [Server thread/WARN]: Can't keep up! Did the system time change, or is the server overloaded? Running 2182ms behind, skipping 43 tick(s)
-[17:40:52] [Server thread/INFO]: Saving and pausing game...
-[17:40:52] [Server thread/INFO]: Saving chunks for level 'Новый мир4'/Overworld
-[17:40:53] [Server thread/INFO]: Saving chunks for level 'Новый мир4'/Nether
-[17:40:53] [Server thread/INFO]: Saving chunks for level 'Новый мир4'/The End
-[17:40:53] [Server thread/INFO]: Saving chunks for level 'Новый мир4'/Spirit World
-[17:40:53] [Server thread/INFO]: Saving chunks for level 'Новый мир4'/Torment
-[17:40:53] [Server thread/INFO]: Saving chunks for level 'Новый мир4'/Mirror
-[17:40:53] [Server thread/INFO]: Saving chunks for level 'Новый мир4'/The Outer Lands
-[17:40:54] [Client thread/INFO]: [CHAT] Version 1.0.7.48 of CodeChickenCore is available
-[17:40:54] [Client thread/INFO]: [CHAT] Version 1.0.5.120 of NotEnoughItems is available
-[17:40:56] [Server thread/INFO]: Player550 заработал достижение [Проверить карманы]
-[17:40:56] [Client thread/INFO]: [CHAT] Player550 заработал достижение [Проверить карманы]
-[17:41:08] [Server thread/ERROR]: Encountered an unexpected exception
-net.minecraft.util.ReportedException: Ticking memory connection
-	at net.minecraft.network.NetworkSystem.networkTick(NetworkSystem.java:198) ~[NetworkSystem.class:?]
-	at net.minecraft.server.MinecraftServer.updateTimeLightAndEntities(MinecraftServer.java:726) ~[MinecraftServer.class:?]
-	at net.minecraft.server.MinecraftServer.tick(MinecraftServer.java:614) ~[MinecraftServer.class:?]
-	at net.minecraft.server.integrated.IntegratedServer.tick(IntegratedServer.java:118) ~[IntegratedServer.class:?]
-	at net.minecraft.server.MinecraftServer.run(MinecraftServer.java:485) [MinecraftServer.class:?]
-	at net.minecraft.server.MinecraftServer$2.run(MinecraftServer.java:752) [MinecraftServer$2.class:?]
-Caused by: java.lang.NullPointerException
-	at net.minecraft.entity.DataWatcher.updateObject(DataWatcher.java:153) ~[DataWatcher.class:?]
-	at com.emoniph.witchery.entity.EntityBroom.setBrushColor(EntityBroom.java:99) ~[EntityBroom.class:?]
-	at com.pyding.deathlyhallows.entity.Nimbus.setBrushColor(Nimbus.java:51) ~[Nimbus.class:?]
-	at com.pyding.deathlyhallows.items.Nimbus3000.onItemRightClick(Nimbus3000.java:28) ~[Nimbus3000.class:?]
-	at net.minecraft.item.ItemStack.useItemRightClick(ItemStack.java:164) ~[ItemStack.class:?]
-	at net.minecraft.server.management.ItemInWorldManager.tryUseItem(ItemInWorldManager.java:345) ~[ItemInWorldManager.class:?]
-	at net.minecraft.network.NetHandlerPlayServer.processPlayerBlockPlacement(NetHandlerPlayServer.java:576) ~[NetHandlerPlayServer.class:?]
-	at net.minecraft.network.play.client.C08PacketPlayerBlockPlacement.processPacket(C08PacketPlayerBlockPlacement.java:74) ~[C08PacketPlayerBlockPlacement.class:?]
-	at net.minecraft.network.play.client.C08PacketPlayerBlockPlacement.processPacket(C08PacketPlayerBlockPlacement.java:122) ~[C08PacketPlayerBlockPlacement.class:?]
-	at net.minecraft.network.NetworkManager.processReceivedPackets(NetworkManager.java:241) ~[NetworkManager.class:?]
-	at net.minecraft.network.NetworkSystem.networkTick(NetworkSystem.java:182) ~[NetworkSystem.class:?]
-	... 5 more
-[17:41:08] [Server thread/ERROR]: This crash report has been saved to: Z:\Deathly Hallows\eclipse\.\crash-reports\crash-2023-07-21_17.41.08-server.txt
-[17:41:08] [Server thread/INFO]: Stopping server
-[17:41:08] [Server thread/INFO]: Saving players
-[17:41:09] [Server thread/INFO]: Saving worlds
-[17:41:09] [Server thread/INFO]: Saving chunks for level 'Новый мир4'/Overworld
-[17:41:09] [Server thread/INFO]: Saving chunks for level 'Новый мир4'/Nether
-[17:41:09] [Server thread/INFO]: Saving chunks for level 'Новый мир4'/The End
-[17:41:09] [Server thread/INFO]: Saving chunks for level 'Новый мир4'/Spirit World
-[17:41:09] [Server thread/INFO]: Saving chunks for level 'Новый мир4'/Torment
-[17:41:09] [Server thread/INFO]: Saving chunks for level 'Новый мир4'/Mirror
-[17:41:09] [Server thread/INFO]: Saving chunks for level 'Новый мир4'/The Outer Lands
-[17:41:10] [Client thread/FATAL]: Unreported exception thrown!
-java.lang.NullPointerException
-	at net.minecraft.entity.DataWatcher.updateObject(DataWatcher.java:153) ~[DataWatcher.class:?]
-	at com.emoniph.witchery.entity.EntityBroom.setBrushColor(EntityBroom.java:99) ~[EntityBroom.class:?]
-	at com.pyding.deathlyhallows.entity.Nimbus.setBrushColor(Nimbus.java:51) ~[Nimbus.class:?]
-	at com.pyding.deathlyhallows.items.Nimbus3000.onItemRightClick(Nimbus3000.java:28) ~[Nimbus3000.class:?]
-	at net.minecraft.item.ItemStack.useItemRightClick(ItemStack.java:164) ~[ItemStack.class:?]
-	at net.minecraft.client.multiplayer.PlayerControllerMP.sendUseItem(PlayerControllerMP.java:430) ~[PlayerControllerMP.class:?]
-	at net.minecraft.client.Minecraft.func_147121_ag(Minecraft.java:1557) ~[Minecraft.class:?]
-	at net.minecraft.client.Minecraft.runTick(Minecraft.java:2044) ~[Minecraft.class:?]
-	at net.minecraft.client.Minecraft.runGameLoop(Minecraft.java:1039) ~[Minecraft.class:?]
-	at net.minecraft.client.Minecraft.run(Minecraft.java:962) [Minecraft.class:?]
-	at net.minecraft.client.main.Main.main(Main.java:164) [Main.class:?]
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_181]
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_181]
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_181]
-	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_181]
-	at net.minecraft.launchwrapper.Launch.launch(Launch.java:135) [launchwrapper-1.12.jar:?]
-	at net.minecraft.launchwrapper.Launch.main(Launch.java:28) [launchwrapper-1.12.jar:?]
-	at net.minecraftforge.gradle.GradleStartCommon.launch(Unknown Source) [start/:?]
-	at GradleStart.main(Unknown Source) [start/:?]
+[00:33:45] [main/INFO]: Setting user: Player51
+[00:33:48] [Client thread/INFO]: LWJGL Version: 2.9.1
+[00:34:02] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Baubles, FMLFileResourcePack:Thaumcraft, FMLFileResourcePack:Witchery, FMLFileResourcePack:Forge Microblocks, FMLFileResourcePack:Forge Multipart, FMLFileResourcePack:Minecraft Multipart Plugin, FMLFileResourcePack:Deathly Hallows
+[00:34:10] [Sound Library Loader/INFO]: Sound engine started
+[00:34:11] [Client thread/INFO]: Created: 16x16 textures/blocks-atlas
+[00:34:11] [Client thread/INFO]: Created: 16x16 textures/items-atlas
+[00:34:14] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Baubles, FMLFileResourcePack:Thaumcraft, FMLFileResourcePack:Witchery, FMLFileResourcePack:Forge Microblocks, FMLFileResourcePack:Forge Multipart, FMLFileResourcePack:Minecraft Multipart Plugin, FMLFileResourcePack:Deathly Hallows
+[00:34:15] [Client thread/INFO]: Created: 1024x512 textures/blocks-atlas
+[00:34:15] [Client thread/INFO]: Created: 4096x2048 textures/items-atlas
+[00:34:16] [Sound Library Loader/INFO]: Sound engine started
+[00:34:52] [Server thread/INFO]: Starting integrated minecraft server version 1.7.10
+[00:34:52] [Server thread/INFO]: Generating keypair
+[00:34:52] [Server thread/INFO]: Preparing start region for level 0
+[00:34:53] [Server thread/INFO]: Changing view distance to 12, from 10
+[00:34:54] [Server thread/INFO]: Player51[local:E:9382b017] logged in with entity id 87 at (-968.7389420825268, 69.61463400578373, 789.8377393005364)
+[00:34:54] [Server thread/INFO]: Player51 joined the game
+[00:34:56] [Server thread/INFO]: Saving and pausing game...
+[00:34:56] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Overworld
+[00:34:56] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Nether
+[00:34:56] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/The End
+[00:34:56] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Spirit World
+[00:34:56] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Torment
+[00:34:56] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Mirror
+[00:34:56] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/The Outer Lands
+[00:36:26] [Client thread/INFO]: [CHAT] Version 1.0.7.48 of CodeChickenCore is available
+[00:36:26] [Client thread/INFO]: [CHAT] Version 1.0.5.120 of NotEnoughItems is available
+[00:36:31] [Server thread/INFO]: Player51 has just earned the achievement [Taking Inventory]
+[00:36:31] [Client thread/INFO]: [CHAT] Player51 has just earned the achievement [Taking Inventory]
+[00:36:37] [Client thread/INFO]: [CHAT] Unknown symbol drawn.
+[00:36:38] [Client thread/INFO]: [CHAT] Unknown symbol drawn.
+[00:36:39] [Client thread/INFO]: [CHAT] Unknown symbol drawn.
+[00:36:41] [Client thread/INFO]: [CHAT] Unknown symbol drawn.
+[00:36:43] [Client thread/INFO]: [CHAT] Unknown symbol drawn.
+[00:36:44] [Server thread/INFO]: Saving and pausing game...
+[00:36:44] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Overworld
+[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Nether
+[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/The End
+[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Spirit World
+[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Torment
+[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Mirror
+[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/The Outer Lands
+[00:36:45] [Client thread/INFO]: Stopping!
+[00:36:45] [Server thread/INFO]: Stopping server
+[00:36:45] [Server thread/INFO]: Saving players
+[00:36:45] [Server thread/INFO]: Saving worlds
+[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Overworld
+[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Nether
+[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/The End
+[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Spirit World
+[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Torment
+[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Mirror
+[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/The Outer Lands
+[00:36:45] [Client Shutdown Thread/INFO]: Stopping server
+[00:36:45] [Client Shutdown Thread/INFO]: Saving players

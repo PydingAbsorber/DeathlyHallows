@@ -1,5 +1,6 @@
 package com.pyding.deathlyhallows.items;
 
+import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -96,6 +97,13 @@ public class DeadlyPrism extends Item {
                     }
                 }
             }
+            /*ExtendedPlayer props = ExtendedPlayer.get(player);
+            int amount = 400;
+            props.setCurrentDuration(amount);
+            player.getEntityData().setInteger("dhcurse",amount);
+            player.getEntityData().setInteger("casterCurse",amount);
+            props.setSource(player);
+            props.setCoordinates(player.posX,player.posY,player.posZ,player.dimension);*/
         } catch(Exception e){
             e.printStackTrace();
         }
