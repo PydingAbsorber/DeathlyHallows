@@ -17,7 +17,7 @@ ao:2
 clouds:true
 resourcePacks:[]
 lastServer:
-lang:en_US
+lang:ru_RU
 chatVisibility:0
 chatColors:true
 chatLinks:true
@@ -85,14 +85,20 @@ key_key.hotbar.6:7
 key_key.hotbar.7:8
 key_key.hotbar.8:9
 key_key.hotbar.9:10
+key_dh.key.wand1:47
+key_dh.key.broom:46
 key_Baubles Inventory:48
 key_Change Wand Focus:33
 key_Activate Hover Harness:35
 key_Misc Wand Toggle:34
-key_dh.key.wand1:47
-key_dh.key.broom:46
+key_key.ShapeGroups:48
+key_key.SpellBookNext:45
+key_key.SpellBookPrev:44
+key_key.AuraCustomization:48
+key_key.ToggleManaDisplay:24
+key_key.ActivateAffinityAbility:45
 key_key.control:44
-soundCategory_master:0.2615894
+soundCategory_master:0.20198676
 soundCategory_music:0.0
 soundCategory_record:1.0
 soundCategory_weather:1.0

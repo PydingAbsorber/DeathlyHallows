@@ -63,9 +63,9 @@ public class Nimbus3000 extends Item {
         cd = stack.getTagCompound().getInteger("NimbusCooldown");
         if(cd > 0) {
             if (I18n.format("dh.util.language").equals("Ru")) {
-                list.add("Осталось сил на: §e" + (int)cd/20*lifeModifier() + " §rсекунд");
+                list.add("Осталось сил на: §e" + (int)(cd/20*lifeModifier()) + " §rсекунд");
             } else {
-                list.add("Powers remain for : §e" + (int)cd/20*lifeModifier() + " §rseconds more");
+                list.add("Powers remain for : §e" + (int)(cd/20*lifeModifier()) + " §rseconds more");
             }
         }
         if (I18n.format("dh.util.language").equals("Ru")) {
@@ -75,6 +75,9 @@ public class Nimbus3000 extends Item {
             list.add("You can press the button for quick summon");
             list.add("Can be obtained through ritual ,,Cloud chaser,,");
         }
+    }
+    public boolean hasEffect(final ItemStack par1ItemStack, final int pass) {
+        return true;
     }
 
     @Override

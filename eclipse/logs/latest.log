@@ -1,54 +1,78 @@
-[00:33:45] [main/INFO]: Setting user: Player51
-[00:33:48] [Client thread/INFO]: LWJGL Version: 2.9.1
-[00:34:02] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Baubles, FMLFileResourcePack:Thaumcraft, FMLFileResourcePack:Witchery, FMLFileResourcePack:Forge Microblocks, FMLFileResourcePack:Forge Multipart, FMLFileResourcePack:Minecraft Multipart Plugin, FMLFileResourcePack:Deathly Hallows
-[00:34:10] [Sound Library Loader/INFO]: Sound engine started
-[00:34:11] [Client thread/INFO]: Created: 16x16 textures/blocks-atlas
-[00:34:11] [Client thread/INFO]: Created: 16x16 textures/items-atlas
-[00:34:14] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Baubles, FMLFileResourcePack:Thaumcraft, FMLFileResourcePack:Witchery, FMLFileResourcePack:Forge Microblocks, FMLFileResourcePack:Forge Multipart, FMLFileResourcePack:Minecraft Multipart Plugin, FMLFileResourcePack:Deathly Hallows
-[00:34:15] [Client thread/INFO]: Created: 1024x512 textures/blocks-atlas
-[00:34:15] [Client thread/INFO]: Created: 4096x2048 textures/items-atlas
-[00:34:16] [Sound Library Loader/INFO]: Sound engine started
-[00:34:52] [Server thread/INFO]: Starting integrated minecraft server version 1.7.10
-[00:34:52] [Server thread/INFO]: Generating keypair
-[00:34:52] [Server thread/INFO]: Preparing start region for level 0
-[00:34:53] [Server thread/INFO]: Changing view distance to 12, from 10
-[00:34:54] [Server thread/INFO]: Player51[local:E:9382b017] logged in with entity id 87 at (-968.7389420825268, 69.61463400578373, 789.8377393005364)
-[00:34:54] [Server thread/INFO]: Player51 joined the game
-[00:34:56] [Server thread/INFO]: Saving and pausing game...
-[00:34:56] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Overworld
-[00:34:56] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Nether
-[00:34:56] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/The End
-[00:34:56] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Spirit World
-[00:34:56] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Torment
-[00:34:56] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Mirror
-[00:34:56] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/The Outer Lands
-[00:36:26] [Client thread/INFO]: [CHAT] Version 1.0.7.48 of CodeChickenCore is available
-[00:36:26] [Client thread/INFO]: [CHAT] Version 1.0.5.120 of NotEnoughItems is available
-[00:36:31] [Server thread/INFO]: Player51 has just earned the achievement [Taking Inventory]
-[00:36:31] [Client thread/INFO]: [CHAT] Player51 has just earned the achievement [Taking Inventory]
-[00:36:37] [Client thread/INFO]: [CHAT] Unknown symbol drawn.
-[00:36:38] [Client thread/INFO]: [CHAT] Unknown symbol drawn.
-[00:36:39] [Client thread/INFO]: [CHAT] Unknown symbol drawn.
-[00:36:41] [Client thread/INFO]: [CHAT] Unknown symbol drawn.
-[00:36:43] [Client thread/INFO]: [CHAT] Unknown symbol drawn.
-[00:36:44] [Server thread/INFO]: Saving and pausing game...
-[00:36:44] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Overworld
-[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Nether
-[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/The End
-[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Spirit World
-[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Torment
-[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Mirror
-[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/The Outer Lands
-[00:36:45] [Client thread/INFO]: Stopping!
-[00:36:45] [Server thread/INFO]: Stopping server
-[00:36:45] [Server thread/INFO]: Saving players
-[00:36:45] [Server thread/INFO]: Saving worlds
-[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Overworld
-[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Nether
-[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/The End
-[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Spirit World
-[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Torment
-[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/Mirror
-[00:36:45] [Server thread/INFO]: Saving chunks for level 'Новый мир5'/The Outer Lands
-[00:36:45] [Client Shutdown Thread/INFO]: Stopping server
-[00:36:45] [Client Shutdown Thread/INFO]: Saving players
+[11:59:11] [main/INFO]: Setting user: Player662
+[11:59:14] [Client thread/INFO]: LWJGL Version: 2.9.1
+[11:59:30] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Ars Magica 2, FMLFileResourcePack:AnimationAPI, FMLFileResourcePack:Baubles, FMLFileResourcePack:Botania, FMLFileResourcePack:Thaumcraft, FMLFileResourcePack:Witchery, FMLFileResourcePack:Forge Microblocks, FMLFileResourcePack:Forge Multipart, FMLFileResourcePack:Minecraft Multipart Plugin, FMLFileResourcePack:Deathly Hallows
+[11:59:42] [Sound Library Loader/INFO]: Sound engine started
+[11:59:43] [Client thread/INFO]: Created: 16x16 textures/blocks-atlas
+[11:59:43] [Client thread/INFO]: Created: 16x16 textures/items-atlas
+[12:00:21] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:Not Enough Items, FMLFileResourcePack:Ars Magica 2, FMLFileResourcePack:AnimationAPI, FMLFileResourcePack:Baubles, FMLFileResourcePack:Botania, FMLFileResourcePack:Thaumcraft, FMLFileResourcePack:Witchery, FMLFileResourcePack:Forge Microblocks, FMLFileResourcePack:Forge Multipart, FMLFileResourcePack:Minecraft Multipart Plugin, FMLFileResourcePack:Deathly Hallows
+[12:00:22] [Client thread/INFO]: Created: 1024x1024 textures/blocks-atlas
+[12:00:23] [Client thread/INFO]: Created: 4096x2048 textures/items-atlas
+[12:00:24] [Sound Library Loader/INFO]: Sound engine started
+[12:00:40] [Server thread/INFO]: Starting integrated minecraft server version 1.7.10
+[12:00:40] [Server thread/INFO]: Generating keypair
+[12:00:41] [Server thread/INFO]: Preparing start region for level 0
+[12:00:42] [Server thread/INFO]: Changing view distance to 12, from 10
+[12:00:43] [Server thread/INFO]: Player662[local:E:50a35770] logged in with entity id 156 at (-178.0089173841273, 77.0, 263.966052578932)
+[12:00:43] [Server thread/INFO]: Player662 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ
+[12:00:44] [Server thread/INFO]: Saving and pausing game...
+[12:00:44] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Overworld
+[12:00:44] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Nether
+[12:00:44] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/The End
+[12:00:44] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Spirit World
+[12:00:44] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Torment
+[12:00:44] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Mirror
+[12:00:44] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/The Outer Lands
+[12:01:01] [Client thread/INFO]: [CHAT] Version 1.0.7.48 of CodeChickenCore is available
+[12:01:01] [Client thread/INFO]: [CHAT] Version 1.0.5.120 of NotEnoughItems is available
+[12:01:03] [Server thread/INFO]: Player662 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ [пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ]
+[12:01:03] [Client thread/INFO]: [CHAT] Player662 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ [пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ]
+[12:01:05] [Server thread/INFO]: [Player662: пїЅпїЅпїЅпїЅ [пїЅeпїЅпїЅпїЅпїЅпїЅпїЅ3000] * 1 пїЅпїЅпїЅпїЅпїЅпїЅ Player662]
+[12:01:05] [Client thread/INFO]: [CHAT] пїЅпїЅпїЅпїЅ [пїЅeпїЅпїЅпїЅпїЅпїЅпїЅ3000] * 1 пїЅпїЅпїЅпїЅпїЅпїЅ Player662
+[12:01:15] [Server thread/INFO]: Saving and pausing game...
+[12:01:15] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Overworld
+[12:01:15] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Nether
+[12:01:15] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/The End
+[12:01:15] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Spirit World
+[12:01:15] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Torment
+[12:01:15] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Mirror
+[12:01:15] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/The Outer Lands
+[12:05:50] [Server thread/INFO]: [Player662: пїЅпїЅпїЅпїЅ [пїЅeпїЅпїЅпїЅпїЅпїЅпїЅ3000] * 1 пїЅпїЅпїЅпїЅпїЅпїЅ Player662]
+[12:05:50] [Client thread/INFO]: [CHAT] пїЅпїЅпїЅпїЅ [пїЅeпїЅпїЅпїЅпїЅпїЅпїЅ3000] * 1 пїЅпїЅпїЅпїЅпїЅпїЅ Player662
+[12:05:54] [Server thread/INFO]: Saving and pausing game...
+[12:05:54] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Overworld
+[12:05:54] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Nether
+[12:05:54] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/The End
+[12:05:54] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Spirit World
+[12:05:54] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Torment
+[12:05:54] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Mirror
+[12:05:54] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/The Outer Lands
+[12:06:02] [Server thread/INFO]: Saving and pausing game...
+[12:06:02] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Overworld
+[12:06:02] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Nether
+[12:06:02] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/The End
+[12:06:02] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Spirit World
+[12:06:02] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Torment
+[12:06:02] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Mirror
+[12:06:02] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/The Outer Lands
+[12:06:11] [Server thread/INFO]: [Player662: пїЅпїЅпїЅпїЅ [пїЅeпїЅпїЅпїЅпїЅпїЅпїЅ3000] * 1 пїЅпїЅпїЅпїЅпїЅпїЅ Player662]
+[12:06:11] [Client thread/INFO]: [CHAT] пїЅпїЅпїЅпїЅ [пїЅeпїЅпїЅпїЅпїЅпїЅпїЅ3000] * 1 пїЅпїЅпїЅпїЅпїЅпїЅ Player662
+[12:07:53] [Client thread/INFO]: Warning: Clientside chunk ticking took 230 ms
+[12:07:54] [Client thread/INFO]: Warning: Clientside chunk ticking took 305 ms
+[12:07:54] [Client thread/INFO]: Warning: Clientside chunk ticking took 402 ms
+[12:07:57] [Client thread/INFO]: Warning: Clientside chunk ticking took 105 ms
+[12:07:58] [Client thread/INFO]: Warning: Clientside chunk ticking took 175 ms
+[12:07:58] [Client thread/INFO]: Warning: Clientside chunk ticking took 143 ms
+[12:08:01] [Client thread/INFO]: Warning: Clientside chunk ticking took 257 ms
+[12:08:01] [Client thread/INFO]: Warning: Clientside chunk ticking took 167 ms
+[12:08:01] [Client thread/INFO]: Warning: Clientside chunk ticking took 145 ms
+[12:08:02] [Client thread/INFO]: Warning: Clientside chunk ticking took 178 ms
+[12:08:18] [Client thread/INFO]: Warning: Clientside chunk ticking took 565 ms
+[12:08:19] [Client thread/INFO]: Warning: Clientside chunk ticking took 162 ms
+[12:11:47] [Server thread/INFO]: Saving and pausing game...
+[12:11:47] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Overworld
+[12:11:47] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Nether
+[12:11:47] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/The End
+[12:11:47] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Spirit World
+[12:11:47] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Torment
+[12:11:47] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/Mirror
+[12:11:47] [Server thread/INFO]: Saving chunks for level 'пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ5'/The Outer Lands

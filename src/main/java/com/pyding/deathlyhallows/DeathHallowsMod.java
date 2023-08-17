@@ -6,35 +6,20 @@ import com.emoniph.witchery.brewing.BrewItemKey;
 import com.emoniph.witchery.brewing.WitcheryBrewRegistry;
 import com.emoniph.witchery.brewing.action.BrewAction;
 import com.emoniph.witchery.brewing.action.BrewActionRitualRecipe;
-import com.emoniph.witchery.client.renderer.RenderBlockItem;
-import com.emoniph.witchery.client.renderer.RenderBroom;
 import com.emoniph.witchery.crafting.KettleRecipes;
 import com.emoniph.witchery.entity.*;
 import com.emoniph.witchery.ritual.*;
 import com.emoniph.witchery.ritual.rites.RiteSummonCreature;
 import com.emoniph.witchery.ritual.rites.RiteSummonItem;
 import com.pyding.deathlyhallows.blocks.VisConverter;
-import com.pyding.deathlyhallows.blocks.VisConverterTile;
-import com.pyding.deathlyhallows.client.ClientProxy;
-import com.pyding.deathlyhallows.client.handler.KeyHandler;
-import com.pyding.deathlyhallows.client.render.block.ViscRender;
-import com.pyding.deathlyhallows.client.render.entity.AnimaInteritusRender;
-import com.pyding.deathlyhallows.client.render.entity.PlayerRender;
-import com.pyding.deathlyhallows.client.render.entity.RenderAbsoluteDeath;
-import com.pyding.deathlyhallows.client.render.entity.RenderNimbus;
-import com.pyding.deathlyhallows.client.render.item.EldenWandRender;
-import com.pyding.deathlyhallows.client.render.item.ViscItemRender;
 import com.pyding.deathlyhallows.commands.DamageLog;
 import com.pyding.deathlyhallows.common.CommonProxy;
 import com.pyding.deathlyhallows.common.handler.EventHandler;
 import com.pyding.deathlyhallows.entity.AbsoluteDeath;
 import com.pyding.deathlyhallows.entity.ModEntity;
-import com.pyding.deathlyhallows.entity.Nimbus;
 import com.pyding.deathlyhallows.integration.Integration;
 import com.pyding.deathlyhallows.items.*;
 import com.pyding.deathlyhallows.network.NetworkHandler;
-import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
@@ -43,38 +28,17 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.command.CommandHandler;
-import net.minecraft.command.ICommand;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
-import thaumcraft.api.ThaumcraftApi;
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
-import thaumcraft.api.crafting.InfusionRecipe;
-import thaumcraft.api.research.ResearchCategories;
-import thaumcraft.api.research.ResearchItem;
-import thaumcraft.api.research.ResearchPage;
-import thaumcraft.common.Thaumcraft;
-import thaumcraft.common.config.ConfigBlocks;
 import thaumcraft.common.config.ConfigItems;
-import thaumcraft.common.items.ItemBucketDeath;
-import thaumcraft.common.tiles.TileArcaneWorkbench;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -99,7 +63,9 @@ public class DeathHallowsMod {
     public static Item hobgoblinSoul;
     public static Item nimbus;
     public static Item deathShard;
+    public static Item cards;
     public static Block visc;
+    public static Item  inferioisMutandis;
     @Mod.Instance("dh")
     public static DeathHallowsMod Instance;
 
@@ -128,6 +94,8 @@ public class DeathHallowsMod {
         hobgoblinSoul = new HobgoblinSoul().setUnlocalizedName("HobgoblinSoul").setTextureName("dh:goblinsoul").setMaxStackSize(64).setCreativeTab(tabDeathlyHallows);
         nimbus = new Nimbus3000().setUnlocalizedName("Nimbus3000").setTextureName("dh:nimbus").setMaxStackSize(1).setCreativeTab(tabDeathlyHallows);
         deathShard = new DeathShard().setUnlocalizedName("deathShard").setTextureName("dh:shard").setMaxStackSize(16).setCreativeTab(tabDeathlyHallows);
+        cards = new Cards().setUnlocalizedName("cards").setTextureName("dh:cards_daybreak").setMaxStackSize(1).setCreativeTab(tabDeathlyHallows);
+        inferioisMutandis = new InferioisMutandis().setUnlocalizedName("focusMutandis").setTextureName("dh:focus_mutant").setMaxStackSize(1).setCreativeTab(tabDeathlyHallows);
         GameRegistry.registerItem(invisibilityMantle, invisibilityMantle.getUnlocalizedName().substring(5));
         GameRegistry.registerItem(elderWand, elderWand.getUnlocalizedName().substring(5));
         GameRegistry.registerItem(resurrectionStone, resurrectionStone.getUnlocalizedName().substring(5));
@@ -142,29 +110,19 @@ public class DeathHallowsMod {
         GameRegistry.registerItem(hobgoblinSoul,hobgoblinSoul.getUnlocalizedName().substring(5));
         GameRegistry.registerItem(nimbus, nimbus.getUnlocalizedName().substring(5));
         GameRegistry.registerItem(deathShard,deathShard.getUnlocalizedName().substring(5));
+        GameRegistry.registerItem(cards,cards.getUnlocalizedName().substring(5));
         MinecraftForge.EVENT_BUS.register(new EventHandler());
         FMLCommonHandler.instance().bus().register(new EventHandler());
         Entities = new ModEntity();
         network.preInit();
         Integration.preInit();
-        if(Integration.thaumcraft){
-            GameRegistry.registerBlock(visc,"visconverter");
-            GameRegistry.registerTileEntity(VisConverterTile.class,"visconverterTile");
-        }
         proxy.preInit(event);
     }
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         network.init();
-        MinecraftForgeClient.registerItemRenderer(elderWand, new EldenWandRender());
-        MinecraftForgeClient.registerItemRenderer(ItemBlock.getItemFromBlock(visc), new ViscItemRender());
-        RenderingRegistry.registerEntityRenderingHandler(AbsoluteDeath.class,new RenderAbsoluteDeath());
-        RenderingRegistry.registerEntityRenderingHandler(Nimbus.class,new RenderNimbus());
-        RenderingRegistry.registerEntityRenderingHandler(EntityPlayer.class, new AnimaInteritusRender());
-        this.bindRenderer(VisConverterTile.class,new ViscRender(),new Item[0]);
-        KeyHandler keyHandler = new KeyHandler();
-        keyHandler.register();
         Entities.init();
+        Integration.init();
         proxy.init(event);
     }
 
@@ -184,11 +142,6 @@ public class DeathHallowsMod {
         if (Integration.thaumcraft){
             brewAction = new BrewActionRitualRecipe(new BrewItemKey(ConfigItems.itemBucketDeath), new AltarPower(7000), new BrewActionRitualRecipe.Recipe[]{new BrewActionRitualRecipe.Recipe(new ItemStack(viscousSecretions), new ItemStack[]{new ItemStack(Items.nether_star), Witchery.Items.GENERIC.itemTearOfTheGoddess.createStack(),new ItemStack(Items.redstone), Witchery.Items.GENERIC.itemBatWool.createStack(),Witchery.Items.GENERIC.itemDiamondVapour.createStack()})});
             meth.invoke(WitcheryBrewRegistry.INSTANCE,brewAction);
-            GameRegistry.addShapedRecipe(new ItemStack(visc),
-                    "BHB", "HSH", "BHB",
-                    'B', new ItemStack(Witchery.Items.MYSTIC_BRANCH),
-                    'H', Witchery.Items.GENERIC.itemDemonHeart.createStack(),
-                    'S', new ItemStack(deathShard));
         }
         brewAction = new BrewActionRitualRecipe(new BrewItemKey(Blocks.iron_bars), new AltarPower(17000), new BrewActionRitualRecipe.Recipe[]{new BrewActionRitualRecipe.Recipe(new ItemStack(hobgoblinChains),new ItemStack[]{new ItemStack(Blocks.iron_block),Witchery.Items.GENERIC.itemKobolditeNugget.createStack(),Witchery.Items.GENERIC.itemKobolditeDust.createStack(), new ItemStack(hobgoblinSoul)})});
         meth.invoke(WitcheryBrewRegistry.INSTANCE,brewAction);
@@ -208,23 +161,4 @@ public class DeathHallowsMod {
             return new ItemStack(tabItem).getItem();
         }
     };
-    private void bindRenderer(Class clazz, TileEntitySpecialRenderer render, Item ... items) {
-        ClientRegistry.bindTileEntitySpecialRenderer(clazz, render);
-        Item[] arr$ = items;
-        int len$ = items.length;
-
-        for(int i$ = 0; i$ < len$; ++i$) {
-            Item item = arr$[i$];
-            if(item != null) {
-                try {
-                    MinecraftForgeClient.registerItemRenderer(item, new RenderBlockItem(render, (TileEntity)clazz.newInstance()));
-                } catch (IllegalAccessException var9) {
-                    ;
-                } catch (InstantiationException var10) {
-                    ;
-                }
-            }
-        }
-
-    }
 }

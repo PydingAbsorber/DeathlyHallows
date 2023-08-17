@@ -288,7 +288,7 @@ public class AbsoluteDeath extends EntityMob implements IBossDisplayData,IHandle
         player.attackEntityFrom(source,amount);
     }
     public void attac(){
-        if(this.getAITarget() != null){
+        if(this.getAITarget() != null && this.getAITarget() instanceof EntityPlayer){
             EntityPlayer player = (EntityPlayer) this.getAITarget();
             if(!player.capabilities.isCreativeMode){
                 double speed = 2;

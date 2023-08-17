@@ -36,3 +36,15 @@ dh.util.language=En
 death.attack.adaptive=You died from... §4Absolute Death: me!!!! HAHAHAHAHA
 dh.key.broom=Summon Nibmus3000
 tile.visconverter.name=§9Multipolygonal Vis Reassembler ⋚ ⋛
+dh.flower.screamily.name=§4Screamily
+tile.botania:flower.screamily.name=§4Screamily
+botania.entry.screamily=Screamily
+botania.tagline.screamily=Scream for mana! Who's screaming the most?...
+botania.page.screamilyabobka=Place some banshee within 4 blocks and get for each screaming ones 10k mana! Banshee stack up to 16, mana generates every 10 seconds.
+dh.flower.spawnlesia.name=§dSpawnlesia
+tile.botania:flower.spawnlesia.name=§dSpawnlesia
+botania.entry.spawnlesia=Spawnlesia
+botania.tagline.spawnlesia=What mobs will lure this smell?
+botania.page.spawnlesiaabobka=A very voracious and patient flower, which, when receiving an abundant amount of mana, begins to exude an extremely specific smell. This strong and pungent smell will attract even anosmics! Finding nearby for a long time is not recommended...
+item.focusMutandis.name=Inferiois Mutandis
+

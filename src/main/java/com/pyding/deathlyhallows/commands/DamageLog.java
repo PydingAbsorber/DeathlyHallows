@@ -49,7 +49,11 @@ public class DamageLog extends CommandBase {
             if (sender instanceof EntityPlayer) {
                 EntityPlayer player = (EntityPlayer) sender;
                 if(player.getHeldItem() != null)
-                player.addChatMessage(new ChatComponentText("item id is: " + player.getHeldItem().getItem().getClass().getName()));
+                player.addChatMessage(new ChatComponentText("§bitem class name is: " + player.getHeldItem().getItem().getClass().getName()));
+                player.addChatMessage(new ChatComponentText("§9item unlock name is: " + player.getHeldItem().getItem().getUnlocalizedName()));
+                player.addChatMessage(new ChatComponentText("§5item damage is: " + player.getHeldItem().getItem().getDamage(player.getHeldItem())));
+                if(player.getHeldItem().getTagCompound() != null)
+                player.addChatMessage(new ChatComponentText("§citem nbt list is: " + player.getHeldItem().getTagCompound()));
             }
         }
         else if(args.length > 0 && args[0].equalsIgnoreCase("getnbt")){

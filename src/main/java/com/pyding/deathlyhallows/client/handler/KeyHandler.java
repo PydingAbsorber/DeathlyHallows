@@ -5,6 +5,8 @@ import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.infusion.infusions.symbols.EffectRegistry;
 import com.emoniph.witchery.infusion.infusions.symbols.SymbolEffect;
 import com.pyding.deathlyhallows.DeathHallowsMod;
+import com.pyding.deathlyhallows.network.KeyPacket;
+import com.pyding.deathlyhallows.network.NetworkHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -58,10 +60,12 @@ public class KeyHandler {
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (binding.isPressed()) {
-            setKeyPressed(true); //fuck this server packets ya ebal
+            KeyPacket packet = new KeyPacket(true,1);
+            NetworkHandler.sendToServer(packet);
         }
         if(binding2.isPressed()){
-            setKeyPressed2(true);
+            KeyPacket packet = new KeyPacket(true,2);
+            NetworkHandler.sendToServer(packet);
         }
     }
 }

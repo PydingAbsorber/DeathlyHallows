@@ -2,22 +2,22 @@ package com.pyding.deathlyhallows.common.handler;
 
 import baubles.api.BaublesApi;
 import com.emoniph.witchery.Witchery;
+import com.emoniph.witchery.blocks.BlockGrassper;
 import com.emoniph.witchery.brewing.potions.PotionFortune;
 import com.emoniph.witchery.brewing.potions.WitcheryPotions;
 import com.emoniph.witchery.entity.EntityGoblin;
 import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.item.ItemDeathsClothes;
+import com.emoniph.witchery.item.ItemMutator;
 import com.emoniph.witchery.util.*;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.pyding.deathlyhallows.DeathHallowsMod;
-import com.pyding.deathlyhallows.client.handler.KeyHandler;
+import com.pyding.deathlyhallows.commands.DamageLog;
 import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
 import com.pyding.deathlyhallows.entity.AbsoluteDeath;
 import com.pyding.deathlyhallows.integration.Integration;
-import com.pyding.deathlyhallows.items.DeadlyPrism;
-import com.pyding.deathlyhallows.items.Nimbus3000;
-import com.pyding.deathlyhallows.items.ResurrectionStone;
+import com.pyding.deathlyhallows.items.*;
 import com.pyding.deathlyhallows.network.RenderPacket;
 import com.pyding.deathlyhallows.network.NetworkHandler;
 import com.pyding.deathlyhallows.spells.SpellRegistry;
@@ -47,9 +47,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.*;
 import net.minecraft.world.World;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -59,6 +58,11 @@ import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
 import net.minecraftforge.event.world.BlockEvent;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.common.config.ConfigItems;
+import thaumcraft.common.items.ItemResource;
+import thaumcraft.common.items.wands.ItemWandCasting;
+import thaumcraft.common.items.wands.foci.ItemFocusPech;
 
 import java.util.*;
 
@@ -159,6 +163,9 @@ public class EventHandler {
         if(!Integration.thaumcraft){
             player.addChatMessage(new ChatComponentText("§5Deathly Hallows has Thaumcraft integration! Bet you didn't know..."));
         }
+        if(!Integration.botania){
+            player.addChatMessage(new ChatComponentText("§aDeathly Hallows has Botania integration! Bet you didn't know..."));
+        }
     }
 
     public static boolean shouldRemove = true;
@@ -169,6 +176,7 @@ public class EventHandler {
     {
         if(event.entity instanceof EntityPlayer){
             EntityPlayer player = (EntityPlayer)event.entity;
+            //BertieBotts.addBuff(player, player.worldObj);
             if(player.getEntityData().getInteger("mantlecd") > 0)
                 player.getEntityData().setInteger("mantlecd",player.getEntityData().getInteger("mantlecd")-1);
             if(player.getEntityData().getInteger("DopVoid") > 0)
@@ -185,17 +193,32 @@ public class EventHandler {
             if(player.getEntityData().getInteger("invincible") > 0) {
                 player.getEntityData().setInteger("invincible",player.getEntityData().getInteger("invincible")-1);
             }
+            if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemWandCasting){
+                ItemWandCasting wand = (ItemWandCasting) player.getHeldItem().getItem();
+                if(wand.getFocus(player.getHeldItem()) == DeathHallowsMod.inferioisMutandis){
+                    for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+                        if (player.inventory.getStackInSlot(i) != null) {
+                            ItemStack stack = player.inventory.getStackInSlot(i);
+                            if(stack.getItem() == ConfigItems.itemResource && stack.getItemDamage() == 18){
+                                if(wand.consumeVis(player.getHeldItem(),player, Aspect.ENTROPY,100,false)){
+                                    player.inventory.decrStackSize(i,1);
+                                    player.inventory.addItemStackToInventory(Witchery.Items.GENERIC.itemMutandis.createStack());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         if((event.entity instanceof EntityPlayer) && !(event.entity.worldObj.isRemote))
         {
             EntityPlayer player = (EntityPlayer)event.entity;
             World world = player.worldObj;
-            KeyHandler keyHandler = new KeyHandler();
             ItemStack stack = player.getHeldItem();
             if(stack != null)
             {
-                if (stack.getItem() == DeathHallowsMod.elderWand && keyHandler.isKeyPressed()) {
-                    keyHandler.setKeyPressed(false);
+                if (stack.getItem() == DeathHallowsMod.elderWand && player.getEntityData().getBoolean("dhkey1")) {
+                    player.getEntityData().setBoolean("dhkey1",false);
                     SpellRegistry spellRegistry = new SpellRegistry();
                     if(stack.hasTagCompound()){
                         if (!stack.getTagCompound().hasKey("spell1")) {
@@ -891,8 +914,44 @@ public class EventHandler {
             }*/
         }
     }
-    @SubscribeEvent
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void playerInteract(PlayerInteractEvent event) {
+        if(Integration.thaumcraft && event.entityPlayer.getHeldItem() != null){
+            ItemStack stack = event.entityPlayer.getHeldItem();
+            if(stack.getItem().getUnlocalizedName().equals("item.witchery:ingredient") && stack.getItemDamage() == 14)
+            {
+                EntityPlayer player = event.entityPlayer;
+                MovingObjectPosition rayTrace = rayTrace(player, 4.0);
+                if (rayTrace != null) {
+                    if (rayTrace.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+                        int blockX = rayTrace.blockX;
+                        int blockY = rayTrace.blockY;
+                        int blockZ = rayTrace.blockZ;
+                        TileEntity tileEntity = player.worldObj.getTileEntity(blockX, blockY, blockZ);
+                        if (tileEntity != null && tileEntity instanceof BlockGrassper.TileEntityGrassper) {
+                            BlockGrassper.TileEntityGrassper grassper = (BlockGrassper.TileEntityGrassper) tileEntity;
+                            ItemStack focus;
+                            if(((BlockGrassper.TileEntityGrassper) tileEntity).getStackInSlot(0).getItem() == ConfigItems.itemFocusPech){
+                                stack.stackSize = stack.stackSize-1;
+                                focus = new ItemStack(DeathHallowsMod.inferioisMutandis);
+                                ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_FIZZ, event.world, blockX, blockY, blockZ, 1.0, 1.0, 8);
+                                grassper.decrStackSize(0,1);
+                                event.world.setBlock(blockX,blockY,blockZ, Blocks.air);
+                                player.inventory.addItemStackToInventory(focus);
+                            } else if(((BlockGrassper.TileEntityGrassper) tileEntity).getStackInSlot(0).getItem() == DeathHallowsMod.inferioisMutandis){
+                                stack.stackSize = stack.stackSize-1;
+                                focus = new ItemStack(ConfigItems.itemFocusPech);
+                                ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_FIZZ, event.world, blockX, blockY, blockZ, 1.0, 1.0, 8);
+                                grassper.decrStackSize(0,1);
+                                event.world.setBlock(blockX,blockY,blockZ, Blocks.air);
+                                player.inventory.addItemStackToInventory(focus);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         /*EntityPlayer player = event.entityPlayer;
         ExtendedPlayer props = ExtendedPlayer.get(player);
         for(Object o: getEntities(1, EntityAnimal.class,player)){
@@ -961,22 +1020,29 @@ public class EventHandler {
                         }
                     }
                 }
-                if(stack.getItem() == DeathHallowsMod.nimbus && stack.getTagCompound() != null){
-                    KeyHandler keyHandler = new KeyHandler();
-                    if(stack.getTagCompound().getInteger("NimbusCooldown") > 0) {
-                        stack.getTagCompound().setInteger("NimbusCooldown", stack.getTagCompound().getInteger("NimbusCooldown") - 1);
-                        if(KeyHandler.isKeyPressed2){
-                            keyHandler.setKeyPressed2(false);
+                if(stack.getItem() == DeathHallowsMod.nimbus){
+                    NBTTagCompound nbt = null;
+                    if (!stack.hasTagCompound() || stack.getTagCompound() == null) {
+                        nbt = new NBTTagCompound();
+                        nbt.setInteger("NimbusCooldown",0);
+                        stack.setTagCompound(nbt);
+                    } else nbt = stack.getTagCompound();
+                    if(nbt.getInteger("NimbusCooldown") > 0) {
+                        nbt.setInteger("NimbusCooldown", stack.getTagCompound().getInteger("NimbusCooldown") - 1);
+                        if(player.getEntityData().getBoolean("dhkey2")){
+                            player.getEntityData().setBoolean("dhkey2",false);
                         }
+                        stack.setTagCompound(nbt);
                     }
-                    else if (stack.getTagCompound().getInteger("NimbusCooldown") < 0) {
-                        stack.getTagCompound().setInteger("NimbusCooldown",0);
+                    else if (nbt.getInteger("NimbusCooldown") < 0) {
+                        nbt.setInteger("NimbusCooldown",0);
+                        stack.setTagCompound(nbt);
                     }
                     else {
-                        if(KeyHandler.isKeyPressed2){
+                        if(player.getEntityData().getBoolean("dhkey2")){
                             Nimbus3000 nimbus3000 = (Nimbus3000) stack.getItem();
                             nimbus3000.onItemRightClick(stack, player.worldObj, player);
-                            keyHandler.setKeyPressed2(false);
+                            player.getEntityData().setBoolean("dhkey2",false);
                         }
                     }
                 }
@@ -1001,6 +1067,12 @@ public class EventHandler {
                 }
             }
         }
+    }
+    public MovingObjectPosition rayTrace(EntityPlayer player, double distance) {
+        Vec3 startVec = Vec3.createVectorHelper(player.posX, player.posY + player.getEyeHeight(), player.posZ);
+        Vec3 lookVec = player.getLook(1.0F);
+        Vec3 endVec = startVec.addVector(lookVec.xCoord * distance, lookVec.yCoord * distance, lookVec.zCoord * distance);
+        return player.worldObj.rayTraceBlocks(startVec, endVec);
     }
     public boolean hasDeathlyHallow(EntityPlayer player){
         int count = 0;

@@ -17,6 +17,7 @@ public class NetworkHandler {
     public static void init() {
         wrapper.registerMessage(RenderPacket.class, RenderPacket.class,1,Side.CLIENT);
         wrapper.registerMessage(CPacketDisableFlight.class, CPacketDisableFlight.class, 2, Side.CLIENT);
+        wrapper.registerMessage(KeyPacket.class, KeyPacket.class,3,Side.SERVER);
     }
 
     public static void sendToPlayer(IMessage message, EntityPlayer player) {
