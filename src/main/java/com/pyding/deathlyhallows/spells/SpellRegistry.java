@@ -11,9 +11,7 @@ import com.emoniph.witchery.util.TimeUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
-import com.pyding.deathlyhallows.network.CPacketDisableFlight;
-import com.pyding.deathlyhallows.network.RenderPacket;
-import com.pyding.deathlyhallows.network.NetworkHandler;
+import com.pyding.deathlyhallows.network.*;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -27,6 +25,7 @@ import net.minecraft.util.*;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class SpellRegistry {
@@ -199,15 +198,18 @@ public class SpellRegistry {
 
     public static int spellCount = 55;
 
-    public static int cd = 2500;
+    public static float cd = 2500;
     public static int cost = 120; //anima
     public static int sectumCost = 10;
     public static int magicCost = 5;
 
-    public static int spellPower = 1;
+    public static float spellPower = 1;
+
+    public static float spellRadius = 1;
 
     public static float baseDamage = 1000;
-    public static int discount = 1;
+    public static float hpCost = 10;
+    public static float discount = 1;
     public static EntityPlayer player;
     Multimap<String, AttributeModifier> attributes = HashMultimap.create();
     public void performEffect(EntityPlayer player2, World world, int spellId) {
@@ -220,10 +222,11 @@ public class SpellRegistry {
             if(props1.getElfLvl() > 0) {
                 discount = 1-props1.getElfLvl()/20;
                 cd = 2500*discount;
-                spellPower = 1*discount;
-                cost = 120*discount;
-                sectumCost = 10*discount;
-                magicCost = 5*discount;
+                spellPower = 1*props1.getElfLvl();
+                cost = (int) (120*discount);
+                sectumCost = (int) (10*discount);
+                magicCost = (int) (5*discount);
+                spellRadius = 1*(spellPower/5);
             }
             double x = player.posX;
             double y = player.posY + player.getEyeHeight();
@@ -246,13 +249,15 @@ public class SpellRegistry {
                             props1.setSpellsUsed(props1.getSpellsUsed()+1);
                             double radius = 64;
                             for (Object o : getEntities(radius, EntityLivingBase.class)) {
-                                if(cursedCount > 0+(elfBonus-1))
+                                if(cursedCount > 0+(elfBonus-1)) {
                                     break;
+                                }
                                 if (!o.equals(player)) {
                                     if(o instanceof EntityPlayer) {
                                         EntityPlayer targetPlayer = (EntityPlayer) o;
-                                        if(targetPlayer.capabilities.isCreativeMode)
+                                        if(targetPlayer.capabilities.isCreativeMode) {
                                             continue;
+                                        }
                                     }
                                     EntityLivingBase target = (EntityLivingBase) o;
                                     if (target.isEntityAlive()) {
@@ -263,13 +268,8 @@ public class SpellRegistry {
                                         } else {
                                             cursedCount++;
                                             this.cd = 20000;
-                                            if(Math.random() > 0.5)
-                                                world.playSoundAtEntity(player,"dh:spell.anima3",1F,1F);
-                                            else {
-                                                if(Math.random() > 0.5)
-                                                    world.playSoundAtEntity(player,"dh:spell.anima2",1F,1F);
-                                                else world.playSoundAtEntity(player,"dh:spell.anima1",1F,1F);
-                                            }
+                                            target.getEntityData().setInteger("dhcurse",1200);
+                                            NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(target.dimension,target.posX,target.posY,target.posZ,radius*1.2);
                                             if(target instanceof EntityPlayer) {
                                                 EntityPlayer targetPlayer = (EntityPlayer) target;
                                                 ExtendedPlayer props = ExtendedPlayer.get(targetPlayer);
@@ -278,15 +278,17 @@ public class SpellRegistry {
                                                 target.setLastAttacker(player);
                                                 props.setCoordinates(targetPlayer.posX,targetPlayer.posY,targetPlayer.posZ,targetPlayer.dimension);
                                                 props1.setCoordinates(targetPlayer.posX,targetPlayer.posY,targetPlayer.posZ,targetPlayer.dimension);
+                                                player.getEntityData().setInteger("casterCurse",1200);
+                                                PlayerRenderPacket packet = new PlayerRenderPacket(targetPlayer.getEntityData());
+                                                NetworkHandler.sendToAllAround(packet,targetPoint);
                                             } else {
                                                 target.setLastAttacker(player);
-                                                ((EntityLiving) target).setAttackTarget(player);
+                                                AnimaMobRenderPacket packet = new AnimaMobRenderPacket(target.getEntityData(),target.getEntityId());
+                                                NetworkHandler.sendToAllAround(packet, targetPoint);
+                                                target.getEntityData().setDouble("chainX",target.posX);
+                                                target.getEntityData().setDouble("chainY",target.posY);
+                                                target.getEntityData().setDouble("chainZ",target.posZ);
                                             }
-                                            target.getEntityData().setInteger("dhcurse",1200);
-                                            player.getEntityData().setInteger("casterCurse",1200);
-                                            RenderPacket packet = new RenderPacket(target.getEntityData(),target.getEntityId());
-                                            NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(target.dimension,target.posX,target.posY,target.posZ,radius*1.2);
-                                            NetworkHandler.sendToAllAround(packet, targetPoint);
                                             if(ExtendedPlayer.get(player) != null) {
                                                 ExtendedPlayer props = ExtendedPlayer.get(player);
                                                 if(props.getElfLvl() > 0) {
@@ -300,6 +302,15 @@ public class SpellRegistry {
                                     }
                                 }
                             }
+                            if(cursedCount > 0){
+                                if(Math.random() > 0.5)
+                                    world.playSoundAtEntity(player,"dh:spell.anima3",1F,1F);
+                                else {
+                                    if(Math.random() > 0.5)
+                                        world.playSoundAtEntity(player,"dh:spell.anima2",1F,1F);
+                                    else world.playSoundAtEntity(player,"dh:spell.anima1",1F,1F);
+                                }
+                            } else SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                         } else {
                             ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.infernalrequired", new Object[0]);
                             ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "elf required", new Object[0]);
@@ -318,8 +329,7 @@ public class SpellRegistry {
                                 }
                                 props1.setSpellsUsed(props1.getSpellsUsed()+1);
                                 int lifes = player.getEntityData().getInteger("Horcrux");
-                                float hpCost = player.getMaxHealth()/2;
-                                if(player.getMaxHealth()-hpCost > 5){
+                                if(player.getMaxHealth()-hpCost > 10){
                                     attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier( "HorcruxHP", -hpCost, 0));
                                     player.getAttributeMap().applyAttributeModifiers(attributes);
                                     attributes.clear();
@@ -353,10 +363,10 @@ public class SpellRegistry {
                                     player.posX - 6 / 2, player.posY - 2 / 2, player.posZ - 6 / 2,
                                     player.posX + 6 / 2, player.posY + 2 / 2, player.posZ + 6 / 2
                             );
-                            List entities = player.worldObj.getEntitiesWithinAABB(EntityLiving.class,boundingBox);
+                            List entities = player.worldObj.getEntitiesWithinAABB(EntityLivingBase.class,boundingBox);
                             for (Object o : entities){
-                                if(o != player && o instanceof EntityLiving){
-                                    EntityLiving entity = (EntityLiving) o;
+                                if(o != player && o instanceof EntityLivingBase){
+                                    EntityLivingBase entity = (EntityLivingBase) o;
                                     entity.getEntityData().setInteger("SectumTime",666);
                                     float hpLower = (float) (entity.getMaxHealth()*(0.15*(1+ props1.getElfLvl()/10)));
                                     if(entity.getMaxHealth()-hpLower > 5){
@@ -383,7 +393,7 @@ public class SpellRegistry {
                             int count = 0;
                             props1.setSpellsUsed(props1.getSpellsUsed()+1);
                             for (Object o : getEntities(32, EntityLivingBase.class)) {
-                                if (!o.equals(player) && count < 6*spellPower) {
+                                if (!o.equals(player) && count < 6*spellRadius) {
                                     if(o instanceof EntityPlayer) {
                                         EntityPlayer targetPlayer = (EntityPlayer) o;
                                         if(targetPlayer.capabilities.isCreativeMode)
@@ -410,7 +420,7 @@ public class SpellRegistry {
                             SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                         } else {
                             props1.setSpellsUsed(props1.getSpellsUsed()+1);
-                            double radius = 40*spellPower;
+                            double radius = 40*spellRadius;
                             for (Object o : getEntities(radius, EntityLivingBase.class)) {
                                 if(!o.equals(player))
                                 {
@@ -424,7 +434,7 @@ public class SpellRegistry {
                                         target.attackEntityFrom(DamageSource.causePlayerDamage(player).setExplosion(), (baseDamage*3+damage)*spellPower);
                                 }
                             }
-                            world.createExplosion(player, x, y, z, 15*spellPower, true);
+                            world.createExplosion(player, x, y, z, 15*spellRadius, true);
                             world.playSoundEffect(x, y, z, "random.explode", 4.0F, (1.0F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.2F) * 0.7F);
                             double d0 = world.rand.nextGaussian() * 0.02D;
                             double d1 = world.rand.nextGaussian() * 0.02D;
@@ -463,7 +473,7 @@ public class SpellRegistry {
                             double radius = 24;
                             for(Object o: getEntities(radius, EntityLivingBase.class)){
                                 if(!o.equals(player)){
-                                    EntityLiving entity = (EntityLiving) o;
+                                    EntityLivingBase entity = (EntityLivingBase) o;
                                     for (Object potionEffect : entity.getActivePotionEffects()) {
                                         PotionEffect effect = (PotionEffect) potionEffect;
                                         if (!Potion.potionTypes[effect.getPotionID()].isBadEffect()) {
@@ -557,7 +567,7 @@ public class SpellRegistry {
                             } else {
                                 effect.perform(world, player, level);
                                 if (!player.capabilities.isCreativeMode) {
-                                    Infusion.setCurrentEnergy(player, nbtPerm.getInteger("witcheryInfusionCharges") - effect.getChargeCost(world, player, level)*discount);
+                                    Infusion.setCurrentEnergy(player, (int) (nbtPerm.getInteger("witcheryInfusionCharges") - effect.getChargeCost(world, player, level)*discount));
                                 }
                             }
                         }

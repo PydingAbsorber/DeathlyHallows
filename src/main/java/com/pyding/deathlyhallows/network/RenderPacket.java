@@ -46,10 +46,6 @@ public class RenderPacket implements IMessage, IMessageHandler<RenderPacket,IMes
                 if (message.nbtData != null) {
                     death.getEntityData().setTag("dhData",message.nbtData);
                 }
-            } else {
-                if(message.nbtData != null) {
-                    entity.getEntityData().setTag("dhRenderData",message.nbtData);
-                }
             }
         }
         return null;

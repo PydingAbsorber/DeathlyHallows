@@ -1,5 +1,6 @@
 package com.pyding.deathlyhallows.blocks;
 
+import com.pyding.deathlyhallows.common.handler.ConfigHandler;
 import com.pyding.deathlyhallows.entity.AbsoluteDeath;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import net.minecraft.entity.Entity;
@@ -16,13 +17,13 @@ import java.util.List;
 
 public class Spawnlesia extends SubTileFunctional {
     private List<String> entities = new ArrayList<>();
-    private List<String> blackList = new ArrayList<>();
+    private String blackList = ConfigHandler.spawnlesia;
     public long summonMaxCd = 10000;
     public long summonCd = 0;
+    public static int cost = ConfigHandler.spawnlesiaMana;
     @Override
     public void onUpdate() {
         super.onUpdate();
-        int cost = 10000000;
         if(mana > cost){
             if(System.currentTimeMillis() - summonCd > summonMaxCd) {
                 addMana(-cost);
@@ -40,7 +41,7 @@ public class Spawnlesia extends SubTileFunctional {
 
     @Override
     public int getMaxMana() {
-        return 20000000;
+        return 20*cost;
     }
 
     @Override
@@ -77,11 +78,8 @@ public class Spawnlesia extends SubTileFunctional {
         }
     }
     public boolean isBlackListed(String name){
-        for(int i = 0; i < blackList.size(); i++){
-            String blackName = blackList.get(i);
-            if(name == blackName)
-                return true;
-        }
+        if(blackList.contains(name))
+            return true;
         return false;
     }
     public void getListOfEntities() {

@@ -56,7 +56,7 @@ public class ElderWand extends ItemBase {
         if (I18n.format("dh.util.language").equals("Ru")) {
             list.add("Листай список заклинаний на §cshift+ЛКМ/ЛКМ §7и кастуй одной кнопкой");
             list.add("Получи доступ к §c8 §7новым мощнейшим заклинаниям");
-            list.add("Все заклинания описаны в книге заклинаний, кнопку можно настроить в настройках управления");
+            list.add("Все заклинания описаны на сайте");
             if(stack.hasTagCompound()){
                 if(stack.getTagCompound().hasKey("dhowner")) {
                     list.add("Владелец §9" + stack.getTagCompound().getString("dhowner"));
@@ -66,7 +66,7 @@ public class ElderWand extends ItemBase {
         } else {
             list.add("Scroll list of spells by §cshift+LMB/LMB §7and cast by one button");
             list.add("Get access to §c8 §7new powerful spells");
-            list.add("All spells are described in the spell book, you can change button in settings");
+            list.add("All spells are described on the site");
             if(stack.hasTagCompound()){
                 if(stack.getTagCompound().hasKey("dhowner")) {
                     list.add("Owner §9" + stack.getTagCompound().getString("dhowner"));

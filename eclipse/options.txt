@@ -11,13 +11,13 @@ anaglyph3d:false
 advancedOpengl:false
 maxFps:120
 fboEnable:true
-difficulty:0
+difficulty:2
 fancyGraphics:true
 ao:2
 clouds:true
 resourcePacks:[]
 lastServer:
-lang:ru_RU
+lang:en_GB
 chatVisibility:0
 chatColors:true
 chatLinks:true
@@ -103,7 +103,7 @@ soundCategory_music:0.0
 soundCategory_record:1.0
 soundCategory_weather:1.0
 soundCategory_block:1.0
-soundCategory_hostile:1.0
+soundCategory_hostile:0.47887325
 soundCategory_neutral:1.0
 soundCategory_player:1.0
 soundCategory_ambient:1.0

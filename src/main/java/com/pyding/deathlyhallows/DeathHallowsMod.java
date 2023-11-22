@@ -9,17 +9,18 @@ import com.emoniph.witchery.brewing.action.BrewActionRitualRecipe;
 import com.emoniph.witchery.crafting.KettleRecipes;
 import com.emoniph.witchery.entity.*;
 import com.emoniph.witchery.ritual.*;
-import com.emoniph.witchery.ritual.rites.RiteSummonCreature;
-import com.emoniph.witchery.ritual.rites.RiteSummonItem;
+import com.emoniph.witchery.ritual.rites.*;
 import com.pyding.deathlyhallows.blocks.VisConverter;
 import com.pyding.deathlyhallows.commands.DamageLog;
 import com.pyding.deathlyhallows.common.CommonProxy;
+import com.pyding.deathlyhallows.common.handler.ConfigHandler;
 import com.pyding.deathlyhallows.common.handler.EventHandler;
 import com.pyding.deathlyhallows.entity.AbsoluteDeath;
 import com.pyding.deathlyhallows.entity.ModEntity;
 import com.pyding.deathlyhallows.integration.Integration;
 import com.pyding.deathlyhallows.items.*;
 import com.pyding.deathlyhallows.network.NetworkHandler;
+import com.pyding.deathlyhallows.spells.RiteOfElvenVanishing;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
@@ -42,9 +43,11 @@ import thaumcraft.common.config.ConfigItems;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
-@Mod(modid = "dh", name = "Deathly Hallows", version = "1.0", dependencies = "required-after:witchery;required-after:Baubles;after:Thaumcraft;after:AWWayofTime;after:Botania")
+@Mod(modid = "dh", name = "Deathly Hallows", version = "1.0", dependencies = "required-after:witchery;required-after:Baubles;after:Thaumcraft;after:AWWayofTime;after:Botania;after:AdvancedBotany")
 public class DeathHallowsMod {
     public static final String MOD_ID = "dh";
     public static Item invisibilityMantle;
@@ -66,6 +69,9 @@ public class DeathHallowsMod {
     public static Item cards;
     public static Block visc;
     public static Item  inferioisMutandis;
+
+    public static Item monsterBook;
+    public static Item trickOrTreat;
     @Mod.Instance("dh")
     public static DeathHallowsMod Instance;
 
@@ -79,7 +85,6 @@ public class DeathHallowsMod {
 
     @Mod.EventHandler
     public void preInt(FMLPreInitializationEvent event) {
-        visc = new VisConverter().setBlockName("visconverter").setBlockTextureName("dh:visc").setCreativeTab(tabDeathlyHallows);
         invisibilityMantle = new InvisibilityMantle().setUnlocalizedName("InvisibilityMantle").setTextureName("dh:mantle").setMaxStackSize(1).setCreativeTab(tabDeathlyHallows);
         elderWand = new ElderWand().setUnlocalizedName("ElderWand").setTextureName("dh:wand").setMaxStackSize(1).setCreativeTab(tabDeathlyHallows);
         resurrectionStone = new ResurrectionStone().setUnlocalizedName("ResurrectionStone").setTextureName("dh:ring").setMaxStackSize(1).setCreativeTab(tabDeathlyHallows);
@@ -95,7 +100,8 @@ public class DeathHallowsMod {
         nimbus = new Nimbus3000().setUnlocalizedName("Nimbus3000").setTextureName("dh:nimbus").setMaxStackSize(1).setCreativeTab(tabDeathlyHallows);
         deathShard = new DeathShard().setUnlocalizedName("deathShard").setTextureName("dh:shard").setMaxStackSize(16).setCreativeTab(tabDeathlyHallows);
         cards = new Cards().setUnlocalizedName("cards").setTextureName("dh:cards_daybreak").setMaxStackSize(1).setCreativeTab(tabDeathlyHallows);
-        inferioisMutandis = new InferioisMutandis().setUnlocalizedName("focusMutandis").setTextureName("dh:focus_mutant").setMaxStackSize(1).setCreativeTab(tabDeathlyHallows);
+        monsterBook = new MonsterBook().setUnlocalizedName("monsterBook").setTextureName("dh:monsterbook").setMaxStackSize(1).setCreativeTab(tabDeathlyHallows);
+        trickOrTreat = new TrickOrTreat().setUnlocalizedName("trick").setTextureName("dh:trick").setMaxStackSize(64).setCreativeTab(tabDeathlyHallows);
         GameRegistry.registerItem(invisibilityMantle, invisibilityMantle.getUnlocalizedName().substring(5));
         GameRegistry.registerItem(elderWand, elderWand.getUnlocalizedName().substring(5));
         GameRegistry.registerItem(resurrectionStone, resurrectionStone.getUnlocalizedName().substring(5));
@@ -111,12 +117,15 @@ public class DeathHallowsMod {
         GameRegistry.registerItem(nimbus, nimbus.getUnlocalizedName().substring(5));
         GameRegistry.registerItem(deathShard,deathShard.getUnlocalizedName().substring(5));
         GameRegistry.registerItem(cards,cards.getUnlocalizedName().substring(5));
+        GameRegistry.registerItem(monsterBook, monsterBook.getUnlocalizedName().substring(5));
+        GameRegistry.registerItem(trickOrTreat,trickOrTreat.getUnlocalizedName().substring(5));
         MinecraftForge.EVENT_BUS.register(new EventHandler());
         FMLCommonHandler.instance().bus().register(new EventHandler());
         Entities = new ModEntity();
         network.preInit();
         Integration.preInit();
         proxy.preInit(event);
+        ConfigHandler.init(event.getSuggestedConfigurationFile());
     }
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
@@ -129,6 +138,9 @@ public class DeathHallowsMod {
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         GameRegistry.addShapelessRecipe(new ItemStack(bertieBots),new ItemStack(Items.dye,1,3),new ItemStack(gastronomicTemptation));
+        //Object[] recipe = {"A","B","A","C","D","C","E","F","G",'A',Witchery.Items.GENERIC.itemNullifiedLeather.createStack(),'B',Witchery.Items.GENERIC.itemOwletsWing.createStack(),'C',Witchery.Items.GENERIC.itemToeOfFrog.createStack(),'D',Witchery.Items.GENERIC.itemBookBurning.createStack(),'E',Witchery.Items.GENERIC.itemVampireBookPage.createStack(),'F',Witchery.Items.GENERIC.itemContractTorment.createStack(),'G',Witchery.Items.GENERIC.itemDarkCloth.createStack()};
+        GameRegistry.addShapelessRecipe(new ItemStack(monsterBook), new ItemStack[]{Witchery.Items.GENERIC.itemNullifiedLeather.createStack(), Witchery.Items.GENERIC.itemOwletsWing.createStack(), Witchery.Items.GENERIC.itemNullifiedLeather.createStack(),Witchery.Items.GENERIC.itemToeOfFrog.createStack(),Witchery.Items.GENERIC.itemBookBurning.createStack(),Witchery.Items.GENERIC.itemToeOfFrog.createStack(),Witchery.Items.GENERIC.itemVampireBookPage.createStack(),Witchery.Items.GENERIC.itemContractTorment.createStack(),Witchery.Items.GENERIC.itemDarkCloth.createStack()});
+        //GameRegistry.addShapedRecipe(new ItemStack(monsterBook), recipe);
         KettleRecipes.instance().addRecipe(new ItemStack(gastronomicTemptation,8),0,0,2000F,-16003328,0,new ItemStack[]{Witchery.Items.GENERIC.itemDemonHeart.createStack(),Witchery.Items.GENERIC.itemToeOfFrog.createStack(),Witchery.Items.GENERIC.itemMellifluousHunger.createStack(),Witchery.Items.GENERIC.itemOwletsWing.createStack(),Witchery.Items.GENERIC.itemWormyApple.createStack(),Witchery.Items.GENERIC.itemFrozenHeart.createStack()});
         //16,28,40
         //RiteRegistry.addRecipe(110, 1, new RiteSummonItem(new ItemStack(soupWithSawdust), RiteSummonItem.Binding.NONE), new SacrificeMultiple(new Sacrifice[]{new SacrificeItem(new ItemStack[]{new ItemStack(Items.water_bucket),new ItemStack(Items.water_bucket),new ItemStack(Items.water_bucket),new ItemStack(Items.rotten_flesh), new ItemStack(Blocks.planks, 1, 0)}), new SacrificePower(1000.0F, 20)}), EnumSet.noneOf(RitualTraits.class), new Circle[]{new Circle(0, 0, 16)}).setUnlocalizedName("dh.rite.soup");
@@ -146,8 +158,11 @@ public class DeathHallowsMod {
         brewAction = new BrewActionRitualRecipe(new BrewItemKey(Blocks.iron_bars), new AltarPower(17000), new BrewActionRitualRecipe.Recipe[]{new BrewActionRitualRecipe.Recipe(new ItemStack(hobgoblinChains),new ItemStack[]{new ItemStack(Blocks.iron_block),Witchery.Items.GENERIC.itemKobolditeNugget.createStack(),Witchery.Items.GENERIC.itemKobolditeDust.createStack(), new ItemStack(hobgoblinSoul)})});
         meth.invoke(WitcheryBrewRegistry.INSTANCE,brewAction);
         RiteRegistry.addRecipe(112,35, new RiteSummonItem(new ItemStack(nimbus), RiteSummonItem.Binding.NONE), new SacrificeMultiple(new Sacrifice[]{new SacrificeItem(new ItemStack[]{Witchery.Items.GENERIC.itemBroomEnchanted.createStack(), Witchery.Items.GENERIC.itemFlyingOintment.createStack(), Witchery.Items.GENERIC.itemOwletsWing.createStack(), Witchery.Items.GENERIC.itemBrewOfSoaring.createStack(), new ItemStack(Items.feather)}), new SacrificePower(15000.0F, 20)}), EnumSet.of(RitualTraits.ONLY_AT_NIGHT), new Circle[]{new Circle(16, 0, 0), new Circle(28, 0, 0), new Circle(40, 0, 0)}).setUnlocalizedName("dh.rite.nimbus");
+        //RiteRegistry.addRecipe(113,36, new RiteSummonItem(new ItemStack(hobgoblinChains),RiteSummonItem.Binding.NONE), new SacrificeMultiple(new Sacrifice[]{new SacrificeItem(new ItemStack[]{Witchery.Items.GENERIC.itemBrewOfWasting.createStack(), Witchery.Items.GENERIC.itemBrewOfSoaring.createStack(), Witchery.Items.GENERIC.itemWormyApple.createStack(), Witchery.Items.GENERIC.itemBrewSoulAnguish.createStack(), Witchery.Items.GENERIC.itemBrewGrave.createStack(), Witchery.Items.GENERIC.itemOwletsWing.createStack()}), new SacrificePower(20000.0F, 20)}), EnumSet.of(RitualTraits.ONLY_AT_NIGHT), new Circle[]{new Circle(0, 16, 0), new Circle(0, 28, 0), new Circle(0, 40, 0)}).setUnlocalizedName("dh.rite.elf");
+        RiteRegistry.addRecipe(113, 5, new RiteOfElvenVanishing(8, 40.0f, 0), new SacrificeMultiple(new Sacrifice[]{new SacrificeItem(new ItemStack[]{Witchery.Items.GENERIC.itemBrewOfWasting.createStack(), Witchery.Items.GENERIC.itemBrewOfSoaring.createStack(), Witchery.Items.GENERIC.itemWormyApple.createStack(), Witchery.Items.GENERIC.itemBrewSoulAnguish.createStack(), Witchery.Items.GENERIC.itemBrewGrave.createStack(), Witchery.Items.GENERIC.itemOwletsWing.createStack()}), new SacrificePower(20000.0F, 20)}), EnumSet.of(RitualTraits.ONLY_AT_NIGHT), new Circle[]{new Circle(0, 16, 0), new Circle(0, 28, 0), new Circle(0, 40, 0)}).setUnlocalizedName("dh.rite.elf");
         Integration.postInit();
         proxy.postInit(event);
+        TrickOrTreat.initList();
     }
 
     @Mod.EventHandler

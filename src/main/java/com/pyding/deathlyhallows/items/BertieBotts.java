@@ -33,7 +33,7 @@ public class BertieBotts extends ItemFood {
             int bounds = 126;
             int random = itemRand.nextInt(bounds)+1;
             int random2 = itemRand.nextInt(4)+1;
-            System.out.println(random);
+            //System.out.println(random);
             try {
                 while (isBlackListed(random)) {
                     random = itemRand.nextInt(bounds) + 1;

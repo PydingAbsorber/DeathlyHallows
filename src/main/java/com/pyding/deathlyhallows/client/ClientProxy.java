@@ -5,10 +5,7 @@ import com.pyding.deathlyhallows.DeathHallowsMod;
 import com.pyding.deathlyhallows.blocks.VisConverterTile;
 import com.pyding.deathlyhallows.client.handler.KeyHandler;
 import com.pyding.deathlyhallows.client.render.block.ViscRender;
-import com.pyding.deathlyhallows.client.render.entity.AnimaInteritusRender;
-import com.pyding.deathlyhallows.client.render.entity.PlayerRender;
-import com.pyding.deathlyhallows.client.render.entity.RenderAbsoluteDeath;
-import com.pyding.deathlyhallows.client.render.entity.RenderNimbus;
+import com.pyding.deathlyhallows.client.render.entity.*;
 import com.pyding.deathlyhallows.client.render.item.EldenWandRender;
 import com.pyding.deathlyhallows.client.render.item.ViscItemRender;
 import com.pyding.deathlyhallows.common.CommonProxy;
@@ -21,6 +18,8 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -47,6 +46,7 @@ public class ClientProxy extends CommonProxy {
         RenderingRegistry.registerEntityRenderingHandler(AbsoluteDeath.class,new RenderAbsoluteDeath());
         RenderingRegistry.registerEntityRenderingHandler(Nimbus.class,new RenderNimbus());
         RenderingRegistry.registerEntityRenderingHandler(EntityPlayer.class, new AnimaInteritusRender());
+        RenderingRegistry.registerEntityRenderingHandler(EntityLiving.class, new AnimaInteritusMobRender());
         this.bindRenderer(VisConverterTile.class,new ViscRender(),new Item[0]);
     }
 

@@ -1,6 +1,7 @@
 package com.pyding.deathlyhallows.blocks;
 
 import com.emoniph.witchery.entity.EntityBanshee;
+import com.pyding.deathlyhallows.common.handler.ConfigHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.Entity;
@@ -27,7 +28,7 @@ public class Screamily extends SubTileGenerating {
         super.onUpdate();
         int multiplier = 1;
         int radius = 4;
-        int manaPerScream = 10000;
+        int manaPerScream = ConfigHandler.screamilyMana;
         int maximumBanshee = 16;
         if(overgrowthBoost){
             multiplier = 2;

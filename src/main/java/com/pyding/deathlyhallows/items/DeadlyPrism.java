@@ -1,6 +1,8 @@
 package com.pyding.deathlyhallows.items;
 
 import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
+import com.pyding.deathlyhallows.entity.AbsoluteDeath;
+import com.pyding.deathlyhallows.spells.SpellRegistry;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -51,6 +53,9 @@ public class DeadlyPrism extends Item {
             case 11:{
                 return "Lava";
             }
+            case 12:{
+                return "Starve";
+            }
         }
         return null;
     }
@@ -95,15 +100,11 @@ public class DeadlyPrism extends Item {
                     case 11:{
                         player.attackEntityFrom(DamageSource.lava,damageAmount);
                     }
+                    case 12:{
+                        player.attackEntityFrom(DamageSource.starve,damageAmount);
+                    }
                 }
             }
-            /*ExtendedPlayer props = ExtendedPlayer.get(player);
-            int amount = 400;
-            props.setCurrentDuration(amount);
-            player.getEntityData().setInteger("dhcurse",amount);
-            player.getEntityData().setInteger("casterCurse",amount);
-            props.setSource(player);
-            props.setCoordinates(player.posX,player.posY,player.posZ,player.dimension);*/
         } catch(Exception e){
             e.printStackTrace();
         }
@@ -115,7 +116,7 @@ public class DeadlyPrism extends Item {
         if(entityLiving instanceof EntityPlayer && !entityLiving.worldObj.isRemote){
             EntityPlayer player = (EntityPlayer) entityLiving;
             if(!player.isSneaking()){
-                if(damage == 0 || damage < 11)
+                if(damage == 0 || damage < 12)
                     damage++;
                 else damage = 0;
                 player.addChatComponentMessage(new ChatComponentText("Damage type is set to: §5"+damageSource()));

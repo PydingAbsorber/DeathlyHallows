@@ -1,6 +1,8 @@
 package com.pyding.deathlyhallows.items;
 
 import com.emoniph.witchery.util.ChatUtil;
+import com.emoniph.witchery.util.ParticleEffect;
+import com.emoniph.witchery.util.SoundEffect;
 import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -25,11 +27,13 @@ public class CreativeItem extends Item {
                 if(props.getElfLvl() < 10)
                     props.increaseElfLvl();
                 else props.nullifyElfLvl();
+                ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_LEVELUP, player, 1.0, 2.0, 8);
             }
             else {
                 if(props.getElfLvl() > 0)
                     props.decreaseElfLvl();
                 else props.maxElfLvl();
+                ParticleEffect.INSTANT_SPELL.send(SoundEffect.NOTE_PLING, player, 1.0, 2.0, 8);
             }
             if(I18n.format("dh.util.language").equals("Ru")){
                 player.addChatComponentMessage(new ChatComponentText("§9Твой уровень Эльфа сейчас " + props.getElfLvl()));

@@ -59,7 +59,7 @@ public class Nimbus extends EntityBroom {
                 this.motionY = motionY;
                 this.motionZ = motionZ;
                 this.rotationYaw = (float) (yaw-90);
-                ParticleEffect.FLAME.send(SoundEffect.NONE,player,1,1,2);
+                ParticleEffect.FLAME.send(SoundEffect.NONE,player,1,1,64);
             }
         } else {
             if(rider != null){

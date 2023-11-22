@@ -13,6 +13,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 public class ExtendedPlayer implements IExtendedEntityProperties
 {
     public final static String EXT_PROP_NAME = "DeathlyHallows";
@@ -36,6 +40,9 @@ public class ExtendedPlayer implements IExtendedEntityProperties
 
     private int mobsFed;
     private boolean damageLog;
+    private String monsters = "";
+
+    private List foodCollection = new ArrayList<>();
     public ExtendedPlayer(EntityPlayer player)
     {
         this.player = player;
@@ -72,7 +79,12 @@ public class ExtendedPlayer implements IExtendedEntityProperties
         properties.setInteger("FoodEaten",this.foodEaten);
         properties.setBoolean("Choice",this.choice);
         properties.setInteger("MobsFed",this.mobsFed);
+        properties.setString("DHMonsters",this.monsters);
         properties.setBoolean("Logs",this.damageLog);
+        for(int i = 0;i < foodCollection.size();i++){
+            properties.setString("DHFood"+i,foodCollection.get(i).toString());
+            properties.setInteger("DHFoodSize",i);
+        }
         compound.setTag(EXT_PROP_NAME, properties);
     }
 
@@ -95,6 +107,10 @@ public class ExtendedPlayer implements IExtendedEntityProperties
             this.choice = properties.getBoolean("Choice");
             this.mobsFed = properties.getInteger("MobsFed");
             this.damageLog = properties.getBoolean("Logs");
+            this.monsters = properties.getString("DHMonsters");
+            for(int i = 0;i < properties.getInteger("DHFoodSize");i++){
+                foodCollection.add(i,properties.getString("DHFood"+i));
+            }
         }
     }
     public void setAllNull(){
@@ -103,9 +119,21 @@ public class ExtendedPlayer implements IExtendedEntityProperties
         this.mobsKilled = 0;
         this.spellsUsed = 0;
         this.foodEaten = 0;
+        this.foodCollection.clear();
     }
     public void sync() {
 
+    }
+
+    public List getFoodCollection() {
+        return foodCollection;
+    }
+    public void addFoodToCollection(String name){
+        for (int i = 0;i < foodCollection.size();i++){
+            if(foodCollection.get(i).toString().equals(name))
+                return;
+        }
+        foodCollection.add(name);
     }
 
     public void deadInside(EntityLivingBase target) {
@@ -123,6 +151,19 @@ public class ExtendedPlayer implements IExtendedEntityProperties
     }
     public void setDamageLog(boolean choice2){
         this.damageLog = choice2;
+    }
+    public int getMonstersCount(){
+        int count = 0;
+        if(this.monsters != null){
+            for(String monster: this.monsters.split(","))
+                count++;
+        }
+        System.out.println(this.monsters);
+        return count;
+    }
+    public void addMonster(String name){
+        if(!this.monsters.contains(name))
+            this.monsters += name + ",";
     }
     public int getMobsFed(){
         return mobsFed;
@@ -154,7 +195,7 @@ public class ExtendedPlayer implements IExtendedEntityProperties
         return spellsUsed;
     }
     public void setSpellsUsed(int count){
-        mobsKilled = count;
+        spellsUsed = count;
     }
     public void setCurrentDuration(int duration) {
         this.currentDuration = duration;
@@ -227,6 +268,7 @@ public class ExtendedPlayer implements IExtendedEntityProperties
         attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier( "DH HP", -this.elfLvl*hpPerLvl, 0));
         player.getAttributeMap().applyAttributeModifiers(attributes);
         this.elfLvl = 0;
+        setAllNull();
     }
 
     public int getTrigger() {return this.trigger;}

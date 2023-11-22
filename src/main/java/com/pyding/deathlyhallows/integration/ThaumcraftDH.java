@@ -2,7 +2,9 @@ package com.pyding.deathlyhallows.integration;
 
 import com.emoniph.witchery.Witchery;
 import com.pyding.deathlyhallows.DeathHallowsMod;
+import com.pyding.deathlyhallows.blocks.VisConverter;
 import com.pyding.deathlyhallows.blocks.VisConverterTile;
+import com.pyding.deathlyhallows.items.InferioisMutandis;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.ItemStack;
 import thaumcraft.api.ThaumcraftApi;
@@ -14,9 +16,12 @@ import static com.pyding.deathlyhallows.DeathHallowsMod.*;
 
 public class ThaumcraftDH {
     public static void register(){
+        visc = new VisConverter().setBlockName("visconverter").setBlockTextureName("dh:visc").setCreativeTab(tabDeathlyHallows);
+        inferioisMutandis = new InferioisMutandis().setUnlocalizedName("focusMutandis").setTextureName("dh:focus_mutant").setMaxStackSize(1).setCreativeTab(tabDeathlyHallows);
         GameRegistry.registerBlock(visc,"visconverter");
         GameRegistry.registerTileEntity(VisConverterTile.class,"visconverterTile");
         GameRegistry.registerItem(inferioisMutandis,inferioisMutandis.getUnlocalizedName().substring(5));
+
     }
     public static void recipes(){
         GameRegistry.addShapedRecipe(new ItemStack(visc),

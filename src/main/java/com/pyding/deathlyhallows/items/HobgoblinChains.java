@@ -2,6 +2,7 @@ package com.pyding.deathlyhallows.items;
 
 import com.emoniph.witchery.entity.EntityGoblin;
 import com.emoniph.witchery.util.ChatUtil;
+import com.pyding.deathlyhallows.common.handler.ConfigHandler;
 import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
 import com.pyding.deathlyhallows.entity.AbsoluteDeath;
 import cpw.mods.fml.relauncher.Side;
@@ -33,7 +34,8 @@ public class HobgoblinChains extends Item {
                     goblin.getEntityData().setDouble("chainX",goblin.posX);
                     goblin.getEntityData().setDouble("chainY",goblin.posY);
                     goblin.getEntityData().setDouble("chainZ",goblin.posZ);
-                    goblin.getEntityData().setBoolean("immortal",true);
+                    if(ConfigHandler.hob)
+                        goblin.getEntityData().setBoolean("immortal",true);
                     break;
                 }
                 if(o instanceof AbsoluteDeath){

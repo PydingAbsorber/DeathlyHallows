@@ -15,6 +15,7 @@ import java.util.UUID;
 import com.pyding.deathlyhallows.DeathHallowsMod;
 import com.pyding.deathlyhallows.client.particles.GenericBlock;
 import com.pyding.deathlyhallows.client.render.entity.RenderAbsoluteDeath;
+import com.pyding.deathlyhallows.common.handler.ConfigHandler;
 import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -54,7 +55,7 @@ public class AbsoluteDeath extends EntityMob implements IBossDisplayData,IHandle
 
     public int rage;
 
-    public float baseDamage = 100;
+    public float baseDamage = 33*ConfigHandler.deathDifficulty;
 
     public static EntityPlayer mvp;
     public float bestDamage;
@@ -249,34 +250,50 @@ public class AbsoluteDeath extends EntityMob implements IBossDisplayData,IHandle
         super.onLivingUpdate();
     }
     public int damageType = 0;
+    public int absorbedCount = 0;
     public void attackPlayer(EntityPlayer player,int multiplier){
         player.getEntityData().setBoolean("adaptiveDamage",true);
         DamageSource adaptive = new DamageSource("adaptive").setDamageBypassesArmor();
         if(player.getEntityData().getBoolean("absorbedDamage")){
             damageType++;
+            absorbedCount++;
+            if(absorbedCount > 8 && (baseDamage+(baseDamage*(0.3 * ConfigHandler.deathDifficulty)) < Float.MAX_VALUE)){
+                baseDamage = (float) (baseDamage+(baseDamage*(0.3 * ConfigHandler.deathDifficulty)));
+            }
             switch(damageType){
                 case 1:{
                     adaptive = new DamageSource("adaptive").setFireDamage();
+                    break;
                 }
                 case 2:{
                     adaptive = new DamageSource("adaptive").setMagicDamage();
+                    break;
                 }
                 case 3:{
                     adaptive = new DamageSource("adaptive").setExplosion();
+                    break;
                 }
                 case 4:{
                     adaptive = new DamageSource("adaptive").setProjectile();
+                    break;
                 }
                 case 5:{
                     adaptive = new DamageSource("adaptive").setDamageAllowedInCreativeMode();
+                    break;
                 }
                 case 6:{
                     adaptive = new DamageSource("adaptive").setDamageIsAbsolute();
+                    break;
                 }
                 case 7:{
                     adaptive = DamageSource.outOfWorld;
+                    break;
                 }
                 case 8:{
+                    adaptive = DamageSource.starve;
+                    break;
+                }
+                case 9:{
                     adaptive = new DamageSource("adaptive").setDamageBypassesArmor();
                     damageType = 0;
                 }
@@ -306,7 +323,8 @@ public class AbsoluteDeath extends EntityMob implements IBossDisplayData,IHandle
                     this.motionX = 0;
                     this.motionZ = 0;
                     this.swingItem();
-                    this.heal(1);
+                    if(ConfigHandler.deathDifficulty != 1)
+                        this.heal(1);
                 }
                 if(this.posY > target.posY)
                     this.motionY = -1; else this.motionY = 1;

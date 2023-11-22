@@ -1,12 +1,15 @@
 package com.pyding.deathlyhallows.commands;
 
 import com.pyding.deathlyhallows.blocks.VisConverter;
+import com.pyding.deathlyhallows.common.handler.ConfigHandler;
+import com.pyding.deathlyhallows.common.handler.EventHandler;
 import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
 import net.minecraft.block.Block;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
@@ -48,12 +51,14 @@ public class DamageLog extends CommandBase {
         } else if(args.length > 0 && args[0].equalsIgnoreCase("getid")){
             if (sender instanceof EntityPlayer) {
                 EntityPlayer player = (EntityPlayer) sender;
-                if(player.getHeldItem() != null)
-                player.addChatMessage(new ChatComponentText("§bitem class name is: " + player.getHeldItem().getItem().getClass().getName()));
-                player.addChatMessage(new ChatComponentText("§9item unlock name is: " + player.getHeldItem().getItem().getUnlocalizedName()));
-                player.addChatMessage(new ChatComponentText("§5item damage is: " + player.getHeldItem().getItem().getDamage(player.getHeldItem())));
-                if(player.getHeldItem().getTagCompound() != null)
-                player.addChatMessage(new ChatComponentText("§citem nbt list is: " + player.getHeldItem().getTagCompound()));
+                if(player.getHeldItem() != null) {
+                    Item item = player.getHeldItem().getItem();
+                    player.addChatMessage(new ChatComponentText("§bitem class name is: " + item.getClass().getName()));
+                    player.addChatMessage(new ChatComponentText("§9item unlock name is: " + item.getUnlocalizedName()));
+                    player.addChatMessage(new ChatComponentText("§5item damage is: " + item.getDamage(player.getHeldItem())));
+                    if(player.getHeldItem().getTagCompound() != null)
+                        player.addChatMessage(new ChatComponentText("§citem nbt list is: " + player.getHeldItem().getTagCompound()));
+                }
             }
         }
         else if(args.length > 0 && args[0].equalsIgnoreCase("getnbt")){
@@ -81,11 +86,69 @@ public class DamageLog extends CommandBase {
                 //getEntities(player);
             }
         }
+        else if(args.length > 0 && args[0].equalsIgnoreCase("elf")){
+            if (sender instanceof EntityPlayer) {
+                EntityPlayer player = (EntityPlayer) sender;
+                ExtendedPlayer props = ExtendedPlayer.get(player);
+                int elf = props.getElfLvl();
+                if(elf > 0){
+                    String text = "";
+                    EventHandler handler = new EventHandler();
+                    switch (elf){
+                        case 1: {
+                            text = "you have " + player.experienceLevel + " lvl out of " + ConfigHandler.getElfRequirements(elf+1);
+                            break;
+                        }
+                        case 2: {
+                            text = "your height is " + player.posY + " out of " + ConfigHandler.getElfRequirements(elf+1);
+                            break;
+                        }
+                        case 3: {
+                            text = "you have " + handler.totalLvl(player) + " enchantment lvls in total out of " + ConfigHandler.getElfRequirements(elf+1);
+                            break;
+                        }
+                        case 4: {
+                            text = "you killed " + props.getMobsKilled() + " creatures by bow out of " + ConfigHandler.getElfRequirements(elf+1);
+                            break;
+                        }
+                        case 5: {
+                            text = "you eaten " + props.getFoodEaten() + " golden apples out of " + ConfigHandler.getElfRequirements(elf+1);
+                            break;
+                        }
+                        case 6: {
+                            text = "you lived " + handler.timeSurvived/20 + " seconds under 10 debuffs out of " +  + ConfigHandler.getElfRequirements(elf+1);
+                            break;
+                        }
+                        case 7: {
+                            text = "you lived " + handler.timeSurvived/20 + " seconds in astral form out of " +  + ConfigHandler.getElfRequirements(elf+1);
+                            break;
+                        }
+                        case 8: {
+                            text = "you consumed " + props.getFoodCollection().size() + " items out of " +  ConfigHandler.getElfRequirements(elf+1);
+                            break;
+                        }
+                        case 9: {
+                            text = "you used " + props.getSpellsUsed() + " violet spells out of " +  + ConfigHandler.getElfRequirements(elf+1);
+                            break;
+                        }
+                        case 10: {
+                            text = "you are at the max lvl!";
+                            break;
+                        }
+                        default: text = "WHAT?!?!??!?!?!?!";
+                    }
+                    sender.addChatMessage(new ChatComponentText("You are now at lvl§5 " + elf));
+                    sender.addChatMessage(new ChatComponentText(text));
+                }
+                else sender.addChatMessage(new ChatComponentText("§4you are not elf lol. Wanna know a secret? Just recharge dude!"));
+            }
+        }
         else {
             sender.addChatMessage(new ChatComponentText("§4Invalid command usage. Use:"));
             sender.addChatMessage(new ChatComponentText("§4/deathlyhallows damagelog"));
             sender.addChatMessage(new ChatComponentText("§4/deathlyhallows getid"));
             sender.addChatMessage(new ChatComponentText("§4/deathlyhallows getnbt"));
+            sender.addChatMessage(new ChatComponentText("§4/deathlyhallows elf"));
         }
     }
     public void getEntities(EntityPlayer player){
