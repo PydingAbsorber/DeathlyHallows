@@ -1,21 +1,17 @@
 package com.pyding.deathlyhallows.items;
 
 import com.emoniph.witchery.Witchery;
-import com.emoniph.witchery.item.ItemGeneral;
 import com.emoniph.witchery.item.ItemMutator;
 import com.emoniph.witchery.util.Config;
 import com.emoniph.witchery.util.MutableBlock;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.pyding.deathlyhallows.DeathHallowsMod;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
@@ -25,9 +21,6 @@ import net.minecraft.world.World;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.wands.FocusUpgradeType;
-import thaumcraft.api.wands.IWandFocus;
-import thaumcraft.api.wands.ItemFocusBasic;
-import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.items.wands.foci.ItemFocusPech;
 
@@ -64,14 +57,15 @@ public class InferioisMutandis extends ItemFocusPech {
     public IIcon getFocusDepthLayerIcon(ItemStack itemstack) {
         return depthIcon;
     }
+
     public static boolean mutator = false;
 
     @Override
     public ItemStack onFocusRightClick(ItemStack itemstack, World world, EntityPlayer player, MovingObjectPosition mob) {
-        if(world.isRemote)
+        if (world.isRemote)
             return null;
-        ItemWandCasting wand = (ItemWandCasting)itemstack.getItem();
-        if(!player.isSneaking()) {
+        ItemWandCasting wand = (ItemWandCasting) itemstack.getItem();
+        if (!player.isSneaking()) {
             MovingObjectPosition rayTrace = rayTrace(player, 4.0);
             if (rayTrace != null) {
                 ItemStack falseStack;
@@ -88,7 +82,7 @@ public class InferioisMutandis extends ItemFocusPech {
                         }
                     } else {
                         falseStack = Witchery.Items.GENERIC.itemMutandis.createStack();
-                        if(useMutandis(false,falseStack,player,world,blockX,blockY,blockZ)){
+                        if (useMutandis(false, falseStack, player, world, blockX, blockY, blockZ)) {
                             wand.consumeAllVis(itemstack, player, this.getVisCost(itemstack), true, false);
                             ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_FIZZ, world, blockX, blockY, blockZ, 1.0, 1.0, 8);
                         }
@@ -96,10 +90,8 @@ public class InferioisMutandis extends ItemFocusPech {
                 }
             }
         } else {
-            if(!mutator)
-            mutator = true;
-            else mutator = false;
-            world.playSoundAtEntity(player,SoundEffect.RANDOM_ORB.toString(),1,1);
+            mutator = !mutator;
+            world.playSoundAtEntity(player, SoundEffect.RANDOM_ORB.toString(), 1, 1);
         }
         System.out.println(mutator);
         return null;
@@ -150,24 +142,22 @@ public class InferioisMutandis extends ItemFocusPech {
                     final int metadata = world.getBlockMetadata(posX, posY, posZ);
                     ArrayList<MutableBlock> list;
                     if (block == Blocks.flower_pot && metadata > 0) {
-                        final MutableBlock[] blocks = { new MutableBlock(Blocks.flower_pot, 1), new MutableBlock(Blocks.flower_pot, 2), new MutableBlock(Blocks.flower_pot, 3), new MutableBlock(Blocks.flower_pot, 4), new MutableBlock(Blocks.flower_pot, 5), new MutableBlock(Blocks.flower_pot, 6), new MutableBlock(Blocks.flower_pot, 7), new MutableBlock(Blocks.flower_pot, 8), new MutableBlock(Blocks.flower_pot, 9), new MutableBlock(Blocks.flower_pot, 10), new MutableBlock(Blocks.flower_pot, 11) };
+                        final MutableBlock[] blocks = {new MutableBlock(Blocks.flower_pot, 1), new MutableBlock(Blocks.flower_pot, 2), new MutableBlock(Blocks.flower_pot, 3), new MutableBlock(Blocks.flower_pot, 4), new MutableBlock(Blocks.flower_pot, 5), new MutableBlock(Blocks.flower_pot, 6), new MutableBlock(Blocks.flower_pot, 7), new MutableBlock(Blocks.flower_pot, 8), new MutableBlock(Blocks.flower_pot, 9), new MutableBlock(Blocks.flower_pot, 10), new MutableBlock(Blocks.flower_pot, 11)};
                         list = new ArrayList<MutableBlock>(Arrays.asList(blocks));
-                    }
-                    else {
-                        final MutableBlock[] blocks = { new MutableBlock(Blocks.sapling, 0), new MutableBlock(Blocks.sapling, 1), new MutableBlock(Blocks.sapling, 2), new MutableBlock(Blocks.sapling, 3), new MutableBlock(Blocks.sapling, 4), new MutableBlock(Blocks.sapling, 5), new MutableBlock(Witchery.Blocks.SAPLING, 0), new MutableBlock(Witchery.Blocks.SAPLING, 1), new MutableBlock(Witchery.Blocks.SAPLING, 2), new MutableBlock(Witchery.Blocks.EMBER_MOSS, 0), new MutableBlock((Block)Blocks.tallgrass, 1), new MutableBlock(Blocks.waterlily), new MutableBlock((Block)Blocks.brown_mushroom), new MutableBlock((Block)Blocks.red_mushroom), new MutableBlock((Block)Blocks.red_flower, 0), new MutableBlock((Block)Blocks.yellow_flower), new MutableBlock(Witchery.Blocks.SPANISH_MOSS, 1) };
+                    } else {
+                        final MutableBlock[] blocks = {new MutableBlock(Blocks.sapling, 0), new MutableBlock(Blocks.sapling, 1), new MutableBlock(Blocks.sapling, 2), new MutableBlock(Blocks.sapling, 3), new MutableBlock(Blocks.sapling, 4), new MutableBlock(Blocks.sapling, 5), new MutableBlock(Witchery.Blocks.SAPLING, 0), new MutableBlock(Witchery.Blocks.SAPLING, 1), new MutableBlock(Witchery.Blocks.SAPLING, 2), new MutableBlock(Witchery.Blocks.EMBER_MOSS, 0), new MutableBlock(Blocks.tallgrass, 1), new MutableBlock(Blocks.waterlily), new MutableBlock(Blocks.brown_mushroom), new MutableBlock(Blocks.red_mushroom), new MutableBlock(Blocks.red_flower, 0), new MutableBlock(Blocks.yellow_flower), new MutableBlock(Witchery.Blocks.SPANISH_MOSS, 1)};
                         list = new ArrayList<MutableBlock>(Arrays.asList(blocks));
                         for (final String extra : Config.instance().mutandisExtras) {
                             try {
                                 list.add(new MutableBlock(extra));
+                            } catch (Throwable t) {
                             }
-                            catch (Throwable t) {}
                         }
                         if (extremis) {
-                            final MutableBlock[] extremisBlocks = { new MutableBlock(Blocks.carrots, -1, Math.min(metadata, 7)), new MutableBlock(Blocks.potatoes, -1, Math.min(metadata, 7)), new MutableBlock(Blocks.wheat, -1, Math.min(metadata, 7)), new MutableBlock(Blocks.reeds, -1, Math.min(metadata, 7)), new MutableBlock((Block)Witchery.Blocks.CROP_BELLADONNA, -1, Math.min(metadata, Witchery.Blocks.CROP_BELLADONNA.getNumGrowthStages())), new MutableBlock((Block)Witchery.Blocks.CROP_MANDRAKE, -1, Math.min(metadata, Witchery.Blocks.CROP_MANDRAKE.getNumGrowthStages())), new MutableBlock((Block)Witchery.Blocks.CROP_ARTICHOKE, -1, Math.min(metadata, Witchery.Blocks.CROP_ARTICHOKE.getNumGrowthStages())), new MutableBlock(Blocks.pumpkin_stem, -1, Math.min(metadata, 7)), new MutableBlock(Blocks.cactus), new MutableBlock(Blocks.melon_stem, -1, Math.min(metadata, 7)), new MutableBlock(Blocks.nether_wart, -1, Math.min(metadata, 3)) };
+                            final MutableBlock[] extremisBlocks = {new MutableBlock(Blocks.carrots, -1, Math.min(metadata, 7)), new MutableBlock(Blocks.potatoes, -1, Math.min(metadata, 7)), new MutableBlock(Blocks.wheat, -1, Math.min(metadata, 7)), new MutableBlock(Blocks.reeds, -1, Math.min(metadata, 7)), new MutableBlock(Witchery.Blocks.CROP_BELLADONNA, -1, Math.min(metadata, Witchery.Blocks.CROP_BELLADONNA.getNumGrowthStages())), new MutableBlock(Witchery.Blocks.CROP_MANDRAKE, -1, Math.min(metadata, Witchery.Blocks.CROP_MANDRAKE.getNumGrowthStages())), new MutableBlock(Witchery.Blocks.CROP_ARTICHOKE, -1, Math.min(metadata, Witchery.Blocks.CROP_ARTICHOKE.getNumGrowthStages())), new MutableBlock(Blocks.pumpkin_stem, -1, Math.min(metadata, 7)), new MutableBlock(Blocks.cactus), new MutableBlock(Blocks.melon_stem, -1, Math.min(metadata, 7)), new MutableBlock(Blocks.nether_wart, -1, Math.min(metadata, 3))};
                             list.addAll(Arrays.asList(extremisBlocks));
-                        }
-                        else if (player.dimension == Config.instance().dimensionDreamID) {
-                            final MutableBlock[] spiritBlocks = { new MutableBlock(Blocks.nether_wart, -1, 3) };
+                        } else if (player.dimension == Config.instance().dimensionDreamID) {
+                            final MutableBlock[] spiritBlocks = {new MutableBlock(Blocks.nether_wart, -1, 3)};
                             list.addAll(Arrays.asList(spiritBlocks));
                         }
                     }
@@ -179,24 +169,21 @@ public class InferioisMutandis extends ItemFocusPech {
                         ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_FIZZ, world, posX, posY, posZ, 1.0, 1.0, 16);
                         --itemstack.stackSize;
                     }
-                }
-                else {
+                } else {
                     if (world.rand.nextInt(2) == 0) {
                         setBlockToClay(world, posX, posY, posZ);
                         setBlockToClay(world, posX + 1, posY, posZ);
                         setBlockToClay(world, posX - 1, posY, posZ);
                         setBlockToClay(world, posX, posY, posZ + 1);
                         setBlockToClay(world, posX, posY, posZ - 1);
-                    }
-                    else {
+                    } else {
                         ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_FIZZ, world, posX, posY + 1, posZ, 1.0, 1.0, 16);
                     }
                     --itemstack.stackSize;
                 }
-            }
-            else {
+            } else {
                 if (world.rand.nextInt(2) == 0) {
-                    world.setBlock(posX, posY, posZ, (Block)((block == Blocks.grass) ? Blocks.mycelium : Blocks.grass));
+                    world.setBlock(posX, posY, posZ, (block == Blocks.grass) ? Blocks.mycelium : Blocks.grass);
                 }
                 ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_FIZZ, world, posX, posY + 1, posZ, 1.0, 1.0, 16);
                 --itemstack.stackSize;
@@ -204,6 +191,7 @@ public class InferioisMutandis extends ItemFocusPech {
         }
         return true;
     }
+
     public static void setBlockToClay(final World world, final int x, final int y, final int z) {
         final Block block = world.getBlock(x, y, z);
         final Block blockAbove = world.getBlock(x, y + 1, z);

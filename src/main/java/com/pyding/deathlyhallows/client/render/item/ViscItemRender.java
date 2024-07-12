@@ -25,8 +25,7 @@ public class ViscItemRender implements IItemRenderer {
 
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
-        switch (type)
-        {
+        switch (type) {
             case EQUIPPED_FIRST_PERSON:
             case EQUIPPED:
                 return true;
@@ -34,10 +33,12 @@ public class ViscItemRender implements IItemRenderer {
                 return false;
         }
     }
+
     @Override
     public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper) {
         return type == ItemRenderType.ENTITY && helper == ItemRendererHelper.ENTITY_ROTATION;
     }
+
     @Override
     public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
         ticks++;
@@ -48,47 +49,47 @@ public class ViscItemRender implements IItemRenderer {
         Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE_URL);
         GL11.glTranslated(d + 0.6, d1 - 0.5, d2 + 0.8);
         GL11.glScalef(0.6F, 0.6F, 0.6F);
-        this.heart.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, 0);
+        this.heart.render(null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, 0);
         GL11.glPopMatrix();
         GL11.glPushMatrix();
         GL11.glTranslated(d + 0.6, d1 - 0.5, d2);
         GL11.glScalef(0.6F, 0.6F, 0.6F);
-        this.heart.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, 0);
+        this.heart.render(null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, 0);
         GL11.glPopMatrix();
         GL11.glPushMatrix();
         GL11.glTranslated(d + 0.1, d1 - 0.5, d2 + 0.4);
         GL11.glScalef(0.6F, 0.6F, 0.6F);
-        this.heart.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, 0);
+        this.heart.render(null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, 0);
         GL11.glPopMatrix();
         GL11.glPushMatrix();
         GL11.glTranslated(d + 1, d1 - 0.5, d2 + 0.4);
         GL11.glScalef(0.6F, 0.6F, 0.6F);
-        this.heart.render((Entity) null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, 0);
+        this.heart.render(null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, 0);
         GL11.glPopMatrix();
         GL11.glPushMatrix();
         Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE_URL2);
         GL11.glTranslated(d, d1, d2);
         GL11.glRotatef(140, -1.0F, 0.0F, 1.0F);
         GL11.glScalef(1.2F, 1.2F, 1.2F);
-        this.branch.render((Entity) null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+        this.branch.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
         GL11.glPopMatrix();
         GL11.glPushMatrix();
         GL11.glTranslated(d + 1, d1, d2);
         GL11.glRotatef(140, -1.0F, 0.0F, -1.0F);
         GL11.glScalef(1.2F, 1.2F, 1.2F);
-        this.branch.render((Entity) null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+        this.branch.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
         GL11.glPopMatrix();
         GL11.glPushMatrix();
         GL11.glTranslated(d + 1, d1, d2 + 1);
         GL11.glRotatef(140, 1.0F, 0.0F, -1.0F);
         GL11.glScalef(1.2F, 1.2F, 1.2F);
-        this.branch.render((Entity) null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+        this.branch.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
         GL11.glPopMatrix();
         GL11.glPushMatrix();
         GL11.glTranslated(d, d1, d2 + 1);
         GL11.glRotatef(140, 1.0F, 0.0F, 1.0F);
         GL11.glScalef(1.2F, 1.2F, 1.2F);
-        this.branch.render((Entity) null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+        this.branch.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
         GL11.glPopMatrix();
         GL11.glPushMatrix();
         Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE_URL3);

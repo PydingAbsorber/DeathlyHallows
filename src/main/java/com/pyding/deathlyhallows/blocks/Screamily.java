@@ -4,8 +4,6 @@ import com.emoniph.witchery.entity.EntityBanshee;
 import com.pyding.deathlyhallows.common.handler.ConfigHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
@@ -20,6 +18,7 @@ public class Screamily extends SubTileGenerating {
     public boolean isPassiveFlower() {
         return false;
     }
+
     public long manaMaxCd = 10000;
     public long manaCd = 0;
 
@@ -30,22 +29,22 @@ public class Screamily extends SubTileGenerating {
         int radius = 4;
         int manaPerScream = ConfigHandler.screamilyMana;
         int maximumBanshee = 16;
-        if(overgrowthBoost){
+        if (overgrowthBoost) {
             multiplier = 2;
         }
         double x = supertile.xCoord;
         double y = supertile.yCoord;
         double z = supertile.zCoord;
-        AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x-radius,y-radius,z-radius,x+radius,y+radius,z+radius);
-        List banshees = supertile.getWorldObj().getEntitiesWithinAABB(EntityBanshee.class,box);
-        for(Object o: banshees){
-            if(o instanceof EntityBanshee) {
+        AxisAlignedBB box = AxisAlignedBB.getBoundingBox(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius);
+        List banshees = supertile.getWorldObj().getEntitiesWithinAABB(EntityBanshee.class, box);
+        for (Object o : banshees) {
+            if (o instanceof EntityBanshee) {
                 EntityBanshee banshee = (EntityBanshee) o;
                 if (banshee.isScreaming() && multiplier < maximumBanshee)
                     multiplier++;
             }
         }
-        if(System.currentTimeMillis() - manaCd > manaMaxCd && multiplier > 2) {
+        if (System.currentTimeMillis() - manaCd > manaMaxCd && multiplier > 2) {
             this.addMana(manaPerScream * multiplier);
             manaCd = manaMaxCd + System.currentTimeMillis();
         }

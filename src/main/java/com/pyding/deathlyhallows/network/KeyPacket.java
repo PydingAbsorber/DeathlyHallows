@@ -1,21 +1,20 @@
 package com.pyding.deathlyhallows.network;
 
-import com.pyding.deathlyhallows.client.handler.KeyHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 
 
-public class KeyPacket implements IMessage, IMessageHandler<KeyPacket,IMessage> {
+public class KeyPacket implements IMessage, IMessageHandler<KeyPacket, IMessage> {
     public boolean state;
     public int id;
+
     public KeyPacket() {
     }
+
     public KeyPacket(boolean keyState, int keyNumber) {
         state = keyState;
         id = keyNumber;
@@ -35,12 +34,11 @@ public class KeyPacket implements IMessage, IMessageHandler<KeyPacket,IMessage> 
 
     @Override
     public IMessage onMessage(KeyPacket message, MessageContext ctx) {
-        if(ctx.side == Side.SERVER){
+        if (ctx.side == Side.SERVER) {
             EntityPlayer player = ctx.getServerHandler().playerEntity;
-            if(message.id == 1){
+            if (message.id == 1) {
                 player.getEntityData().setBoolean("dhkey1", message.state);
-            }
-            else{
+            } else {
                 player.getEntityData().setBoolean("dhkey2", message.state);
             }
         }

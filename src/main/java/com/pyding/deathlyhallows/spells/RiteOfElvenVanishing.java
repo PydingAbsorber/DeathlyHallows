@@ -1,24 +1,15 @@
 package com.pyding.deathlyhallows.spells;
 
-import com.emoniph.witchery.Witchery;
 import com.emoniph.witchery.blocks.BlockAltar;
 import com.emoniph.witchery.blocks.BlockCircle;
-import com.emoniph.witchery.common.ExtendedPlayer;
 import com.emoniph.witchery.common.IPowerSource;
 import com.emoniph.witchery.common.PowerSources;
-import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.ritual.Rite;
 import com.emoniph.witchery.ritual.RitualStep;
-import com.emoniph.witchery.ritual.rites.RiteBindSpiritsToFetish;
-import com.emoniph.witchery.ritual.rites.RiteExpandingEffect;
-import com.emoniph.witchery.ritual.rites.RiteInfusionRecharge;
 import com.emoniph.witchery.util.Coord;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -27,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class RiteOfElvenVanishing extends Rite{
+public class RiteOfElvenVanishing extends Rite {
     private final float upkeepPowerCost;
     private final int ticksToLive;
     private final int radius;
@@ -45,7 +36,7 @@ public class RiteOfElvenVanishing extends Rite{
 
     private static class StepVanish extends RitualStep {
         private final RiteOfElvenVanishing rite;
-        private boolean activated = false;
+        private final boolean activated = false;
         protected int ticksSoFar;
         Coord powerSourceCoord;
         static final int POWER_SOURCE_RADIUS = 16;
@@ -82,13 +73,13 @@ public class RiteOfElvenVanishing extends Rite{
                     }
 
                     int r = this.rite.radius;
-                    AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox((double)(posX - r), (double)posY, (double)(posZ - r), (double)(posX + r), (double)(posY + 1), (double)(posZ + r));
+                    AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(posX - r, posY, posZ - r, posX + r, posY + 1, posZ + r);
                     Iterator i$ = world.getEntitiesWithinAABB(EntityPlayer.class, bounds).iterator();
 
-                    while(i$.hasNext()) {
+                    while (i$.hasNext()) {
                         Object obj = i$.next();
-                        EntityPlayer player = (EntityPlayer)obj;
-                        if (Coord.distance(player.posX, player.posY, player.posZ, (double)posX, (double)posY, (double)posZ) <= (double)r) {
+                        EntityPlayer player = (EntityPlayer) obj;
+                        if (Coord.distance(player.posX, player.posY, player.posZ, posX, posY, posZ) <= (double) r) {
                             com.pyding.deathlyhallows.common.properties.ExtendedPlayer props = com.pyding.deathlyhallows.common.properties.ExtendedPlayer.get(player);
                             if (props.getElfLvl() > 0) {
                                 props.nullifyElfLvl();
@@ -110,8 +101,8 @@ public class RiteOfElvenVanishing extends Rite{
                 if (!(tileEntity instanceof BlockAltar.TileEntityAltar)) {
                     return this.findNewPowerSource(world, posX, posY, posZ);
                 } else {
-                    BlockAltar.TileEntityAltar altarTileEntity = (BlockAltar.TileEntityAltar)tileEntity;
-                    return (IPowerSource)(!altarTileEntity.isValid() ? this.findNewPowerSource(world, posX, posY, posZ) : altarTileEntity);
+                    BlockAltar.TileEntityAltar altarTileEntity = (BlockAltar.TileEntityAltar) tileEntity;
+                    return !altarTileEntity.isValid() ? this.findNewPowerSource(world, posX, posY, posZ) : altarTileEntity;
                 }
             } else {
                 return this.findNewPowerSource(world, posX, posY, posZ);
@@ -120,7 +111,7 @@ public class RiteOfElvenVanishing extends Rite{
 
         private IPowerSource findNewPowerSource(World world, int posX, int posY, int posZ) {
             List<PowerSources.RelativePowerSource> sources = PowerSources.instance() != null ? PowerSources.instance().get(world, new Coord(posX, posY, posZ), 16) : null;
-            return sources != null && sources.size() > 0 ? ((PowerSources.RelativePowerSource)sources.get(0)).source() : null;
+            return sources != null && sources.size() > 0 ? sources.get(0).source() : null;
         }
     }
 }

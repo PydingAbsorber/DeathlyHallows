@@ -13,15 +13,17 @@ public class ModEntity {
     private final ArrayList entities = new ArrayList();
     public final ModEntity.EntityRef ABSOLUTE_DEATH;
     public final ModEntity.EntityRef NIMBUS;
+
     public List getEntities() {
         return this.entities;
     }
 
-    public void init() {}
+    public void init() {
+    }
 
-    public ModEntity(){
+    public ModEntity() {
         this.ABSOLUTE_DEATH = (new ModEntity.LivingRef(92, AbsoluteDeath.class, "death", this.entities)).setEgg(9502720, 11430927);
-        this.NIMBUS = (new ModEntity.EntityRef(93, Nimbus.class,"Nimbus3000",this.entities)).setEgg(666,666);
+        this.NIMBUS = (new ModEntity.EntityRef(93, Nimbus.class, "Nimbus3000", this.entities)).setEgg(666, 666);
     }
 
     public static class EntityRef {
@@ -62,7 +64,7 @@ public class ModEntity {
         private static int getUniqueEggId() {
             do {
                 ++eggRoot;
-            } while(EntityList.getStringFromID(eggRoot) != null);
+            } while (EntityList.getStringFromID(eggRoot) != null);
 
             return eggRoot;
         }

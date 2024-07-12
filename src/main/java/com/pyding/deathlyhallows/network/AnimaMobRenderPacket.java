@@ -1,6 +1,5 @@
 package com.pyding.deathlyhallows.network;
 
-import com.pyding.deathlyhallows.entity.AbsoluteDeath;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -13,14 +12,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class AnimaMobRenderPacket implements IMessage, IMessageHandler<AnimaMobRenderPacket,IMessage> {
+public class AnimaMobRenderPacket implements IMessage, IMessageHandler<AnimaMobRenderPacket, IMessage> {
     public NBTTagCompound nbtData;
 
     public int id;
 
-    public AnimaMobRenderPacket(){
+    public AnimaMobRenderPacket() {
     }
-    public AnimaMobRenderPacket(NBTTagCompound nbt, int identifier){
+
+    public AnimaMobRenderPacket(NBTTagCompound nbt, int identifier) {
         nbtData = nbt;
         id = identifier;
     }
@@ -40,12 +40,12 @@ public class AnimaMobRenderPacket implements IMessage, IMessageHandler<AnimaMobR
     @Override
     @SideOnly(Side.CLIENT)
     public IMessage onMessage(AnimaMobRenderPacket message, MessageContext ctx) {
-        if(ctx.side == Side.CLIENT){
+        if (ctx.side == Side.CLIENT) {
             Entity entity = Minecraft.getMinecraft().theWorld.getEntityByID(message.id);
-            if(entity instanceof EntityLiving){
+            if (entity instanceof EntityLiving) {
                 EntityLiving mob = (EntityLiving) Minecraft.getMinecraft().theWorld.getEntityByID(message.id);
                 if (message.nbtData != null) {
-                    mob.getEntityData().setTag("dhData",message.nbtData);
+                    mob.getEntityData().setTag("dhData", message.nbtData);
                 }
             }
         }

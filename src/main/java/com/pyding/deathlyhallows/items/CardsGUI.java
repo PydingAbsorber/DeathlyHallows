@@ -11,12 +11,12 @@ import org.lwjgl.opengl.GL11;
 
 public class CardsGUI extends GuiContainer {
     private static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation("witchery", "textures/gui/urn.png");
-    private IInventory upperInventory;
-    private IInventory lowerInventory;
+    private final IInventory upperInventory;
+    private final IInventory lowerInventory;
 
 
     public CardsGUI(IInventory inventoryPlayer, IInventory inventoryBag) {
-        super(new ItemLeonardsUrn.ContainerLeonardsUrn(inventoryPlayer, inventoryBag, (ItemStack)null));
+        super(new ItemLeonardsUrn.ContainerLeonardsUrn(inventoryPlayer, inventoryBag, null));
         this.upperInventory = inventoryBag;
         this.lowerInventory = inventoryPlayer;
         super.ySize = 184;
@@ -34,7 +34,7 @@ public class CardsGUI extends GuiContainer {
         int top = (super.height - super.ySize) / 2;
         this.drawTexturedModalRect(left, top, 0, 0, super.xSize, super.ySize);
 
-        for(int i = 0; i < this.upperInventory.getSizeInventory(); ++i) {
+        for (int i = 0; i < this.upperInventory.getSizeInventory(); ++i) {
             Slot slot = super.inventorySlots.getSlotFromInventory(this.upperInventory, i);
             this.drawTexturedModalRect(left + slot.xDisplayPosition - 1, top + slot.yDisplayPosition - 1, super.xSize, 0, 18, 18);
         }

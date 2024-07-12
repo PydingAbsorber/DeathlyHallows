@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ViscousSecretions extends ItemFood {
     public ViscousSecretions() {
-        super(20,40,true);
+        super(20, 40, true);
     }
 
     @Override
@@ -27,24 +27,25 @@ public class ViscousSecretions extends ItemFood {
 
     public ItemStack onEaten(ItemStack stack, World world, EntityPlayer player) {
         super.onEaten(stack, world, player);
-        if(!world.isRemote)
-        ChatUtil.sendTranslated(EnumChatFormatting.DARK_RED, player,  "dh.chat.food", new Object[0]);
-        player.getEntityData().setInteger("DopVoid",3000);
-        if(!world.isRemote && Integration.thaumcraft) {
+        if (!world.isRemote)
+            ChatUtil.sendTranslated(EnumChatFormatting.DARK_RED, player, "dh.chat.food");
+        player.getEntityData().setInteger("DopVoid", 3000);
+        if (!world.isRemote && Integration.thaumcraft) {
             double random = Math.random();
-            if (random < 0.01){
-                Thaumcraft.addWarpToPlayer(player,1,false);
-            } else if(random < 0.1){
-                Thaumcraft.addStickyWarpToPlayer(player,1);
+            if (random < 0.01) {
+                Thaumcraft.addWarpToPlayer(player, 1, false);
+            } else if (random < 0.1) {
+                Thaumcraft.addStickyWarpToPlayer(player, 1);
             } else {
-                Thaumcraft.addWarpToPlayer(player,1,true);
+                Thaumcraft.addWarpToPlayer(player, 1, true);
             }
         }
         return stack;
     }
+
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
-        if(Integration.thaumcraft){
+        if (Integration.thaumcraft) {
             if (I18n.format("dh.util.language").equals("Ru")) {
                 list.add("§5Нежное искажение: ");
                 list.add("§5Шанс 1% на 1 постоянное, 10% на липкое, 89% на временное искажение");

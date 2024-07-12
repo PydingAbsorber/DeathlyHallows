@@ -12,14 +12,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class RenderPacket implements IMessage, IMessageHandler<RenderPacket,IMessage> {
+public class RenderPacket implements IMessage, IMessageHandler<RenderPacket, IMessage> {
     public NBTTagCompound nbtData;
 
     public int id;
 
-    public RenderPacket(){
+    public RenderPacket() {
     }
-    public RenderPacket(NBTTagCompound nbt, int identifier){
+
+    public RenderPacket(NBTTagCompound nbt, int identifier) {
         nbtData = nbt;
         id = identifier;
     }
@@ -39,12 +40,12 @@ public class RenderPacket implements IMessage, IMessageHandler<RenderPacket,IMes
     @Override
     @SideOnly(Side.CLIENT)
     public IMessage onMessage(RenderPacket message, MessageContext ctx) {
-        if(ctx.side == Side.CLIENT){
+        if (ctx.side == Side.CLIENT) {
             Entity entity = Minecraft.getMinecraft().theWorld.getEntityByID(message.id);
-            if(entity instanceof AbsoluteDeath){
+            if (entity instanceof AbsoluteDeath) {
                 AbsoluteDeath death = (AbsoluteDeath) Minecraft.getMinecraft().theWorld.getEntityByID(message.id);
                 if (message.nbtData != null) {
-                    death.getEntityData().setTag("dhData",message.nbtData);
+                    death.getEntityData().setTag("dhData", message.nbtData);
                 }
             }
         }

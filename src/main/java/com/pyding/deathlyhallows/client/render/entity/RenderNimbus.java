@@ -7,9 +7,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
@@ -21,7 +19,7 @@ public class RenderNimbus extends Render {
 
 
     protected ResourceLocation getEntityTexture(Entity par1Entity) {
-        return this.func_110832_a((EntityBroom)par1Entity);
+        return this.func_110832_a((EntityBroom) par1Entity);
     }
 
     public RenderNimbus() {
@@ -35,7 +33,7 @@ public class RenderNimbus extends Render {
 
     public void renderBroom(Nimbus par1EntityBoat, double par2, double par4, double par6, float par8, float par9) {
         GL11.glPushMatrix();
-        GL11.glTranslatef((float)par2, (float)par4 + 1.0F, (float)par6);
+        GL11.glTranslatef((float) par2, (float) par4 + 1.0F, (float) par6);
         GL11.glRotatef(90.0F - par8, 0.0F, 1.0F, 0.0F);
         float f4 = 0.75F;
         GL11.glScalef(f4, f4, f4);
@@ -47,7 +45,7 @@ public class RenderNimbus extends Render {
     }
 
     public void doRender(Entity par1Entity, double par2, double par4, double par6, float par8, float par9) {
-        this.renderBroom((Nimbus)par1Entity, par2, par4, par6, par8, par9);
+        this.renderBroom((Nimbus) par1Entity, par2, par4, par6, par8, par9);
     }
 
 }

@@ -1,0 +1,11 @@
+*.iws
+*.iml
+*.ipr
+/*.bat
+/gradle/wrapper/*.jar
+/out/
+/build/
+/.gradle/
+/.idea/
+/.shelf/
+/run/

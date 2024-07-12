@@ -1,10 +1,8 @@
 package com.pyding.deathlyhallows.commands;
 
-import com.pyding.deathlyhallows.blocks.VisConverter;
 import com.pyding.deathlyhallows.common.handler.ConfigHandler;
 import com.pyding.deathlyhallows.common.handler.EventHandler;
 import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
-import net.minecraft.block.Block;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
@@ -40,7 +38,7 @@ public class DamageLog extends CommandBase {
             if (sender instanceof EntityPlayer) {
                 EntityPlayer player = (EntityPlayer) sender;
                 ExtendedPlayer props = ExtendedPlayer.get(player);
-                if(props.getDamageLog()){
+                if (props.getDamageLog()) {
                     props.setDamageLog(false);
                     player.addChatMessage(new ChatComponentText("Damage Log disabled for " + player.getDisplayName()));
                 } else {
@@ -48,20 +46,19 @@ public class DamageLog extends CommandBase {
                     player.addChatMessage(new ChatComponentText("Damage Log enabled for " + player.getDisplayName()));
                 }
             }
-        } else if(args.length > 0 && args[0].equalsIgnoreCase("getid")){
+        } else if (args.length > 0 && args[0].equalsIgnoreCase("getid")) {
             if (sender instanceof EntityPlayer) {
                 EntityPlayer player = (EntityPlayer) sender;
-                if(player.getHeldItem() != null) {
+                if (player.getHeldItem() != null) {
                     Item item = player.getHeldItem().getItem();
                     player.addChatMessage(new ChatComponentText("§bitem class name is: " + item.getClass().getName()));
                     player.addChatMessage(new ChatComponentText("§9item unlock name is: " + item.getUnlocalizedName()));
                     player.addChatMessage(new ChatComponentText("§5item damage is: " + item.getDamage(player.getHeldItem())));
-                    if(player.getHeldItem().getTagCompound() != null)
+                    if (player.getHeldItem().getTagCompound() != null)
                         player.addChatMessage(new ChatComponentText("§citem nbt list is: " + player.getHeldItem().getTagCompound()));
                 }
             }
-        }
-        else if(args.length > 0 && args[0].equalsIgnoreCase("getnbt")){
+        } else if (args.length > 0 && args[0].equalsIgnoreCase("getnbt")) {
             if (sender instanceof EntityPlayer) {
                 EntityPlayer player = (EntityPlayer) sender;
                 MovingObjectPosition rayTrace = rayTrace(player, 5.0); // Получаем точку, на которую игрок смотрит
@@ -79,71 +76,69 @@ public class DamageLog extends CommandBase {
 
                             String nbtString = tileEntityNBT.toString();
                             player.addChatComponentMessage(new ChatComponentText("NBT Data (Block): §5" + tileEntity.getClass().getName() + " §9" + nbtString));
-                        }
-                        else player.addChatComponentMessage(new ChatComponentText("this block is not tile"));
+                        } else player.addChatComponentMessage(new ChatComponentText("this block is not tile"));
                     }
                 } else player.addChatMessage(new ChatComponentText("no tile blocks found"));
                 //getEntities(player);
             }
-        }
-        else if(args.length > 0 && args[0].equalsIgnoreCase("elf")){
+        } else if (args.length > 0 && args[0].equalsIgnoreCase("elf")) {
             if (sender instanceof EntityPlayer) {
                 EntityPlayer player = (EntityPlayer) sender;
                 ExtendedPlayer props = ExtendedPlayer.get(player);
                 int elf = props.getElfLvl();
-                if(elf > 0){
+                if (elf > 0) {
                     String text = "";
                     EventHandler handler = new EventHandler();
-                    switch (elf){
+                    switch (elf) {
                         case 1: {
-                            text = "you have " + player.experienceLevel + " lvl out of " + ConfigHandler.getElfRequirements(elf+1);
+                            text = "you have " + player.experienceLevel + " lvl out of " + ConfigHandler.getElfRequirements(elf + 1);
                             break;
                         }
                         case 2: {
-                            text = "your height is " + player.posY + " out of " + ConfigHandler.getElfRequirements(elf+1);
+                            text = "your height is " + player.posY + " out of " + ConfigHandler.getElfRequirements(elf + 1);
                             break;
                         }
                         case 3: {
-                            text = "you have " + handler.totalLvl(player) + " enchantment lvls in total out of " + ConfigHandler.getElfRequirements(elf+1);
+                            text = "you have " + handler.totalLvl(player) + " enchantment lvls in total out of " + ConfigHandler.getElfRequirements(elf + 1);
                             break;
                         }
                         case 4: {
-                            text = "you killed " + props.getMobsKilled() + " creatures by bow out of " + ConfigHandler.getElfRequirements(elf+1);
+                            text = "you killed " + props.getMobsKilled() + " creatures by bow out of " + ConfigHandler.getElfRequirements(elf + 1);
                             break;
                         }
                         case 5: {
-                            text = "you eaten " + props.getFoodEaten() + " golden apples out of " + ConfigHandler.getElfRequirements(elf+1);
+                            text = "you eaten " + props.getFoodEaten() + " golden apples out of " + ConfigHandler.getElfRequirements(elf + 1);
                             break;
                         }
                         case 6: {
-                            text = "you lived " + handler.timeSurvived/20 + " seconds under 10 debuffs out of " +  + ConfigHandler.getElfRequirements(elf+1);
+                            text = "you lived " + EventHandler.timeSurvived / 20 + " seconds under 10 debuffs out of " + +ConfigHandler.getElfRequirements(elf + 1);
                             break;
                         }
                         case 7: {
-                            text = "you lived " + handler.timeSurvived/20 + " seconds in astral form out of " +  + ConfigHandler.getElfRequirements(elf+1);
+                            text = "you lived " + EventHandler.timeSurvived / 20 + " seconds in astral form out of " + +ConfigHandler.getElfRequirements(elf + 1);
                             break;
                         }
                         case 8: {
-                            text = "you consumed " + props.getFoodCollection().size() + " items out of " +  ConfigHandler.getElfRequirements(elf+1);
+                            text = "you consumed " + props.getFoodCollection().size() + " items out of " + ConfigHandler.getElfRequirements(elf + 1);
                             break;
                         }
                         case 9: {
-                            text = "you used " + props.getSpellsUsed() + " violet spells out of " +  + ConfigHandler.getElfRequirements(elf+1);
+                            text = "you used " + props.getSpellsUsed() + " violet spells out of " + +ConfigHandler.getElfRequirements(elf + 1);
                             break;
                         }
                         case 10: {
                             text = "you are at the max lvl!";
                             break;
                         }
-                        default: text = "WHAT?!?!??!?!?!?!";
+                        default:
+                            text = "WHAT?!?!??!?!?!?!";
                     }
                     sender.addChatMessage(new ChatComponentText("You are now at lvl§5 " + elf));
                     sender.addChatMessage(new ChatComponentText(text));
-                }
-                else sender.addChatMessage(new ChatComponentText("§4you are not elf lol. Wanna know a secret? Just recharge dude!"));
+                } else
+                    sender.addChatMessage(new ChatComponentText("§4you are not elf lol. Wanna know a secret? Just recharge dude!"));
             }
-        }
-        else {
+        } else {
             sender.addChatMessage(new ChatComponentText("§4Invalid command usage. Use:"));
             sender.addChatMessage(new ChatComponentText("§4/deathlyhallows damagelog"));
             sender.addChatMessage(new ChatComponentText("§4/deathlyhallows getid"));
@@ -151,9 +146,10 @@ public class DamageLog extends CommandBase {
             sender.addChatMessage(new ChatComponentText("§4/deathlyhallows elf"));
         }
     }
-    public void getEntities(EntityPlayer player){
-        List entities = player.worldObj.getEntitiesWithinAABB(Entity.class, player.getBoundingBox().expand(5,5,5));
-        if(entities != null) {
+
+    public void getEntities(EntityPlayer player) {
+        List entities = player.worldObj.getEntitiesWithinAABB(Entity.class, player.getBoundingBox().expand(5, 5, 5));
+        if (entities != null) {
             for (Object o : entities) {
                 Entity entity = (Entity) o;
                 String entityInfo = "Entity Info: " + entity.getCommandSenderName() + " " + entity.getEntityData();
@@ -161,6 +157,7 @@ public class DamageLog extends CommandBase {
             }
         } else player.addChatMessage(new ChatComponentText("no entities found"));
     }
+
     private MovingObjectPosition rayTrace(EntityPlayer player, double distance) {
         Vec3 startVec = Vec3.createVectorHelper(player.posX, player.posY + player.getEyeHeight(), player.posZ);
         Vec3 lookVec = player.getLook(1.0F);
