@@ -19,7 +19,7 @@ public class AnimaInteritusMobRender extends RenderLiving {
     private final IModelCustom curseModel2 = new ModelWrapperDisplayList((WavefrontObject) AdvancedModelLoader.loadModel(modelPath2));
 
     public AnimaInteritusMobRender() {
-        super(null,0);
+        super(null, 0);
     }
 
     @Override
@@ -33,9 +33,9 @@ public class AnimaInteritusMobRender extends RenderLiving {
         NBTTagCompound mobNbt = entity.getEntityData().getCompoundTag("dhData");
         int curse2 = mobNbt.getInteger("dhcurse");
         System.out.println(curse2);
-        if(curse2 > 0){
+        if (curse2 > 0) {
             GL11.glPushMatrix();
-            if(curse2 > 200){
+            if (curse2 > 200) {
                 bindTexture(anima);
                 GL11.glTranslatef((float) par2, (float) par4 + 0.5F, (float) par6);
                 curseModel.renderAll();

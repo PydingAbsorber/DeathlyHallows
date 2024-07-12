@@ -11,62 +11,61 @@ buildscript {
         }
     }
     dependencies {
-        classpath ('com.anatawa12.forge:ForgeGradle:1.2-1.0.+') {
-                       changing = true
-                  }
+        classpath('com.anatawa12.forge:ForgeGradle:1.2-1.1.+') {
+            changing = true
+        }
     }
 }
 
+apply plugin: 'maven'
 apply plugin: 'forge'
-
 
 version = "1.0.0"
 group = "com.pyding.deathlyhallows"
 archivesBaseName = "deathlyhallows"
 
 compileJava.options.encoding = 'UTF-8'
-sourceCompatibility = targetCompatibility = '1.8'
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 
 minecraft {
     version = "1.7.10-10.13.4.1614-1.7.10"
-    runDir = "eclipse"
+    runDir = "run"
 }
 
-repositories {
-    flatDir {
-        dirs 'libs'
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+}
+
+configurations {
+    provided
+}
+
+sourceSets {
+    main {
+        compileClasspath += configurations.provided
     }
-    maven {
-        name = "chickenbones"
-        url = "http://chickenbones.net/maven/"
-    }
 }
 
-dependencies {
-    compile fileTree(dir: "libs", include: "*.jar")
-    compile "codechicken:CodeChickenLib:1.7.10-1.1.1.109:dev"
-    compile "codechicken:CodeChickenCore:1.7.10-1.0.2.9:dev"
-    compile "codechicken:NotEnoughItems:1.7.10-1.0.2.15:dev"
-    compile "codechicken:ForgeMultipart:1.7.10-1.1.1.320:dev"
-    compile files("/libs/Baubles-deobf-1.7.10-1.0.1.10.jar")
-}
-
-processResources
-{
+processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
 
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        expand 'version': project.version, 'mcversion': project.minecraft.version
     }
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
 }
 
+dependencies {
+    provided fileTree(dir: 'libs', include: '*.jar')
+}
+
+/* uncomment if you really need those 2 files each build
 task devJar(type: Jar) {
     classifier = 'dev'
     from sourceSets.main.output
@@ -81,3 +80,4 @@ artifacts {
     archives devJar
     archives sourcesJar
 }
+*/

@@ -11,9 +11,14 @@ import com.emoniph.witchery.util.TimeUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
-import com.pyding.deathlyhallows.network.*;
+import com.pyding.deathlyhallows.network.AnimaMobRenderPacket;
+import com.pyding.deathlyhallows.network.CPacketDisableFlight;
+import com.pyding.deathlyhallows.network.NetworkHandler;
+import com.pyding.deathlyhallows.network.PlayerRenderPacket;
 import cpw.mods.fml.common.network.NetworkRegistry;
-import net.minecraft.entity.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,11 +26,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.*;
-import net.minecraft.world.Explosion;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
-import java.util.Comparator;
 import java.util.List;
 
 public class SpellRegistry {
@@ -112,6 +118,7 @@ public class SpellRegistry {
         }
         return "IdError";
     }
+
     public int getId(String name) {
         switch (name) {
             case ("Accio"):
@@ -186,7 +193,7 @@ public class SpellRegistry {
                 return 51;
             case ("BombardaMaxima"):
                 return 52;
-            case("Leonardo 1-4 urn"):
+            case ("Leonardo 1-4 urn"):
                 return 53;
             case ("Decaimiento de la fuerza"):
                 return 54;
@@ -212,6 +219,7 @@ public class SpellRegistry {
     public static float discount = 1;
     public static EntityPlayer player;
     Multimap<String, AttributeModifier> attributes = HashMultimap.create();
+
     public void performEffect(EntityPlayer player2, World world, int spellId) {
         player = player2;
         ItemStack stack = player.getHeldItem();
@@ -219,14 +227,14 @@ public class SpellRegistry {
         if (System.currentTimeMillis() - lastUsedTime > cd) {
             cd = 2500;
             ExtendedPlayer props1 = ExtendedPlayer.get(player);
-            if(props1.getElfLvl() > 0) {
-                discount = 1-props1.getElfLvl()/20;
-                cd = 2500*discount;
-                spellPower = 1*props1.getElfLvl();
-                cost = (int) (120*discount);
-                sectumCost = (int) (10*discount);
-                magicCost = (int) (5*discount);
-                spellRadius = 1*(spellPower/5);
+            if (props1.getElfLvl() > 0) {
+                discount = 1 - props1.getElfLvl() / 20;
+                cd = 2500 * discount;
+                spellPower = props1.getElfLvl();
+                cost = (int) (120 * discount);
+                sectumCost = (int) (10 * discount);
+                magicCost = (int) (5 * discount);
+                spellRadius = 1 * (spellPower / 5);
             }
             double x = player.posX;
             double y = player.posY + player.getEyeHeight();
@@ -235,244 +243,241 @@ public class SpellRegistry {
             double endX = x + lookVec.xCoord * 60;
             double endY = y + lookVec.yCoord * 60;
             double endZ = z + lookVec.zCoord * 60;
-            if(spellId < 48)
-            {
-                performWitcherySpell(player,world,spellId);
+            if (spellId < 48) {
+                performWitcherySpell(player, world, spellId);
             } else {
                 float damage = (float) player.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
                 switch (spellId) {
                     case 48: {
-                        if(Infusion.getInfusionID(player) == 4 && props1.getElfLvl() > 0)
-                        {
+                        if (Infusion.getInfusionID(player) == 4 && props1.getElfLvl() > 0) {
                             int cursedCount = 0;
-                            int elfBonus = 1 + props1.getElfLvl()/5;
-                            props1.setSpellsUsed(props1.getSpellsUsed()+1);
+                            int elfBonus = 1 + props1.getElfLvl() / 5;
+                            props1.setSpellsUsed(props1.getSpellsUsed() + 1);
                             double radius = 64;
                             for (Object o : getEntities(radius, EntityLivingBase.class)) {
-                                if(cursedCount > 0+(elfBonus-1)) {
+                                if (cursedCount > (elfBonus - 1)) {
                                     break;
                                 }
                                 if (!o.equals(player)) {
-                                    if(o instanceof EntityPlayer) {
+                                    if (o instanceof EntityPlayer) {
                                         EntityPlayer targetPlayer = (EntityPlayer) o;
-                                        if(targetPlayer.capabilities.isCreativeMode) {
+                                        if (targetPlayer.capabilities.isCreativeMode) {
                                             continue;
                                         }
                                     }
                                     EntityLivingBase target = (EntityLivingBase) o;
                                     if (target.isEntityAlive()) {
-                                        if(!player.capabilities.isCreativeMode && Infusion.getNBT(player).getInteger("witcheryInfusionCharges") < this.cost) {
-                                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges", new Object[0]);
+                                        if (!player.capabilities.isCreativeMode && Infusion.getNBT(player).getInteger("witcheryInfusionCharges") < cost) {
+                                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges");
                                             SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                                             break;
                                         } else {
                                             cursedCount++;
-                                            this.cd = 20000;
-                                            target.getEntityData().setInteger("dhcurse",1200);
-                                            NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(target.dimension,target.posX,target.posY,target.posZ,radius*1.2);
-                                            if(target instanceof EntityPlayer) {
+                                            cd = 20000;
+                                            target.getEntityData().setInteger("dhcurse", 1200);
+                                            NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(target.dimension, target.posX, target.posY, target.posZ, radius * 1.2);
+                                            if (target instanceof EntityPlayer) {
                                                 EntityPlayer targetPlayer = (EntityPlayer) target;
                                                 ExtendedPlayer props = ExtendedPlayer.get(targetPlayer);
                                                 props.setCurrentDuration(1200);
                                                 props.setSource(player);
                                                 target.setLastAttacker(player);
-                                                props.setCoordinates(targetPlayer.posX,targetPlayer.posY,targetPlayer.posZ,targetPlayer.dimension);
-                                                props1.setCoordinates(targetPlayer.posX,targetPlayer.posY,targetPlayer.posZ,targetPlayer.dimension);
-                                                player.getEntityData().setInteger("casterCurse",1200);
+                                                props.setCoordinates(targetPlayer.posX, targetPlayer.posY, targetPlayer.posZ, targetPlayer.dimension);
+                                                props1.setCoordinates(targetPlayer.posX, targetPlayer.posY, targetPlayer.posZ, targetPlayer.dimension);
+                                                player.getEntityData().setInteger("casterCurse", 1200);
                                                 PlayerRenderPacket packet = new PlayerRenderPacket(targetPlayer.getEntityData());
-                                                NetworkHandler.sendToAllAround(packet,targetPoint);
+                                                NetworkHandler.sendToAllAround(packet, targetPoint);
                                             } else {
                                                 target.setLastAttacker(player);
-                                                AnimaMobRenderPacket packet = new AnimaMobRenderPacket(target.getEntityData(),target.getEntityId());
+                                                AnimaMobRenderPacket packet = new AnimaMobRenderPacket(target.getEntityData(), target.getEntityId());
                                                 NetworkHandler.sendToAllAround(packet, targetPoint);
-                                                target.getEntityData().setDouble("chainX",target.posX);
-                                                target.getEntityData().setDouble("chainY",target.posY);
-                                                target.getEntityData().setDouble("chainZ",target.posZ);
+                                                target.getEntityData().setDouble("chainX", target.posX);
+                                                target.getEntityData().setDouble("chainY", target.posY);
+                                                target.getEntityData().setDouble("chainZ", target.posZ);
                                             }
-                                            if(ExtendedPlayer.get(player) != null) {
+                                            if (ExtendedPlayer.get(player) != null) {
                                                 ExtendedPlayer props = ExtendedPlayer.get(player);
-                                                if(props.getElfLvl() > 0) {
-                                                    this.cd = 20000*(1-props.getElfLvl()/20);
+                                                if (props.getElfLvl() > 0) {
+                                                    cd = 20000 * (1 - props.getElfLvl() / 20);
                                                 }
                                             }
-                                            if(!player.capabilities.isCreativeMode) {
+                                            if (!player.capabilities.isCreativeMode) {
                                                 Infusion.setCurrentEnergy(player, Infusion.getNBT(player).getInteger("witcheryInfusionCharges") - cost);
                                             }
                                         }
                                     }
                                 }
                             }
-                            if(cursedCount > 0){
-                                if(Math.random() > 0.5)
-                                    world.playSoundAtEntity(player,"dh:spell.anima3",1F,1F);
+                            if (cursedCount > 0) {
+                                if (Math.random() > 0.5)
+                                    world.playSoundAtEntity(player, "dh:spell.anima3", 1F, 1F);
                                 else {
-                                    if(Math.random() > 0.5)
-                                        world.playSoundAtEntity(player,"dh:spell.anima2",1F,1F);
-                                    else world.playSoundAtEntity(player,"dh:spell.anima1",1F,1F);
+                                    if (Math.random() > 0.5)
+                                        world.playSoundAtEntity(player, "dh:spell.anima2", 1F, 1F);
+                                    else world.playSoundAtEntity(player, "dh:spell.anima1", 1F, 1F);
                                 }
                             } else SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                         } else {
-                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.infernalrequired", new Object[0]);
-                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "elf required", new Object[0]);
+                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.infernalrequired");
+                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "elf required");
                             SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                         }
                         break;
                     }
                     case 49: {
-                        if(Infusion.getInfusionID(player) == 4 && props1.getElfLvl() > 0) {
-                            if(!player.capabilities.isCreativeMode && Infusion.getNBT(player).getInteger("witcheryInfusionCharges") < cost) {
-                                ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges", new Object[0]);
+                        if (Infusion.getInfusionID(player) == 4 && props1.getElfLvl() > 0) {
+                            if (!player.capabilities.isCreativeMode && Infusion.getNBT(player).getInteger("witcheryInfusionCharges") < cost) {
+                                ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges");
                                 SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                             } else {
-                                if(!player.capabilities.isCreativeMode) {
+                                if (!player.capabilities.isCreativeMode) {
                                     Infusion.setCurrentEnergy(player, Infusion.getNBT(player).getInteger("witcheryInfusionCharges") - cost);
                                 }
-                                props1.setSpellsUsed(props1.getSpellsUsed()+1);
+                                props1.setSpellsUsed(props1.getSpellsUsed() + 1);
                                 int lifes = player.getEntityData().getInteger("Horcrux");
-                                if(player.getMaxHealth()-hpCost > 10){
-                                    attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier( "HorcruxHP", -hpCost, 0));
+                                if (player.getMaxHealth() - hpCost > 10) {
+                                    attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier("HorcruxHP", -hpCost, 0));
                                     player.getAttributeMap().applyAttributeModifiers(attributes);
                                     attributes.clear();
-                                    player.getEntityData().setInteger("Horcrux",lifes+1);
-                                    this.cd = 20000*(1-props1.getElfLvl()/20);
+                                    player.getEntityData().setInteger("Horcrux", lifes + 1);
+                                    cd = 20000 * (1 - props1.getElfLvl() / 20);
                                 } else {
-                                    ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "temptation is high but you seem to look back", new Object[0]);
+                                    ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "temptation is high but you seem to look back");
                                     SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                                 }
-                                if(Math.random() > 0.5)
-                                    world.playSoundAtEntity(player,"dh:spell.death1",1F,1F);
-                                else world.playSoundAtEntity(player,"dh:spell.death2",1F,1F);
+                                if (Math.random() > 0.5)
+                                    world.playSoundAtEntity(player, "dh:spell.death1", 1F, 1F);
+                                else world.playSoundAtEntity(player, "dh:spell.death2", 1F, 1F);
                             }
                         } else {
-                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.infernalrequired", new Object[0]);
-                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "elf required", new Object[0]);
+                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.infernalrequired");
+                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "elf required");
                             SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                         }
                         break;
                     }
                     case 50: {
-                        if(!player.capabilities.isCreativeMode && Infusion.getNBT(player).getInteger("witcheryInfusionCharges") < sectumCost) {
-                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges", new Object[0]);
+                        if (!player.capabilities.isCreativeMode && Infusion.getNBT(player).getInteger("witcheryInfusionCharges") < sectumCost) {
+                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges");
                             SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                         } else {
-                            if(!player.capabilities.isCreativeMode) {
+                            if (!player.capabilities.isCreativeMode) {
                                 Infusion.setCurrentEnergy(player, Infusion.getNBT(player).getInteger("witcheryInfusionCharges") - sectumCost);
                             }
-                            props1.setSpellsUsed(props1.getSpellsUsed()+1);
+                            props1.setSpellsUsed(props1.getSpellsUsed() + 1);
                             AxisAlignedBB boundingBox = AxisAlignedBB.getBoundingBox(
-                                    player.posX - 6 / 2, player.posY - 2 / 2, player.posZ - 6 / 2,
-                                    player.posX + 6 / 2, player.posY + 2 / 2, player.posZ + 6 / 2
+                                    player.posX - 6 / 2, player.posY - 1, player.posZ - 6 / 2,
+                                    player.posX + 6 / 2, player.posY + 1, player.posZ + 6 / 2
                             );
-                            List entities = player.worldObj.getEntitiesWithinAABB(EntityLivingBase.class,boundingBox);
-                            for (Object o : entities){
-                                if(o != player && o instanceof EntityLivingBase){
+                            List entities = player.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, boundingBox);
+                            for (Object o : entities) {
+                                if (o != player && o instanceof EntityLivingBase) {
                                     EntityLivingBase entity = (EntityLivingBase) o;
-                                    entity.getEntityData().setInteger("SectumTime",666);
-                                    float hpLower = (float) (entity.getMaxHealth()*(0.15*(1+ props1.getElfLvl()/10)));
-                                    if(entity.getMaxHealth()-hpLower > 5){
-                                        entity.getEntityData().setFloat("SectumHp",entity.getEntityData().getInteger("SectumHp")+hpLower);
-                                        attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier( "SectumHPAttribute", -hpLower, 0));
+                                    entity.getEntityData().setInteger("SectumTime", 666);
+                                    float hpLower = (float) (entity.getMaxHealth() * (0.15 * (1 + props1.getElfLvl() / 10)));
+                                    if (entity.getMaxHealth() - hpLower > 5) {
+                                        entity.getEntityData().setFloat("SectumHp", entity.getEntityData().getInteger("SectumHp") + hpLower);
+                                        attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier("SectumHPAttribute", -hpLower, 0));
                                         entity.getAttributeMap().applyAttributeModifiers(attributes);
                                         attributes.clear();
                                         entity.setHealth(entity.getMaxHealth());
                                     }
                                 }
                             }
-                            ParticleEffect.FLAME.send(SoundEffect.FIRE_FIRE,player,6.0D, 2.0D, 16);
-                            if(Math.random() > 0.5)
-                                world.playSoundAtEntity(player,"dh:spell.sectum1",1F,1F);
-                            else world.playSoundAtEntity(player,"dh:spell.sectum2",1F,1F);
+                            ParticleEffect.FLAME.send(SoundEffect.FIRE_FIRE, player, 6.0D, 2.0D, 16);
+                            if (Math.random() > 0.5)
+                                world.playSoundAtEntity(player, "dh:spell.sectum1", 1F, 1F);
+                            else world.playSoundAtEntity(player, "dh:spell.sectum2", 1F, 1F);
                         }
                         break;
                     }
                     case 51: {
-                        if(!player.capabilities.isCreativeMode && Infusion.getNBT(player).getInteger("witcheryInfusionCharges") < magicCost) {
-                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges", new Object[0]);
+                        if (!player.capabilities.isCreativeMode && Infusion.getNBT(player).getInteger("witcheryInfusionCharges") < magicCost) {
+                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges");
                             SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                         } else {
                             int count = 0;
-                            props1.setSpellsUsed(props1.getSpellsUsed()+1);
+                            props1.setSpellsUsed(props1.getSpellsUsed() + 1);
                             for (Object o : getEntities(32, EntityLivingBase.class)) {
-                                if (!o.equals(player) && count < 6*spellRadius) {
-                                    if(o instanceof EntityPlayer) {
+                                if (!o.equals(player) && count < 6 * spellRadius) {
+                                    if (o instanceof EntityPlayer) {
                                         EntityPlayer targetPlayer = (EntityPlayer) o;
-                                        if(targetPlayer.capabilities.isCreativeMode)
+                                        if (targetPlayer.capabilities.isCreativeMode)
                                             continue;
                                     }
                                     EntityLivingBase target = (EntityLivingBase) o;
                                     if (target.isEntityAlive()) {
                                         world.addWeatherEffect(new EntityLightningBolt(world, target.posX, target.posY, target.posZ));
-                                        target.attackEntityFrom(DamageSource.causePlayerDamage(player).setMagicDamage(), (baseDamage + damage)*spellPower);
+                                        target.attackEntityFrom(DamageSource.causePlayerDamage(player).setMagicDamage(), (baseDamage + damage) * spellPower);
                                         target.setLastAttacker(player);
                                         count++;
                                     }
                                 }
                             }
-                            if(!player.capabilities.isCreativeMode) {
+                            if (!player.capabilities.isCreativeMode) {
                                 Infusion.setCurrentEnergy(player, Infusion.getNBT(player).getInteger("witcheryInfusionCharges") - magicCost);
                             }
                         }
                         break;
                     }
                     case 52: {
-                        if(!player.capabilities.isCreativeMode && Infusion.getNBT(player).getInteger("witcheryInfusionCharges") < magicCost) {
-                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges", new Object[0]);
+                        if (!player.capabilities.isCreativeMode && Infusion.getNBT(player).getInteger("witcheryInfusionCharges") < magicCost) {
+                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges");
                             SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                         } else {
-                            props1.setSpellsUsed(props1.getSpellsUsed()+1);
-                            double radius = 40*spellRadius;
+                            props1.setSpellsUsed(props1.getSpellsUsed() + 1);
+                            double radius = 40 * spellRadius;
                             for (Object o : getEntities(radius, EntityLivingBase.class)) {
-                                if(!o.equals(player))
-                                {
-                                    if(o instanceof EntityPlayer) {
+                                if (!o.equals(player)) {
+                                    if (o instanceof EntityPlayer) {
                                         EntityPlayer targetPlayer = (EntityPlayer) o;
-                                        if(targetPlayer.capabilities.isCreativeMode)
+                                        if (targetPlayer.capabilities.isCreativeMode)
                                             continue;
                                     }
                                     EntityLivingBase target = (EntityLivingBase) o;
-                                    if(target.isEntityAlive())
-                                        target.attackEntityFrom(DamageSource.causePlayerDamage(player).setExplosion(), (baseDamage*3+damage)*spellPower);
+                                    if (target.isEntityAlive())
+                                        target.attackEntityFrom(DamageSource.causePlayerDamage(player).setExplosion(), (baseDamage * 3 + damage) * spellPower);
                                 }
                             }
-                            world.createExplosion(player, x, y, z, 15*spellRadius, true);
+                            world.createExplosion(player, x, y, z, 15 * spellRadius, true);
                             world.playSoundEffect(x, y, z, "random.explode", 4.0F, (1.0F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.2F) * 0.7F);
                             double d0 = world.rand.nextGaussian() * 0.02D;
                             double d1 = world.rand.nextGaussian() * 0.02D;
                             double d2 = world.rand.nextGaussian() * 0.02D;
-                            world.spawnParticle("explode", x, y, z, d0,d1,d2);
-                            if(Math.random() > 0.5)
-                                world.playSoundAtEntity(player,"dh:spell.explode1",1F,1F);
-                            else world.playSoundAtEntity(player,"dh:spell.explode2",1F,1F);
-                            if(!player.capabilities.isCreativeMode) {
+                            world.spawnParticle("explode", x, y, z, d0, d1, d2);
+                            if (Math.random() > 0.5)
+                                world.playSoundAtEntity(player, "dh:spell.explode1", 1F, 1F);
+                            else world.playSoundAtEntity(player, "dh:spell.explode2", 1F, 1F);
+                            if (!player.capabilities.isCreativeMode) {
                                 Infusion.setCurrentEnergy(player, Infusion.getNBT(player).getInteger("witcheryInfusionCharges") - magicCost);
                             }
                         }
                     }
                     case 53: {
-                        if(!player.capabilities.isCreativeMode && Infusion.getNBT(player).getInteger("witcheryInfusionCharges") < magicCost) {
-                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges", new Object[0]);
+                        if (!player.capabilities.isCreativeMode && Infusion.getNBT(player).getInteger("witcheryInfusionCharges") < magicCost) {
+                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges");
                             SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                         } else {
-                            props1.setSpellsUsed(props1.getSpellsUsed()+1);
-                            performWitcherySpell(player,world,43);
-                            performWitcherySpell(player,world,44);
-                            performWitcherySpell(player,world,45);
-                            performWitcherySpell(player,world,46);
-                            if(!player.capabilities.isCreativeMode) {
+                            props1.setSpellsUsed(props1.getSpellsUsed() + 1);
+                            performWitcherySpell(player, world, 43);
+                            performWitcherySpell(player, world, 44);
+                            performWitcherySpell(player, world, 45);
+                            performWitcherySpell(player, world, 46);
+                            if (!player.capabilities.isCreativeMode) {
                                 Infusion.setCurrentEnergy(player, Infusion.getNBT(player).getInteger("witcheryInfusionCharges") - magicCost);
                             }
                         }
                         break;
                     }
                     case 54: {
-                        if(!player.capabilities.isCreativeMode && Infusion.getNBT(player).getInteger("witcheryInfusionCharges") < magicCost) {
-                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges", new Object[0]);
+                        if (!player.capabilities.isCreativeMode && Infusion.getNBT(player).getInteger("witcheryInfusionCharges") < magicCost) {
+                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges");
                             SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                         } else {
-                            props1.setSpellsUsed(props1.getSpellsUsed()+1);
+                            props1.setSpellsUsed(props1.getSpellsUsed() + 1);
                             double radius = 24;
-                            for(Object o: getEntities(radius, EntityLivingBase.class)){
-                                if(!o.equals(player)){
+                            for (Object o : getEntities(radius, EntityLivingBase.class)) {
+                                if (!o.equals(player)) {
                                     EntityLivingBase entity = (EntityLivingBase) o;
                                     for (Object potionEffect : entity.getActivePotionEffects()) {
                                         PotionEffect effect = (PotionEffect) potionEffect;
@@ -482,42 +487,42 @@ public class SpellRegistry {
                                     }
                                 }
                             }
-                            if(!player.capabilities.isCreativeMode) {
+                            if (!player.capabilities.isCreativeMode) {
                                 Infusion.setCurrentEnergy(player, Infusion.getNBT(player).getInteger("witcheryInfusionCharges") - magicCost);
                             }
                         }
                         break;
                     }
                     case 55: {
-                        if(!player.capabilities.isCreativeMode && Infusion.getNBT(player).getInteger("witcheryInfusionCharges") < magicCost) {
-                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges", new Object[0]);
+                        if (!player.capabilities.isCreativeMode && Infusion.getNBT(player).getInteger("witcheryInfusionCharges") < magicCost) {
+                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges");
                             SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                         } else {
-                            props1.setSpellsUsed(props1.getSpellsUsed()+1);
+                            props1.setSpellsUsed(props1.getSpellsUsed() + 1);
                             double radius = 16;
-                            List entities = getEntities(radius,EntityLivingBase.class);
-                            for(Object o: entities){
-                                if(!o.equals(player)){
-                                    if(o instanceof EntityLivingBase && !(o instanceof EntityPlayer)){
+                            List entities = getEntities(radius, EntityLivingBase.class);
+                            for (Object o : entities) {
+                                if (!o.equals(player)) {
+                                    if (o instanceof EntityLivingBase && !(o instanceof EntityPlayer)) {
                                         Entity entity = (Entity) o;
                                         entity.motionY = -10F;
-                                        entity.attackEntityFrom(DamageSource.causePlayerDamage(player).fall.setDamageBypassesArmor(),(baseDamage*10*(props1.getElfLvl()+1))*damage);
+                                        entity.attackEntityFrom(DamageSource.fall.setDamageBypassesArmor(), (baseDamage * 10 * (props1.getElfLvl() + 1)) * damage);
                                     }
-                                    if(o instanceof EntityPlayer){
+                                    if (o instanceof EntityPlayer) {
                                         EntityPlayer targetPlayer = (EntityPlayer) o;
-                                        NetworkHandler.sendToPlayer(new CPacketDisableFlight(),targetPlayer);
+                                        NetworkHandler.sendToPlayer(new CPacketDisableFlight(), targetPlayer);
                                         targetPlayer.capabilities.isFlying = false;
                                         targetPlayer.motionY = -10F;
-                                        targetPlayer.attackEntityFrom(DamageSource.causePlayerDamage(player).fall.setDamageBypassesArmor(),(baseDamage*10*(props1.getElfLvl()+1))*damage);
+                                        targetPlayer.attackEntityFrom(DamageSource.fall.setDamageBypassesArmor(), (baseDamage * 10 * (props1.getElfLvl() + 1)) * damage);
                                     }
                                 }
                             }
-                            if(!player.capabilities.isCreativeMode) {
+                            if (!player.capabilities.isCreativeMode) {
                                 Infusion.setCurrentEnergy(player, Infusion.getNBT(player).getInteger("witcheryInfusionCharges") - magicCost);
                             }
-                            if(Math.random() > 0.5)
-                                world.playSoundAtEntity(player,"dh:spell.death1",1F,1F);
-                            else world.playSoundAtEntity(player,"dh:spell.death2",1F,1F);
+                            if (Math.random() > 0.5)
+                                world.playSoundAtEntity(player, "dh:spell.death1", 1F, 1F);
+                            else world.playSoundAtEntity(player, "dh:spell.death2", 1F, 1F);
                         }
                         break;
                     }
@@ -525,10 +530,11 @@ public class SpellRegistry {
             }
             stack.getTagCompound().setLong("lastUsedTime", System.currentTimeMillis());
         } else {
-            ChatUtil.sendTranslated(EnumChatFormatting.GREEN, player, "dh.chat.wait", new Object[0]);
+            ChatUtil.sendTranslated(EnumChatFormatting.GREEN, player, "dh.chat.wait");
         }
     }
-    public void performWitcherySpell(EntityPlayer player,World world,int spellId) {
+
+    public void performWitcherySpell(EntityPlayer player, World world, int spellId) {
         int level = 1;
         NBTTagCompound nbtTag = player.getEntityData();
         if (nbtTag != null) {
@@ -540,13 +546,13 @@ public class SpellRegistry {
             NBTTagCompound nbtPerm = Infusion.getNBT(player);
             if (effect != null) {
                 if (!player.capabilities.isCreativeMode && (nbtPerm == null || !nbtPerm.hasKey("witcheryInfusionID") || !nbtPerm.hasKey("witcheryInfusionCharges"))) {
-                    ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.infusionrequired", new Object[0]);
+                    ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.infusionrequired");
                     SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                 } else if (effect.hasValidInfusion(player, nbtPerm.getInteger("witcheryInfusionID"))) {
                     if (effect.hasValidKnowledge(player, nbtPerm)) {
                         long ticksRemaining = effect.cooldownRemaining(player, nbtPerm);
                         if (ticksRemaining > 0L && !player.capabilities.isCreativeMode) {
-                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.effectoncooldown", new Object[]{Long.valueOf(TimeUtil.ticksToSecs(ticksRemaining)).toString()});
+                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.effectoncooldown", Long.valueOf(TimeUtil.ticksToSecs(ticksRemaining)).toString());
                             SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                         } else {
                             if (level > 1) {
@@ -561,31 +567,32 @@ public class SpellRegistry {
                                 level = newLevel;
                             }
 
-                            if (!player.capabilities.isCreativeMode && nbtPerm.getInteger("witcheryInfusionCharges") < effect.getChargeCost(world, player, level)*discount) {
-                                ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges", new Object[0]);
+                            if (!player.capabilities.isCreativeMode && nbtPerm.getInteger("witcheryInfusionCharges") < effect.getChargeCost(world, player, level) * discount) {
+                                ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges");
                                 SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                             } else {
                                 effect.perform(world, player, level);
                                 if (!player.capabilities.isCreativeMode) {
-                                    Infusion.setCurrentEnergy(player, (int) (nbtPerm.getInteger("witcheryInfusionCharges") - effect.getChargeCost(world, player, level)*discount));
+                                    Infusion.setCurrentEnergy(player, (int) (nbtPerm.getInteger("witcheryInfusionCharges") - effect.getChargeCost(world, player, level) * discount));
                                 }
                             }
                         }
                     } else {
-                        ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.unknowneffect", new Object[0]);
+                        ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.unknowneffect");
                         SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                     }
                 } else {
-                    ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.infernalrequired", new Object[0]);
+                    ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.infernalrequired");
                     SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                 }
             } else {
-                ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.unknownsymbol", new Object[0]);
+                ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.unknownsymbol");
                 SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
             }
         }
     }
-    public List getEntities(double radius, Class target){
+
+    public List getEntities(double radius, Class target) {
         List entities = player.worldObj.getEntitiesWithinAABB(target, player.boundingBox.expand(radius, radius, radius));
         return entities;
     }

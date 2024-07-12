@@ -4,7 +4,6 @@ import baubles.api.BaubleType;
 import baubles.api.IBauble;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,7 +12,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -23,6 +21,7 @@ import java.util.List;
 
 public class ResurrectionStone extends Item implements IBauble {
     private static int ticks = 0;
+
     @Override
     public BaubleType getBaubleType(ItemStack itemStack) {
         return BaubleType.RING;
@@ -48,38 +47,35 @@ public class ResurrectionStone extends Item implements IBauble {
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
         if (!world.isRemote) {
-            if(player.isSneaking()) {
+            if (player.isSneaking()) {
                 List<EntityPlayerMP> playerList = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
                 if (!playerList.isEmpty()) {
                     String selectedPlayerName = "";
                     int maxIndex = playerList.size();
                     if (getIndex(stack) == 0) {
                         selectedPlayerName = playerList.get(getIndex(stack)).getDisplayName();
-                        setPlayer(stack,selectedPlayerName);
+                        setPlayer(stack, selectedPlayerName);
                         player.addChatComponentMessage(new ChatComponentText("§aChosen Player: " + selectedPlayerName));
-                        if(getIndex(stack)+1 <= maxIndex)
-                            setIndex(stack,getIndex(stack)+1);
-                    }
-                    else if(getIndex(stack)+1 > maxIndex) {
-                        setIndex(stack,0);
+                        if (getIndex(stack) + 1 <= maxIndex)
+                            setIndex(stack, getIndex(stack) + 1);
+                    } else if (getIndex(stack) + 1 > maxIndex) {
+                        setIndex(stack, 0);
                         selectedPlayerName = playerList.get(getIndex(stack)).getDisplayName();
-                        setPlayer(stack,selectedPlayerName);
+                        setPlayer(stack, selectedPlayerName);
                         player.addChatComponentMessage(new ChatComponentText("§aChosen Player: " + selectedPlayerName));
-                        setIndex(stack,1);
-                    }
-                    else {
+                        setIndex(stack, 1);
+                    } else {
                         selectedPlayerName = playerList.get(getIndex(stack)).getDisplayName();
-                        setPlayer(stack,selectedPlayerName);
+                        setPlayer(stack, selectedPlayerName);
                         player.addChatComponentMessage(new ChatComponentText("§aChosen Player: " + selectedPlayerName));
-                        setIndex(stack,getIndex(stack)+1);
+                        setIndex(stack, getIndex(stack) + 1);
                     }
                     System.out.println("Chosen Player: " + selectedPlayerName);
                 }
-            }
-            else {
+            } else {
                 for (Object obj : world.playerEntities) {
                     if (obj instanceof EntityPlayer && ((EntityPlayer) obj).getDisplayName() == (getPlayer(stack)) && getCharges(stack) > 0) {
-                        setCharges(stack,getCharges(stack)-1);
+                        setCharges(stack, getCharges(stack) - 1);
                         EntityPlayer otherPlayer = (EntityPlayer) obj;
                         player.addChatComponentMessage(new ChatComponentText("§aPlayer Name: " + otherPlayer.getCommandSenderName()));
                         player.addChatComponentMessage(new ChatComponentText("§aX=" + otherPlayer.posX));
@@ -102,12 +98,12 @@ public class ResurrectionStone extends Item implements IBauble {
 
     @Override
     public void onWornTick(ItemStack itemStack, EntityLivingBase entityLivingBase) {
-        if(getCharges(itemStack) < 3) {
+        if (getCharges(itemStack) < 3) {
             if (ticks < 1200) {
                 ticks++;
             } else {
                 ticks = 0;
-                setCharges(itemStack,getCharges(itemStack)+1);
+                setCharges(itemStack, getCharges(itemStack) + 1);
             }
         }
     }
@@ -115,13 +111,13 @@ public class ResurrectionStone extends Item implements IBauble {
     @Override
     public void onEquipped(ItemStack itemStack, EntityLivingBase entityLivingBase) {
         World world = entityLivingBase.worldObj;
-        world.playSoundAtEntity(entityLivingBase,"dh:ring.1",1F,1F);
+        world.playSoundAtEntity(entityLivingBase, "dh:ring.1", 1F, 1F);
     }
 
     @Override
     public void onUnequipped(ItemStack itemStack, EntityLivingBase entityLivingBase) {
         World world = entityLivingBase.worldObj;
-        world.playSoundAtEntity(entityLivingBase,"dh:ring.1",1F,1F);
+        world.playSoundAtEntity(entityLivingBase, "dh:ring.1", 1F, 1F);
     }
 
     @Override
@@ -173,7 +169,7 @@ public class ResurrectionStone extends Item implements IBauble {
         String currentLanguage = StatCollector.translateToLocal("language.name");
 
         if (I18n.format("dh.util.language").equals("Ru")) {
-            if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
                 list.add("Нажми §ashift+ПКМ §7с кольцом в руке, чтобы выбрать игрока");
                 list.add("Нажми §aПКМ §7чтобы найти выбранного игрока за §a1 заряд воскрешения");
                 list.add("§aВоскрешения работают только когда кольцо надето");
@@ -182,14 +178,14 @@ public class ResurrectionStone extends Item implements IBauble {
                 list.add("Выбранный игрок:§a " + getPlayer(stack));
                 list.add("Нажми §ashift §7для дополнительной информации");
             }
-            if(stack.hasTagCompound()){
-                if(stack.getTagCompound().hasKey("dhowner")) {
+            if (stack.hasTagCompound()) {
+                if (stack.getTagCompound().hasKey("dhowner")) {
                     list.add("Владелец §9" + stack.getTagCompound().getString("dhowner"));
                 }
             } else list.add("Владелец §9Смерть");
             list.add("Возможно иметь лишь один дар у себя в инвентаре");
         } else {
-            if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
                 list.add("Press §ashift+RMB §7with ring in hand to select a player");
                 list.add("Press §aRMB §7to search for the selected player for a cost of §a1 resurrection");
                 list.add("§aResurrections work only if the ring is equipped");
@@ -198,8 +194,8 @@ public class ResurrectionStone extends Item implements IBauble {
                 list.add("Chosen Player:§a " + getPlayer(stack));
                 list.add("Press §ashift §7for additional information");
             }
-            if(stack.hasTagCompound()){
-                if(stack.getTagCompound().hasKey("dhowner")) {
+            if (stack.hasTagCompound()) {
+                if (stack.getTagCompound().hasKey("dhowner")) {
                     list.add("Owner §9" + stack.getTagCompound().getString("dhowner"));
                 }
             } else list.add("Owner §9Death");

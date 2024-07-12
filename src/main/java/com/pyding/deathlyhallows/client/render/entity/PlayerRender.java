@@ -1,7 +1,5 @@
 package com.pyding.deathlyhallows.client.render.entity;
-import java.lang.reflect.Field;
 
-import com.emoniph.witchery.Witchery;
 import com.emoniph.witchery.client.RenderEntityViewer;
 import com.emoniph.witchery.infusion.infusions.symbols.EffectRegistry;
 import com.emoniph.witchery.infusion.infusions.symbols.SymbolEffect;
@@ -18,13 +16,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
+import java.lang.reflect.Field;
+
 import static codechicken.lib.gui.GuiDraw.drawTexturedModalRect;
 import static codechicken.lib.gui.GuiDraw.getStringWidth;
 import static com.emoniph.witchery.client.PlayerRender.drawString;
-import static com.pyding.deathlyhallows.spells.SpellRegistry.player;
 
 public class PlayerRender {
-    private boolean remoteViewingActive = true;
+    private final boolean remoteViewingActive = true;
     public static long ticksSinceActive = 0L;
     public static boolean moveCameraActive = false;
     public static int moveCameraToEntityID = 0;
@@ -33,19 +32,19 @@ public class PlayerRender {
     RenderEntityViewer renderer;
     int currentBeastForm = 0;
     private static final ResourceLocation BARK_TEXTURES = new ResourceLocation("witchery", "textures/gui/creatures.png");
-    private static RenderItem drawItems = new RenderItem();
+    private static final RenderItem drawItems = new RenderItem();
     private int lastY = 0;
     private static final int[] glyphOffsetX = new int[]{0, 0, 1, -1, 1, -1, -1, 1};
     private static final int[] glyphOffsetY = new int[]{-1, 1, 0, 0, -1, 1, -1, 1};
     private static final ResourceLocation TEXTURE_GRID = new ResourceLocation("witchery", "textures/gui/grid.png");
-    private Field fieldAccess = null;
+    private final Field fieldAccess = null;
 
 
     @SubscribeEvent
     public void onRenderTick(TickEvent.RenderTickEvent event) {
         EntityClientPlayerMP player;
         Minecraft mc;
-        if(event.phase == TickEvent.Phase.START) {
+        if (event.phase == TickEvent.Phase.START) {
             player = Minecraft.getMinecraft().thePlayer;
             mc = Minecraft.getMinecraft();
             if (player != null && mc.currentScreen == null) {
@@ -53,8 +52,7 @@ public class PlayerRender {
                     moveCameraActive = false;
                 }
             }
-        }
-        else if (event.phase == TickEvent.Phase.END) {
+        } else if (event.phase == TickEvent.Phase.END) {
             player = Minecraft.getMinecraft().thePlayer;
             if (player != null && Minecraft.getMinecraft().currentScreen == null) {
                 mc = Minecraft.getMinecraft();
@@ -94,7 +92,7 @@ public class PlayerRender {
                             String var49 = var47.getLocalizedName();
                             int tx = var30.getScaledWidth() / 2 - (int) (getStringWidth(var49) / 2.0D);
                             int ty = var30.getScaledHeight() / 2 + 20;
-                            drawString(var49, (double) tx, (double) ty, 16777215);
+                            drawString(var49, tx, ty, 16777215);
                         }
                     } finally {
                         GL11.glPopMatrix();

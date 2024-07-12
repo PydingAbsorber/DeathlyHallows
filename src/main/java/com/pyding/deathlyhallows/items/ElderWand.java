@@ -27,7 +27,6 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
-import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 
@@ -57,8 +56,8 @@ public class ElderWand extends ItemBase {
             list.add("Листай список заклинаний на §cshift+ЛКМ/ЛКМ §7и кастуй одной кнопкой");
             list.add("Получи доступ к §c8 §7новым мощнейшим заклинаниям");
             list.add("Все заклинания описаны на сайте");
-            if(stack.hasTagCompound()){
-                if(stack.getTagCompound().hasKey("dhowner")) {
+            if (stack.hasTagCompound()) {
+                if (stack.getTagCompound().hasKey("dhowner")) {
                     list.add("Владелец §9" + stack.getTagCompound().getString("dhowner"));
                 }
             } else list.add("Владелец §9Смерть");
@@ -67,8 +66,8 @@ public class ElderWand extends ItemBase {
             list.add("Scroll list of spells by §cshift+LMB/LMB §7and cast by one button");
             list.add("Get access to §c8 §7new powerful spells");
             list.add("All spells are described on the site");
-            if(stack.hasTagCompound()){
-                if(stack.getTagCompound().hasKey("dhowner")) {
+            if (stack.hasTagCompound()) {
+                if (stack.getTagCompound().hasKey("dhowner")) {
                     list.add("Owner §9" + stack.getTagCompound().getString("dhowner"));
                 }
             } else list.add("Owner §9Death");
@@ -79,12 +78,12 @@ public class ElderWand extends ItemBase {
     @Override
     public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) {
         World world = entityLiving.worldObj;
-        if(entityLiving instanceof EntityPlayer){
-            if(!world.isRemote){
+        if (entityLiving instanceof EntityPlayer) {
+            if (!world.isRemote) {
                 NBTTagCompound nbt = new NBTTagCompound();
                 SpellRegistry spellRegistry = new SpellRegistry();
                 EntityPlayer player = (EntityPlayer) entityLiving;
-                if(stack.getTagCompound() != null){
+                if (stack.getTagCompound() != null) {
                     nbt = stack.getTagCompound();
                 }
                 if (!nbt.hasKey("spell1")) {
@@ -93,35 +92,35 @@ public class ElderWand extends ItemBase {
                     player.addChatComponentMessage(new ChatComponentText(spellRegistry.getName(1)));
                 } else {
                     int spell1 = nbt.getInteger("spell1");
-                    if(spell1 != 0) {
-                        if(!entityLiving.isSneaking()) {
-                            if(spell1 < spellRegistry.spellCount) {
+                    if (spell1 != 0) {
+                        if (!entityLiving.isSneaking()) {
+                            if (spell1 < SpellRegistry.spellCount) {
                                 spell1++;
                             } else {
                                 spell1 = 1;
                             }
                         } else {
-                            if(spell1 > 1) {
+                            if (spell1 > 1) {
                                 spell1--;
                             } else {
-                                spell1 = spellRegistry.spellCount;
+                                spell1 = SpellRegistry.spellCount;
                             }
                         }
                     } else {
                         spell1 = 1;
                     }
-                    while(spellRegistry.getName(spell1).equals("IdError")) {
-                        if(!entityLiving.isSneaking()) {
-                            if(spell1 < spellRegistry.spellCount) {
+                    while (spellRegistry.getName(spell1).equals("IdError")) {
+                        if (!entityLiving.isSneaking()) {
+                            if (spell1 < SpellRegistry.spellCount) {
                                 spell1++;
                             } else {
                                 spell1 = 1;
                             }
                         } else {
-                            if(spell1 > 1) {
+                            if (spell1 > 1) {
                                 spell1--;
                             } else {
-                                spell1 = spellRegistry.spellCount;
+                                spell1 = SpellRegistry.spellCount;
                             }
                         }
                     }
@@ -152,11 +151,12 @@ public class ElderWand extends ItemBase {
         return true;
     }
 
-    public void onUpdate(ItemStack stack, World world, Entity entity, int invSlot, boolean isHeld) {}
+    public void onUpdate(ItemStack stack, World world, Entity entity, int invSlot, boolean isHeld) {
+    }
 
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
         NBTTagCompound nbtTag = player.getEntityData();
-        if(!player.worldObj.isRemote) {
+        if (!player.worldObj.isRemote) {
             nbtTag.removeTag("WITCSpellEffectID");
             nbtTag.removeTag("WITCSpellEffectEnhanced");
         }
@@ -169,9 +169,9 @@ public class ElderWand extends ItemBase {
     }
 
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
-        if(world.getBlock(x, y, z) == Witchery.Blocks.ALTAR && side == 1 && world.getBlock(x, y + 1, z) == Blocks.air) {
+        if (world.getBlock(x, y, z) == Witchery.Blocks.ALTAR && side == 1 && world.getBlock(x, y + 1, z) == Blocks.air) {
             BlockPlacedItem.placeItemInWorld(stack, player, world, x, y + 1, z);
-            player.inventory.setInventorySlotContents(player.inventory.currentItem, (ItemStack)null);
+            player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
             return !world.isRemote;
         } else {
             return super.onItemUse(stack, player, world, x, y, z, side, hitX, hitY, hitZ);
@@ -179,9 +179,9 @@ public class ElderWand extends ItemBase {
     }
 
     public void onUsingTick(ItemStack stack, EntityPlayer player, int countdown) {
-        if(player.worldObj.isRemote) {
+        if (player.worldObj.isRemote) {
             NBTTagCompound nbtTag = player.getEntityData();
-            if(nbtTag == null) {
+            if (nbtTag == null) {
                 return;
             }
 
@@ -189,24 +189,24 @@ public class ElderWand extends ItemBase {
             float pitchDiff = nbtTag.getFloat("startPitch") - player.rotationPitch;
             byte[] strokes = nbtTag.getByteArray("Strokes");
             int strokesStart = strokes.length;
-            if(!EffectRegistry.instance().contains(strokes) && strokesStart <= 15) {
-                if(pitchDiff >= 7.0F) {
-                    strokes = this.addNewStroke(nbtTag, strokes, (byte)0);
-                } else if(pitchDiff <= -7.0F) {
-                    strokes = this.addNewStroke(nbtTag, strokes, (byte)1);
-                } else if(yawDiff <= -7.0F) {
-                    strokes = this.addNewStroke(nbtTag, strokes, (byte)2);
-                } else if(yawDiff >= 7.0F) {
-                    strokes = this.addNewStroke(nbtTag, strokes, (byte)3);
+            if (!EffectRegistry.instance().contains(strokes) && strokesStart <= 15) {
+                if (pitchDiff >= 7.0F) {
+                    strokes = this.addNewStroke(nbtTag, strokes, (byte) 0);
+                } else if (pitchDiff <= -7.0F) {
+                    strokes = this.addNewStroke(nbtTag, strokes, (byte) 1);
+                } else if (yawDiff <= -7.0F) {
+                    strokes = this.addNewStroke(nbtTag, strokes, (byte) 2);
+                } else if (yawDiff >= 7.0F) {
+                    strokes = this.addNewStroke(nbtTag, strokes, (byte) 3);
                 }
 
-                if(strokes.length > strokesStart) {
+                if (strokes.length > strokesStart) {
                     nbtTag.setFloat("startPitch", player.rotationPitch);
                     nbtTag.setFloat("startYaw", player.rotationYawHead);
                 }
 
                 SymbolEffect effect = EffectRegistry.instance().getEffect(strokes);
-                if(effect != null) {
+                if (effect != null) {
                     int level = EffectRegistry.instance().getLevel(strokes);
                     Witchery.packetPipeline.sendToServer(new PacketSpellPrepared(effect, level));
                 }
@@ -225,11 +225,11 @@ public class ElderWand extends ItemBase {
 
     public void onPlayerStoppedUsing(ItemStack stack, World world, EntityPlayer player, int countdown) {
         NBTTagCompound nbtTag = player.getEntityData();
-        if(nbtTag != null) {
-            if(!world.isRemote) {
+        if (nbtTag != null) {
+            if (!world.isRemote) {
                 int effectID = nbtTag.getInteger("WITCSpellEffectID");
                 int level = 1;
-                if(nbtTag.hasKey("WITCSpellEffectEnhanced")) {
+                if (nbtTag.hasKey("WITCSpellEffectEnhanced")) {
                     level = nbtTag.getInteger("WITCSpellEffectEnhanced");
                     nbtTag.removeTag("WITCSpellEffectEnhanced");
                 }
@@ -237,22 +237,22 @@ public class ElderWand extends ItemBase {
                 nbtTag.removeTag("WITCSpellEffectID");
                 SymbolEffect effect = EffectRegistry.instance().getEffect(effectID);
                 NBTTagCompound nbtPerm = Infusion.getNBT(player);
-                if(effect != null) {
-                    if(!player.capabilities.isCreativeMode && (nbtPerm == null || !nbtPerm.hasKey("witcheryInfusionID") || !nbtPerm.hasKey("witcheryInfusionCharges"))) {
-                        ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.infusionrequired", new Object[0]);
+                if (effect != null) {
+                    if (!player.capabilities.isCreativeMode && (nbtPerm == null || !nbtPerm.hasKey("witcheryInfusionID") || !nbtPerm.hasKey("witcheryInfusionCharges"))) {
+                        ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.infusionrequired");
                         SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
-                    } else if(effect.hasValidInfusion(player, nbtPerm.getInteger("witcheryInfusionID"))) {
-                        if(effect.hasValidKnowledge(player, nbtPerm)) {
+                    } else if (effect.hasValidInfusion(player, nbtPerm.getInteger("witcheryInfusionID"))) {
+                        if (effect.hasValidKnowledge(player, nbtPerm)) {
                             long ticksRemaining = effect.cooldownRemaining(player, nbtPerm);
-                            if(ticksRemaining > 0L && !player.capabilities.isCreativeMode) {
-                                ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.effectoncooldown", new Object[]{Long.valueOf(TimeUtil.ticksToSecs(ticksRemaining)).toString()});
+                            if (ticksRemaining > 0L && !player.capabilities.isCreativeMode) {
+                                ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.effectoncooldown", Long.valueOf(TimeUtil.ticksToSecs(ticksRemaining)).toString());
                                 SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                             } else {
-                                if(level > 1) {
+                                if (level > 1) {
                                     int newLevel = 1;
-                                    if(player.isPotionActive(Witchery.Potions.WORSHIP)) {
+                                    if (player.isPotionActive(Witchery.Potions.WORSHIP)) {
                                         PotionEffect potion = player.getActivePotionEffect(Witchery.Potions.WORSHIP);
-                                        if(level <= potion.getAmplifier() + 2) {
+                                        if (level <= potion.getAmplifier() + 2) {
                                             newLevel = level;
                                         }
                                     }
@@ -260,26 +260,26 @@ public class ElderWand extends ItemBase {
                                     level = newLevel;
                                 }
 
-                                if(!player.capabilities.isCreativeMode && nbtPerm.getInteger("witcheryInfusionCharges") < effect.getChargeCost(world, player, level)) {
-                                    ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges", new Object[0]);
+                                if (!player.capabilities.isCreativeMode && nbtPerm.getInteger("witcheryInfusionCharges") < effect.getChargeCost(world, player, level)) {
+                                    ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges");
                                     SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                                 } else {
                                     effect.perform(world, player, level);
-                                    if(!player.capabilities.isCreativeMode) {
+                                    if (!player.capabilities.isCreativeMode) {
                                         Infusion.setCurrentEnergy(player, nbtPerm.getInteger("witcheryInfusionCharges") - effect.getChargeCost(world, player, level));
                                     }
                                 }
                             }
                         } else {
-                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.unknowneffect", new Object[0]);
+                            ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.unknowneffect");
                             SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                         }
                     } else {
-                        ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.infernalrequired", new Object[0]);
+                        ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.infernalrequired");
                         SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                     }
                 } else {
-                    ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.unknownsymbol", new Object[0]);
+                    ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.unknownsymbol");
                     SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
                 }
             } else {

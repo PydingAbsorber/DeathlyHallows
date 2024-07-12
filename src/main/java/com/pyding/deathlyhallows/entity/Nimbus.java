@@ -1,19 +1,11 @@
 package com.pyding.deathlyhallows.entity;
 
-import com.emoniph.witchery.Witchery;
-import com.emoniph.witchery.WitcheryItems;
 import com.emoniph.witchery.entity.EntityBroom;
 import com.emoniph.witchery.familiar.Familiar;
 import com.emoniph.witchery.infusion.InfusedBrewEffect;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.pyding.deathlyhallows.DeathHallowsMod;
-import com.pyding.deathlyhallows.client.handler.KeyHandler;
-import com.pyding.deathlyhallows.items.Nimbus3000;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,29 +15,32 @@ import net.minecraft.world.World;
 public class Nimbus extends EntityBroom {
     boolean riderHasOwlFamiliar;
     boolean riderHasSoaringBrew;
-    public float speedModifier(){
+
+    public float speedModifier() {
         float modifier = 1;
-        if(riderHasOwlFamiliar)
+        if (riderHasOwlFamiliar)
             modifier += 0.7;
-        if(riderHasSoaringBrew)
+        if (riderHasSoaringBrew)
             modifier += 0.6;
         return modifier;
     }
+
     public Nimbus(World world) {
         super(world);
         this.setSize(1.2F, 0.5F);
     }
+
     private EntityPlayer rider = null;
 
     @Override
     public void onEntityUpdate() {
         super.onEntityUpdate();
-        if(ticksExisted > 4000*speedModifier())
+        if (ticksExisted > 4000 * speedModifier())
             this.setDead();
-        if(this.riddenByEntity != null){
-            if(this.riddenByEntity instanceof EntityPlayer) {
+        if (this.riddenByEntity != null) {
+            if (this.riddenByEntity instanceof EntityPlayer) {
                 EntityPlayer player = (EntityPlayer) this.riddenByEntity;
-                if(rider == null)
+                if (rider == null)
                     rider = player;
                 float yaw = player.rotationYaw;
                 float pitch = player.rotationPitch;
@@ -54,21 +49,21 @@ public class Nimbus extends EntityBroom {
                     speed *= 2;
                 double motionX = -Math.sin(Math.toRadians(yaw)) * speed;
                 double motionZ = Math.cos(Math.toRadians(yaw)) * speed;
-                double motionY = Math.sin(Math.toRadians(-pitch)) * speed*2;
+                double motionY = Math.sin(Math.toRadians(-pitch)) * speed * 2;
                 this.motionX = motionX;
                 this.motionY = motionY;
                 this.motionZ = motionZ;
-                this.rotationYaw = (float) (yaw-90);
-                ParticleEffect.FLAME.send(SoundEffect.NONE,player,1,1,64);
+                this.rotationYaw = yaw - 90;
+                ParticleEffect.FLAME.send(SoundEffect.NONE, player, 1, 1, 64);
             }
         } else {
-            if(rider != null){
+            if (rider != null) {
                 int count = 0;
                 for (int i = 0; i < rider.inventory.getSizeInventory(); i++) {
-                    if(rider.inventory.getStackInSlot(i) != null && count == 0) {
+                    if (rider.inventory.getStackInSlot(i) != null && count == 0) {
                         ItemStack stack = rider.inventory.getStackInSlot(i);
-                        if(stack.getItem() == DeathHallowsMod.nimbus && stack.getTagCompound() != null){
-                            stack.getTagCompound().setInteger("NimbusCooldown",ticksExisted);
+                        if (stack.getItem() == DeathHallowsMod.nimbus && stack.getTagCompound() != null) {
+                            stack.getTagCompound().setInteger("NimbusCooldown", ticksExisted);
                             count++;
                         }
                     }
@@ -77,6 +72,7 @@ public class Nimbus extends EntityBroom {
             }
         }
     }
+
     @Override
     public void setBrushColor(int color) {
         super.setBrushColor(color);
@@ -105,6 +101,7 @@ public class Nimbus extends EntityBroom {
     protected void writeEntityToNBT(NBTTagCompound p_70014_1_) {
 
     }
+
     public boolean interactFirst(EntityPlayer player) {
         if (super.riddenByEntity == null || !(super.riddenByEntity instanceof EntityPlayer) || super.riddenByEntity == player) {
             if (!super.worldObj.isRemote) {

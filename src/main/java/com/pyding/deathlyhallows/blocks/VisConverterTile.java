@@ -1,13 +1,9 @@
 package com.pyding.deathlyhallows.blocks;
 
 import com.emoniph.witchery.blocks.BlockAltar;
-import com.emoniph.witchery.brewing.WitcheryBrewRegistry;
-import com.emoniph.witchery.brewing.action.BrewAction;
 import com.emoniph.witchery.common.IPowerSource;
 import com.emoniph.witchery.common.PowerSources;
 import com.emoniph.witchery.util.ParticleEffect;
-import com.emoniph.witchery.util.SoundEffect;
-import com.pyding.deathlyhallows.DeathHallowsMod;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -20,13 +16,10 @@ import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.tiles.TileArcaneWorkbench;
 import thaumcraft.common.tiles.TileMagicWorkbench;
-import thaumcraft.common.tiles.TileMagicWorkbenchCharger;
 import thaumcraft.common.tiles.TileNodeEnergized;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -36,17 +29,17 @@ public class VisConverterTile extends TileEntity {
         if (!worldObj.isRemote) {
             EntityPlayer player = null;
             double radius = 20;
-            List entities = worldObj.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox(this.xCoord-radius,this.yCoord-radius,this.zCoord-radius,this.xCoord+radius,this.zCoord+radius,this.zCoord+radius));
-            for(Object o: entities){
+            List entities = worldObj.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox(this.xCoord - radius, this.yCoord - radius, this.zCoord - radius, this.xCoord + radius, this.zCoord + radius, this.zCoord + radius));
+            for (Object o : entities) {
                 player = (EntityPlayer) o;
                 break;
             }
             int posX = xCoord;
             int posY = yCoord;
             int posZ = zCoord;
-            if(worldObj.getTileEntity(posX,posY-1,posZ) != null && worldObj.getTileEntity(posX,posY-1,posZ) instanceof BlockAltar.TileEntityAltar){
-                BlockAltar.TileEntityAltar altar = (BlockAltar.TileEntityAltar) worldObj.getTileEntity(posX,posY-1,posZ);
-                int searchRadius = (int)altar.getRange();
+            if (worldObj.getTileEntity(posX, posY - 1, posZ) != null && worldObj.getTileEntity(posX, posY - 1, posZ) instanceof BlockAltar.TileEntityAltar) {
+                BlockAltar.TileEntityAltar altar = (BlockAltar.TileEntityAltar) worldObj.getTileEntity(posX, posY - 1, posZ);
+                int searchRadius = (int) altar.getRange();
                 double nearestDistanceSq = Double.MAX_VALUE;
                 int nearestBlockX = 0;
                 int nearestBlockY = 0;
@@ -76,7 +69,7 @@ public class VisConverterTile extends TileEntity {
                 }
 
                 if (nearestBlockX != 0 || nearestBlockY != 0 || nearestBlockZ != 0) {
-                    TileEntity aura = worldObj.getTileEntity(nearestBlockX,nearestBlockY,nearestBlockZ);
+                    TileEntity aura = worldObj.getTileEntity(nearestBlockX, nearestBlockY, nearestBlockZ);
                     NBTTagCompound tagCompound = new NBTTagCompound();
                     aura.writeToNBT(tagCompound);
                     int aer = 0;
@@ -96,63 +89,59 @@ public class VisConverterTile extends TileEntity {
                                 aer = amount;
                             } else if ("terra".equals(key)) {
                                 terra = amount;
-                            }
-                            else if ("ignis".equals(key)) {
+                            } else if ("ignis".equals(key)) {
                                 ignis = amount;
-                            }
-                            else if ("ordo".equals(key)) {
+                            } else if ("ordo".equals(key)) {
                                 ordo = amount;
-                            }
-                            else if ("perditio".equals(key)) {
+                            } else if ("perditio".equals(key)) {
                                 perditio = amount;
-                            }
-                            else if ("aqua".equals(key)) {
+                            } else if ("aqua".equals(key)) {
                                 aqua = amount;
                             }
                         }
                     }
-                    int total = aer+terra+ignis+ordo+perditio+aqua;
-                    if(worldObj.getTotalWorldTime() % 20 == 0)
-                    ParticleEffect.PORTAL.send(null,worldObj,posX,posY,posZ+1,2,1,16);
+                    int total = aer + terra + ignis + ordo + perditio + aqua;
+                    if (worldObj.getTotalWorldTime() % 20 == 0)
+                        ParticleEffect.PORTAL.send(null, worldObj, posX, posY, posZ + 1, 2, 1, 16);
 
                     NBTTagCompound altarNBT = new NBTTagCompound();
                     altar.writeToNBT(altarNBT);
                     int x = altarNBT.getInteger("CoreX");
                     int y = altarNBT.getInteger("CoreY");
                     int z = altarNBT.getInteger("CoreZ");
-                    BlockAltar.TileEntityAltar coreAltar = (BlockAltar.TileEntityAltar) worldObj.getTileEntity(x,y,z);
-                    if(coreAltar != null){
+                    BlockAltar.TileEntityAltar coreAltar = (BlockAltar.TileEntityAltar) worldObj.getTileEntity(x, y, z);
+                    if (coreAltar != null) {
                         NBTTagCompound coreNBT = new NBTTagCompound();
                         coreAltar.writeToNBT(coreNBT);
                         float maxPower = coreAltar.getCoreMaxPower();
-                        coreNBT.setFloat("MaxPower",3850+total*10);
-                        coreNBT.setInteger("RechargeScale",(int)12+total/10);
+                        coreNBT.setFloat("MaxPower", 3850 + total * 10);
+                        coreNBT.setInteger("RechargeScale", 12 + total / 10);
                         coreAltar.readFromNBT(coreNBT);
                         coreAltar.markDirty();
-                        worldObj.markBlockForUpdate(x,y,z);
+                        worldObj.markBlockForUpdate(x, y, z);
                     }
                 }
-            } else if (worldObj.getTileEntity(posX,posY-1,posZ) != null && worldObj.getTileEntity(posX,posY-1,posZ) instanceof TileArcaneWorkbench && worldObj.getTotalWorldTime() % 20 == 0) {
+            } else if (worldObj.getTileEntity(posX, posY - 1, posZ) != null && worldObj.getTileEntity(posX, posY - 1, posZ) instanceof TileArcaneWorkbench && worldObj.getTotalWorldTime() % 20 == 0) {
                 IPowerSource altar = PowerSources.findClosestPowerSource(this);
                 TileEntity te = this.worldObj.getTileEntity(this.xCoord, this.yCoord - 1, this.zCoord);
-                if(altar != null && altar.getCurrentPower() > 100){
+                if (altar != null && altar.getCurrentPower() > 100) {
                     if (te != null && te instanceof TileMagicWorkbench) {
-                        TileMagicWorkbench tm = (TileMagicWorkbench)te;
+                        TileMagicWorkbench tm = (TileMagicWorkbench) te;
                         ItemStack wand = tm.getStackInSlot(10);
                         if (wand != null && wand.getItem() instanceof ItemWandCasting) {
-                            AspectList al = ((ItemWandCasting)wand.getItem()).getAspectsWithRoom(wand);
+                            AspectList al = ((ItemWandCasting) wand.getItem()).getAspectsWithRoom(wand);
                             if (al.size() > 0) {
                                 Aspect[] arr$ = al.getAspects();
                                 int len$ = arr$.length;
 
-                                for(int i$ = 0; i$ < len$; ++i$) {
+                                for (int i$ = 0; i$ < len$; ++i$) {
                                     Aspect aspect = arr$[i$];
-                                    int drain = Math.min(100, ((ItemWandCasting)wand.getItem()).getMaxVis(tm.getStackInSlot(10)) - ((ItemWandCasting)wand.getItem()).getVis(tm.getStackInSlot(10), aspect));
+                                    int drain = Math.min(100, ((ItemWandCasting) wand.getItem()).getMaxVis(tm.getStackInSlot(10)) - ((ItemWandCasting) wand.getItem()).getVis(tm.getStackInSlot(10), aspect));
                                     if (drain > 0) {
-                                        ((ItemWandCasting)wand.getItem()).addRealVis(tm.getStackInSlot(10), aspect, 1000, true);
+                                        ((ItemWandCasting) wand.getItem()).addRealVis(tm.getStackInSlot(10), aspect, 1000, true);
                                         altar.consumePower(100);
-                                        ParticleEffect.PORTAL.send(null,worldObj,posX,posY,posZ,2,2,16);
-                                        ParticleEffect.PORTAL.send(null,worldObj,altar.getLocation(),2,2,16);
+                                        ParticleEffect.PORTAL.send(null, worldObj, posX, posY, posZ, 2, 2, 16);
+                                        ParticleEffect.PORTAL.send(null, worldObj, altar.getLocation(), 2, 2, 16);
                                     }
                                 }
                             }
@@ -178,17 +167,18 @@ public class VisConverterTile extends TileEntity {
     public void readFromNBT(NBTTagCompound p_145839_1_) {
         super.readFromNBT(p_145839_1_);
     }
+
     public void vzlomJopi2(BlockAltar.TileEntityAltar altar, int power) throws NoSuchFieldException, IllegalAccessException {
         Class<?> tileEntityAltarClass = BlockAltar.TileEntityAltar.class;
         Field rechargeScale = tileEntityAltarClass.getDeclaredField("rechargeScale");
         rechargeScale.setAccessible(true);
-        rechargeScale.setInt(altar, (int)(altar.getCoreSpeed()+power/10));
+        rechargeScale.setInt(altar, altar.getCoreSpeed() + power / 10);
         Field maxPowerField = tileEntityAltarClass.getDeclaredField("maxPower");
         maxPowerField.setAccessible(true);
-        maxPowerField.setFloat(altar, altar.getCoreMaxPower()+power*10);
+        maxPowerField.setFloat(altar, altar.getCoreMaxPower() + power * 10);
     }
 
-    public void vzlomJopi(int power){
+    public void vzlomJopi(int power) {
         try {
             Class<?> blockAltarClass = BlockAltar.class;
             Class<?>[] declaredClasses = blockAltarClass.getDeclaredClasses();

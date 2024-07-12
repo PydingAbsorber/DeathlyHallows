@@ -1,6 +1,5 @@
 package com.pyding.deathlyhallows.common;
 
-import com.pyding.deathlyhallows.client.handler.KeyHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;

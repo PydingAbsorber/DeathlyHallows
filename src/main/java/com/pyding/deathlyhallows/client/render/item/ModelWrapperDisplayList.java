@@ -11,16 +11,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ModelWrapperDisplayList implements IModelCustom
-{
+public class ModelWrapperDisplayList implements IModelCustom {
     // Для каждой группы свой лист
     private final Map<String, Integer> lists = new HashMap<>();
     // Буффер, который будет содержать все листы. Для более быстрого рендера всей модели.
     private final IntBuffer bufAll;
     private final String type;
 
-    public ModelWrapperDisplayList(WavefrontObject model)
-    {
+    public ModelWrapperDisplayList(WavefrontObject model) {
         type = model.getType();
         int list = GL11.glGenLists(model.groupObjects.size());
         for (GroupObject obj : model.groupObjects) {
@@ -32,8 +30,7 @@ public class ModelWrapperDisplayList implements IModelCustom
         bufAll = initBuffer();
     }
 
-    private IntBuffer initBuffer()
-    {
+    private IntBuffer initBuffer() {
         IntBuffer buf = BufferUtils.createIntBuffer(lists.size());
         for (int i : lists.values()) {
             buf.put(i);
@@ -43,21 +40,18 @@ public class ModelWrapperDisplayList implements IModelCustom
     }
 
     @Override
-    public String getType()
-    {
+    public String getType() {
         return type;
     }
 
     @Override
-    public void renderAll()
-    {
+    public void renderAll() {
         GL11.glCallLists(bufAll);
     }
 
     @Override
-    public void renderOnly(String... groupNames)
-    {
-        if (groupNames == null || groupNames.length == 0) {
+    public void renderOnly(String... groupNames) {
+        if (groupNames == null) {
             return;
         }
 
@@ -67,8 +61,7 @@ public class ModelWrapperDisplayList implements IModelCustom
     }
 
     @Override
-    public void renderPart(String partName)
-    {
+    public void renderPart(String partName) {
         Integer list = lists.get(partName);
         if (list != null) {
             GL11.glCallList(list);
@@ -76,8 +69,7 @@ public class ModelWrapperDisplayList implements IModelCustom
     }
 
     @Override
-    public void renderAllExcept(String... groupNames)
-    {
+    public void renderAllExcept(String... groupNames) {
         if (groupNames == null || groupNames.length == 0) {
             renderAll();
             return;

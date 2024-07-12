@@ -8,26 +8,29 @@ public class Integration {
     public static boolean botania = false;
     public static boolean bloodMagic = false;
     public static boolean arsMagica = false;
-    public static void preInit(){
+
+    public static void preInit() {
         thaumcraft = Loader.isModLoaded("Thaumcraft");
         botania = Loader.isModLoaded("Botania");
         bloodMagic = Loader.isModLoaded("AWWayofTime");
         arsMagica = Loader.isModLoaded("ArsMagica2");
     }
-    public static void init(){
-        if(Integration.thaumcraft){
+
+    public static void init() {
+        if (Integration.thaumcraft) {
             ThaumcraftDH.register();
         }
-        if(Integration.botania){
+        if (Integration.botania) {
             RegisterFlowers.init();
         }
     }
-    public static void postInit(){
+
+    public static void postInit() {
         if (thaumcraft) {
             ThaumcraftDH.recipes();
             ThaumcraftDH.aspects();
         }
-        if(Integration.botania){
+        if (Integration.botania) {
             BotaniaDH.lexus();
         }
     }

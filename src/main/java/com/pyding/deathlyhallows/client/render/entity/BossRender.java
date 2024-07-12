@@ -4,10 +4,7 @@ import com.pyding.deathlyhallows.entity.AbsoluteDeath;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
-
-import static codechicken.lib.gui.GuiDraw.drawTexturedModalRect;
 
 public class BossRender extends RenderLiving {
     private static final ResourceLocation generic_block = new ResourceLocation("dh", "textures/particles/generic_block.png");
@@ -18,7 +15,7 @@ public class BossRender extends RenderLiving {
 
     @Override
     public void doRender(Entity entity, double p_76986_2_, double p_76986_4_, double p_76986_6_, float p_76986_8_, float p_76986_9_) {
-        if(entity instanceof AbsoluteDeath){
+        if (entity instanceof AbsoluteDeath) {
             /*bindTexture(generic_block);
             drawTexturedModalRect(entity.serverPosX, entity.serverPosY+2, 0, 0, 64, 64);*/
         }

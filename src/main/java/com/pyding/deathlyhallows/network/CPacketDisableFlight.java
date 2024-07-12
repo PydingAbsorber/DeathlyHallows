@@ -8,7 +8,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 
-public class CPacketDisableFlight implements IMessage, IMessageHandler<CPacketDisableFlight,IMessage> {
+public class CPacketDisableFlight implements IMessage, IMessageHandler<CPacketDisableFlight, IMessage> {
 
     public CPacketDisableFlight() {
     }
@@ -24,7 +24,7 @@ public class CPacketDisableFlight implements IMessage, IMessageHandler<CPacketDi
     @Override
     @SideOnly(Side.CLIENT)
     public IMessage onMessage(CPacketDisableFlight message, MessageContext ctx) {
-        if(ctx.side == Side.CLIENT){
+        if (ctx.side == Side.CLIENT) {
             Minecraft.getMinecraft().thePlayer.capabilities.isFlying = false;
             Minecraft.getMinecraft().thePlayer.motionY = -10F;
         }

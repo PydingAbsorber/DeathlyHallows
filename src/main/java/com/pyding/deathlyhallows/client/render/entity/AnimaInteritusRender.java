@@ -1,23 +1,14 @@
 package com.pyding.deathlyhallows.client.render.entity;
 
 import com.pyding.deathlyhallows.client.render.item.ModelWrapperDisplayList;
-import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
-import com.pyding.deathlyhallows.entity.AbsoluteDeath;
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.passive.EntityVillager;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 import net.minecraftforge.client.model.obj.WavefrontObject;
 import org.lwjgl.opengl.GL11;
-
-import java.util.List;
 
 public class AnimaInteritusRender extends RenderPlayer {
     private static final ResourceLocation anima = new ResourceLocation("dh", "textures/particles/anima.png");
@@ -32,9 +23,9 @@ public class AnimaInteritusRender extends RenderPlayer {
         super.doRender(entity, par2, par4, par6, par8, par9);
         NBTTagCompound nbt = entity.getEntityData().getCompoundTag("dhRenderData");
         int curse = nbt.getInteger("dhcurse");
-        if(curse > 0){
+        if (curse > 0) {
             GL11.glPushMatrix();
-            if(curse > 200){
+            if (curse > 200) {
                 bindTexture(anima);
                 GL11.glTranslatef((float) par2, (float) par4 + 0.5F, (float) par6);
                 curseModel.renderAll();
