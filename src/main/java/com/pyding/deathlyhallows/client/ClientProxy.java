@@ -6,9 +6,11 @@ import com.pyding.deathlyhallows.client.handler.KeyHandler;
 import com.pyding.deathlyhallows.client.render.block.ViscRender;
 import com.pyding.deathlyhallows.client.render.entity.*;
 import com.pyding.deathlyhallows.client.render.item.EldenWandRender;
+import com.pyding.deathlyhallows.client.render.item.EmpoweredEntityRender;
 import com.pyding.deathlyhallows.client.render.item.ViscItemRender;
 import com.pyding.deathlyhallows.common.CommonProxy;
 import com.pyding.deathlyhallows.entity.AbsoluteDeath;
+import com.pyding.deathlyhallows.entity.EmpoweredArrowEntity;
 import com.pyding.deathlyhallows.entity.Nimbus;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
@@ -45,6 +47,7 @@ public class ClientProxy extends CommonProxy {
         RenderingRegistry.registerEntityRenderingHandler(Nimbus.class, new RenderNimbus());
         RenderingRegistry.registerEntityRenderingHandler(EntityPlayer.class, new AnimaInteritusRender());
         RenderingRegistry.registerEntityRenderingHandler(EntityLiving.class, new AnimaInteritusMobRender());
+		RenderingRegistry.registerEntityRenderingHandler(EmpoweredArrowEntity.class, new EmpoweredEntityRender());
         this.bindRenderer(VisConverterTile.class, new ViscRender());
     }
 

@@ -14,6 +14,7 @@ import com.google.common.collect.Multimap;
 import com.pyding.deathlyhallows.DeathHallowsMod;
 import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
 import com.pyding.deathlyhallows.entity.AbsoluteDeath;
+import com.pyding.deathlyhallows.entity.EmpoweredArrowEntity;
 import com.pyding.deathlyhallows.integration.Integration;
 import com.pyding.deathlyhallows.items.DeadlyPrism;
 import com.pyding.deathlyhallows.items.Nimbus3000;
@@ -27,6 +28,7 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import ibxm.Player;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.enchantment.Enchantment;
@@ -37,6 +39,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityPainting;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
@@ -60,6 +63,8 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.ArrowLooseEvent;
+import net.minecraftforge.event.entity.player.ArrowNockEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -119,6 +124,11 @@ public class EventHandler {
             }
         }
     }
+	
+	@SubscribeEvent
+	public void onUsingItem(PlayerUseItemEvent event){
+		
+	}
 
     @SubscribeEvent
     public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
@@ -580,8 +590,29 @@ public class EventHandler {
                 playerSource.addChatMessage(new ChatComponentText("Damage Source: " + event.source.damageType + " §7Victim: " + event.entity.getCommandSenderName() + " Dealer: " + event.source.getEntity().getCommandSenderName()));
                 playerSource.addChatMessage(new ChatComponentText("Amount: §5" + event.ammount));
             }
+			if(props.getElfLvl() > 7){
+				EmpoweredArrowEntity arrow = new EmpoweredArrowEntity(playerSource.getEntityWorld(),playerSource,100,10,DamageSource.magic);
+				arrow.setPosition(playerSource.posX,playerSource.posY,playerSource.posZ);
+				playerSource.worldObj.spawnEntityInWorld(arrow); 
+			}
         }
     }
+	@SubscribeEvent
+	public void bowUseStart(ArrowNockEvent event){
+		EntityPlayer player = event.entityPlayer;
+		player.getEntityData().setLong("DHArrow",System.currentTimeMillis());
+	}
+	@SubscribeEvent
+	public void bowUse(ArrowLooseEvent event){
+		EntityPlayer player = event.entityPlayer;
+		ExtendedPlayer props = ExtendedPlayer.get(player);
+		long time = System.currentTimeMillis()-player.getEntityData().getLong("DHArrow");
+		if(props.getElfLvl() > 7 && time > 2*1000){
+			EmpoweredArrowEntity arrow = new EmpoweredArrowEntity(player.getEntityWorld(),player,100,10,DamageSource.magic);
+			arrow.setPosition(player.posX,player.posY,player.posZ);
+			player.worldObj.spawnEntityInWorld(arrow);
+		}
+	}
 
     public long aoeCD = 0;
 
@@ -651,7 +682,7 @@ public class EventHandler {
                 if (event.source == DamageSource.outOfWorld && player.getEntityData().getInteger("DopVoid") > 0) {
                     if (event.ammount * 10 < Float.MAX_VALUE)
                         event.ammount = event.ammount * 10;
-                }
+                } 
                 if (BaublesApi.getBaubles(player).getStackInSlot(3) != null) {
                     if (player.getEntityData().getDouble("mantlecd") == 0 && BaublesApi.getBaubles(player).getStackInSlot(3).getItem() == DeathHallowsMod.invisibilityMantle) {
                         if (ItemDeathsClothes.isFullSetWorn(player) && player.getHeldItem() != null && player.getHeldItem().getItem() == Witchery.Items.DEATH_HAND) {

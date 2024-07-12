@@ -13,6 +13,7 @@ public class ModEntity {
     private final ArrayList entities = new ArrayList();
     public final ModEntity.EntityRef ABSOLUTE_DEATH;
     public final ModEntity.EntityRef NIMBUS;
+	public final ModEntity.EntityRef ARROW;
 
     public List getEntities() {
         return this.entities;
@@ -24,6 +25,7 @@ public class ModEntity {
     public ModEntity() {
         this.ABSOLUTE_DEATH = (new ModEntity.LivingRef(92, AbsoluteDeath.class, "death", this.entities)).setEgg(9502720, 11430927);
         this.NIMBUS = (new ModEntity.EntityRef(93, Nimbus.class, "Nimbus3000", this.entities)).setEgg(666, 666);
+		this.ARROW = (new ModEntity.EntityRef(94,EmpoweredArrowEntity.class,"EmpoweredArrow",this.entities));
     }
 
     public static class EntityRef {
