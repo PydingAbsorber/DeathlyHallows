@@ -17,7 +17,6 @@ buildscript {
     }
 }
 
-apply plugin: 'maven'
 apply plugin: 'forge'
 
 version = "1.0.0"
@@ -31,11 +30,6 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 minecraft {
     version = "1.7.10-10.13.4.1614-1.7.10"
     runDir = "run"
-}
-
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = "UTF-8"
 }
 
 configurations {
@@ -62,12 +56,7 @@ processResources {
 }
 
 dependencies {
-	compile fileTree(dir: "libs", include: "*.jar")
-	//compile "codechicken:CodeChickenLib:1.7.10-1.1.1.109:dev"
-	//compile "codechicken:CodeChickenCore:1.7.10-1.0.2.9:dev"
-	//compile "codechicken:NotEnoughItems:1.7.10-1.0.2.15:dev"
-	//compile "codechicken:ForgeMultipart:1.7.10-1.1.1.320:dev"
-	//compile files("/libs/Baubles-deobf-1.7.10-1.0.1.10.jar")
+	provided fileTree(dir: "libs", include: "*.jar")
 }
 
 /* uncomment if you really need those 2 files each build

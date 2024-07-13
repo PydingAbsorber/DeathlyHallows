@@ -6,17 +6,20 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-public class EmpoweredArrowEntity extends Entity {
+public class EntityEmpoweredArrow extends Entity {
 	EntityLivingBase owner = null;
 	float damage = 0;
 	float radius = 0;
 	DamageSource source = null;
-	public EmpoweredArrowEntity(World p_i1582_1_) {
-		super(p_i1582_1_);
+	
+	public EntityEmpoweredArrow(World world) {
+		super(world);
+		setSize(0.5F, 0.5F);
 	}
 
-	public EmpoweredArrowEntity(World p_i1582_1_, EntityLivingBase owner, float damage, float radius, DamageSource source) {
-		super(p_i1582_1_);
+	public EntityEmpoweredArrow(World world, EntityLivingBase owner, float damage, float radius, DamageSource source) {
+		super(world);
+		setSize(0.5F, 0.5F);
 		this.owner = owner;
 		this.damage = damage;
 		this.radius = radius;
@@ -37,4 +40,5 @@ public class EmpoweredArrowEntity extends Entity {
 	protected void writeEntityToNBT(NBTTagCompound nbtTagCompound) {
 
 	}
+	
 }

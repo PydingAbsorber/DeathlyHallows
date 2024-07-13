@@ -14,7 +14,7 @@ import com.google.common.collect.Multimap;
 import com.pyding.deathlyhallows.DeathHallowsMod;
 import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
 import com.pyding.deathlyhallows.entity.AbsoluteDeath;
-import com.pyding.deathlyhallows.entity.EmpoweredArrowEntity;
+import com.pyding.deathlyhallows.entity.EntityEmpoweredArrow;
 import com.pyding.deathlyhallows.integration.Integration;
 import com.pyding.deathlyhallows.items.DeadlyPrism;
 import com.pyding.deathlyhallows.items.Nimbus3000;
@@ -28,7 +28,6 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
-import ibxm.Player;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.enchantment.Enchantment;
@@ -39,7 +38,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.item.EntityPainting;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
@@ -591,8 +589,10 @@ public class EventHandler {
                 playerSource.addChatMessage(new ChatComponentText("Amount: §5" + event.ammount));
             }
 			if(props.getElfLvl() > 7){
-				EmpoweredArrowEntity arrow = new EmpoweredArrowEntity(playerSource.getEntityWorld(),playerSource,100,10,DamageSource.magic);
-				arrow.setPosition(playerSource.posX,playerSource.posY,playerSource.posZ);
+				EntityEmpoweredArrow arrow = new EntityEmpoweredArrow(playerSource.getEntityWorld(),playerSource,100,10,DamageSource.magic);
+				arrow.setPositionAndRotation(playerSource.posX,playerSource.posY,playerSource.posZ, playerSource.rotationYaw, playerSource.rotationPitch);
+				arrow.prevRotationYaw = playerSource.rotationYaw;
+				arrow.prevRotationPitch = playerSource.rotationPitch;
 				playerSource.worldObj.spawnEntityInWorld(arrow); 
 			}
         }
@@ -608,8 +608,8 @@ public class EventHandler {
 		ExtendedPlayer props = ExtendedPlayer.get(player);
 		long time = System.currentTimeMillis()-player.getEntityData().getLong("DHArrow");
 		if(props.getElfLvl() > 7 && time > 2*1000){
-			EmpoweredArrowEntity arrow = new EmpoweredArrowEntity(player.getEntityWorld(),player,100,10,DamageSource.magic);
-			arrow.setPosition(player.posX,player.posY,player.posZ);
+			EntityEmpoweredArrow arrow = new EntityEmpoweredArrow(player.getEntityWorld(),player,100,10,DamageSource.magic);
+			arrow.setPositionAndRotation(player.posX,player.posY,player.posZ, player.rotationYaw, player.rotationPitch);
 			player.worldObj.spawnEntityInWorld(arrow);
 		}
 	}
