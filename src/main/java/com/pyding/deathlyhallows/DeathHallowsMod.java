@@ -45,9 +45,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.EnumSet;
 
-@Mod(modid = "dh", name = "Deathly Hallows", version = "1.0", dependencies = "required-after:witchery;required-after:Baubles;after:Thaumcraft;after:AWWayofTime;after:Botania;after:AdvancedBotany")
+@Mod(modid = DeathHallowsMod.ID, name = "Deathly Hallows", version = "1.0", dependencies = "required-after:witchery;required-after:Baubles;after:Thaumcraft;after:AWWayofTime;after:Botania;after:AdvancedBotany")
 public class DeathHallowsMod {
-    public static final String MOD_ID = "dh";
+    public static final String ID = "dh";
     public static Item invisibilityMantle;
     public static Item elderWand;
     public static Item resurrectionStone;
