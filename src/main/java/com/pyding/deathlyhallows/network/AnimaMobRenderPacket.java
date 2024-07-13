@@ -13,42 +13,42 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class AnimaMobRenderPacket implements IMessage, IMessageHandler<AnimaMobRenderPacket, IMessage> {
-    public NBTTagCompound nbtData;
+	public NBTTagCompound nbtData;
 
-    public int id;
+	public int id;
 
-    public AnimaMobRenderPacket() {
-    }
+	public AnimaMobRenderPacket() {
+	}
 
-    public AnimaMobRenderPacket(NBTTagCompound nbt, int identifier) {
-        nbtData = nbt;
-        id = identifier;
-    }
+	public AnimaMobRenderPacket(NBTTagCompound nbt, int identifier) {
+		nbtData = nbt;
+		id = identifier;
+	}
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        nbtData = ByteBufUtils.readTag(buf);
-        id = buf.readInt();
-    }
+	@Override
+	public void fromBytes(ByteBuf buf) {
+		nbtData = ByteBufUtils.readTag(buf);
+		id = buf.readInt();
+	}
 
-    @Override
-    public void toBytes(ByteBuf buf) {
-        ByteBufUtils.writeTag(buf, nbtData);
-        buf.writeInt(id);
-    }
+	@Override
+	public void toBytes(ByteBuf buf) {
+		ByteBufUtils.writeTag(buf, nbtData);
+		buf.writeInt(id);
+	}
 
-    @Override
-    @SideOnly(Side.CLIENT)
-    public IMessage onMessage(AnimaMobRenderPacket message, MessageContext ctx) {
-        if (ctx.side == Side.CLIENT) {
-            Entity entity = Minecraft.getMinecraft().theWorld.getEntityByID(message.id);
-            if (entity instanceof EntityLiving) {
-                EntityLiving mob = (EntityLiving) Minecraft.getMinecraft().theWorld.getEntityByID(message.id);
-                if (message.nbtData != null) {
-                    mob.getEntityData().setTag("dhData", message.nbtData);
-                }
-            }
-        }
-        return null;
-    }
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IMessage onMessage(AnimaMobRenderPacket message, MessageContext ctx) {
+		if(ctx.side == Side.CLIENT) {
+			Entity entity = Minecraft.getMinecraft().theWorld.getEntityByID(message.id);
+			if(entity instanceof EntityLiving) {
+				EntityLiving mob = (EntityLiving)Minecraft.getMinecraft().theWorld.getEntityByID(message.id);
+				if(message.nbtData != null) {
+					mob.getEntityData().setTag("dhData", message.nbtData);
+				}
+			}
+		}
+		return null;
+	}
 }

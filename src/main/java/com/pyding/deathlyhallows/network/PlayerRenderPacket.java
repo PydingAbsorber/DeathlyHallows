@@ -11,35 +11,35 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class PlayerRenderPacket implements IMessage, IMessageHandler<com.pyding.deathlyhallows.network.PlayerRenderPacket, IMessage> {
-    public NBTTagCompound nbtData;
+	public NBTTagCompound nbtData;
 
 
-    public PlayerRenderPacket() {
-    }
+	public PlayerRenderPacket() {
+	}
 
-    public PlayerRenderPacket(NBTTagCompound nbt) {
-        nbtData = nbt;
-    }
+	public PlayerRenderPacket(NBTTagCompound nbt) {
+		nbtData = nbt;
+	}
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        nbtData = ByteBufUtils.readTag(buf);
-    }
+	@Override
+	public void fromBytes(ByteBuf buf) {
+		nbtData = ByteBufUtils.readTag(buf);
+	}
 
-    @Override
-    public void toBytes(ByteBuf buf) {
-        ByteBufUtils.writeTag(buf, nbtData);
-    }
+	@Override
+	public void toBytes(ByteBuf buf) {
+		ByteBufUtils.writeTag(buf, nbtData);
+	}
 
-    @Override
-    @SideOnly(Side.CLIENT)
-    public IMessage onMessage(PlayerRenderPacket message, MessageContext ctx) {
-        if (ctx.side == Side.CLIENT) {
-            EntityPlayer entity = ctx.getServerHandler().playerEntity;
-            if (message.nbtData != null) {
-                entity.getEntityData().setTag("dhRenderData", message.nbtData);
-            }
-        }
-        return null;
-    }
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IMessage onMessage(PlayerRenderPacket message, MessageContext ctx) {
+		if(ctx.side == Side.CLIENT) {
+			EntityPlayer entity = ctx.getServerHandler().playerEntity;
+			if(message.nbtData != null) {
+				entity.getEntityData().setTag("dhRenderData", message.nbtData);
+			}
+		}
+		return null;
+	}
 }

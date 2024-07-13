@@ -5,10 +5,7 @@ import com.pyding.deathlyhallows.client.render.entity.model.ModelEmpoweredArrow;
 import com.pyding.deathlyhallows.client.render.item.ModelWrapperDisplayList;
 import com.pyding.deathlyhallows.entity.EntityEmpoweredArrow;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderArrow;
-import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
@@ -32,7 +29,7 @@ public class RenderEmpoweredArrow extends Render {
 		glPushMatrix();
 		// render arrow
 		glTranslated(x, y + 0.5D, z);
-		
+
 		glRotatef(180F - e.rotationYaw, 0.0F, 1.0F, 0.0F);
 		glRotatef(-e.rotationPitch, 1.0F, 0.0F, 0.0F);
 

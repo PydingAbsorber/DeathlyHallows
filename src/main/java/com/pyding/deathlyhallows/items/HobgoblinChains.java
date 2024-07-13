@@ -18,39 +18,42 @@ import net.minecraft.world.World;
 import java.util.List;
 
 public class HobgoblinChains extends Item {
-    @Override
-    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
-        double radius = 2;
-        List entities = world.getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(player.posX - radius, player.posY - radius, player.posZ - radius, player.posX + radius, player.posY + radius, player.posZ + radius));
-        if (entities != null) {
-            for (Object o : entities) {
-                if (o instanceof EntityGoblin) {
-                    EntityGoblin goblin = (EntityGoblin) o;
-                    player.swingItem();
-                    player.inventory.consumeInventoryItem(player.getHeldItem().getItem());
-                    goblin.getEntityData().setDouble("chainX", goblin.posX);
-                    goblin.getEntityData().setDouble("chainY", goblin.posY);
-                    goblin.getEntityData().setDouble("chainZ", goblin.posZ);
-                    if (ConfigHandler.hob)
-                        goblin.getEntityData().setBoolean("immortal", true);
-                    break;
-                }
-                if (o instanceof AbsoluteDeath) {
-                    if (!player.worldObj.isRemote)
-                        ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "dh.chat.freak");
-                }
-            }
-        }
-        return super.onItemRightClick(stack, world, player);
-    }
+	@Override
+	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
+		double radius = 2;
+		List entities = world.getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(player.posX - radius, player.posY - radius, player.posZ - radius, player.posX + radius, player.posY + radius, player.posZ + radius));
+		if(entities != null) {
+			for(Object o: entities) {
+				if(o instanceof EntityGoblin) {
+					EntityGoblin goblin = (EntityGoblin)o;
+					player.swingItem();
+					player.inventory.consumeInventoryItem(player.getHeldItem().getItem());
+					goblin.getEntityData().setDouble("chainX", goblin.posX);
+					goblin.getEntityData().setDouble("chainY", goblin.posY);
+					goblin.getEntityData().setDouble("chainZ", goblin.posZ);
+					if(ConfigHandler.hob) {
+						goblin.getEntityData().setBoolean("immortal", true);
+					}
+					break;
+				}
+				if(o instanceof AbsoluteDeath) {
+					if(!player.worldObj.isRemote) {
+						ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "dh.chat.freak");
+					}
+				}
+			}
+		}
+		return super.onItemRightClick(stack, world, player);
+	}
 
 
-    @SideOnly(Side.CLIENT)
-    public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
-        if (I18n.format("dh.util.language").equals("Ru")) {
-            list.add("Привязывают Хобгоблина к зоне 16х16 от его текущей позиции навсегда и делают его бессертным");
-        } else {
-            list.add("Binds Hobgoblin to box 16x16 blocks from its current position forever and makes him immortal");
-        }
-    }
+	@SideOnly(Side.CLIENT)
+	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
+		if(I18n.format("dh.util.language").equals("Ru")) {
+			list.add("Привязывают Хобгоблина к зоне 16х16 от его текущей позиции навсегда и делают его бессертным");
+		}
+		else {
+			list.add("Binds Hobgoblin to box 16x16 blocks from its current position forever and makes him immortal");
+		}
+	}
 }
