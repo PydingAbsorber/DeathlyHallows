@@ -4,9 +4,13 @@ import com.emoniph.witchery.client.renderer.RenderBlockItem;
 import com.pyding.deathlyhallows.blocks.VisConverterTile;
 import com.pyding.deathlyhallows.client.handler.KeyHandler;
 import com.pyding.deathlyhallows.client.render.block.ViscRender;
-import com.pyding.deathlyhallows.client.render.entity.*;
-import com.pyding.deathlyhallows.client.render.item.EldenWandRender;
+import com.pyding.deathlyhallows.client.render.entity.AnimaInteritusMobRender;
+import com.pyding.deathlyhallows.client.render.entity.AnimaInteritusRender;
+import com.pyding.deathlyhallows.client.render.entity.PlayerRender;
+import com.pyding.deathlyhallows.client.render.entity.RenderAbsoluteDeath;
 import com.pyding.deathlyhallows.client.render.entity.RenderEmpoweredArrow;
+import com.pyding.deathlyhallows.client.render.entity.RenderNimbus;
+import com.pyding.deathlyhallows.client.render.item.EldenWandRender;
 import com.pyding.deathlyhallows.client.render.item.ViscItemRender;
 import com.pyding.deathlyhallows.common.CommonProxy;
 import com.pyding.deathlyhallows.entity.AbsoluteDeath;
@@ -30,47 +34,49 @@ import static com.pyding.deathlyhallows.DeathHallowsMod.elderWand;
 import static com.pyding.deathlyhallows.DeathHallowsMod.visc;
 
 public class ClientProxy extends CommonProxy {
-    @Override
-    public void preInit(FMLPreInitializationEvent event) {
-        super.preInit(event);
-        KeyHandler keyHandler = new KeyHandler();
-        keyHandler.register();
-    }
+	@Override
+	public void preInit(FMLPreInitializationEvent event) {
+		super.preInit(event);
+		KeyHandler keyHandler = new KeyHandler();
+		keyHandler.register();
+	}
 
-    @Override
-    public void init(FMLInitializationEvent event) {
-        super.init(event);
-        FMLCommonHandler.instance().bus().register(new PlayerRender());
-        MinecraftForgeClient.registerItemRenderer(elderWand, new EldenWandRender());
-        MinecraftForgeClient.registerItemRenderer(ItemBlock.getItemFromBlock(visc), new ViscItemRender());
-        RenderingRegistry.registerEntityRenderingHandler(AbsoluteDeath.class, new RenderAbsoluteDeath());
-        RenderingRegistry.registerEntityRenderingHandler(Nimbus.class, new RenderNimbus());
-        RenderingRegistry.registerEntityRenderingHandler(EntityPlayer.class, new AnimaInteritusRender());
-        RenderingRegistry.registerEntityRenderingHandler(EntityLiving.class, new AnimaInteritusMobRender());
+	@Override
+	public void init(FMLInitializationEvent event) {
+		super.init(event);
+		FMLCommonHandler.instance().bus().register(new PlayerRender());
+		MinecraftForgeClient.registerItemRenderer(elderWand, new EldenWandRender());
+		MinecraftForgeClient.registerItemRenderer(ItemBlock.getItemFromBlock(visc), new ViscItemRender());
+		RenderingRegistry.registerEntityRenderingHandler(AbsoluteDeath.class, new RenderAbsoluteDeath());
+		RenderingRegistry.registerEntityRenderingHandler(Nimbus.class, new RenderNimbus());
+		RenderingRegistry.registerEntityRenderingHandler(EntityPlayer.class, new AnimaInteritusRender());
+		RenderingRegistry.registerEntityRenderingHandler(EntityLiving.class, new AnimaInteritusMobRender());
 		RenderingRegistry.registerEntityRenderingHandler(EntityEmpoweredArrow.class, new RenderEmpoweredArrow());
-        this.bindRenderer(VisConverterTile.class, new ViscRender());
-    }
+		this.bindRenderer(VisConverterTile.class, new ViscRender());
+	}
 
-    @Override
-    public void postInit(FMLPostInitializationEvent event) {
-        super.postInit(event);
-    }
+	@Override
+	public void postInit(FMLPostInitializationEvent event) {
+		super.postInit(event);
+	}
 
-    private void bindRenderer(Class clazz, TileEntitySpecialRenderer render, Item... items) {
-        ClientRegistry.bindTileEntitySpecialRenderer(clazz, render);
-        Item[] arr$ = items;
-        int len$ = items.length;
+	private void bindRenderer(Class clazz, TileEntitySpecialRenderer render, Item... items) {
+		ClientRegistry.bindTileEntitySpecialRenderer(clazz, render);
+		Item[] arr$ = items;
+		int len$ = items.length;
 
-        for (int i$ = 0; i$ < len$; ++i$) {
-            Item item = arr$[i$];
-            if (item != null) {
-                try {
-                    MinecraftForgeClient.registerItemRenderer(item, new RenderBlockItem(render, (TileEntity) clazz.newInstance()));
-                } catch (IllegalAccessException var9) {
-                } catch (InstantiationException var10) {
-                }
-            }
-        }
+		for(int i$ = 0; i$ < len$; ++i$) {
+			Item item = arr$[i$];
+			if(item != null) {
+				try {
+					MinecraftForgeClient.registerItemRenderer(item, new RenderBlockItem(render, (TileEntity)clazz.newInstance()));
+				}
+				catch(IllegalAccessException var9) {
+				}
+				catch(InstantiationException var10) {
+				}
+			}
+		}
 
-    }
+	}
 }

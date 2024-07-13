@@ -6,18 +6,18 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 
 public class ModelEmpoweredArrow extends ModelBase {
-	
+
 	private final ModelRenderer head;
 	private final ModelRenderer tail;
 	private final ModelRenderer body;
-	
+
 	@SuppressWarnings("unchecked")
 	public ModelEmpoweredArrow() {
 		textureWidth = 32;
 		textureHeight = 16;
 
 		head = new ModelRenderer(this);
-		head.setRotationPoint( 0.0F, -4.0F, 2.0F);
+		head.setRotationPoint(0.0F, -4.0F, 2.0F);
 		head.cubeList.add(new ModelBox(head, -1, 2, -0.5F, 0.0F, -12.0F, 1, 0, 3, 0.0F));
 		head.cubeList.add(new ModelBox(head, 0, 0, 0.0F, -0.5F, -12.0F, 0, 1, 3, 0.0F));
 		head.cubeList.add(new ModelBox(head, -1, 1, -1.0F, 0.0F, -9.0F, 2, 0, 1, 0.0F));

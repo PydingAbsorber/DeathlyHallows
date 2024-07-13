@@ -11,7 +11,7 @@ public class EntityEmpoweredArrow extends Entity {
 	float damage = 0;
 	float radius = 0;
 	DamageSource source = null;
-	
+
 	public EntityEmpoweredArrow(World world) {
 		super(world);
 		setSize(0.5F, 0.5F);
@@ -28,7 +28,7 @@ public class EntityEmpoweredArrow extends Entity {
 
 	@Override
 	protected void entityInit() {
-		
+
 	}
 
 	@Override
@@ -40,5 +40,5 @@ public class EntityEmpoweredArrow extends Entity {
 	protected void writeEntityToNBT(NBTTagCompound nbtTagCompound) {
 
 	}
-	
+
 }

@@ -6,13 +6,13 @@ import net.minecraft.profiler.Profiler;
 
 public final class ParticleRenderDispatcher {
 
-    public static void dispatch() {
-        Tessellator tessellator = Tessellator.instance;
+	public static void dispatch() {
+		Tessellator tessellator = Tessellator.instance;
 
-        Profiler profiler = Minecraft.getMinecraft().mcProfiler;
+		Profiler profiler = Minecraft.getMinecraft().mcProfiler;
 
-        profiler.startSection("Generic");
-        GenericBlock.dispatchQueuedRenders(tessellator);
-        profiler.endSection();
-    }
+		profiler.startSection("Generic");
+		GenericBlock.dispatchQueuedRenders(tessellator);
+		profiler.endSection();
+	}
 }
