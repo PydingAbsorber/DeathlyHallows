@@ -124,5 +124,14 @@
         "stream": true
       }
     ]
-  }
+  },
+	"spell.arrow": {
+		"category": "master",
+		"sounds": [
+			{
+				"name": "dh:spell/arrow",
+				"stream": true
+			}
+		]
+	}
 }

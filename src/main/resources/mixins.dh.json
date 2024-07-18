@@ -1,0 +1,14 @@
+{
+	"required": true,
+	"minVersion": "0.7.11",
+	"package": "com.pyding.deathlyhallows.coremod",
+	"target": "@env(DEFAULT)",
+	"compatibilityLevel": "JAVA_8",
+	"mixins": [
+		"WitcheryGuiMixin"
+	],
+	"client": [
+		
+	],
+	"server": []
+}

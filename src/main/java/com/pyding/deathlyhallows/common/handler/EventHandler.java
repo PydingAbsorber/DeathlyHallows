@@ -247,6 +247,15 @@ public class EventHandler {
 		if((event.entity instanceof EntityPlayer) && !(event.entity.worldObj.isRemote)) {
 			EntityPlayer player = (EntityPlayer)event.entity;
 			World world = player.worldObj;
+			if(player.getEntityData().getLong("DHArrow") > 0) {
+				long time = System.currentTimeMillis() - player.getEntityData().getLong("DHArrow");
+				boolean show = player.getEntityData().getBoolean("DHArrowShow");
+				if(time >= 2 * 1000 && show) {
+					player.getEntityData().setBoolean("DHArrowShow",false);
+					ParticleEffect.MAGIC_CRIT.send(null, player, 2, 2, 64);
+					world.playSoundAtEntity(player, "dh:spell.arrow", 1F, 1F);
+				}
+			}
 			ItemStack stack = player.getHeldItem();
 			if(stack != null) {
 				if(stack.getItem() == DeathHallowsMod.elderWand && player.getEntityData().getBoolean("dhkey1")) {
@@ -642,13 +651,6 @@ public class EventHandler {
 																																																.getCommandSenderName()));
 				playerSource.addChatMessage(new ChatComponentText("Amount: §5" + event.ammount));
 			}
-			if(props.getElfLvl() > 7) {
-				EntityEmpoweredArrow arrow = new EntityEmpoweredArrow(playerSource.getEntityWorld(), playerSource, 100, 10, DamageSource.magic);
-				arrow.setPositionAndRotation(playerSource.posX, playerSource.posY, playerSource.posZ, playerSource.rotationYaw, playerSource.rotationPitch);
-				arrow.prevRotationYaw = playerSource.rotationYaw;
-				arrow.prevRotationPitch = playerSource.rotationPitch;
-				playerSource.worldObj.spawnEntityInWorld(arrow);
-			}
 		}
 	}
 
@@ -656,17 +658,21 @@ public class EventHandler {
 	public void bowUseStart(ArrowNockEvent event) {
 		EntityPlayer player = event.entityPlayer;
 		player.getEntityData().setLong("DHArrow", System.currentTimeMillis());
+		player.getEntityData().setBoolean("DHArrowShow", true);
 	}
 
 	@SubscribeEvent
 	public void bowUse(ArrowLooseEvent event) {
-		EntityPlayer player = event.entityPlayer;
+		EntityPlayer player = event.entityPlayer; 
 		ExtendedPlayer props = ExtendedPlayer.get(player);
 		long time = System.currentTimeMillis() - player.getEntityData().getLong("DHArrow");
-		if(props.getElfLvl() > 7 && time > 2 * 1000) {
-			EntityEmpoweredArrow arrow = new EntityEmpoweredArrow(player.getEntityWorld(), player, 100, 10, DamageSource.magic);
+		player.getEntityData().setLong("DHArrow",0);
+		if(props.getElfLvl() > 7 && time > 2 * 1000) { 
+			EntityEmpoweredArrow arrow = new EntityEmpoweredArrow(player.getEntityWorld(), player, (float)(player.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue()*20), 4, DamageSource.causePlayerDamage(player).setMagicDamage().setProjectile());
 			arrow.setPositionAndRotation(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
 			player.worldObj.spawnEntityInWorld(arrow);
+			player.worldObj.playSoundAtEntity(player, "dh:spell.arrow", 1F, 1F);
+			event.setCanceled(true);
 		}
 	}
 

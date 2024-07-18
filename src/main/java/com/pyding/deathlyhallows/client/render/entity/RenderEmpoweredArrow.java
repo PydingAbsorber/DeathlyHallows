@@ -40,7 +40,7 @@ public class RenderEmpoweredArrow extends Render {
 		glMatrixMode(GL_TEXTURE);
 		glPushMatrix();
 		bindTexture(effectTexture);
-		float moveY = (e.ticksExisted % 20) / 20F;
+		float moveY = (e.ticksExisted % 20) / 10F;
 		glTranslatef(0.0F, moveY, 0.0F);
 		glScalef(1.0F, 0.0625F, 1.0F);
 		effectModel.renderAll();

@@ -59,6 +59,14 @@ dependencies {
 	provided fileTree(dir: "libs", include: "*.jar")
 }
 
+jar {
+	manifest {
+		attributes 'FMLCorePlugin': 'com.pyding.deathlyhallows.coremod.CoreMod'
+		attributes 'FMLCorePluginContainsFMLMod': 'true'
+	}
+}
+
+
 /* uncomment if you really need those 2 files each build
 task devJar(type: Jar) {
     classifier = 'dev'
