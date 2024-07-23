@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.emoniph.witchery.Witchery;
+import com.pyding.deathlyhallows.items.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -226,7 +227,7 @@ public class Multiblock {
 
     public MultiblockComponent getHeartGlyph() {
         for (MultiblockComponent component : components) {
-            if (component.getBlock().getUnlocalizedName().equals(Witchery.Blocks.CIRCLE.getUnlocalizedName())) {
+            if (component.getBlock().getUnlocalizedName().equals(ModItems.elderRitualBlock.getUnlocalizedName())) {
                 return component;
             }
         }

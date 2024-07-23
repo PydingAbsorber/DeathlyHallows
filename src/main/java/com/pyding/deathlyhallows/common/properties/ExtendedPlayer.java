@@ -33,11 +33,14 @@ public class ExtendedPlayer implements IExtendedEntityProperties {
 	private int mobsKilled;
 	private int spellsUsed;
 	private int foodEaten;
+	public int page;
 	private boolean choice;
 
 	private int mobsFed;
 	private boolean damageLog;
 	private String monsters = "";
+	private boolean avenger;
+	private int cursed;
 
 	private final List foodCollection = new ArrayList<>();
 
@@ -75,6 +78,9 @@ public class ExtendedPlayer implements IExtendedEntityProperties {
 		properties.setInteger("MobsFed", this.mobsFed);
 		properties.setString("DHMonsters", this.monsters);
 		properties.setBoolean("Logs", this.damageLog);
+		properties.setInteger("Page", this.page);
+		properties.setBoolean("Avenger", this.avenger);
+		properties.setInteger("Cursed", this.cursed);
 		for(int i = 0; i < foodCollection.size(); i++) {
 			properties.setString("DHFood" + i, foodCollection.get(i).toString());
 			properties.setInteger("DHFoodSize", i);
@@ -101,6 +107,9 @@ public class ExtendedPlayer implements IExtendedEntityProperties {
 			this.mobsFed = properties.getInteger("MobsFed");
 			this.damageLog = properties.getBoolean("Logs");
 			this.monsters = properties.getString("DHMonsters");
+			this.page = properties.getInteger("Page");
+			this.avenger = properties.getBoolean("Avenger");
+			this.cursed = properties.getInteger("Cursed");
 			for(int i = 0; i < properties.getInteger("DHFoodSize"); i++) {
 				foodCollection.add(i, properties.getString("DHFood" + i));
 			}
@@ -131,6 +140,14 @@ public class ExtendedPlayer implements IExtendedEntityProperties {
 			}
 		}
 		foodCollection.add(name);
+	}
+	
+	public void setCursed(int number){
+		this.cursed = number;
+	}
+	
+	public int getCursed(){
+		return this.cursed;
 	}
 
 	public void deadInside(EntityLivingBase target) {
@@ -171,6 +188,14 @@ public class ExtendedPlayer implements IExtendedEntityProperties {
 		if(!this.monsters.contains(name)) {
 			this.monsters += name + ",";
 		}
+	}
+	
+	public void setAvenger(boolean value){
+		this.avenger = value;
+	}
+	
+	public boolean getAvenger(){
+		return this.avenger;
 	}
 
 	public int getMobsFed() {

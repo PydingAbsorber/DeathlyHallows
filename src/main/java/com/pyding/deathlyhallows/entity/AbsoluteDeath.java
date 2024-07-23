@@ -5,9 +5,9 @@ import com.emoniph.witchery.util.ChatUtil;
 import com.emoniph.witchery.util.IHandleDT;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
-import com.pyding.deathlyhallows.DeathHallowsMod;
 import com.pyding.deathlyhallows.common.handler.ConfigHandler;
 import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
+import com.pyding.deathlyhallows.items.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -463,7 +463,7 @@ public class AbsoluteDeath extends EntityMob implements IBossDisplayData, IHandl
 	public void onDeath(DamageSource par1DamageSource) {
 		super.onDeath(par1DamageSource);
 		dropDeathlyHallows();
-		this.dropItem(DeathHallowsMod.deathShard, 1);
+		this.dropItem(ModItems.deathShard, 1);
 		if(!super.worldObj.isRemote) {
 			ParticleEffect.PORTAL.send(SoundEffect.MOB_ENDERMEN_PORTAL, this, 1.0D, 2.0D, 16);
 		}
@@ -502,13 +502,13 @@ public class AbsoluteDeath extends EntityMob implements IBossDisplayData, IHandl
 		else {
 			double random = Math.random();
 			if(random < 0.33) {
-				this.dropItem(DeathHallowsMod.elderWand, 1);
+				this.dropItem(ModItems.elderWand, 1);
 			}
 			else if(random < 0.66) {
-				this.dropItem(DeathHallowsMod.invisibilityMantle, 1);
+				this.dropItem(ModItems.invisibilityMantle, 1);
 			}
 			else {
-				this.dropItem(DeathHallowsMod.resurrectionStone, 1);
+				this.dropItem(ModItems.resurrectionStone, 1);
 			}
 		}
 	}

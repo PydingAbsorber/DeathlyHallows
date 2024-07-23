@@ -11,6 +11,7 @@ public class ConfigHandler {
 	public static String spells;
 	public static String elfLvl;
 	public static boolean hob;
+	public static String sonatRitual;
 
 	public static int screamilyMana;
 
@@ -37,6 +38,8 @@ public class ConfigHandler {
 		elfLvl = config.getString("elfLvl", "staff", "1-20,2-1000,3--1000,4-1000,5-1000,6-64,7-20000,8-20000,9-100,10-1000", "Change this numbers for elf lvl requirements (First number is elf lvl you want)");
 		hob = config.getBoolean("hob", "staff", true, "Hobgoblin chains immortality");
 		screamilyMana = config.getInt("screamilyMana", "staff", 10000, 1, Integer.MAX_VALUE, "Screamily mana per banshee scream");
+		sonatRitual = config.getString("sonatRitual", "staff", "", "Black list for ritual Sonat of Dispair, type names are separated with ',' for example: Zombie, EnderDragon ");
+
 		config.save();
 	}
 

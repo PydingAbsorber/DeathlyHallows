@@ -1,5 +1,6 @@
 package com.pyding.deathlyhallows.coremod;
 
+import com.emoniph.witchery.client.gui.GuiScreenWitchcraftBook;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -15,27 +16,27 @@ import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.FLOAD;
 import static org.objectweb.asm.Opcodes.ILOAD;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
+import static org.objectweb.asm.Opcodes.RETURN;
 
 public class ClassTransformer implements IClassTransformer {
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] basicClass) {
 		switch(name){
 			case "com.emoniph.witchery.client.gui.GuiScreenWitchcraftBook": {
-				return meth(basicClass);
+				return basicClass;
 			}
 		}
 		return basicClass;
 	}
 	
-	public byte[] meth(byte[] basicClass) {
+	public byte[] drawGui(byte[] basicClass) {
 		ClassNode cnode = new ClassNode();
 		ClassReader cr = new ClassReader(basicClass);
 		cr.accept(cnode, 0);
 
 		for(MethodNode mnode: cnode.methods) {
 			if(mnode.name.equals("drawScreen")) {
-				drawPenis(mnode);
-				return basicClass;
+				vzlomDraw(mnode);
 			}
 		}
 		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
@@ -44,13 +45,14 @@ public class ClassTransformer implements IClassTransformer {
 		return cw.toByteArray();
 	}
 	
-	public void drawPenis(MethodNode mnode){
+	public void vzlomDraw(MethodNode mnode){
 		InsnList list = new InsnList(); 
 		list.add(new VarInsnNode(ALOAD,0));
 		list.add(new VarInsnNode(ILOAD,1));
 		list.add(new VarInsnNode(ILOAD,2));
 		list.add(new VarInsnNode(FLOAD,3)); 
 		list.add(new MethodInsnNode(INVOKESTATIC,"com/pyding/deathlyhallows/coremod/VzlomJop","gui","(Lcom/emoniph/witchery/client/gui/GuiScreenWitchcraftBook;IIF)V",false));
-		mnode.instructions.insert(list);
+		list.add(new InsnNode(RETURN));
+		mnode.instructions.insertBefore(mnode.instructions.getFirst(),list);
 	}
 }

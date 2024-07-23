@@ -20,6 +20,7 @@ public class NetworkHandler {
 		wrapper.registerMessage(KeyPacket.class, KeyPacket.class, 3, Side.SERVER);
 		wrapper.registerMessage(PlayerRenderPacket.class, PlayerRenderPacket.class, 4, Side.CLIENT);
 		wrapper.registerMessage(AnimaMobRenderPacket.class, AnimaMobRenderPacket.class, 5, Side.CLIENT);
+		wrapper.registerMessage(NBTSync.class, NBTSync.class, 6, Side.CLIENT);
 	}
 
 	public static void sendToPlayer(IMessage message, EntityPlayer player) {

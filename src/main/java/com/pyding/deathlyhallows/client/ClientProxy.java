@@ -12,6 +12,7 @@ import com.pyding.deathlyhallows.client.render.entity.RenderEmpoweredArrow;
 import com.pyding.deathlyhallows.client.render.entity.RenderNimbus;
 import com.pyding.deathlyhallows.client.render.item.EldenWandRender;
 import com.pyding.deathlyhallows.client.render.item.ViscItemRender;
+import com.pyding.deathlyhallows.client.render.multiblock.MultiblockRenderHandler;
 import com.pyding.deathlyhallows.common.CommonProxy;
 import com.pyding.deathlyhallows.entity.AbsoluteDeath;
 import com.pyding.deathlyhallows.entity.EntityEmpoweredArrow;
@@ -29,9 +30,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.MinecraftForge;
 
-import static com.pyding.deathlyhallows.DeathHallowsMod.elderWand;
-import static com.pyding.deathlyhallows.DeathHallowsMod.visc;
+import static com.pyding.deathlyhallows.items.ModItems.elderWand;
+import static com.pyding.deathlyhallows.items.ModItems.visc;
 
 public class ClientProxy extends CommonProxy {
 	@Override
@@ -52,6 +54,7 @@ public class ClientProxy extends CommonProxy {
 		RenderingRegistry.registerEntityRenderingHandler(EntityPlayer.class, new AnimaInteritusRender());
 		RenderingRegistry.registerEntityRenderingHandler(EntityLiving.class, new AnimaInteritusMobRender());
 		RenderingRegistry.registerEntityRenderingHandler(EntityEmpoweredArrow.class, new RenderEmpoweredArrow());
+		MinecraftForge.EVENT_BUS.register(new MultiblockRenderHandler());
 		this.bindRenderer(VisConverterTile.class, new ViscRender());
 	}
 

@@ -4,7 +4,7 @@ import com.emoniph.witchery.client.RenderEntityViewer;
 import com.emoniph.witchery.infusion.infusions.symbols.EffectRegistry;
 import com.emoniph.witchery.infusion.infusions.symbols.SymbolEffect;
 import com.emoniph.witchery.util.Config;
-import com.pyding.deathlyhallows.DeathHallowsMod;
+import com.pyding.deathlyhallows.items.ModItems;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.client.Minecraft;
@@ -65,7 +65,7 @@ public class PlayerRender {
 				int y;
 				int color;
 				ScaledResolution var30 = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
-				if(var44 != null && var44.getItem() == DeathHallowsMod.elderWand) {
+				if(var44 != null && var44.getItem() == ModItems.elderWand) {
 					byte[] var39 = player.getEntityData().getByteArray("Strokes");
 					mc.getTextureManager().bindTexture(TEXTURE_GRID);
 					GL11.glPushMatrix();

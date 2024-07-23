@@ -4,8 +4,12 @@ import baubles.api.BaublesApi;
 import com.emoniph.witchery.Witchery;
 import com.emoniph.witchery.blocks.BlockGrassper;
 import com.emoniph.witchery.dimension.WorldProviderDreamWorld;
+import com.emoniph.witchery.entity.EntityBanshee;
 import com.emoniph.witchery.entity.EntityDeath;
 import com.emoniph.witchery.entity.EntityGoblin;
+import com.emoniph.witchery.entity.EntityNightmare;
+import com.emoniph.witchery.entity.EntityPoltergeist;
+import com.emoniph.witchery.entity.EntitySpirit;
 import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.item.ItemDeathsClothes;
 import com.emoniph.witchery.util.ChatUtil;
@@ -15,12 +19,12 @@ import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.pyding.deathlyhallows.DeathHallowsMod;
+import com.pyding.deathlyhallows.DHUtil;
 import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
 import com.pyding.deathlyhallows.entity.AbsoluteDeath;
-import com.pyding.deathlyhallows.entity.EntityEmpoweredArrow;
 import com.pyding.deathlyhallows.integration.Integration;
 import com.pyding.deathlyhallows.items.DeadlyPrism;
+import com.pyding.deathlyhallows.items.ModItems;
 import com.pyding.deathlyhallows.items.Nimbus3000;
 import com.pyding.deathlyhallows.items.ResurrectionStone;
 import com.pyding.deathlyhallows.network.AnimaMobRenderPacket;
@@ -68,6 +72,7 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingHealEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.ArrowLooseEvent;
 import net.minecraftforge.event.entity.player.ArrowNockEvent;
@@ -77,6 +82,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import thaumcraft.api.aspects.Aspect;
+import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.ConfigItems;
 import thaumcraft.common.items.wands.ItemWandCasting;
 
@@ -195,6 +201,7 @@ public class EventHandler {
 		if(!Integration.botania) {
 			player.addChatMessage(new ChatComponentText("§aDeathly Hallows has Botania integration! Bet you didn't know..."));
 		}
+		DHUtil.sync(player);
 	}
 
 	public static boolean shouldRemove = true;
@@ -203,10 +210,49 @@ public class EventHandler {
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
+		EntityLivingBase entityLivingBase = event.entityLiving;
+		if(entityLivingBase.ticksExisted % 20 == 0 && entityLivingBase.getEntityData().getInteger("DHMagicAvenger") >= 10){
+			if(entityLivingBase.getHealth() > entityLivingBase.getMaxHealth()*0.01)
+				entityLivingBase.setHealth((float)(entityLivingBase.getHealth()-entityLivingBase.getMaxHealth()*0.01));
+			else DHUtil.deadInside(entityLivingBase,null);
+			if(entityLivingBase.getEntityData().getInteger("DHMagicAvenger") >= 30){
+				int potions = 0;
+				for(Object potionEffect: entityLivingBase.getActivePotionEffects()) {
+					PotionEffect effect = (PotionEffect)potionEffect;
+					if(!Potion.potionTypes[effect.getPotionID()].isBadEffect()) {
+						entityLivingBase.removePotionEffect(effect.getPotionID());
+						potions++;
+					}
+				}
+				entityLivingBase.hurtResistantTime = 0;
+				entityLivingBase.attackEntityFrom(DamageSource.outOfWorld,100*potions);
+			}
+			if(entityLivingBase.getEntityData().getInteger("DHMagicAvenger") >= 100){
+				entityLivingBase.getEntityData().setInteger("DHMagicAvenger",0);
+				if(event.entity instanceof EntityPlayer){
+					EntityPlayer player = (EntityPlayer)entityLivingBase;
+					ExtendedPlayer props = ExtendedPlayer.get(player);
+					props.setAvenger(true);
+				}
+				DHUtil.deadInside(entityLivingBase,null);
+			}
+		}
 		if(event.entity instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer)event.entity;
-			AbsoluteDeath death = new AbsoluteDeath(player.worldObj);
-			//BertieBotts.addBuff(player, player.worldObj);
+			ExtendedPlayer props = ExtendedPlayer.get(player);
+			if(player.ticksExisted % 20 == 0 && player.getEntityData().getInteger("DHMagicAvenger") >= 10){
+				Infusion.setCurrentEnergy(player,Math.min(0,Infusion.getCurrentEnergy(player)-10));
+			}
+			if(player.ticksExisted % 20 == 0 && props.getAvenger()){
+				com.emoniph.witchery.common.ExtendedPlayer witchProps = com.emoniph.witchery.common.ExtendedPlayer.get(player);
+				if(witchProps.isVampire())
+					witchProps.setVampireLevel(0);
+				if(witchProps.getWerewolfLevel() > 0)
+					witchProps.setWerewolfLevel(0);
+				if(WorldProviderDreamWorld.getPlayerIsSpiritWalking(player))
+					WorldProviderDreamWorld.setPlayerIsSpiritWalking(player,false);
+				Infusion.setEnergy(player,0,0,0);
+			}
 			if(player.getEntityData().getInteger("mantlecd") > 0) {
 				player.getEntityData().setInteger("mantlecd", player.getEntityData().getInteger("mantlecd") - 1);
 			}
@@ -228,7 +274,7 @@ public class EventHandler {
 			if(Integration.thaumcraft) {
 				if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemWandCasting) {
 					ItemWandCasting wand = (ItemWandCasting)player.getHeldItem().getItem();
-					if(wand.getFocus(player.getHeldItem()) == DeathHallowsMod.inferioisMutandis) {
+					if(wand.getFocus(player.getHeldItem()) == ModItems.inferioisMutandis) {
 						for(int i = 0; i < player.inventory.getSizeInventory(); i++) {
 							if(player.inventory.getStackInSlot(i) != null) {
 								ItemStack stack = player.inventory.getStackInSlot(i);
@@ -243,6 +289,8 @@ public class EventHandler {
 					}
 				}
 			}
+			if(player.ticksExisted % 20 == 0)
+				DHUtil.sync(player);
 		}
 		if((event.entity instanceof EntityPlayer) && !(event.entity.worldObj.isRemote)) {
 			EntityPlayer player = (EntityPlayer)event.entity;
@@ -258,7 +306,7 @@ public class EventHandler {
 			}
 			ItemStack stack = player.getHeldItem();
 			if(stack != null) {
-				if(stack.getItem() == DeathHallowsMod.elderWand && player.getEntityData().getBoolean("dhkey1")) {
+				if(stack.getItem() == ModItems.elderWand && player.getEntityData().getBoolean("dhkey1")) {
 					player.getEntityData().setBoolean("dhkey1", false);
 					SpellRegistry spellRegistry = new SpellRegistry();
 					if(stack.hasTagCompound()) {
@@ -668,10 +716,7 @@ public class EventHandler {
 		long time = System.currentTimeMillis() - player.getEntityData().getLong("DHArrow");
 		player.getEntityData().setLong("DHArrow",0);
 		if(props.getElfLvl() > 7 && time > 2 * 1000) { 
-			EntityEmpoweredArrow arrow = new EntityEmpoweredArrow(player.getEntityWorld(), player, (float)(player.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue()*20), 4, DamageSource.causePlayerDamage(player).setMagicDamage().setProjectile());
-			arrow.setPositionAndRotation(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
-			player.worldObj.spawnEntityInWorld(arrow);
-			player.worldObj.playSoundAtEntity(player, "dh:spell.arrow", 1F, 1F);
+			DHUtil.spawnArrow(player);
 			event.setCanceled(true);
 		}
 	}
@@ -681,9 +726,18 @@ public class EventHandler {
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void hurt(LivingHurtEvent event) {
 		if(!event.isCanceled()) {
-			if(event.source.getEntity() != null) {
+			if(event.source.getEntity() != null && event.entity instanceof EntityLivingBase) {
+				EntityLivingBase entity = event.entityLiving;
 				if(event.source.getEntity() instanceof EntityPlayer) {
 					EntityPlayer attacker = (EntityPlayer)event.source.getEntity();
+					if(entity instanceof EntityBanshee || entity instanceof EntitySpirit || entity instanceof EntityPoltergeist || entity instanceof EntityNightmare){
+						entity.getEntityData().setInteger("DHMagicAvenger",entity.getEntityData().getInteger("DHMagicAvenger")+1);
+					} else if(entity instanceof EntityPlayer){
+						EntityPlayer player = (EntityPlayer)entity;
+						com.emoniph.witchery.common.ExtendedPlayer witchProps = com.emoniph.witchery.common.ExtendedPlayer.get(player);
+						if(witchProps.isVampire() || witchProps.getWerewolfLevel() > 0 || WorldProviderDreamWorld.getPlayerIsSpiritWalking(player))
+							player.getEntityData().setInteger("DHMagicAvenger",entity.getEntityData().getInteger("DHMagicAvenger")+1);
+					}
 					ExtendedPlayer props = ExtendedPlayer.get(attacker);
 					if(event.source.isProjectile()) {
 						double radius = 16;
@@ -740,7 +794,7 @@ public class EventHandler {
 					else {
 						if(props.getElfLvl() >= 1) {
 							if(attacker.getHeldItem() != null && attacker.getHeldItem()
-																		 .getItem() != DeathHallowsMod.elderWand) {
+																		 .getItem() != ModItems.elderWand) {
 								event.ammount = event.ammount * 0.05F;
 							}
 						}
@@ -757,7 +811,7 @@ public class EventHandler {
 				if(BaublesApi.getBaubles(player).getStackInSlot(3) != null) {
 					if(player.getEntityData().getDouble("mantlecd") == 0 && BaublesApi.getBaubles(player)
 																					  .getStackInSlot(3)
-																					  .getItem() == DeathHallowsMod.invisibilityMantle) {
+																					  .getItem() == ModItems.invisibilityMantle) {
 						if(ItemDeathsClothes.isFullSetWorn(player) && player.getHeldItem() != null && player.getHeldItem()
 																											.getItem() == Witchery.Items.DEATH_HAND) {
 							event.ammount = Math.min(event.ammount - 1000, 4);
@@ -790,6 +844,12 @@ public class EventHandler {
 							event.ammount = event.ammount * 2;
 						}
 					}
+				}
+				if(player.getEntityData().getLong("DHBanka") > System.currentTimeMillis()){
+					int warp = Thaumcraft.proxy.getPlayerKnowledge().getWarpTemp(player.getCommandSenderName())
+							+Thaumcraft.proxy.getPlayerKnowledge().getWarpSticky(player.getCommandSenderName())*5
+							+Thaumcraft.proxy.getPlayerKnowledge().getWarpPerm(player.getCommandSenderName())*10;
+					event.ammount = DHUtil.absorbExponentially(event.ammount,warp);
 				}
 			}
 			if(event.entityLiving instanceof AbsoluteDeath && !event.isCanceled()) {
@@ -891,6 +951,23 @@ public class EventHandler {
 		}
 
 	}
+	@SubscribeEvent
+	public void onHeal(LivingHealEvent event) {
+		EntityLivingBase entity = event.entityLiving;
+		if(entity.getEntityData().getLong("DHMending") > System.currentTimeMillis() && entity instanceof EntityPlayer){
+			EntityPlayer player = (EntityPlayer)entity;
+			for(ItemStack stack: player.inventory.armorInventory){
+				if(stack.isItemDamaged()){
+					stack.setItemDamage(stack.getItemDamage()-1);
+				}
+			}
+			for(ItemStack stack: player.inventory.mainInventory){
+				if(stack.isItemDamaged()){
+					stack.setItemDamage(stack.getItemDamage()-1);
+				}
+			}
+		}
+	}
 
 	@SubscribeEvent
 	public void onSendMessage(ServerChatEvent event) {
@@ -899,26 +976,26 @@ public class EventHandler {
 		if(props.getChoice()) {
 			if(event.message.contains("1")) {
 				props.setChoice(false);
-				player.inventory.addItemStackToInventory(new ItemStack(DeathHallowsMod.elderWand));
+				player.inventory.addItemStackToInventory(new ItemStack(ModItems.elderWand));
 			}
 			if(event.message.contains("2")) {
 				props.setChoice(false);
-				player.inventory.addItemStackToInventory(new ItemStack(DeathHallowsMod.resurrectionStone));
+				player.inventory.addItemStackToInventory(new ItemStack(ModItems.resurrectionStone));
 			}
 			if(event.message.contains("3")) {
 				props.setChoice(false);
-				player.inventory.addItemStackToInventory(new ItemStack(DeathHallowsMod.invisibilityMantle));
+				player.inventory.addItemStackToInventory(new ItemStack(ModItems.invisibilityMantle));
 			}
 			if(event.message.contains("4")) {
 				double random = Math.random();
 				if(random < 0.33) {
-					player.inventory.addItemStackToInventory(new ItemStack(DeathHallowsMod.elderWand));
+					player.inventory.addItemStackToInventory(new ItemStack(ModItems.elderWand));
 				}
 				else if(random < 0.66) {
-					player.inventory.addItemStackToInventory(new ItemStack(DeathHallowsMod.resurrectionStone));
+					player.inventory.addItemStackToInventory(new ItemStack(ModItems.resurrectionStone));
 				}
 				else {
-					player.inventory.addItemStackToInventory(new ItemStack(DeathHallowsMod.invisibilityMantle));
+					player.inventory.addItemStackToInventory(new ItemStack(ModItems.invisibilityMantle));
 				}
 				props.setChoice(false);
 			}
@@ -982,7 +1059,7 @@ public class EventHandler {
 					ItemStack stack = BaublesApi.getBaubles(player).getStackInSlot(1);
 					if(BaublesApi.getBaubles(player)
 								 .getStackInSlot(1)
-								 .getItem() == DeathHallowsMod.resurrectionStone && rs.getCharges(stack) > 0) {
+								 .getItem() == ModItems.resurrectionStone && rs.getCharges(stack) > 0) {
 						rs.setCharges(stack, rs.getCharges(stack) - 1);
 						event.setCanceled(true);
 						player.setHealth(player.getMaxHealth());
@@ -993,7 +1070,7 @@ public class EventHandler {
 					ItemStack stack = BaublesApi.getBaubles(player).getStackInSlot(2);
 					if(BaublesApi.getBaubles(player)
 								 .getStackInSlot(1)
-								 .getItem() == DeathHallowsMod.resurrectionStone && rs.getCharges(stack) > 0) {
+								 .getItem() == ModItems.resurrectionStone && rs.getCharges(stack) > 0) {
 						rs.setCharges(stack, rs.getCharges(stack) - 1);
 						event.setCanceled(true);
 						player.setHealth(player.getMaxHealth());
@@ -1045,14 +1122,14 @@ public class EventHandler {
 						if(entityLiving instanceof AbsoluteDeath) {
 							amount += 32;
 						}
-						entityLiving.entityDropItem(new ItemStack(DeathHallowsMod.trickOrTreat), amount);
+						entityLiving.entityDropItem(new ItemStack(ModItems.trickOrTreat), amount);
 					}
 				}
 			}
 		}
 		if(event.entity instanceof EntityGoblin) {
 			if(Math.random() < 0.01) {
-				event.entity.entityDropItem(new ItemStack(DeathHallowsMod.hobgoblinSoul), 1);
+				event.entity.entityDropItem(new ItemStack(ModItems.hobgoblinSoul), 1);
 			}
 		}
 	}
@@ -1163,14 +1240,14 @@ public class EventHandler {
 							if(((BlockGrassper.TileEntityGrassper)tileEntity).getStackInSlot(0)
 																			 .getItem() == ConfigItems.itemFocusPech) {
 								stack.stackSize = stack.stackSize - 1;
-								focus = new ItemStack(DeathHallowsMod.inferioisMutandis);
+								focus = new ItemStack(ModItems.inferioisMutandis);
 								ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_FIZZ, event.world, blockX, blockY, blockZ, 1.0, 1.0, 8);
 								grassper.decrStackSize(0, 1);
 								event.world.setBlock(blockX, blockY, blockZ, Blocks.air);
 								player.inventory.addItemStackToInventory(focus);
 							}
 							else if(((BlockGrassper.TileEntityGrassper)tileEntity).getStackInSlot(0)
-																				  .getItem() == DeathHallowsMod.inferioisMutandis) {
+																				  .getItem() == ModItems.inferioisMutandis) {
 								stack.stackSize = stack.stackSize - 1;
 								focus = new ItemStack(ConfigItems.itemFocusPech);
 								ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_FIZZ, event.world, blockX, blockY, blockZ, 1.0, 1.0, 8);
@@ -1211,7 +1288,7 @@ public class EventHandler {
 	}
 
 	public boolean isHallow(ItemStack stack) {
-		return stack.getItem() == DeathHallowsMod.resurrectionStone || stack.getItem() == DeathHallowsMod.elderWand || stack.getItem() == DeathHallowsMod.invisibilityMantle;
+		return stack.getItem() == ModItems.resurrectionStone || stack.getItem() == ModItems.elderWand || stack.getItem() == ModItems.invisibilityMantle;
 	}
 
 
@@ -1247,7 +1324,7 @@ public class EventHandler {
 						}
 					}
 				}
-				if(stack.getItem() == DeathHallowsMod.nimbus) {
+				if(stack.getItem() == ModItems.nimbus) {
 					NBTTagCompound nbt = null;
 					if(!stack.hasTagCompound() || stack.getTagCompound() == null) {
 						nbt = new NBTTagCompound();

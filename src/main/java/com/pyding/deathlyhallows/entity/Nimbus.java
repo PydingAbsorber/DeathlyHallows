@@ -5,7 +5,7 @@ import com.emoniph.witchery.familiar.Familiar;
 import com.emoniph.witchery.infusion.InfusedBrewEffect;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
-import com.pyding.deathlyhallows.DeathHallowsMod;
+import com.pyding.deathlyhallows.items.ModItems;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -68,7 +68,7 @@ public class Nimbus extends EntityBroom {
 				for(int i = 0; i < rider.inventory.getSizeInventory(); i++) {
 					if(rider.inventory.getStackInSlot(i) != null && count == 0) {
 						ItemStack stack = rider.inventory.getStackInSlot(i);
-						if(stack.getItem() == DeathHallowsMod.nimbus && stack.getTagCompound() != null) {
+						if(stack.getItem() == ModItems.nimbus && stack.getTagCompound() != null) {
 							stack.getTagCompound().setInteger("NimbusCooldown", ticksExisted);
 							count++;
 						}

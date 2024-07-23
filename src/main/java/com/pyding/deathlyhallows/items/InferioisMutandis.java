@@ -6,7 +6,6 @@ import com.emoniph.witchery.util.Config;
 import com.emoniph.witchery.util.MutableBlock;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
-import com.pyding.deathlyhallows.DeathHallowsMod;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.resources.I18n;
@@ -76,7 +75,7 @@ public class InferioisMutandis extends ItemFocusPech {
 					int blockZ = rayTrace.blockZ;
 					if(mutator) {
 						ItemMutator itemMutator = new ItemMutator();
-						falseStack = new ItemStack(DeathHallowsMod.inferioisMutandis);
+						falseStack = new ItemStack(ModItems.inferioisMutandis);
 						if(itemMutator.onItemUseFirst(falseStack, player, world, blockX, blockY, blockZ, rayTrace.sideHit, 0, 0, 0)) {
 							wand.consumeAllVis(itemstack, player, this.getVisCost(itemstack), true, false);
 							ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_FIZZ, world, blockX, blockY, blockZ, 1.0, 1.0, 8);

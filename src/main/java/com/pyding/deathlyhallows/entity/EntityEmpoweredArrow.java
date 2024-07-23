@@ -3,18 +3,22 @@ package com.pyding.deathlyhallows.entity;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.pyding.deathlyhallows.DHUtil;
+import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
+import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 public class EntityEmpoweredArrow extends Entity{
-	EntityLivingBase owner = null;
+	String name;
 	float damage = 0;
 	float radius = 0;
 	DamageSource source = null;
@@ -24,10 +28,11 @@ public class EntityEmpoweredArrow extends Entity{
 		setSize(0.5F, 0.5F);
 	}
 
-	public EntityEmpoweredArrow(World world, EntityLivingBase owner, float damage, float radius, DamageSource source) {
+	public EntityEmpoweredArrow(World world, EntityLivingBase entity, float damage, float radius, DamageSource source) {
 		super(world);
 		setSize(0.5F, 0.5F);
-		this.owner = owner;
+		this.name = entity.getCommandSenderName();
+		getEntityData().setString("DHOwner",name);
 		this.damage = damage;
 		this.radius = radius;
 		this.source = source;
@@ -36,13 +41,37 @@ public class EntityEmpoweredArrow extends Entity{
 	@Override
 	public void onEntityUpdate() {
 		super.onEntityUpdate();
+		if(ticksExisted > 200)
+			this.kill();
+		String nbt = getEntityData().getString("DHOwner");
+		EntityPlayer owner = null;
+		if(name == null){
+			if(nbt.isEmpty())
+				DHUtil.sync(this);
+			if(!nbt.isEmpty())
+				name = nbt;
+			if(name == null || name.isEmpty()){
+				List<EntityLivingBase> list = DHUtil.getEntitiesAround(this,30,false);
+				for(Object o: list){
+					if(o instanceof EntityPlayer){
+						EntityPlayer player = (EntityPlayer)o;
+						ExtendedPlayer props = ExtendedPlayer.get(player);
+						if(props.getElfLvl() >= 7){
+							owner = player;
+							break;
+						}
+					}
+				}
+			}
+			else owner = this.worldObj.getPlayerEntityByName(name);
+		} else owner = this.worldObj.getPlayerEntityByName(name);
 		if(owner != null){
 			this.noClip = true;
 			float speed = 1;
 			Vec3 lookVec = owner.getLookVec();
 			this.motionX = lookVec.xCoord * speed;
 			this.motionY = lookVec.yCoord * speed;
-			this.motionZ = lookVec.zCoord * speed;
+			this.motionZ = lookVec.zCoord * speed; 
 			this.posX += this.motionX;
 			this.posY += this.motionY;
 			this.posZ += this.motionZ;
@@ -83,8 +112,6 @@ public class EntityEmpoweredArrow extends Entity{
 					}
 				}
 			}
-			if(ticksExisted > 200)
-				this.kill();
 		}
 	}
 

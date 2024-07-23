@@ -13,8 +13,8 @@ import vazkii.botania.common.item.block.ItemBlockSpecialFlower;
 import vazkii.botania.common.lexicon.BLexiconEntry;
 import vazkii.botania.common.lexicon.page.PageText;
 
-import static com.pyding.deathlyhallows.DeathHallowsMod.deathShard;
-import static com.pyding.deathlyhallows.DeathHallowsMod.hobgoblinSoul;
+import static com.pyding.deathlyhallows.items.ModItems.deathShard;
+import static com.pyding.deathlyhallows.items.ModItems.hobgoblinSoul;
 
 public class BotaniaDH {
 	public static void lexus() {

@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static com.pyding.deathlyhallows.DeathHallowsMod.*;
-
 public class TrickOrTreat extends Item {
 	public static List witcheryItems = new ArrayList<>();
 	public static List itemList = new ArrayList<>();
@@ -153,7 +151,7 @@ public class TrickOrTreat extends Item {
 		for(int i = 1; i < 4; i++) {
 			if(BaublesApi.getBaubles(player).getStackInSlot(i) != null) {
 				ItemStack stack = BaublesApi.getBaubles(player).getStackInSlot(i);
-				if(stack.getItem() == resurrectionStone) {
+				if(stack.getItem() == ModItems.resurrectionStone) {
 					return stack;
 				}
 			}
@@ -162,26 +160,26 @@ public class TrickOrTreat extends Item {
 	}
 
 	public static void initList() {
-		itemList.add(invisibilityMantle);
-		itemList.add(elderWand);
-		itemList.add(resurrectionStone);
-		itemList.add(tabItem);
-		itemList.add(creativeItem);
-		itemList.add(bertieBots);
-		itemList.add(gastronomicTemptation);
-		itemList.add(soupWithSawdust);
-		itemList.add(viscousSecretions);
-		itemList.add(hobgoblinChains);
-		itemList.add(deadlyPrism);
-		itemList.add(hobgoblinSoul);
-		itemList.add(nimbus);
-		itemList.add(deathShard);
-		itemList.add(cards);
+		itemList.add(ModItems.invisibilityMantle);
+		itemList.add(ModItems.elderWand);
+		itemList.add(ModItems.resurrectionStone);
+		itemList.add(ModItems.tabItem);
+		itemList.add(ModItems.creativeItem);
+		itemList.add(ModItems.bertieBots);
+		itemList.add(ModItems.gastronomicTemptation);
+		itemList.add(ModItems.soupWithSawdust);
+		itemList.add(ModItems.viscousSecretions);
+		itemList.add(ModItems.hobgoblinChains);
+		itemList.add(ModItems.deadlyPrism);
+		itemList.add(ModItems.hobgoblinSoul);
+		itemList.add(ModItems.nimbus);
+		itemList.add(ModItems.deathShard);
+		itemList.add(ModItems.cards);
 		if(Integration.thaumcraft) {
-			itemList.add(inferioisMutandis);
+			itemList.add(ModItems.inferioisMutandis);
 		}
-		itemList.add(monsterBook);
-		itemList.add(trickOrTreat);
+		itemList.add(ModItems.monsterBook);
+		itemList.add(ModItems.trickOrTreat);
 		for(Object o: Witchery.Items.GENERIC.subItems) {
 			witcheryItems.add(o);
 		}
