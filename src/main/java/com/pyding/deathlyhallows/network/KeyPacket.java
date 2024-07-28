@@ -39,8 +39,11 @@ public class KeyPacket implements IMessage, IMessageHandler<KeyPacket, IMessage>
 			if(message.id == 1) {
 				player.getEntityData().setBoolean("dhkey1", message.state);
 			}
-			else {
+			else if(message.id == 2) {
 				player.getEntityData().setBoolean("dhkey2", message.state);
+			}
+			else if(message.id == 3){
+				player.getEntityData().setBoolean("DHSprint", message.state);
 			}
 		}
 		return null;

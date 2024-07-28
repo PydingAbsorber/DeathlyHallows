@@ -111,13 +111,13 @@ public class ModItems {
 								   .setTextureName("dh:book")
 								   .setMaxStackSize(1)
 								   .setCreativeTab(tabDeathlyHallows);
-		lightningInBag = new Item().setUnlocalizedName("lightning_in_bag")
+		lightningInBag = new LightningInBag().setUnlocalizedName("lightning_in_bag")
 								   .setTextureName("dh:bag")
 								   .setMaxStackSize(1)
 								   .setCreativeTab(tabDeathlyHallows);
 
 		elderRitualBlock = new ElderRitualBlock().setBlockName("elder_ritual_block")
-												 .setBlockTextureName("dh:ritual");
+												 .setBlockTextureName("dh:elderGlyph");
 
 
 		elderChalk = new ElderChalk(elderRitualBlock).setUnlocalizedName("elder_chalk")

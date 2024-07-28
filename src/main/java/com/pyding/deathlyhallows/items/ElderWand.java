@@ -10,6 +10,7 @@ import com.emoniph.witchery.network.PacketSpellPrepared;
 import com.emoniph.witchery.util.ChatUtil;
 import com.emoniph.witchery.util.SoundEffect;
 import com.emoniph.witchery.util.TimeUtil;
+import com.pyding.deathlyhallows.client.handler.KeyHandler;
 import com.pyding.deathlyhallows.spells.SpellRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -27,6 +28,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 
@@ -51,35 +53,18 @@ public class ElderWand extends ItemBase {
 
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
-		String currentLanguage = StatCollector.translateToLocal("language.name");
-		if(I18n.format("dh.util.language").equals("Ru")) {
-			list.add("Листай список заклинаний на §cshift+ЛКМ/ЛКМ §7и кастуй одной кнопкой");
-			list.add("Получи доступ к §c8 §7новым мощнейшим заклинаниям");
-			list.add("Все заклинания описаны на сайте");
-			if(stack.hasTagCompound()) {
-				if(stack.getTagCompound().hasKey("dhowner")) {
-					list.add("Владелец §9" + stack.getTagCompound().getString("dhowner"));
-				}
+		list.add(I18n.format("dh.desc.wand1", Keyboard.getKeyName(KeyHandler.binding.getKeyCode())));
+		list.add(I18n.format("dh.desc.wand2"));
+		list.add(I18n.format("dh.desc.wand3"));
+		if(stack.hasTagCompound()) {
+			if(stack.getTagCompound().hasKey("dhowner")) {
+				list.add(I18n.format("dh.desc.wand4",stack.getTagCompound().getString("dhowner")));
 			}
-			else {
-				list.add("Владелец §9Смерть");
-			}
-			list.add("Возможно иметь лишь один дар у себя в инвентаре");
 		}
 		else {
-			list.add("Scroll list of spells by §cshift+LMB/LMB §7and cast by one button");
-			list.add("Get access to §c8 §7new powerful spells");
-			list.add("All spells are described on the site");
-			if(stack.hasTagCompound()) {
-				if(stack.getTagCompound().hasKey("dhowner")) {
-					list.add("Owner §9" + stack.getTagCompound().getString("dhowner"));
-				}
-			}
-			else {
-				list.add("Owner §9Death");
-			}
-			list.add("You can have only one Hallow at the time");
+			list.add(I18n.format("dh.desc.wand5"));
 		}
+		list.add(I18n.format("dh.desc.wand6"));
 	}
 
 	@Override

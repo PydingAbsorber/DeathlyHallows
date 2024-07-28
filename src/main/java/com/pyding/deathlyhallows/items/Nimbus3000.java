@@ -2,6 +2,7 @@ package com.pyding.deathlyhallows.items;
 
 import com.emoniph.witchery.familiar.Familiar;
 import com.emoniph.witchery.infusion.InfusedBrewEffect;
+import com.pyding.deathlyhallows.client.handler.KeyHandler;
 import com.pyding.deathlyhallows.entity.Nimbus;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -12,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 
@@ -26,10 +28,12 @@ public class Nimbus3000 extends Item {
 			else {
 				nbt = stack.getTagCompound();
 			}
-			if(nbt.getInteger("NimbusCooldown") == 0) {
-				nbt.setInteger("NimbusCooldown", 4000);
+			if(nbt.getLong("NimbusCooldown") >= System.currentTimeMillis())
+				return super.onItemRightClick(stack, world, player);
+			if(nbt.getLong("NimbusDuration") <= System.currentTimeMillis()) {
+				nbt.setLong("NimbusDuration", (long)(160*1000*lifeModifier(player))+System.currentTimeMillis());
 				Nimbus nimbus = new Nimbus(world);
-				nimbus.setBrushColor(666);
+				//nimbus.setBrushColor(666);
 				nimbus.setPosition(player.posX, player.posY, player.posZ);
 				world.spawnEntityInWorld(nimbus);
 				nimbus.interactFirst(player);
@@ -38,52 +42,45 @@ public class Nimbus3000 extends Item {
 				if(player.ridingEntity != null) {
 					Entity entity = player.ridingEntity;
 					entity.setDead();
-					nbt.setInteger("NimbusCooldown", 0);
+					if(stack.getTagCompound().getLong("NimbusDuration") > System.currentTimeMillis())
+						stack.getTagCompound().setLong("NimbusCooldown", (long)(System.currentTimeMillis()+(System.currentTimeMillis()-(stack.getTagCompound().getLong("NimbusDuration")-160*1000*lifeModifier(player)))/2));
+					else stack.getTagCompound().setLong("NimbusCooldown", (long)(System.currentTimeMillis()+(160*1000*lifeModifier(player))/2));
+					nbt.setLong("NimbusDuration", 0);
 				}
 			}
 			stack.setTagCompound(nbt);
-			this.riderHasOwlFamiliar = Familiar.hasActiveBroomMasteryFamiliar(player);
-			this.riderHasSoaringBrew = InfusedBrewEffect.Soaring.isActive(player);
 		}
 		return super.onItemRightClick(stack, world, player);
 	}
 
-	boolean riderHasOwlFamiliar;
-	boolean riderHasSoaringBrew;
 
-	public float lifeModifier() {
+	public float lifeModifier(EntityPlayer player) {
 		float modifier = 1;
-		if(riderHasOwlFamiliar) {
-			modifier += 0.5;
+		if(Familiar.hasActiveBroomMasteryFamiliar(player)) {
+			modifier += 0.7f;
 		}
-		if(riderHasSoaringBrew) {
-			modifier += 0.2;
+		if(InfusedBrewEffect.Soaring.isActive(player)) {
+			modifier += 0.6f;
 		}
 		return modifier;
 	}
 
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
-		int cd = 0;
+		long cd = 0;
+		long duration = 0;
 		if(stack.getTagCompound() != null) {
-			cd = stack.getTagCompound().getInteger("NimbusCooldown");
+			cd = stack.getTagCompound().getLong("NimbusCooldown");
+			duration = stack.getTagCompound().getLong("NimbusDuration");
 		}
-		if(cd > 0) {
-			if(I18n.format("dh.util.language").equals("Ru")) {
-				list.add("Осталось сил на: §e" + (int)(cd / 20 * lifeModifier()) + " §rсекунд");
-			}
-			else {
-				list.add("Powers remain for : §e" + (int)(cd / 20 * lifeModifier()) + " §rseconds more");
-			}
+		if(cd > System.currentTimeMillis()) {
+			list.add(I18n.format("dh.desc.broom0",(cd-System.currentTimeMillis())/1000));
 		}
-		if(I18n.format("dh.util.language").equals("Ru")) {
-			list.add("Можно нажать на клавишу для быстрого призыва");
-			list.add("Получается при помощи ритуала ,,Охотник за облаками,,");
+		if((duration-System.currentTimeMillis()) > 0){
+			list.add(I18n.format("dh.desc.broom1",(duration-System.currentTimeMillis())/1000));
 		}
-		else {
-			list.add("You can press the button for quick summon");
-			list.add("Can be obtained through ritual ,,Cloud chaser,,");
-		}
+		list.add(I18n.format("dh.desc.broom2", Keyboard.getKeyName(KeyHandler.binding2.getKeyCode())));
+		list.add(I18n.format("dh.desc.broom3"));
 	}
 
 	public boolean hasEffect(final ItemStack par1ItemStack, final int pass) {

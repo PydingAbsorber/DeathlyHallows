@@ -1,11 +1,15 @@
 package com.pyding.deathlyhallows.client.handler;
 
+import com.pyding.deathlyhallows.entity.Nimbus;
 import com.pyding.deathlyhallows.network.KeyPacket;
 import com.pyding.deathlyhallows.network.NetworkHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
 
@@ -29,8 +33,8 @@ public class KeyHandler {
 		isKeyPressed2 = set;
 	}
 
-	private static final KeyBinding binding = new KeyBinding("dh.key.wand1", Keyboard.KEY_V, "dh.key.wand");
-	private static final KeyBinding binding2 = new KeyBinding("dh.key.broom", Keyboard.KEY_C, "dh.key.wand");
+	public static final KeyBinding binding = new KeyBinding("dh.key.wand1", Keyboard.KEY_V, "dh.key.wand");
+	public static final KeyBinding binding2 = new KeyBinding("dh.key.broom", Keyboard.KEY_C, "dh.key.wand");
 
 	public static String getKeyDescription() {
 		return binding.getKeyDescription();
@@ -47,14 +51,18 @@ public class KeyHandler {
 	}
 
 	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
 	public void onKeyInput(InputEvent.KeyInputEvent event) {
 		if(binding.isPressed()) {
-			KeyPacket packet = new KeyPacket(true, 1);
-			NetworkHandler.sendToServer(packet);
+			NetworkHandler.sendToServer(new KeyPacket(true, 1));
 		}
 		if(binding2.isPressed()) {
-			KeyPacket packet = new KeyPacket(true, 2);
-			NetworkHandler.sendToServer(packet);
+			NetworkHandler.sendToServer(new KeyPacket(true, 2));
+		}
+		if(Minecraft.getMinecraft().thePlayer.ridingEntity instanceof Nimbus) {
+			boolean sprint = Minecraft.getMinecraft().gameSettings.keyBindSprint.isPressed();
+			Minecraft.getMinecraft().thePlayer.getEntityData().setBoolean("DHSprint",sprint);
+			NetworkHandler.sendToServer(new KeyPacket(sprint, 3));
 		}
 	}
 }

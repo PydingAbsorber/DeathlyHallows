@@ -180,7 +180,6 @@ public class ExtendedPlayer implements IExtendedEntityProperties {
 				count++;
 			}
 		}
-		System.out.println(this.monsters);
 		return count;
 	}
 

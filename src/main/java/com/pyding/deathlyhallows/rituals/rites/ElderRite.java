@@ -15,7 +15,7 @@ public abstract class ElderRite {
 	public ElderRite() {
 	}
 
-	public abstract void addSteps(ArrayList<RitualStep> var1, int var2);
+	public abstract void addSteps(ArrayList var1, int var2);
 
 	public ArrayList<EntityItem> getItemsInRadius(World world, int x, int y, int z, float radius) {
 		float RADIUS_SQ = radius * radius;

@@ -9,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import thaumcraft.common.Thaumcraft;
 
@@ -49,14 +50,8 @@ public class ViscousSecretions extends ItemFood {
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
 		if(Integration.thaumcraft) {
-			if(I18n.format("dh.util.language").equals("Ru")) {
-				list.add("§5Нежное искажение: ");
-				list.add("§5Шанс 1% на 1 постоянное, 10% на липкое, 89% на временное искажение");
-			}
-			else {
-				list.add("§5Gentle Warp: ");
-				list.add("§5Chance 1% for 1 permanent, 10% for sticky, 89% for temporary warp");
-			}
+			list.add(StatCollector.translateToLocal("dh.desc.visSec1"));
+			list.add(StatCollector.translateToLocalFormatted("dh.desc.visSec2","1%","10%","89%"));
 		}
 	}
 }

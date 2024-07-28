@@ -1,5 +1,6 @@
 package com.pyding.deathlyhallows.commands;
 
+import com.pyding.deathlyhallows.DHUtil;
 import com.pyding.deathlyhallows.common.handler.ConfigHandler;
 import com.pyding.deathlyhallows.common.handler.EventHandler;
 import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
@@ -153,6 +154,29 @@ public class DamageLog extends CommandBase {
 				else {
 					sender.addChatMessage(new ChatComponentText("§4you are not elf lol. Wanna know a secret? Just recharge dude!"));
 				}
+			}
+		}
+		else if(args.length == 7 && args[0].equalsIgnoreCase("figure")) {
+			if(sender instanceof EntityPlayer) {
+				EntityPlayer player = (EntityPlayer)sender;
+
+				try {
+					int x = Integer.parseInt(args[1]);
+					int y = Integer.parseInt(args[2]);
+					int z = Integer.parseInt(args[3]);
+					int xSize = Integer.parseInt(args[4]);
+					int ySize = Integer.parseInt(args[5]);
+					int zSize = Integer.parseInt(args[6]);
+
+					player.addChatMessage(new ChatComponentText("Figure sent in console: " +
+							"x=" + x + ", y=" + y + ", z=" + z + ", xSize=" + xSize + ", ySize=" + ySize + ", zSize=" + zSize));
+					DHUtil.getFigure(player.worldObj,(int)player.posX+x,(int)player.posY+y,(int)player.posZ+z,xSize,ySize,zSize);
+
+				} catch (NumberFormatException e) {
+					player.addChatMessage(new ChatComponentText("It must be all numbers you retard."));
+				}
+			} else {
+				sender.addChatMessage(new ChatComponentText("Wtf who is that."));
 			}
 		}
 		else {

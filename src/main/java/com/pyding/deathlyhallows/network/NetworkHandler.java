@@ -13,14 +13,19 @@ public class NetworkHandler {
 	public static void preInit() {
 		wrapper = NetworkRegistry.INSTANCE.newSimpleChannel("dh");
 	}
-
+	
+	
 	public static void init() {
-		wrapper.registerMessage(RenderPacket.class, RenderPacket.class, 1, Side.CLIENT); //client kyda prihodit
-		wrapper.registerMessage(CPacketDisableFlight.class, CPacketDisableFlight.class, 2, Side.CLIENT);
-		wrapper.registerMessage(KeyPacket.class, KeyPacket.class, 3, Side.SERVER);
-		wrapper.registerMessage(PlayerRenderPacket.class, PlayerRenderPacket.class, 4, Side.CLIENT);
-		wrapper.registerMessage(AnimaMobRenderPacket.class, AnimaMobRenderPacket.class, 5, Side.CLIENT);
-		wrapper.registerMessage(NBTSync.class, NBTSync.class, 6, Side.CLIENT);
+		int id = 1;
+		wrapper.registerMessage(RenderPacket.class, RenderPacket.class, id++, Side.CLIENT); 
+		wrapper.registerMessage(CPacketDisableFlight.class, CPacketDisableFlight.class, id++, Side.CLIENT);
+		wrapper.registerMessage(KeyPacket.class, KeyPacket.class, id++, Side.SERVER);
+		wrapper.registerMessage(PlayerRenderPacket.class, PlayerRenderPacket.class, id++, Side.CLIENT);
+		wrapper.registerMessage(AnimaMobRenderPacket.class, AnimaMobRenderPacket.class, id++, Side.CLIENT);
+		wrapper.registerMessage(NBTSync.class, NBTSync.class, id++, Side.CLIENT);
+		wrapper.registerMessage(PlayerNBTSync.class, PlayerNBTSync.class, id++, Side.CLIENT);
+		wrapper.registerMessage(ArrowSync.class, ArrowSync.class, id++, Side.CLIENT);
+		wrapper.registerMessage(ParticlePacket.class, ParticlePacket.class, id++, Side.CLIENT);
 	}
 
 	public static void sendToPlayer(IMessage message, EntityPlayer player) {

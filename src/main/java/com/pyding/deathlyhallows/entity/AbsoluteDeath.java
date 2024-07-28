@@ -61,9 +61,6 @@ public class AbsoluteDeath extends EntityMob implements IBossDisplayData, IHandl
 		super.experienceValue = 80000;
 	}
 
-	protected int decreaseAirSupply(int par1) {
-		return par1;
-	}
 
 	protected boolean canDespawn() {
 		return false;

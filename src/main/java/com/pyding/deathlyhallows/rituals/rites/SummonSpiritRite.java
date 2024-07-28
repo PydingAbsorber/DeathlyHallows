@@ -109,23 +109,25 @@ public class SummonSpiritRite extends ElderRite {
 								world.spawnEntityInWorld(entity);
 							} else {
 								Class entityClass;
-								switch(random.nextInt(10)) {
-									case 0:
-										entityClass = EntityBanshee.class;
-										break;
-									case 1:
-										entityClass = EntitySpirit.class;
-										break;
-									case 2:
-										entityClass = EntityNightmare.class;
-										break;
-									case 3:
-										entityClass = EntityPoltergeist.class;
-										break;
-									default:
-										entityClass = null;
+								for(int i = 0;i < ConfigHandler.randomSpirits;i++) {
+									switch(random.nextInt(4)) {
+										case 0:
+											entityClass = EntityBanshee.class;
+											break;
+										case 1:
+											entityClass = EntitySpirit.class;
+											break;
+										case 2:
+											entityClass = EntityNightmare.class;
+											break;
+										case 3:
+											entityClass = EntityPoltergeist.class;
+											break;
+										default:
+											entityClass = null;
+									}
+									DHUtil.spawnEntity(world, posX, posY + 1, posZ, entityClass);
 								}
-								DHUtil.spawnEntity(world, posX, posY + 1, posZ, entityClass);
 							}
 							ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_BABA_LIVING, player, 1.0, 2.0, 8);
 							ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_IMP_LAUGH, player, 1.0, 2.0, 8);

@@ -122,27 +122,14 @@ public class TrickOrTreat extends Item {
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
 		if(Integration.thaumcraft) {
-			if(I18n.format("dh.util.language").equals("Ru")) {
-				if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-					list.add("§6Даёт при открытии случайный предмет из Витчери 98% или Даров Смерти 2%");
-					list.add("§6Шанс удваивается, если ты обладаешь Даром Смерти");
-					list.add("§6Можно получить во время Хэллоуина при убийстве монстров и боссов. Период ивента с 18 октября по 8 ноября");
-					list.add("§6Падает с шансом 0.01% * макс хп монстра/босса");
-				}
-				else {
-					list.add("§6Нажми §eshift §6для дополнительной информации");
-				}
+			if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+				list.add(I18n.format("dh.desc.trick1","98%","2%"));
+				list.add(I18n.format("dh.desc.trick2"));
+				list.add(I18n.format("dh.desc.trick3"));
+				list.add(I18n.format("dh.desc.trick4","0.01%"));
 			}
 			else {
-				if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-					list.add("§6Gives random item from Witchery 98% or Deathly Hallows 2% when opened");
-					list.add("§6Chance doubles if you have Deathly Hallow");
-					list.add("§6Can be obtained via Halloween event from killing monsters and bosses. Event period is from October 18 to November 8");
-					list.add("§6Drops with 0.01% * max hp of monster/boss chance");
-				}
-				else {
-					list.add("§6Press §eshift §6for additional information");
-				}
+				list.add(I18n.format("dh.desc.trick5"));
 			}
 		}
 	}

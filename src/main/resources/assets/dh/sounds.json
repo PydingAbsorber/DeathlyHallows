@@ -133,5 +133,41 @@
 				"stream": true
 			}
 		]
+	},
+	"arrow.arrow_ready_1": {
+		"category": "master",
+		"sounds": [
+			{
+				"name": "dh:arrow/arrow_ready_1",
+				"stream": true
+			}
+		]
+	},
+	"arrow.arrow_ready_2": {
+		"category": "master",
+		"sounds": [
+			{
+				"name": "dh:arrow/arrow_ready_2",
+				"stream": true
+			}
+		]
+	},
+	"arrow.magic_arrow_1": {
+		"category": "master",
+		"sounds": [
+			{
+				"name": "dh:arrow/magic_arrow_1",
+				"stream": true
+			}
+		]
+	},
+	"arrow.magic_arrow_2": {
+		"category": "master",
+		"sounds": [
+			{
+				"name": "dh:arrow/magic_arrow_2",
+				"stream": true
+			}
+		]
 	}
 }

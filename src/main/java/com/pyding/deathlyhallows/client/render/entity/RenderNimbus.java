@@ -11,6 +11,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
+import static org.lwjgl.opengl.GL11.*;
+
 @SideOnly(Side.CLIENT)
 public class RenderNimbus extends Render {
 
@@ -19,7 +21,7 @@ public class RenderNimbus extends Render {
 
 
 	protected ResourceLocation getEntityTexture(Entity par1Entity) {
-		return this.func_110832_a((EntityBroom)par1Entity);
+		return this.func_110832_a((Nimbus)par1Entity);
 	}
 
 	public RenderNimbus() {
@@ -27,20 +29,20 @@ public class RenderNimbus extends Render {
 		this.modelBroom = new ModelBroom();
 	}
 
-	protected ResourceLocation func_110832_a(EntityBroom par1Entity) {
+	protected ResourceLocation func_110832_a(Nimbus par1Entity) {
 		return TEXTURE_URL;
 	}
 
-	public void renderBroom(Nimbus par1EntityBoat, double par2, double par4, double par6, float par8, float par9) {
+	public void renderBroom(Nimbus nimbus, double par2, double par4, double par6, float par8, float par9) {
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float)par2, (float)par4 + 1.0F, (float)par6);
 		GL11.glRotatef(90.0F - par8, 0.0F, 1.0F, 0.0F);
 		float f4 = 0.75F;
 		GL11.glScalef(f4, f4, f4);
 		GL11.glScalef(1.0F / f4, 1.0F / f4, 1.0F / f4);
-		this.bindEntityTexture(par1EntityBoat);
+		this.bindEntityTexture(nimbus);
 		GL11.glScalef(-1.0F, -1.0F, 1.0F);
-		this.modelBroom.render(par1EntityBoat, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+		this.modelBroom.render(nimbus, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
 		GL11.glPopMatrix();
 	}
 

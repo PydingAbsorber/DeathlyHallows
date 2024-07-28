@@ -12,11 +12,13 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 
+import java.awt.*;
 import java.util.List;
 
 public class Cards extends Item {
 	@Override
 	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
+		//DHUtil.spawnSphere(player,player.getPosition(1),30, 5, Color.BLUE,1,2,60,1);
 		/*double radius = 4;
 		List entities = world.getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(player.posX - radius, player.posY - radius, player.posZ - radius, player.posX + radius, player.posY + radius, player.posZ + radius));
 		if(entities != null) {
@@ -33,8 +35,6 @@ public class Cards extends Item {
 			}
 		}
 		player.openGui(DeathHallowsMod.Instance, 1, world, (int)player.posX, (int)player.posY, (int)player.posZ);*/
-		if(!world.isRemote)
-			DHUtil.getFigure(world,(int)player.posX,(int)player.posY-5,(int)player.posZ,17,15,18);
 		return super.onItemRightClick(stack, world, player);
 	}
 }

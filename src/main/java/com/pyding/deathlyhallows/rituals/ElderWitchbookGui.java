@@ -69,12 +69,12 @@ public class ElderWitchbookGui extends GuiScreen
         this.bookTitle = itemstack.getDisplayName();
         this.bookPages = new NBTTagList();
 		NBTTagCompound compound = new NBTTagCompound();
-		final String intro = Witchery.resource("witchery.book.rites1");
+		/*final String intro = Witchery.resource("witchery.book.rites1");
 		final String intro2 = Witchery.resource("witchery.book.rites2");
 		final String anyCircles = Witchery.resource("witchery.book.rites.anycircle");
 		compound.setString("Summary", intro);
 		compound.setString("Summary2", intro2);
-		this.bookPages.appendTag(compound);
+		this.bookPages.appendTag(compound);*/
 		for (ElderRiteRegistry.Ritual ritual : ElderRiteRegistry.instance().getRituals()) {
 			if (ritual.showInBook()) {
 				compound = new NBTTagCompound();
@@ -134,7 +134,7 @@ public class ElderWitchbookGui extends GuiScreen
 		buttonList.add(this.buttonJumpPage3 = new ButtonJump(5, i + 214, b0 + 58, 23, 16, 248));
 		buttonList.add(this.buttonJumpPage2 = new ButtonJump(4, i + 214, b0 + 38, 17, 8, 248));
 		buttonList.add(this.buttonJumpPage1 = new ButtonJump(3, i + 214, b0 + 18, 2, 0, 248));
-		buttonList.add(new GuiButton(12, i + 125, b0 + 135, 70, 20, "botaniamisc.visualize"));
+		buttonList.add(new GuiButton(12, i + 125, b0 + 135, 70, 20, "dh.visualize"));
 		((GuiButton)buttonList.get(12)).visible=false;
     }
 

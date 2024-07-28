@@ -1,5 +1,6 @@
 package com.pyding.deathlyhallows.items;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -7,6 +8,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 public class DeadlyPrism extends Item {
 	public int damage;
@@ -129,5 +132,11 @@ public class DeadlyPrism extends Item {
 			}
 		}
 		return super.onEntitySwing(entityLiving, stack);
+	}
+
+	@Override
+	public void addInformation(ItemStack p_77624_1_, EntityPlayer p_77624_2_, List list, boolean p_77624_4_) {
+		list.add(I18n.format("dh.desc.prism"));
+		super.addInformation(p_77624_1_, p_77624_2_, list, p_77624_4_);
 	}
 }

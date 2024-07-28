@@ -10,45 +10,44 @@ import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.List;
 
-public class NBTSync implements IMessage, IMessageHandler<NBTSync, IMessage> {
+public class PlayerNBTSync implements IMessage, IMessageHandler<PlayerNBTSync, IMessage> {
 	public NBTTagCompound nbtData;
 
-	public int id;
-
-	public NBTSync() {
+	public PlayerNBTSync() {
 	}
 
-	public NBTSync(NBTTagCompound nbt, int identifier) {
+	public PlayerNBTSync(NBTTagCompound nbt) {
 		nbtData = nbt;
-		id = identifier;
 	}
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
 		nbtData = ByteBufUtils.readTag(buf);
-		id = buf.readInt();
 	}
 
 	@Override
 	public void toBytes(ByteBuf buf) {
 		ByteBufUtils.writeTag(buf, nbtData);
-		buf.writeInt(id);
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IMessage onMessage(NBTSync message, MessageContext ctx) {
+	public IMessage onMessage(PlayerNBTSync message, MessageContext ctx) {
 		if(message.nbtData == null)
 			return null;
 		if(ctx.side == Side.CLIENT) {
-			Entity entity = Minecraft.getMinecraft().theWorld.getEntityByID(message.id);
-			entity.readFromNBT(message.nbtData);
+			EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+			/*ExtendedPlayer props = ExtendedPlayer.get(player);
+			if(props == null) {
+				props = new ExtendedPlayer(player);
+			}
+			props.loadNBTData(message.nbtData);*/
+			player.readFromNBT(message.nbtData);
 		}
 		return null;
 	}

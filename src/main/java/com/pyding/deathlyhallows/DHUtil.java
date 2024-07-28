@@ -6,20 +6,31 @@ import com.emoniph.witchery.util.CreatureUtil;
 import com.emoniph.witchery.util.EntityUtil;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.pyding.deathlyhallows.client.particles.ParticleBlueMagic;
 import com.pyding.deathlyhallows.entity.EntityEmpoweredArrow;
+import com.pyding.deathlyhallows.network.ArrowSync;
 import com.pyding.deathlyhallows.network.NBTSync;
 import com.pyding.deathlyhallows.network.NetworkHandler;
+import com.pyding.deathlyhallows.network.ParticlePacket;
+import com.pyding.deathlyhallows.network.PlayerNBTSync;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameData;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -32,11 +43,14 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 import scala.util.parsing.json.JSON;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class DHUtil {
 	public static List<EntityLivingBase> getEntitiesAround(Entity entity, float radius, boolean self){
@@ -77,20 +91,38 @@ public class DHUtil {
 		if(entity.getEntityData() == null || entity.worldObj.isRemote)
 			return;
 		if(entity instanceof EntityPlayer){
-			EntityPlayer player = (EntityPlayer)entity;
-			NetworkHandler.sendToPlayer(new NBTSync(player.getEntityData(),player.getEntityId()),player);
+			//EntityPlayer player = (EntityPlayer)entity;
+			//NetworkHandler.sendToPlayer(new PlayerNBTSync(player.getEntityData()),player);
 		} else {
-			NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 64);
-			NetworkHandler.sendToAllAround(new NBTSync(entity.getEntityData(),entity.getEntityId()),targetPoint);
+			//NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 64);
+			//NetworkHandler.sendToAllAround(new NBTSync(entity.getEntityData(),entity.getEntityId()),targetPoint);
 		}
 	}
 	
-	public static void spawnArrow(EntityPlayer player){
-		EntityEmpoweredArrow arrow = new EntityEmpoweredArrow(player.getEntityWorld(), player, (float)(player.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue()*20), 4, DamageSource.causePlayerDamage(player).setMagicDamage().setProjectile());
+	public static void spawnArrow(EntityPlayer player, int type){
+		float damage = (float)(player.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue()*20);
+		float radius = 4;
+		DamageSource source = DamageSource.causePlayerDamage(player).setMagicDamage().setProjectile();
+		if(type == 2){
+			damage = damage*20+1000;
+			radius *= 2;
+			source = DamageSource.causePlayerDamage(player).setMagicDamage().setDamageIsAbsolute();
+		}
+		else if(type == 3){
+			damage = damage*20+5000;
+			radius *= 3;
+			source = DamageSource.causePlayerDamage(player).setMagicDamage().setDamageBypassesArmor().setDamageIsAbsolute();
+		}
+		EntityEmpoweredArrow arrow = new EntityEmpoweredArrow(player.getEntityWorld(), player, damage, radius,source ,type);
 		arrow.setPositionAndRotation(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
 		DHUtil.sync(arrow);
 		player.worldObj.spawnEntityInWorld(arrow);
-		player.worldObj.playSoundAtEntity(player, "dh:spell.arrow", 1F, 1F);
+		if(type == 1)
+			player.worldObj.playSoundAtEntity(player, "dh:spell.arrow", 1F, 1F);
+		if(type == 2)
+			player.worldObj.playSoundAtEntity(player, "dh:arrow.magic_arrow_1", 1F, 1F);
+		if(type == 3)
+			player.worldObj.playSoundAtEntity(player, "dh:arrow.magic_arrow_2", 1F, 1F);
 	}
 
 
@@ -237,29 +269,46 @@ public class DHUtil {
 	}
 	
 	
-	/*public static void getFigure(World world, int xBeg, int yBeg, int zBeg, int xSize, int ySize, int zSize) {
-		String[] struct = new String[(yBeg + ySize)];
-		for (int y = yBeg; y < yBeg + ySize; y++) {
-			String[] layer = new String[(yBeg + ySize)*(xBeg + xSize)];
-			for (int x = xBeg; x < xBeg + xSize; x++) {
-				String[] row = new String[(xBeg + xSize)*(zBeg + zSize)];
-				for (int z = zBeg; z < zBeg + zSize; z++) {
-					Block block = world.getBlock(x, y, z);
-					int meta = world.getBlockMetadata(x, y, z);
-					if (block == Blocks.air || block == null) {
-						row[z] = null;
-					} else {
-						String blockName = Block.blockRegistry.getNameForObject(block).toString();
-						if (blockName.contains("witchery:circleglyph")) {
-							meta = -1;
-						}
-						row[z] = (blockName + " " + meta);
-					}
-				}
-				layer[x] = row;
-			}
-			struct[y] = layer;
+	public static void modifyAttribute(EntityLivingBase entity, IAttribute attribute, String name, float amount, int method, boolean add){
+		Multimap<String, AttributeModifier> attributes = HashMultimap.create();
+		attributes.put(attribute.getAttributeUnlocalizedName(), new AttributeModifier(name, amount, method));
+		if(add)
+			entity.getAttributeMap().applyAttributeModifiers(attributes);
+		else entity.getAttributeMap().removeAttributeModifiers(attributes);
+	}
+
+	public static void spawnSphere(Entity entity,Vec3 pos,int count, float radius,Color color,float resizeSpeed, float scale, int age,int type) {
+		Random random = new Random();
+		for (int i = 0; i < count; i++) {
+			double theta = 2 * Math.PI * random.nextDouble();
+			double phi = Math.acos(2 * random.nextDouble() - 1);
+			double xOffset = radius * Math.sin(phi) * Math.cos(theta);
+			double yOffset = radius * Math.sin(phi) * Math.sin(theta);
+			double zOffset = radius * Math.cos(phi);
+			
+			float speed = 1;
+			float motionX = (float)(xOffset * speed);
+			float motionY = (float)(yOffset * speed);
+			float motionZ = (float)(zOffset * speed);
+
+			spawnParticle(entity, pos.xCoord + xOffset, pos.yCoord + yOffset, pos.zCoord + zOffset, color, resizeSpeed, scale, age, type, motionX, motionY, motionZ);
 		}
-		System.out.println(Arrays.toString(struct));
-	}*/
+	}
+	
+	public static void spawnParticle(Entity entity, double x, double y, double z, Color color, float resizeSpeed, float scale, int age,int type,float motionX,float motionY,float motionZ){
+		NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(entity.dimension, x, y, z, 64);
+		NetworkHandler.sendToAllAround(new ParticlePacket(x, y, z, color, resizeSpeed, scale, age, type, motionX, motionY, motionZ), targetPoint);
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static void spawnParticleClient(Entity entity, double x, double y, double z, Color color, float resizeSpeed, float scale, int age,int type,float motionX,float motionY,float motionZ){
+		if(type == 1) {
+			ParticleBlueMagic particle = new ParticleBlueMagic(entity.worldObj, x, y, z, color, resizeSpeed, scale, age);
+			particle.motionX = motionX;
+			particle.motionY = motionY;
+			particle.motionZ = motionZ;
+			particle.noClip = true;
+			Minecraft.getMinecraft().effectRenderer.addEffect(particle);
+		}
+	}
 }

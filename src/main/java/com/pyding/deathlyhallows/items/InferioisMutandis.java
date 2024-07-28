@@ -102,16 +102,9 @@ public class InferioisMutandis extends ItemFocusPech {
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4) {
 		super.addInformation(stack, player, list, par4);
-		if(I18n.format("dh.util.language").equals("Ru")) {
-			list.add("Мутандис и Мутирующий Сук за вис? Наверное полезно...");
-			list.add("Шифт+ПКМ чтобы сменить режим");
-			list.add("§aПропахло резким запахом Щипуна");
-		}
-		else {
-			list.add("Mutandis and Mutating Sprig with a cost of vis? Useful maybe...");
-			list.add("Shift+RMB to change mode");
-			list.add("§aStrongly saturated with the smell of Grassper");
-		}
+		list.add(I18n.format("dh.desc.mutandis1"));
+		list.add(I18n.format("dh.desc.mutandis2"));
+		list.add(I18n.format("dh.desc.mutandis3"));
 	}
 
 	public boolean hasEffect(final ItemStack par1ItemStack, final int pass) {

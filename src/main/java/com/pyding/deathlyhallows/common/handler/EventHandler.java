@@ -3,6 +3,7 @@ package com.pyding.deathlyhallows.common.handler;
 import baubles.api.BaublesApi;
 import com.emoniph.witchery.Witchery;
 import com.emoniph.witchery.blocks.BlockGrassper;
+import com.emoniph.witchery.brewing.WitcheryBrewRegistry;
 import com.emoniph.witchery.dimension.WorldProviderDreamWorld;
 import com.emoniph.witchery.entity.EntityBanshee;
 import com.emoniph.witchery.entity.EntityDeath;
@@ -22,6 +23,7 @@ import com.google.common.collect.Multimap;
 import com.pyding.deathlyhallows.DHUtil;
 import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
 import com.pyding.deathlyhallows.entity.AbsoluteDeath;
+import com.pyding.deathlyhallows.entity.Nimbus;
 import com.pyding.deathlyhallows.integration.Integration;
 import com.pyding.deathlyhallows.items.DeadlyPrism;
 import com.pyding.deathlyhallows.items.ModItems;
@@ -40,6 +42,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -86,6 +89,7 @@ import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.ConfigItems;
 import thaumcraft.common.items.wands.ItemWandCasting;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -298,10 +302,16 @@ public class EventHandler {
 			if(player.getEntityData().getLong("DHArrow") > 0) {
 				long time = System.currentTimeMillis() - player.getEntityData().getLong("DHArrow");
 				boolean show = player.getEntityData().getBoolean("DHArrowShow");
-				if(time >= 2 * 1000 && show) {
+				boolean show2 = player.getEntityData().getBoolean("DHArrowShow2");
+				if(time >= firstShot && show) {
 					player.getEntityData().setBoolean("DHArrowShow",false);
-					ParticleEffect.MAGIC_CRIT.send(null, player, 2, 2, 64);
-					world.playSoundAtEntity(player, "dh:spell.arrow", 1F, 1F);
+					DHUtil.spawnSphere(player,player.getPosition(1),20, 3, Color.BLUE,1,3,60,1);
+					world.playSoundAtEntity(player, "dh:arrow.arrow_ready_1", 1F, 1F);
+				}
+				if(time >= secondShot && show2) {
+					player.getEntityData().setBoolean("DHArrowShow2",false);
+					DHUtil.spawnSphere(player,player.getPosition(1),20, 3, Color.magenta,1,3,60,1);
+					world.playSoundAtEntity(player, "dh:arrow.arrow_ready_2", 1F, 1F);
 				}
 			}
 			ItemStack stack = player.getHeldItem();
@@ -325,6 +335,24 @@ public class EventHandler {
 			}
 			if(shouldRemove) {
 				removeDuplicatesFromInventory(player);
+			}
+			if(player.ticksExisted % 20 == 0 || player.getEntityData().getBoolean("dhkey2")){
+				boolean found = false;
+				for(ItemStack itemStack : player.inventory.mainInventory){
+					if(itemStack != null && itemStack.getItem() == ModItems.nimbus) {
+						found = true;
+						if(player.getEntityData().getBoolean("dhkey2")) {
+							Nimbus3000 nimbus3000 = (Nimbus3000)itemStack.getItem();
+							nimbus3000.onItemRightClick(itemStack, player.worldObj, player);
+						}
+					}
+				}
+				if(!found && player.ridingEntity instanceof Nimbus){
+					Entity entity = player.ridingEntity;
+					player.dismountEntity(entity);
+					entity.setDead();
+				}
+				player.getEntityData().setBoolean("dhkey2", false);
 			}
 			if(ExtendedPlayer.get((EntityPlayer)event.entity) != null) {
 				ExtendedPlayer props = ExtendedPlayer.get(player);
@@ -707,7 +735,11 @@ public class EventHandler {
 		EntityPlayer player = event.entityPlayer;
 		player.getEntityData().setLong("DHArrow", System.currentTimeMillis());
 		player.getEntityData().setBoolean("DHArrowShow", true);
+		player.getEntityData().setBoolean("DHArrowShow2", true);
 	}
+
+	long firstShot = 1000;
+	long secondShot = 2000;
 
 	@SubscribeEvent
 	public void bowUse(ArrowLooseEvent event) {
@@ -715,8 +747,27 @@ public class EventHandler {
 		ExtendedPlayer props = ExtendedPlayer.get(player);
 		long time = System.currentTimeMillis() - player.getEntityData().getLong("DHArrow");
 		player.getEntityData().setLong("DHArrow",0);
-		if(props.getElfLvl() > 7 && time > 2 * 1000) { 
-			DHUtil.spawnArrow(player);
+		long perfectTime = secondShot+150;
+		if(props.getElfLvl() >= 10 && (time > secondShot || player.getEntityData().getInteger("DHShot") > 0)){
+
+			if(player.getEntityData().getInteger("DHShot") > 0){
+				DHUtil.spawnArrow(player, 3);
+				player.getEntityData().setInteger("DHShot",player.getEntityData().getInteger("DHShot")-1);
+				event.setCanceled(true);
+			}
+			else if(time < perfectTime){
+				DHUtil.spawnArrow(player, 3);
+				player.getEntityData().setInteger("DHShot",5);
+				event.setCanceled(true);
+			}
+			else {
+				DHUtil.spawnArrow(player, 2);
+				event.setCanceled(true);
+			}
+			return;
+		}
+		if(props.getElfLvl() >= 7 && time > firstShot) { 
+			DHUtil.spawnArrow(player,1);
 			event.setCanceled(true);
 		}
 	}
@@ -740,11 +791,11 @@ public class EventHandler {
 					}
 					ExtendedPlayer props = ExtendedPlayer.get(attacker);
 					if(event.source.isProjectile()) {
-						double radius = 16;
+						float radius = 8;
 						float damageAoe = 0.3F;
 						if(props.getElfLvl() >= 9) {
-							radius = 32;
-							damageAoe = 0.6F;
+							radius *= 2;
+							damageAoe *= 2;
 						}
 						List entities = event.entity.worldObj.getEntitiesWithinAABB(EntityLiving.class, event.entity.boundingBox.expand(radius, radius, radius));
 						if(props.getElfLvl() >= 1) {
@@ -754,11 +805,12 @@ public class EventHandler {
 							event.source.setMagicDamage();
 						}
 						if(props.getElfLvl() >= 6 && !event.source.isDamageAbsolute()) {
+							DHUtil.spawnSphere(entity,entity.getPosition(1),(int)(radius*20), radius, Color.BLUE,1,6,60,1);
 							for(Object o: entities) {
 								if(o != attacker && o != event.entity) {
 									EntityLiving target = (EntityLiving)o;
 									target.setLastAttacker(attacker);
-									ParticleEffect.INSTANT_SPELL.send(null, target, 2, 2, 64);
+									ParticleEffect.MAGIC_CRIT.send(null, target, 2, 2, 64);
 									target.attackEntityFrom(DamageSource.causePlayerDamage(attacker)
 																		.setDamageIsAbsolute()
 																		.setProjectile(), event.ammount * damageAoe);
@@ -770,15 +822,15 @@ public class EventHandler {
 							com.emoniph.witchery.common.ExtendedPlayer wprops = com.emoniph.witchery.common.ExtendedPlayer.get(target);
 							if(wprops.isVampire()) {
 								wprops.setBloodReserve(0);
-								if(Math.random() < 0.05) {
+								/*if(Math.random() < 0.05) {
 									wprops.setVampireLevel(wprops.getVampireLevel() - 1);
-								}
+								}*/
 								target.attackEntityFrom(EntityUtil.DamageSourceVampireFire.magic, event.ammount * 10);
 							}
 							if(wprops.getWerewolfLevel() > 0) {
-								if(Math.random() < 0.05) {
+								/*if(Math.random() < 0.05) {
 									wprops.setWerewolfLevel(wprops.getWerewolfLevel() - 1);
-								}
+								}*/
 								target.attackEntityFrom(EntityDamageSourceIndirectSilver.magic, event.ammount * 10);
 							}
 							if((wprops.isVampire() || wprops.getWerewolfLevel() > 0) && target.getHealth() <= target.getMaxHealth() * 0.1) {
@@ -792,7 +844,7 @@ public class EventHandler {
 						}
 					}
 					else {
-						if(props.getElfLvl() >= 1) {
+						if(props.getElfLvl() >= 1 && !(event.source.isMagicDamage())) {
 							if(attacker.getHeldItem() != null && attacker.getHeldItem()
 																		 .getItem() != ModItems.elderWand) {
 								event.ammount = event.ammount * 0.05F;
@@ -1321,35 +1373,6 @@ public class EventHandler {
 						else {
 							player.inventory.setInventorySlotContents(i, null);
 							//player.entityDropItem(stack,1);
-						}
-					}
-				}
-				if(stack.getItem() == ModItems.nimbus) {
-					NBTTagCompound nbt = null;
-					if(!stack.hasTagCompound() || stack.getTagCompound() == null) {
-						nbt = new NBTTagCompound();
-						nbt.setInteger("NimbusCooldown", 0);
-						stack.setTagCompound(nbt);
-					}
-					else {
-						nbt = stack.getTagCompound();
-					}
-					if(nbt.getInteger("NimbusCooldown") > 0) {
-						nbt.setInteger("NimbusCooldown", stack.getTagCompound().getInteger("NimbusCooldown") - 1);
-						if(player.getEntityData().getBoolean("dhkey2")) {
-							player.getEntityData().setBoolean("dhkey2", false);
-						}
-						stack.setTagCompound(nbt);
-					}
-					else if(nbt.getInteger("NimbusCooldown") < 0) {
-						nbt.setInteger("NimbusCooldown", 0);
-						stack.setTagCompound(nbt);
-					}
-					else {
-						if(player.getEntityData().getBoolean("dhkey2")) {
-							Nimbus3000 nimbus3000 = (Nimbus3000)stack.getItem();
-							nimbus3000.onItemRightClick(stack, player.worldObj, player);
-							player.getEntityData().setBoolean("dhkey2", false);
 						}
 					}
 				}

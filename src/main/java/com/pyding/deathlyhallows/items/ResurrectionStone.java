@@ -48,8 +48,7 @@ public class ResurrectionStone extends Item implements IBauble {
 	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
 		if(!world.isRemote) {
 			if(player.isSneaking()) {
-				List<EntityPlayerMP> playerList = MinecraftServer.getServer()
-																 .getConfigurationManager().playerEntityList;
+				List<EntityPlayerMP> playerList = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
 				if(!playerList.isEmpty()) {
 					String selectedPlayerName = "";
 					int maxIndex = playerList.size();
@@ -173,49 +172,24 @@ public class ResurrectionStone extends Item implements IBauble {
 
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
-		String currentLanguage = StatCollector.translateToLocal("language.name");
-
-		if(I18n.format("dh.util.language").equals("Ru")) {
-			if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-				list.add("Нажми §ashift+ПКМ §7с кольцом в руке, чтобы выбрать игрока");
-				list.add("Нажми §aПКМ §7чтобы найти выбранного игрока за §a1 заряд воскрешения");
-				list.add("§aВоскрешения работают только когда кольцо надето");
-			}
-			else {
-				list.add("Воскрешений осталось:§a " + getCharges(stack));
-				list.add("Выбранный игрок:§a " + getPlayer(stack));
-				list.add("Нажми §ashift §7для дополнительной информации");
-			}
-			if(stack.hasTagCompound()) {
-				if(stack.getTagCompound().hasKey("dhowner")) {
-					list.add("Владелец §9" + stack.getTagCompound().getString("dhowner"));
-				}
-			}
-			else {
-				list.add("Владелец §9Смерть");
-			}
-			list.add("Возможно иметь лишь один дар у себя в инвентаре");
+		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+			list.add(I18n.format("dh.desc.stone1"));
+			list.add(I18n.format("dh.desc.stone2"));
+			list.add(I18n.format("dh.desc.stone3"));
 		}
 		else {
-			if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-				list.add("Press §ashift+RMB §7with ring in hand to select a player");
-				list.add("Press §aRMB §7to search for the selected player for a cost of §a1 resurrection");
-				list.add("§aResurrections work only if the ring is equipped");
-			}
-			else {
-				list.add("Resurrections left:§a " + getCharges(stack));
-				list.add("Chosen Player:§a " + getPlayer(stack));
-				list.add("Press §ashift §7for additional information");
-			}
-			if(stack.hasTagCompound()) {
-				if(stack.getTagCompound().hasKey("dhowner")) {
-					list.add("Owner §9" + stack.getTagCompound().getString("dhowner"));
-				}
-			}
-			else {
-				list.add("Owner §9Death");
-			}
-			list.add("You can have only one Hallow at the time");
+			list.add(I18n.format("dh.desc.stone4") + getCharges(stack));
+			list.add(I18n.format("dh.desc.stone5") + getPlayer(stack));
+			list.add(I18n.format("dh.desc.stone6"));
 		}
+		if(stack.hasTagCompound()) {
+			if(stack.getTagCompound().hasKey("dhowner")) {
+				list.add(I18n.format("dh.desc.stone7") + stack.getTagCompound().getString("dhowner"));
+			}
+		}
+		else {
+			list.add(I18n.format("dh.desc.stone8"));
+		}
+		list.add(I18n.format("dh.desc.stone9"));
 	}
 }

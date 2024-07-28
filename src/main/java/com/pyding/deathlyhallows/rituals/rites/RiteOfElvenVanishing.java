@@ -1,11 +1,8 @@
 package com.pyding.deathlyhallows.rituals.rites;
 
 import com.emoniph.witchery.blocks.BlockAltar;
-import com.emoniph.witchery.blocks.BlockCircle;
 import com.emoniph.witchery.common.IPowerSource;
 import com.emoniph.witchery.common.PowerSources;
-import com.emoniph.witchery.ritual.Rite;
-import com.emoniph.witchery.ritual.RitualStep;
 import com.emoniph.witchery.util.Coord;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
@@ -19,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class RiteOfElvenVanishing extends Rite {
+public class RiteOfElvenVanishing extends ElderRite {
 	private final float upkeepPowerCost;
 	private final int ticksToLive;
 	private final int radius;
