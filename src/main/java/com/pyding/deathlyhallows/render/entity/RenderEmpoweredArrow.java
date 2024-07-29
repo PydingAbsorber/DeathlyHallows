@@ -1,7 +1,7 @@
 package com.pyding.deathlyhallows.render.entity;
 
 import com.pyding.deathlyhallows.DeathHallowsMod;
-import com.pyding.deathlyhallows.entity.EntityEmpoweredArrow;
+import com.pyding.deathlyhallows.entities.EntityEmpoweredArrow;
 import com.pyding.deathlyhallows.render.ModelWrapperDisplayList;
 import com.pyding.deathlyhallows.render.entity.model.ModelEmpoweredArrow;
 import net.minecraft.client.renderer.entity.Render;

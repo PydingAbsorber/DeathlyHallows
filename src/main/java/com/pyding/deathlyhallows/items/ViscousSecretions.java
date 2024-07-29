@@ -1,7 +1,7 @@
 package com.pyding.deathlyhallows.items;
 
 import com.emoniph.witchery.util.ChatUtil;
-import com.pyding.deathlyhallows.integration.Integration;
+import com.pyding.deathlyhallows.integrations.DHIntegration;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,7 +31,7 @@ public class ViscousSecretions extends ItemFood {
 			ChatUtil.sendTranslated(EnumChatFormatting.DARK_RED, player, "dh.chat.food");
 		}
 		player.getEntityData().setInteger("DopVoid", 3000);
-		if(!world.isRemote && Integration.thaumcraft) {
+		if(!world.isRemote && DHIntegration.thaumcraft) {
 			double random = Math.random();
 			if(random < 0.01) {
 				Thaumcraft.addWarpToPlayer(player, 1, false);
@@ -48,7 +48,7 @@ public class ViscousSecretions extends ItemFood {
 
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
-		if(Integration.thaumcraft) {
+		if(DHIntegration.thaumcraft) {
 			list.add(StatCollector.translateToLocal("dh.desc.visSec1"));
 			list.add(StatCollector.translateToLocalFormatted("dh.desc.visSec2", "1%", "10%", "89%"));
 		}
