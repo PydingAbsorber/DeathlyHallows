@@ -1,9 +1,6 @@
 package com.pyding.deathlyhallows.entities;
 
-import com.pyding.deathlyhallows.network.DHPacketProcessor;
-import com.pyding.deathlyhallows.network.packets.PacketArrowSync;
 import com.pyding.deathlyhallows.utils.DHUtils;
-import cpw.mods.fml.common.network.NetworkRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,8 +29,8 @@ public class EntityEmpoweredArrow extends Entity {
 	public EntityEmpoweredArrow(World world, EntityPlayer shooter, float damage, float radius, DamageSource source, int type) {
 		this(world);
 		setSize(0.5F, 0.5F);
-		this.shooter = shooter;
-		setRotation(this.shooter.rotationYaw, this.shooter.rotationPitch);
+		setShooter(shooter);
+		setRotation(shooter.rotationYaw, shooter.rotationPitch);
 		this.damage = damage;
 		this.radius = radius;
 		this.source = source;
