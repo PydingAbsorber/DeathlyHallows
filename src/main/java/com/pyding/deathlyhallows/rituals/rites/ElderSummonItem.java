@@ -1,10 +1,8 @@
 package com.pyding.deathlyhallows.rituals.rites;
 
 import com.emoniph.witchery.Witchery;
-import com.emoniph.witchery.blocks.BlockCircle;
 import com.emoniph.witchery.predictions.PredictionManager;
 import com.emoniph.witchery.ritual.RitualStep;
-import com.emoniph.witchery.ritual.rites.RiteSummonItem;
 import com.emoniph.witchery.util.Coord;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
@@ -46,78 +44,82 @@ public class ElderSummonItem extends ElderRite {
 
 		@Override
 		public Result elderProcess(World world, int posX, int posY, int posZ, long ticks, ElderRitualBlock.TileEntityCircle.ActivatedElderRitual ritual) {
-			if (ticks % 20L != 0L) {
+			if(ticks % 20L != 0L) {
 				return Result.STARTING;
-			} else {
-				if (!world.isRemote) {
+			}
+			else {
+				if(!world.isRemote) {
 					ItemStack itemstack = ItemStack.copyItemStack(this.rite.itemToSummon);
-					if (this.rite.binding == ElderSummonItem.Binding.LOCATION) {
+					if(this.rite.binding == ElderSummonItem.Binding.LOCATION) {
 						Witchery.Items.GENERIC.bindToLocation(world, posX, posY, posZ, world.provider.dimensionId, world.provider.getDimensionName(), itemstack);
-					} else {
+					}
+					else {
 						boolean r;
 						AxisAlignedBB bounds;
 						Iterator i$;
 						Object obj;
 						EntityPlayer player;
-						if (this.rite.binding == ElderSummonItem.Binding.ENTITY) {
+						if(this.rite.binding == ElderSummonItem.Binding.ENTITY) {
 							r = true;
 							EntityLivingBase target = null;
-							bounds = AxisAlignedBB.getBoundingBox((double)(posX - 4), (double)posY, (double)(posZ - 4), (double)(posX + 4), (double)(posY + 1), (double)(posZ + 4));
+							bounds = AxisAlignedBB.getBoundingBox(posX - 4, posY, posZ - 4, posX + 4, posY + 1, posZ + 4);
 							i$ = world.getEntitiesWithinAABB(EntityPlayer.class, bounds).iterator();
 
 							while(i$.hasNext()) {
 								obj = i$.next();
 								player = (EntityPlayer)obj;
-								if (Coord.distance(player.posX, player.posY, player.posZ, (double)posX, (double)posY, (double)posZ) <= 4.0) {
+								if(Coord.distance(player.posX, player.posY, player.posZ, posX, posY, posZ) <= 4.0) {
 									target = player;
 								}
 							}
 
-							if (target != null) {
-								bounds = AxisAlignedBB.getBoundingBox((double)(posX - 4), (double)posY, (double)(posZ - 4), (double)(posX + 4), (double)(posY + 1), (double)(posZ + 4));
+							if(target != null) {
+								bounds = AxisAlignedBB.getBoundingBox(posX - 4, posY, posZ - 4, posX + 4, posY + 1, posZ + 4);
 								i$ = world.getEntitiesWithinAABB(EntityLiving.class, bounds).iterator();
 
 								while(i$.hasNext()) {
 									obj = i$.next();
 									EntityLiving entity = (EntityLiving)obj;
-									if (Coord.distance(entity.posX, entity.posY, entity.posZ, (double)posX, (double)posY, (double)posZ) <= 4.0) {
+									if(Coord.distance(entity.posX, entity.posY, entity.posZ, posX, posY, posZ) <= 4.0) {
 										target = entity;
 									}
 								}
 							}
 
-							if (target == null) {
+							if(target == null) {
 								return Result.ABORTED_REFUND;
 							}
 
-							Witchery.Items.TAGLOCK_KIT.setTaglockForEntity(itemstack, (EntityPlayer)null, (Entity)target, false, 1);
-						} else if (this.rite.binding != ElderSummonItem.Binding.PLAYER) {
-							if (this.rite.binding == ElderSummonItem.Binding.COPY_LOCATION) {
+							Witchery.Items.TAGLOCK_KIT.setTaglockForEntity(itemstack, null, target, false, 1);
+						}
+						else if(this.rite.binding != ElderSummonItem.Binding.PLAYER) {
+							if(this.rite.binding == ElderSummonItem.Binding.COPY_LOCATION) {
 								Iterator i$1 = ritual.sacrificedItems.iterator();
 
 								while(i$1.hasNext()) {
 									RitualStep.SacrificedItem item = (ElderRitualStep.SacrificedItem)i$1.next();
-									if (Witchery.Items.GENERIC.hasLocationBinding(item.itemstack)) {
+									if(Witchery.Items.GENERIC.hasLocationBinding(item.itemstack)) {
 										Witchery.Items.GENERIC.copyLocationBinding(item.itemstack, itemstack);
 										break;
 									}
 								}
 							}
-						} else {
+						}
+						else {
 							r = true;
 							EntityLivingBase target = null;
-							bounds = AxisAlignedBB.getBoundingBox((double)(posX - 4), (double)posY, (double)(posZ - 4), (double)(posX + 4), (double)(posY + 1), (double)(posZ + 4));
+							bounds = AxisAlignedBB.getBoundingBox(posX - 4, posY, posZ - 4, posX + 4, posY + 1, posZ + 4);
 							i$ = world.getEntitiesWithinAABB(EntityPlayer.class, bounds).iterator();
 
 							while(i$.hasNext()) {
 								obj = i$.next();
 								player = (EntityPlayer)obj;
-								if (Coord.distance(player.posX, player.posY, player.posZ, (double)posX, (double)posY, (double)posZ) <= 4.0) {
+								if(Coord.distance(player.posX, player.posY, player.posZ, posX, posY, posZ) <= 4.0) {
 									target = player;
 								}
 							}
 
-							if (target == null) {
+							if(target == null) {
 								return Result.ABORTED_REFUND;
 							}
 
@@ -127,9 +129,9 @@ public class ElderSummonItem extends ElderRite {
 						}
 					}
 
-					if (itemstack.getItem() == Item.getItemFromBlock(Witchery.Blocks.CRYSTAL_BALL)) {
+					if(itemstack.getItem() == Item.getItemFromBlock(Witchery.Blocks.CRYSTAL_BALL)) {
 						EntityPlayer player = ritual.getInitiatingPlayer(world);
-						if (player != null) {
+						if(player != null) {
 							PredictionManager.instance().setFortuneTeller(player, true);
 						}
 					}
@@ -147,14 +149,14 @@ public class ElderSummonItem extends ElderRite {
 		}
 	}
 
-	public static enum Binding {
+	public enum Binding {
 		NONE,
 		LOCATION,
 		ENTITY,
 		COPY_LOCATION,
 		PLAYER;
 
-		private Binding() {
+		Binding() {
 		}
 	}
 }

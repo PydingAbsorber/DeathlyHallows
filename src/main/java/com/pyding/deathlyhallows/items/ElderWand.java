@@ -10,8 +10,8 @@ import com.emoniph.witchery.network.PacketSpellPrepared;
 import com.emoniph.witchery.util.ChatUtil;
 import com.emoniph.witchery.util.SoundEffect;
 import com.emoniph.witchery.util.TimeUtil;
-import com.pyding.deathlyhallows.client.handler.KeyHandler;
 import com.pyding.deathlyhallows.spells.SpellRegistry;
+import com.pyding.deathlyhallows.utils.DHKeys;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.resources.I18n;
@@ -53,18 +53,18 @@ public class ElderWand extends ItemBase {
 
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
-		list.add(I18n.format("dh.desc.wand1", Keyboard.getKeyName(KeyHandler.binding.getKeyCode())));
-		list.add(I18n.format("dh.desc.wand2"));
-		list.add(I18n.format("dh.desc.wand3"));
+		list.add(StatCollector.translateToLocalFormatted("dh.desc.wand1", Keyboard.getKeyName(DHKeys.WAND.getKeyCode())));
+		list.add(StatCollector.translateToLocal("dh.desc.wand2"));
+		list.add(StatCollector.translateToLocal("dh.desc.wand3"));
 		if(stack.hasTagCompound()) {
 			if(stack.getTagCompound().hasKey("dhowner")) {
-				list.add(I18n.format("dh.desc.wand4",stack.getTagCompound().getString("dhowner")));
+				list.add(StatCollector.translateToLocalFormatted("dh.desc.wand4", stack.getTagCompound().getString("dhowner")));
 			}
 		}
 		else {
-			list.add(I18n.format("dh.desc.wand5"));
+			list.add(StatCollector.translateToLocal("dh.desc.wand5"));
 		}
-		list.add(I18n.format("dh.desc.wand6"));
+		list.add(StatCollector.translateToLocal("dh.desc.wand6"));
 	}
 
 	@Override
@@ -144,7 +144,7 @@ public class ElderWand extends ItemBase {
 	}
 
 	public int getMaxItemUseDuration(ItemStack stack) {
-		return '\u8ca0';
+		return '負';
 	}
 
 	public boolean hasEffect(ItemStack par1ItemStack, int pass) {

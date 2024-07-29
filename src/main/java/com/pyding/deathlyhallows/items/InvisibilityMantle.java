@@ -20,14 +20,7 @@ public class InvisibilityMantle extends Item implements IBauble {
 	public BaubleType getBaubleType(ItemStack itemStack) {
 		return BaubleType.BELT;
 	}
-
-	@Override
-	public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) {
-		if(!entityLiving.worldObj.isRemote) {
-		}
-		return super.onEntitySwing(entityLiving, stack);
-	}
-
+	
 	@Override
 	public void onWornTick(ItemStack itemStack, EntityLivingBase entityLivingBase) {
 		World world = entityLivingBase.worldObj;
@@ -91,24 +84,24 @@ public class InvisibilityMantle extends Item implements IBauble {
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
 
 		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-			list.add(I18n.format("dh.desc.mantle1"));
-			list.add(I18n.format("dh.desc.mantle2"));
-			list.add(I18n.format("dh.desc.mantle3"));
-			list.add(I18n.format("dh.desc.mantle4"));
+			list.add(StatCollector.translateToLocal("dh.desc.mantle1"));
+			list.add(StatCollector.translateToLocal("dh.desc.mantle2"));
+			list.add(StatCollector.translateToLocal("dh.desc.mantle3"));
+			list.add(StatCollector.translateToLocal("dh.desc.mantle4"));
 		}
 		else {
-			list.add(I18n.format("dh.desc.mantle5"));
-			list.add(I18n.format("dh.desc.mantle6"));
-			list.add(I18n.format("dh.desc.mantle7"));
+			list.add(StatCollector.translateToLocal("dh.desc.mantle5"));
+			list.add(StatCollector.translateToLocal("dh.desc.mantle6"));
+			list.add(StatCollector.translateToLocal("dh.desc.mantle7"));
 		}
 		if(stack.hasTagCompound()) {
 			if(stack.getTagCompound().hasKey("dhowner")) {
-				list.add(I18n.format("dh.desc.mantle8",stack.getTagCompound().getString("dhowner")));
+				list.add(StatCollector.translateToLocalFormatted("dh.desc.mantle8", stack.getTagCompound().getString("dhowner")));
 			}
 		}
 		else {
-			list.add(I18n.format("dh.desc.mantle9"));
+			list.add(StatCollector.translateToLocal("dh.desc.mantle9"));
 		}
-		list.add(I18n.format("dh.desc.mantle10"));
+		list.add(StatCollector.translateToLocal("dh.desc.mantle10"));
 	}
 }

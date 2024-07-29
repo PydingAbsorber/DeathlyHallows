@@ -43,10 +43,10 @@ tile.elder_ritual_block.name=Elder Chalk
 dh.desc.visSec1=§5Gentle Warp:
 dh.desc.visSec2=§5Chance %s for 1 permanent, %s for sticky, %s for temporary warp
 
-dh.desc.trick1=§6Gives random item from Witchery %s or Deathly Hallows %s when opened
+dh.desc.trick1=§6Gives random item from Witchery 98% or Deathly Hallows 2% when opened
 dh.desc.trick2=§6Chance doubles if you have Deathly Hallow
 dh.desc.trick3=§6Can be obtained via Halloween event from killing monsters and bosses. Event period is from October 18 to November 8
-dh.desc.trick4=§6Drops with %s * max hp of monster/boss chance
+dh.desc.trick4=§6Drops with 0.01% * max hp of monster/boss chance
 dh.desc.trick5=§6Press §eshift §6for additional information
 
 dh.desc.stone1=Press §ashift+RMB §7with ring in hand to select a player

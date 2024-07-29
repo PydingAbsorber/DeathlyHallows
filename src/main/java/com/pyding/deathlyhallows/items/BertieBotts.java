@@ -56,8 +56,8 @@ public class BertieBotts extends ItemFood {
 	}
 
 	public static boolean isBlackListed(int random) {
-		for(int i = 0; i < blackList.size(); i++) {
-			if(random == blackList.get(i)) {
+		for(Integer integer: blackList) {
+			if(random == integer) {
 				return true;
 			}
 		}

@@ -17,19 +17,19 @@ public abstract class ElderRitualStep extends RitualStep {
 	public Result process(World world, int i, int i1, int i2, long l, BlockCircle.TileEntityCircle.ActivatedRitual activatedRitual) {
 		return null;
 	}
-	
+
 	public Result elderRun(World world, int posX, int posY, int posZ, long ticks, ElderRitualBlock.TileEntityCircle.ActivatedElderRitual ritual) {
 		this.sourceX = posX;
 		this.sourceZ = posZ;
 		this.sourceY = posY;
-		if (this.canRelocate && ritual.getLocation() != null) {
+		if(this.canRelocate && ritual.getLocation() != null) {
 			Coord l = ritual.getLocation();
 			int maxDistance = 50 + 50 * ritual.covenSize;
 			int maxDistanceSq = maxDistance * maxDistance;
-			if (l.distanceSqTo(this.sourceX, this.sourceY, this.sourceZ) > (double)maxDistanceSq) {
+			if(l.distanceSqTo(this.sourceX, this.sourceY, this.sourceZ) > (double)maxDistanceSq) {
 				EntityPlayer player = ritual.getInitiatingPlayer(world);
-				if (player != null) {
-					ChatUtil.sendTranslated(player, "witchery.rite.toofaraway", new Object[0]);
+				if(player != null) {
+					ChatUtil.sendTranslated(player, "witchery.rite.toofaraway");
 				}
 
 				return RitualStep.Result.ABORTED_REFUND;

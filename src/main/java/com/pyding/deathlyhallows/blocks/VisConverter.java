@@ -1,5 +1,6 @@
 package com.pyding.deathlyhallows.blocks;
 
+import com.pyding.deathlyhallows.blocks.tiles.VisConverterTile;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;

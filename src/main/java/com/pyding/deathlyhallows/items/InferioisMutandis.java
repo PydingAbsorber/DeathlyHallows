@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import thaumcraft.api.aspects.Aspect;
@@ -75,7 +76,7 @@ public class InferioisMutandis extends ItemFocusPech {
 					int blockZ = rayTrace.blockZ;
 					if(mutator) {
 						ItemMutator itemMutator = new ItemMutator();
-						falseStack = new ItemStack(ModItems.inferioisMutandis);
+						falseStack = new ItemStack(DHItems.inferioisMutandis);
 						if(itemMutator.onItemUseFirst(falseStack, player, world, blockX, blockY, blockZ, rayTrace.sideHit, 0, 0, 0)) {
 							wand.consumeAllVis(itemstack, player, this.getVisCost(itemstack), true, false);
 							ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_FIZZ, world, blockX, blockY, blockZ, 1.0, 1.0, 8);
@@ -102,9 +103,9 @@ public class InferioisMutandis extends ItemFocusPech {
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4) {
 		super.addInformation(stack, player, list, par4);
-		list.add(I18n.format("dh.desc.mutandis1"));
-		list.add(I18n.format("dh.desc.mutandis2"));
-		list.add(I18n.format("dh.desc.mutandis3"));
+		list.add(StatCollector.translateToLocal("dh.desc.mutandis1"));
+		list.add(StatCollector.translateToLocal("dh.desc.mutandis2"));
+		list.add(StatCollector.translateToLocal("dh.desc.mutandis3"));
 	}
 
 	public boolean hasEffect(final ItemStack par1ItemStack, final int pass) {

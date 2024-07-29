@@ -16,12 +16,12 @@ import net.minecraft.world.World;
 public class ElderChalk extends ItemBase {
 	private static final int MAX_DAMAGE = 64;
 	private static final int DAMAGE_PER_USE = 1;
-	private Block block;
+	private final Block block;
 
 	public ElderChalk(Block block) {
 		this.block = block;
 		this.setMaxStackSize(64);
-		this.setMaxDamage(64);
+		this.setMaxDamage(MAX_DAMAGE);
 		this.setNoRepair();
 	}
 
@@ -35,54 +35,58 @@ public class ElderChalk extends ItemBase {
 
 	public static boolean drawGlyph(World world, int posX, int posY, int posZ, int side, Block block, EntityPlayer player) {
 		boolean chalkUsed = false;
-		if (block != Witchery.Blocks.CIRCLE) {
+		if(block != Witchery.Blocks.CIRCLE) {
 			Block overBlock = world.getBlock(posX, posY, posZ);
-			if (overBlock == block) {
+			if(overBlock == block) {
 				world.setBlockMetadataWithNotify(posX, posY, posZ, world.rand.nextInt(12), 3);
 				chalkUsed = true;
-			} else if (overBlock != Witchery.Blocks.GLYPH_RITUAL && overBlock != Witchery.Blocks.GLYPH_OTHERWHERE && overBlock != Witchery.Blocks.GLYPH_INFERNAL) {
-				if (BlockSide.TOP.isEqual(side) && Witchery.Blocks.GLYPH_RITUAL.canBlockStay(world, posX, posY + 1, posZ) && BlockUtil.isReplaceableBlock(world, posX, posY + 1, posZ, player)) {
+			}
+			else if(overBlock != Witchery.Blocks.GLYPH_RITUAL && overBlock != Witchery.Blocks.GLYPH_OTHERWHERE && overBlock != Witchery.Blocks.GLYPH_INFERNAL) {
+				if(BlockSide.TOP.isEqual(side) && Witchery.Blocks.GLYPH_RITUAL.canBlockStay(world, posX, posY + 1, posZ) && BlockUtil.isReplaceableBlock(world, posX, posY + 1, posZ, player)) {
 					world.setBlock(posX, posY + 1, posZ, block, world.rand.nextInt(12), 3);
 					world.markBlockForUpdate(posX, posY + 1, posZ);
 					chalkUsed = true;
 				}
-			} else {
+			}
+			else {
 				world.setBlock(posX, posY, posZ, block, world.rand.nextInt(12), 3);
 				world.markBlockForUpdate(posX, posY, posZ);
 				chalkUsed = true;
 			}
-		} else if (world.getBlock(posX, posY, posZ) != block && BlockSide.TOP.isEqual(side) && Witchery.Blocks.CIRCLE.canBlockStay(world, posX, posY + 1, posZ)) {
+		}
+		else if(world.getBlock(posX, posY, posZ) != block && BlockSide.TOP.isEqual(side) && Witchery.Blocks.CIRCLE.canBlockStay(world, posX, posY + 1, posZ)) {
 			world.setBlock(posX, posY + 1, posZ, block);
 			world.markBlockForUpdate(posX, posY + 1, posZ);
 			chalkUsed = true;
 		}
 
-		if (chalkUsed) {
-			SoundEffect.WITCHERY_RANDOM_CHALK.playAt(world, (double)posX, (double)posY, (double)posZ, 1.0F, 1.0F);
+		if(chalkUsed) {
+			SoundEffect.WITCHERY_RANDOM_CHALK.playAt(world, posX, posY, posZ, 1.0F, 1.0F);
 		}
 
 		return chalkUsed;
 	}
 
 	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int posX, int posY, int posZ, int side, float hitX, float hitY, float hitZ) {
-		if (!world.isRemote) {
+		if(!world.isRemote) {
 			boolean chalkUsed = drawGlyph(world, posX, posY, posZ, side, this.block, player);
-			if (chalkUsed && !player.capabilities.isCreativeMode) {
-				stack.damageItem(1, player);
-				if (stack.stackSize > 1) {
+			if(chalkUsed && !player.capabilities.isCreativeMode) {
+				stack.damageItem(DAMAGE_PER_USE, player);
+				if(stack.stackSize > 1) {
 					ItemStack newStack = ItemStack.copyItemStack(stack);
 					--newStack.stackSize;
 					newStack.setItemDamage(0);
-					if (!player.inventory.addItemStackToInventory(newStack)) {
+					if(!player.inventory.addItemStackToInventory(newStack)) {
 						world.spawnEntityInWorld(new EntityItem(world, player.posX + 0.5, player.posY + 1.5, player.posZ + 0.5, newStack));
-					} else if (player instanceof EntityPlayerMP) {
+					}
+					else if(player instanceof EntityPlayerMP) {
 						((EntityPlayerMP)player).sendContainerToPlayer(player.inventoryContainer);
 					}
 
 					stack.stackSize = 1;
 				}
 
-				if (!stack.hasTagCompound()) {
+				if(!stack.hasTagCompound()) {
 					stack.setTagCompound(new NBTTagCompound());
 				}
 

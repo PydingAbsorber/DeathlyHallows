@@ -1,19 +1,9 @@
 package com.pyding.deathlyhallows.items;
 
-import com.emoniph.witchery.blocks.BlockPerpertualIceStairs;
-import com.pyding.deathlyhallows.DHUtil;
-import com.pyding.deathlyhallows.DeathHallowsMod;
-import com.pyding.deathlyhallows.entity.AbsoluteDeath;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
-
-import java.awt.*;
-import java.util.List;
 
 public class Cards extends Item {
 	@Override

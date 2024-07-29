@@ -7,8 +7,8 @@ import com.emoniph.witchery.item.ItemGeneral;
 import com.emoniph.witchery.item.ItemVanillaPotion;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
-import com.pyding.deathlyhallows.common.handler.EventHandler;
-import com.pyding.deathlyhallows.integration.Integration;
+import com.pyding.deathlyhallows.events.DHEvents;
+import com.pyding.deathlyhallows.integrations.DHIntegration;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import org.lwjgl.input.Keyboard;
 
@@ -32,7 +33,7 @@ public class TrickOrTreat extends Item {
 	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
 		stack.splitStack(1);
 		Object o;
-		EventHandler eventHandler = new EventHandler();
+		DHEvents eventHandler = new DHEvents();
 		double chance = 0.98;
 		if(eventHandler.hasDeathlyHallow(player)) {
 			chance = 0.96;
@@ -121,15 +122,15 @@ public class TrickOrTreat extends Item {
 
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
-		if(Integration.thaumcraft) {
+		if(DHIntegration.thaumcraft) {
 			if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-				list.add(I18n.format("dh.desc.trick1","98%","2%"));
-				list.add(I18n.format("dh.desc.trick2"));
-				list.add(I18n.format("dh.desc.trick3"));
-				list.add(I18n.format("dh.desc.trick4","0.01%"));
+				list.add(StatCollector.translateToLocal("dh.desc.trick1"));
+				list.add(StatCollector.translateToLocal("dh.desc.trick2"));
+				list.add(StatCollector.translateToLocal("dh.desc.trick3"));
+				list.add(StatCollector.translateToLocal("dh.desc.trick4"));
 			}
 			else {
-				list.add(I18n.format("dh.desc.trick5"));
+				list.add(StatCollector.translateToLocal("dh.desc.trick5"));
 			}
 		}
 	}
@@ -138,7 +139,7 @@ public class TrickOrTreat extends Item {
 		for(int i = 1; i < 4; i++) {
 			if(BaublesApi.getBaubles(player).getStackInSlot(i) != null) {
 				ItemStack stack = BaublesApi.getBaubles(player).getStackInSlot(i);
-				if(stack.getItem() == ModItems.resurrectionStone) {
+				if(stack.getItem() == DHItems.resurrectionStone) {
 					return stack;
 				}
 			}
@@ -147,26 +148,26 @@ public class TrickOrTreat extends Item {
 	}
 
 	public static void initList() {
-		itemList.add(ModItems.invisibilityMantle);
-		itemList.add(ModItems.elderWand);
-		itemList.add(ModItems.resurrectionStone);
-		itemList.add(ModItems.tabItem);
-		itemList.add(ModItems.creativeItem);
-		itemList.add(ModItems.bertieBots);
-		itemList.add(ModItems.gastronomicTemptation);
-		itemList.add(ModItems.soupWithSawdust);
-		itemList.add(ModItems.viscousSecretions);
-		itemList.add(ModItems.hobgoblinChains);
-		itemList.add(ModItems.deadlyPrism);
-		itemList.add(ModItems.hobgoblinSoul);
-		itemList.add(ModItems.nimbus);
-		itemList.add(ModItems.deathShard);
-		itemList.add(ModItems.cards);
-		if(Integration.thaumcraft) {
-			itemList.add(ModItems.inferioisMutandis);
+		itemList.add(DHItems.invisibilityMantle);
+		itemList.add(DHItems.elderWand);
+		itemList.add(DHItems.resurrectionStone);
+		itemList.add(DHItems.tabItem);
+		itemList.add(DHItems.creativeItem);
+		itemList.add(DHItems.bertieBots);
+		itemList.add(DHItems.gastronomicTemptation);
+		itemList.add(DHItems.soupWithSawdust);
+		itemList.add(DHItems.viscousSecretions);
+		itemList.add(DHItems.hobgoblinChains);
+		itemList.add(DHItems.deadlyPrism);
+		itemList.add(DHItems.hobgoblinSoul);
+		itemList.add(DHItems.nimbus);
+		itemList.add(DHItems.deathShard);
+		itemList.add(DHItems.cards);
+		if(DHIntegration.thaumcraft) {
+			itemList.add(DHItems.inferioisMutandis);
 		}
-		itemList.add(ModItems.monsterBook);
-		itemList.add(ModItems.trickOrTreat);
+		itemList.add(DHItems.monsterBook);
+		itemList.add(DHItems.trickOrTreat);
 		for(Object o: Witchery.Items.GENERIC.subItems) {
 			witcheryItems.add(o);
 		}

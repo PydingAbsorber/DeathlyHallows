@@ -10,11 +10,11 @@ import com.emoniph.witchery.util.SoundEffect;
 import com.emoniph.witchery.util.TimeUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
-import com.pyding.deathlyhallows.network.AnimaMobRenderPacket;
-import com.pyding.deathlyhallows.network.CPacketDisableFlight;
-import com.pyding.deathlyhallows.network.NetworkHandler;
-import com.pyding.deathlyhallows.network.PlayerRenderPacket;
+import com.pyding.deathlyhallows.network.DHPacketProcessor;
+import com.pyding.deathlyhallows.network.packets.PacketAnimaMobRender;
+import com.pyding.deathlyhallows.network.packets.PacketDisableFlight;
+import com.pyding.deathlyhallows.network.packets.PacketPlayerRender;
+import com.pyding.deathlyhallows.utils.properties.ExtendedPlayer;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -289,13 +289,13 @@ public class SpellRegistry {
 												props.setCoordinates(targetPlayer.posX, targetPlayer.posY, targetPlayer.posZ, targetPlayer.dimension);
 												props1.setCoordinates(targetPlayer.posX, targetPlayer.posY, targetPlayer.posZ, targetPlayer.dimension);
 												player.getEntityData().setInteger("casterCurse", 1200);
-												PlayerRenderPacket packet = new PlayerRenderPacket(targetPlayer.getEntityData());
-												NetworkHandler.sendToAllAround(packet, targetPoint);
+												PacketPlayerRender packet = new PacketPlayerRender(targetPlayer.getEntityData());
+												DHPacketProcessor.sendToAllAround(packet, targetPoint);
 											}
 											else {
 												target.setLastAttacker(player);
-												AnimaMobRenderPacket packet = new AnimaMobRenderPacket(target.getEntityData(), target.getEntityId());
-												NetworkHandler.sendToAllAround(packet, targetPoint);
+												PacketAnimaMobRender packet = new PacketAnimaMobRender(target.getEntityData(), target.getEntityId());
+												DHPacketProcessor.sendToAllAround(packet, targetPoint);
 												target.getEntityData().setDouble("chainX", target.posX);
 												target.getEntityData().setDouble("chainY", target.posY);
 												target.getEntityData().setDouble("chainZ", target.posZ);
@@ -562,7 +562,7 @@ public class SpellRegistry {
 									}
 									if(o instanceof EntityPlayer) {
 										EntityPlayer targetPlayer = (EntityPlayer)o;
-										NetworkHandler.sendToPlayer(new CPacketDisableFlight(), targetPlayer);
+										DHPacketProcessor.sendToPlayer(new PacketDisableFlight(), targetPlayer);
 										targetPlayer.capabilities.isFlying = false;
 										targetPlayer.motionY = -10F;
 										targetPlayer.attackEntityFrom(DamageSource.fall.setDamageBypassesArmor(), (baseDamage * 10 * (props1.getElfLvl() + 1)) * damage);

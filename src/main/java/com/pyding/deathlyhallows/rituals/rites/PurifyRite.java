@@ -1,19 +1,14 @@
 package com.pyding.deathlyhallows.rituals.rites;
 
 import com.emoniph.witchery.blocks.BlockAltar;
-import com.emoniph.witchery.blocks.BlockCircle;
 import com.emoniph.witchery.common.IPowerSource;
 import com.emoniph.witchery.common.PowerSources;
-import com.emoniph.witchery.ritual.Rite;
-import com.emoniph.witchery.ritual.RitualStep;
-import com.emoniph.witchery.ritual.rites.RiteCurseCreature;
-import com.emoniph.witchery.ritual.rites.RiteCursePoppets;
 import com.emoniph.witchery.util.Coord;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.pyding.deathlyhallows.blocks.ElderRitualBlock;
-import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
 import com.pyding.deathlyhallows.integration.Integration;
+import com.pyding.deathlyhallows.utils.properties.ExtendedPlayer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -88,7 +83,7 @@ public class PurifyRite extends ElderRite {
 						Object obj = i$.next();
 						EntityPlayer player = (EntityPlayer)obj;
 						if(Coord.distance(player.posX, player.posY, player.posZ, posX, posY, posZ) <= (double)r) {
-							player.getEntityData().setInteger("DHMagicAvenger",0);
+							player.getEntityData().setInteger("DHMagicAvenger", 0);
 							ExtendedPlayer props = ExtendedPlayer.get(player);
 							props.setAvenger(false);
 							player.getEntityData().setInteger("witcheryCursed", 0);
@@ -98,8 +93,8 @@ public class PurifyRite extends ElderRite {
 							player.getEntityData().setInteger("witcheryWakingNightmare", 0);
 							if(Integration.thaumcraft) {
 								Thaumcraft.proxy.playerKnowledge.setWarpPerm(player.getCommandSenderName(), 0);
-								Thaumcraft.proxy.playerKnowledge.setWarpTemp(player.getCommandSenderName(),0);
-								Thaumcraft.proxy.playerKnowledge.setWarpSticky(player.getCommandSenderName(),0);
+								Thaumcraft.proxy.playerKnowledge.setWarpTemp(player.getCommandSenderName(), 0);
+								Thaumcraft.proxy.playerKnowledge.setWarpSticky(player.getCommandSenderName(), 0);
 							}
 							ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_BABA_LIVING, player, 1.0, 2.0, 8);
 							ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_IMP_LAUGH, player, 1.0, 2.0, 8);

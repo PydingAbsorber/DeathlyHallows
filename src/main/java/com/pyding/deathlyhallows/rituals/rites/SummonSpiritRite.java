@@ -1,27 +1,20 @@
 package com.pyding.deathlyhallows.rituals.rites;
 
-import com.emoniph.witchery.WitcheryEntities;
 import com.emoniph.witchery.blocks.BlockAltar;
-import com.emoniph.witchery.blocks.BlockCircle;
 import com.emoniph.witchery.common.IPowerSource;
 import com.emoniph.witchery.common.PowerSources;
 import com.emoniph.witchery.entity.EntityBanshee;
 import com.emoniph.witchery.entity.EntityNightmare;
 import com.emoniph.witchery.entity.EntityPoltergeist;
 import com.emoniph.witchery.entity.EntitySpirit;
-import com.emoniph.witchery.ritual.Rite;
-import com.emoniph.witchery.ritual.RitualStep;
 import com.emoniph.witchery.util.Coord;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
-import com.pyding.deathlyhallows.DHUtil;
 import com.pyding.deathlyhallows.blocks.ElderRitualBlock;
-import com.pyding.deathlyhallows.common.handler.ConfigHandler;
-import cpw.mods.fml.common.registry.GameData;
+import com.pyding.deathlyhallows.utils.DHConfig;
+import com.pyding.deathlyhallows.utils.DHUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -96,20 +89,26 @@ public class SummonSpiritRite extends ElderRite {
 						EntityPlayer player = (EntityPlayer)obj;
 						if(Coord.distance(player.posX, player.posY, player.posZ, posX, posY, posZ) <= (double)r) {
 							Random random = new Random();
-							if(random.nextDouble() < 0.05){
-								String randomEntityName = DHUtil.getEntitiesNames().get(world.rand.nextInt(DHUtil.getEntitiesNames().size()-1));
+							if(random.nextDouble() < 0.05) {
+								String randomEntityName = DHUtils.getEntitiesNames()
+																 .get(world.rand.nextInt(DHUtils.getEntitiesNames()
+																								.size() - 1));
 								int tries = 0;
-								while(DHUtil.contains(ConfigHandler.sonatRitual,randomEntityName) && tries <= 1000){
-									randomEntityName = DHUtil.getEntitiesNames().get(world.rand.nextInt(DHUtil.getEntitiesNames().size()-1));
+								while(DHUtils.contains(DHConfig.sonatRitual, randomEntityName) && tries <= 1000) {
+									randomEntityName = DHUtils.getEntitiesNames()
+															  .get(world.rand.nextInt(DHUtils.getEntitiesNames()
+																							 .size() - 1));
 									tries++;
 								}
-								if(tries <= 1000)
+								if(tries <= 1000) {
 									return Result.ABORTED_REFUND;
+								}
 								Entity entity = EntityList.createEntityByName(randomEntityName, world);
 								world.spawnEntityInWorld(entity);
-							} else {
+							}
+							else {
 								Class entityClass;
-								for(int i = 0;i < ConfigHandler.randomSpirits;i++) {
+								for(int i = 0; i < DHConfig.randomSpirits; i++) {
 									switch(random.nextInt(4)) {
 										case 0:
 											entityClass = EntityBanshee.class;
@@ -126,7 +125,7 @@ public class SummonSpiritRite extends ElderRite {
 										default:
 											entityClass = null;
 									}
-									DHUtil.spawnEntity(world, posX, posY + 1, posZ, entityClass);
+									DHUtils.spawnEntity(world, posX, posY + 1, posZ, entityClass);
 								}
 							}
 							ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_BABA_LIVING, player, 1.0, 2.0, 8);

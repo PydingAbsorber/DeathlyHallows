@@ -1,11 +1,9 @@
 package com.pyding.deathlyhallows.rituals.rites;
 
 import com.emoniph.witchery.Witchery;
-import com.emoniph.witchery.blocks.BlockCircle;
 import com.emoniph.witchery.blocks.BlockGrassper;
 import com.emoniph.witchery.ritual.RiteRegistry;
 import com.emoniph.witchery.ritual.RitualStep;
-import com.emoniph.witchery.ritual.Sacrifice;
 import com.emoniph.witchery.util.Config;
 import com.emoniph.witchery.util.Const;
 import com.emoniph.witchery.util.Coord;
@@ -29,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class ElderSacrificeItem extends ElderSacrifice{
+public class ElderSacrificeItem extends ElderSacrifice {
 	final ItemStack[] itemstacks;
 
 	public ElderSacrificeItem(ItemStack... itemstacks) {
@@ -43,24 +41,26 @@ public class ElderSacrificeItem extends ElderSacrifice{
 		for(int i$ = 0; i$ < len$; ++i$) {
 			ItemStack itemstack = arr$[i$];
 			sb.append("§8>§0 ");
-			if (itemstack.getItem() == Items.potionitem) {
+			if(itemstack.getItem() == Items.potionitem) {
 				List list = Items.potionitem.getEffects(itemstack);
-				if (list != null && !list.isEmpty()) {
+				if(list != null && !list.isEmpty()) {
 					PotionEffect effect = (PotionEffect)list.get(0);
 					String s = itemstack.getDisplayName();
-					if (effect.getAmplifier() > 0) {
+					if(effect.getAmplifier() > 0) {
 						s = s + " " + StatCollector.translateToLocal("potion.potency." + effect.getAmplifier()).trim();
 					}
 
-					if (effect.getDuration() > 20) {
+					if(effect.getDuration() > 20) {
 						s = s + " (" + Potion.getDurationString(effect) + ")";
 					}
 
 					sb.append(s);
-				} else {
+				}
+				else {
 					sb.append(itemstack.getDisplayName());
 				}
-			} else {
+			}
+			else {
 				sb.append(itemstack.getDisplayName());
 			}
 
@@ -78,9 +78,9 @@ public class ElderSacrificeItem extends ElderSacrifice{
 
 			int i;
 			for(i = 0; i < entities.size(); ++i) {
-				if (entities.get(i) instanceof EntityItem) {
+				if(entities.get(i) instanceof EntityItem) {
 					EntityItem entity = (EntityItem)entities.get(i);
-					if (isItemEqual(this.itemstacks[j], entity.getEntityItem()) && !itemsToRemove.contains(entity) && distance(entity.posX, entity.posY, entity.posZ, (double)posX, (double)posY, (double)posZ) <= (double)maxDistance) {
+					if(isItemEqual(this.itemstacks[j], entity.getEntityItem()) && !itemsToRemove.contains(entity) && distance(entity.posX, entity.posY, entity.posZ, posX, posY, posZ) <= (double)maxDistance) {
 						itemsToRemove.add(entity);
 						found = true;
 						break;
@@ -89,14 +89,14 @@ public class ElderSacrificeItem extends ElderSacrifice{
 			}
 
 			for(i = 0; i < grassperStacks.size(); ++i) {
-				if (isItemEqual(this.itemstacks[j], (ItemStack)grassperStacks.get(i)) && !otherItemsToRemove.contains(grassperStacks.get(i))) {
+				if(isItemEqual(this.itemstacks[j], grassperStacks.get(i)) && !otherItemsToRemove.contains(grassperStacks.get(i))) {
 					otherItemsToRemove.add(grassperStacks.get(i));
 					found = true;
 					break;
 				}
 			}
 
-			if (!found) {
+			if(!found) {
 				return false;
 			}
 		}
@@ -150,23 +150,25 @@ public class ElderSacrificeItem extends ElderSacrifice{
 
 		@Override
 		public Result elderProcess(World world, int posX, int posY, int posZ, long ticks, ElderRitualBlock.TileEntityCircle.ActivatedElderRitual ritual) {
-			if (ticks % 20L != 0L) {
+			if(ticks % 20L != 0L) {
 				return Result.STARTING;
-			} else {
-				if (!world.isRemote) {
+			}
+			else {
+				if(!world.isRemote) {
 					List itemEntities = world.getEntitiesWithinAABB(EntityItem.class, this.bounds);
 					Iterator i$;
 					Object obj;
 					EntityItem entity;
 					ItemStack foundItemstack;
-					if (Config.instance().traceRites()) {
+					if(Config.instance().traceRites()) {
 						i$ = itemEntities.iterator();
 
 						while(i$.hasNext()) {
 							obj = i$.next();
 							entity = (EntityItem)obj;
 							foundItemstack = entity.getEntityItem();
-							Log.instance().traceRite(String.format(" * found: %s, distance: %f", foundItemstack.toString(), ElderSacrifice.distance(entity.posX, entity.posY, entity.posZ, (double)posX, (double)posY, (double)posZ)));
+							Log.instance()
+							   .traceRite(String.format(" * found: %s, distance: %f", foundItemstack.toString(), ElderSacrifice.distance(entity.posX, entity.posY, entity.posZ, posX, posY, posZ)));
 						}
 					}
 
@@ -176,13 +178,14 @@ public class ElderSacrificeItem extends ElderSacrifice{
 						obj = i$.next();
 						entity = (EntityItem)obj;
 						foundItemstack = entity.getEntityItem();
-						if (ElderSacrificeItem.isItemEqual(this.itemstack, foundItemstack) && ElderSacrifice.distance(entity.posX, entity.posY, entity.posZ, (double)posX, (double)posY, (double)posZ) <= (double)this.maxDistance) {
+						if(ElderSacrificeItem.isItemEqual(this.itemstack, foundItemstack) && ElderSacrifice.distance(entity.posX, entity.posY, entity.posZ, posX, posY, posZ) <= (double)this.maxDistance) {
 							ItemStack sacrificedItemstack = ItemStack.copyItemStack(foundItemstack);
 							sacrificedItemstack.stackSize = 1;
 							ritual.sacrificedItems.add(new RitualStep.SacrificedItem(sacrificedItemstack, new Coord(entity)));
-							if (foundItemstack.isStackable() && foundItemstack.stackSize > 1) {
+							if(foundItemstack.isStackable() && foundItemstack.stackSize > 1) {
 								--foundItemstack.stackSize;
-							} else {
+							}
+							else {
 								world.removeEntity(entity);
 							}
 
@@ -193,19 +196,20 @@ public class ElderSacrificeItem extends ElderSacrifice{
 					for(int x = posX - 5; x <= posX + 5; ++x) {
 						for(int z = posZ - 5; z <= posZ + 5; ++z) {
 							Block blockID = world.getBlock(x, posY, z);
-							if (blockID == Witchery.Blocks.GRASSPER) {
+							if(blockID == Witchery.Blocks.GRASSPER) {
 								TileEntity tile = world.getTileEntity(x, posY, z);
-								if (tile != null && tile instanceof BlockGrassper.TileEntityGrassper) {
+								if(tile != null && tile instanceof BlockGrassper.TileEntityGrassper) {
 									BlockGrassper.TileEntityGrassper grassper = (BlockGrassper.TileEntityGrassper)tile;
 									ItemStack stack = grassper.getStackInSlot(0);
-									if (stack != null && ElderSacrificeItem.isItemEqual(this.itemstack, stack)) {
+									if(stack != null && ElderSacrificeItem.isItemEqual(this.itemstack, stack)) {
 										ItemStack sacrificedItemstack = ItemStack.copyItemStack(stack);
 										sacrificedItemstack.stackSize = 1;
 										ritual.sacrificedItems.add(new RitualStep.SacrificedItem(sacrificedItemstack, new Coord(tile)));
-										if (stack.isStackable() && stack.stackSize > 1) {
+										if(stack.isStackable() && stack.stackSize > 1) {
 											--stack.stackSize;
-										} else {
-											grassper.setInventorySlotContents(0, (ItemStack)null);
+										}
+										else {
+											grassper.setInventorySlotContents(0, null);
 										}
 
 										ParticleEffect.EXPLODE.send(SoundEffect.RANDOM_POP, world, 0.5 + (double)x, 0.8 + (double)posY, 0.5 + (double)z, 0.5, 1.0, 16);
@@ -217,7 +221,7 @@ public class ElderSacrificeItem extends ElderSacrifice{
 					}
 				}
 
-				if (this.showMessages) {
+				if(this.showMessages) {
 					RiteRegistry.RiteError("witchery.rite.missingitem", ritual.getInitiatingPlayerName(), world);
 				}
 

@@ -1,15 +1,14 @@
 package com.pyding.deathlyhallows.items;
 
-import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
-import com.pyding.deathlyhallows.integration.Integration;
+import com.pyding.deathlyhallows.utils.properties.ExtendedPlayer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.StatCollector;
 import org.lwjgl.input.Keyboard;
 
 import java.util.List;
@@ -31,12 +30,14 @@ public class MonsterBook extends Item {
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
 		ExtendedPlayer props = ExtendedPlayer.get(player);
 		float damage = props.getMonstersCount();
-		list.add(I18n.format("dh.desc.book1"));
-		list.add(I18n.format("dh.desc.book2",damage));
-		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-			list.add(I18n.format("dh.desc.book3"));
-			if(props.getElfLvl() > 0)
-				list.add(I18n.format("dh.desc.book4"));
+		list.add(StatCollector.translateToLocal("dh.desc.book1"));
+		list.add(StatCollector.translateToLocalFormatted("dh.desc.book2", damage));
+		if(!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+			return;
+		}
+		list.add(StatCollector.translateToLocal("dh.desc.book3"));
+		if(props.getElfLvl() > 0) {
+			list.add(StatCollector.translateToLocal("dh.desc.book4"));
 		}
 	}
 }

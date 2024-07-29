@@ -2,8 +2,8 @@ package com.pyding.deathlyhallows.items;
 
 import com.emoniph.witchery.entity.EntityGoblin;
 import com.emoniph.witchery.util.ChatUtil;
-import com.pyding.deathlyhallows.common.handler.ConfigHandler;
-import com.pyding.deathlyhallows.entity.AbsoluteDeath;
+import com.pyding.deathlyhallows.entities.EntityAbsoluteDeath;
+import com.pyding.deathlyhallows.utils.DHConfig;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.resources.I18n;
@@ -13,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -31,12 +32,12 @@ public class HobgoblinChains extends Item {
 					goblin.getEntityData().setDouble("chainX", goblin.posX);
 					goblin.getEntityData().setDouble("chainY", goblin.posY);
 					goblin.getEntityData().setDouble("chainZ", goblin.posZ);
-					if(ConfigHandler.hob) {
+					if(DHConfig.hob) {
 						goblin.getEntityData().setBoolean("immortal", true);
 					}
 					break;
 				}
-				if(o instanceof AbsoluteDeath) {
+				if(o instanceof EntityAbsoluteDeath) {
 					if(!player.worldObj.isRemote) {
 						ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "dh.chat.freak");
 					}
@@ -49,6 +50,6 @@ public class HobgoblinChains extends Item {
 
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
-		list.add(I18n.format("dh.desc.hobChains"));
+		list.add(StatCollector.translateToLocal("dh.desc.hobChains"));
 	}
 }

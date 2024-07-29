@@ -2,11 +2,11 @@ package com.pyding.deathlyhallows.items;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StatCollector;
 
 import java.util.List;
 import java.util.Random;
@@ -44,7 +44,7 @@ public class DeathShard extends Item {
 
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
-		list.add(I18n.format("dh.desc.death"));
+		list.add(StatCollector.translateToLocal("dh.desc.death"));
 	}
 
 	public static String generateRandomString(int length) {

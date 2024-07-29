@@ -172,24 +172,25 @@ public class ResurrectionStone extends Item implements IBauble {
 
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
+		// TODO wtf?
 		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-			list.add(I18n.format("dh.desc.stone1"));
-			list.add(I18n.format("dh.desc.stone2"));
-			list.add(I18n.format("dh.desc.stone3"));
+			list.add(StatCollector.translateToLocal("dh.desc.stone1"));
+			list.add(StatCollector.translateToLocal("dh.desc.stone2"));
+			list.add(StatCollector.translateToLocal("dh.desc.stone3"));
 		}
 		else {
-			list.add(I18n.format("dh.desc.stone4") + getCharges(stack));
-			list.add(I18n.format("dh.desc.stone5") + getPlayer(stack));
-			list.add(I18n.format("dh.desc.stone6"));
+			list.add(StatCollector.translateToLocal("dh.desc.stone4") + getCharges(stack));
+			list.add(StatCollector.translateToLocal("dh.desc.stone5") + getPlayer(stack));
+			list.add(StatCollector.translateToLocal("dh.desc.stone6"));
 		}
 		if(stack.hasTagCompound()) {
 			if(stack.getTagCompound().hasKey("dhowner")) {
-				list.add(I18n.format("dh.desc.stone7") + stack.getTagCompound().getString("dhowner"));
+				list.add(StatCollector.translateToLocal("dh.desc.stone7") + stack.getTagCompound().getString("dhowner"));
 			}
 		}
 		else {
-			list.add(I18n.format("dh.desc.stone8"));
+			list.add(StatCollector.translateToLocal("dh.desc.stone8"));
 		}
-		list.add(I18n.format("dh.desc.stone9"));
+		list.add(StatCollector.translateToLocal("dh.desc.stone9"));
 	}
 }

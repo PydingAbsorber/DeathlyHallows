@@ -80,7 +80,7 @@ public class RiteOfElvenVanishing extends ElderRite {
 						Object obj = i$.next();
 						EntityPlayer player = (EntityPlayer)obj;
 						if(Coord.distance(player.posX, player.posY, player.posZ, posX, posY, posZ) <= (double)r) {
-							com.pyding.deathlyhallows.common.properties.ExtendedPlayer props = com.pyding.deathlyhallows.common.properties.ExtendedPlayer.get(player);
+							com.pyding.deathlyhallows.utils.properties.ExtendedPlayer props = com.pyding.deathlyhallows.utils.properties.ExtendedPlayer.get(player);
 							if(props.getElfLvl() > 0) {
 								props.nullifyElfLvl();
 								ParticleEffect.INSTANT_SPELL.send(SoundEffect.NOTE_PLING, player, 1.0, 2.0, 8);

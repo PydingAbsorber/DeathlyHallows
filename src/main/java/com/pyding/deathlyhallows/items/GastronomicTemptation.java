@@ -4,7 +4,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.StatCollector;
 
 import java.util.Random;
 
@@ -13,7 +12,6 @@ public class GastronomicTemptation extends Item {
 	public String getItemStackDisplayName(ItemStack stack) {
 		return getRainbowString(I18n.format("dh.desc.gastro"));
 	}
-
 
 	private String getRainbowString(String text) {
 		StringBuilder coloredText = new StringBuilder();
@@ -28,4 +26,5 @@ public class GastronomicTemptation extends Item {
 
 		return coloredText.toString();
 	}
+	
 }

@@ -1,11 +1,8 @@
 package com.pyding.deathlyhallows.rituals.rites;
 
 import com.emoniph.witchery.blocks.BlockAltar;
-import com.emoniph.witchery.blocks.BlockCircle;
 import com.emoniph.witchery.common.IPowerSource;
 import com.emoniph.witchery.common.PowerSources;
-import com.emoniph.witchery.ritual.Rite;
-import com.emoniph.witchery.ritual.RitualStep;
 import com.emoniph.witchery.util.Coord;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;

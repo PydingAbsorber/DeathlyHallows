@@ -2,7 +2,7 @@ package com.pyding.deathlyhallows.items;
 
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
-import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
+import com.pyding.deathlyhallows.utils.properties.ExtendedPlayer;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.resources.I18n;

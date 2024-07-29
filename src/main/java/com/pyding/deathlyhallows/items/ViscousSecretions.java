@@ -4,7 +4,6 @@ import com.emoniph.witchery.util.ChatUtil;
 import com.pyding.deathlyhallows.integration.Integration;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
@@ -51,7 +50,7 @@ public class ViscousSecretions extends ItemFood {
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
 		if(Integration.thaumcraft) {
 			list.add(StatCollector.translateToLocal("dh.desc.visSec1"));
-			list.add(StatCollector.translateToLocalFormatted("dh.desc.visSec2","1%","10%","89%"));
+			list.add(StatCollector.translateToLocalFormatted("dh.desc.visSec2", "1%", "10%", "89%"));
 		}
 	}
 }
