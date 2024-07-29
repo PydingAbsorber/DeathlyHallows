@@ -29,7 +29,6 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
@@ -65,11 +64,7 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 	protected boolean canDespawn() {
 		return false;
 	}
-
-	public String getCommandSenderName() {
-		return this.hasCustomNameTag() ? this.getCustomNameTag() : StatCollector.translateToLocal("dh.entity.death");
-	}
-
+	
 	@Override
 	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
@@ -85,9 +80,9 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 
 	protected void entityInit() {
 		super.entityInit();
-		super.dataWatcher.addObject(19, new Byte((byte)0));
-		super.dataWatcher.addObject(20, new Byte((byte)0));
-		super.dataWatcher.addObject(21, new Byte((byte)0));
+		dataWatcher.addObject(19, (byte)0);
+		dataWatcher.addObject(20, (byte)0);
+		dataWatcher.addObject(21, (byte)0);
 	}
 
 	public void writeEntityToNBT(NBTTagCompound par1NBTTagCompound) {

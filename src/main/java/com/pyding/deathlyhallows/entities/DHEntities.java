@@ -26,7 +26,7 @@ public class DHEntities {
 	}
 
 	public static void init() {
-		register(EntityAbsoluteDeath.class, "death");
+		register(EntityAbsoluteDeath.class, "AbsoluteDeath");
 		addEgg(EntityAbsoluteDeath.class, 9502720, 11430927);
 		register(EntityNimbus.class, "Nimbus3000", 64, 2, true);
 		register(EntityEmpoweredArrow.class, "EmpoweredArrow", 128, 2, true);

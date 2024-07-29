@@ -1,9 +1,9 @@
 package com.pyding.deathlyhallows.commands;
 
 import com.pyding.deathlyhallows.utils.DHConfig;
-import com.pyding.deathlyhallows.utils.DHElfUtils;
+import com.pyding.deathlyhallows.utils.ElfUtils;
 import com.pyding.deathlyhallows.utils.DHUtils;
-import com.pyding.deathlyhallows.utils.ExtendedPlayer;
+import com.pyding.deathlyhallows.utils.properties.ExtendedPlayer;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
@@ -111,7 +111,7 @@ public class CommandDamageLog extends CommandBase {
 							break;
 						}
 						case 3: {
-							text = "you have " + DHElfUtils.getTotalEnchantmentLevels(player) + " enchantment lvls in total out of " + DHConfig.getElfRequirements(elf + 1);
+							text = "you have " + ElfUtils.getTotalEnchantmentLevels(player) + " enchantment lvls in total out of " + DHConfig.getElfRequirements(elf + 1);
 							break;
 						}
 						case 4: {
@@ -123,11 +123,11 @@ public class CommandDamageLog extends CommandBase {
 							break;
 						}
 						case 6: {
-							text = "you lived " + DHElfUtils.getSecondsSurvived(player) + " seconds under 10 debuffs out of " + +DHConfig.getElfRequirements(elf + 1);
+							text = "you lived " + ElfUtils.getSecondsSurvived(player) + " seconds under 10 debuffs out of " + +DHConfig.getElfRequirements(elf + 1);
 							break;
 						}
 						case 7: {
-							text = "you lived " + DHElfUtils.getSecondsSurvived(player) + " seconds in astral form out of " + +DHConfig.getElfRequirements(elf + 1);
+							text = "you lived " + ElfUtils.getSecondsSurvived(player) + " seconds in astral form out of " + +DHConfig.getElfRequirements(elf + 1);
 							break;
 						}
 						case 8: {

@@ -13,12 +13,12 @@ import com.emoniph.witchery.entity.EntitySpirit;
 import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.item.ItemDeathsClothes;
 import com.emoniph.witchery.util.ChatUtil;
-import com.emoniph.witchery.util.EntityDamageSourceIndirectSilver;
 import com.emoniph.witchery.util.EntityUtil;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.pyding.deathlyhallows.blocks.DHBlocks;
 import com.pyding.deathlyhallows.entities.EntityAbsoluteDeath;
 import com.pyding.deathlyhallows.entities.EntityNimbus;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
@@ -33,12 +33,13 @@ import com.pyding.deathlyhallows.network.packets.PacketRenderAbsoluteDeath;
 import com.pyding.deathlyhallows.spells.SpellRegistry;
 import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.utils.DHUtils;
+import com.pyding.deathlyhallows.utils.ElfUtils;
 import com.pyding.deathlyhallows.utils.properties.ExtendedPlayer;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -50,15 +51,11 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemAppleGold;
-import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
@@ -67,9 +64,11 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ISpecialArmor;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -77,8 +76,6 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHealEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.ArrowLooseEvent;
-import net.minecraftforge.event.entity.player.ArrowNockEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -89,19 +86,27 @@ import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.ConfigItems;
 import thaumcraft.common.items.wands.ItemWandCasting;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
-import static com.emoniph.witchery.infusion.Infusion.getNBT;
-
-public class DHEvents {
+public final class DHEvents {
 	private static final String TAG_PLAYER_KEPT_DROPS = "Dh_playerKeptDrops";
 	private static final String TAG_DROP_COUNT = "Dh_dropCount";
 	private static final String TAG_DROP_PREFIX = "Dh_dropPrefix";
 	Multimap<String, AttributeModifier> attributes = HashMultimap.create();
+
+	private static final DHEvents INSTANCE = new DHEvents();
+
+	private DHEvents() {
+
+	}
+
+	public static void init() {
+		MinecraftForge.EVENT_BUS.register(INSTANCE);
+		FMLCommonHandler.instance().bus().register(INSTANCE);
+	}
 
 	@SubscribeEvent
 	public void onPlayerDrops(PlayerDropsEvent event) {
@@ -168,9 +173,7 @@ public class DHEvents {
 		}
 		if(event.player.getEntityData().getInteger("Horcrux") == 0) {
 			Multimap<String, AttributeModifier> attributes = HashMultimap.create();
-			ExtendedPlayer props = ExtendedPlayer.get(event.player);
-			float hpBoost = 4 * props.getElfLvl();
-			attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier("DH HP", hpBoost, 0));
+			attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier("DH HP", 4 * ElfUtils.getElfLevel(event.player), 0));
 			event.player.getAttributeMap().applyAttributeModifiers(attributes);
 		}
 	}
@@ -209,8 +212,6 @@ public class DHEvents {
 	}
 
 	public static boolean shouldRemove = true;
-	public static long elfInfusionCd = 0;
-	public static int timeSurvived = 0;
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
@@ -307,21 +308,6 @@ public class DHEvents {
 		if((event.entity instanceof EntityPlayer) && !(event.entity.worldObj.isRemote)) {
 			EntityPlayer player = (EntityPlayer)event.entity;
 			World world = player.worldObj;
-			if(player.getEntityData().getLong("DHArrow") > 0) {
-				long time = System.currentTimeMillis() - player.getEntityData().getLong("DHArrow");
-				boolean show = player.getEntityData().getBoolean("DHArrowShow");
-				boolean show2 = player.getEntityData().getBoolean("DHArrowShow2");
-				if(time >= firstShot && show) {
-					player.getEntityData().setBoolean("DHArrowShow", false);
-					DHUtils.spawnSphere(player, player.getPosition(1), 20, 3, Color.BLUE, 1, 3, 60, 1);
-					world.playSoundAtEntity(player, "dh:arrow.arrow_ready_1", 1F, 1F);
-				}
-				if(time >= secondShot && show2) {
-					player.getEntityData().setBoolean("DHArrowShow2", false);
-					DHUtils.spawnSphere(player, player.getPosition(1), 20, 3, Color.magenta, 1, 3, 60, 1);
-					world.playSoundAtEntity(player, "dh:arrow.arrow_ready_2", 1F, 1F);
-				}
-			}
 			ItemStack stack = player.getHeldItem();
 			if(stack != null) {
 				if(stack.getItem() == DHItems.elderWand && player.getEntityData().getBoolean("dhkey1")) {
@@ -405,128 +391,9 @@ public class DHEvents {
 					}
 				}
 				com.emoniph.witchery.common.ExtendedPlayer witchProps = com.emoniph.witchery.common.ExtendedPlayer.get(player);
-				if(props.getElfLvl() == 0) {
-					if(Infusion.getCurrentEnergy(player) == 0 && props.getTrigger() == 0 && Infusion.getInfusionID(player) != 0) {
-						props.setTrigger(1);
-					}
-					if(Infusion.getCurrentEnergy(player) == Infusion.getMaxEnergy(player) && props.getTrigger() == 1) {
-						props.setTrigger(0);
-						props.setElfCount(props.getElfCount() + 1);
-						if(props.getElfCount() == 1) {
-							ChatUtil.sendTranslated(EnumChatFormatting.BLUE, player, "dh.chat.elf1");
-						}
-					}
-					if(props.getElfCount() >= 20 && !witchProps.isVampire() && witchProps.getWerewolfLevel() == 0) {
-						props.setElfCount(0);
-						props.increaseElfLvl();
-						ChatUtil.sendTranslated(EnumChatFormatting.BLUE, player, "dh.chat.elf2");
-					}
-				}
-				else {
-					if(witchProps.isVampire()) {
-						witchProps.setVampireLevel(0);
-						ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "dh.chat.no");
-					}
-					if(witchProps.getWerewolfLevel() > 0) {
-						witchProps.setWerewolfLevel(0);
-						ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "dh.chat.no");
-					}
-				}
-				switch(props.getElfLvl()) {
-					case 1: {
-						if(player.experienceLevel >= DHConfig.getElfRequirements(props.getElfLvl() + 1)) {
-							props.increaseElfLvl();
-							ChatUtil.sendTranslated(EnumChatFormatting.BLUE, player, "dh.chat.elflvl1");
-						}
-						break;
-					}
-					case 2: {
-						if(player.posY <= DHConfig.getElfRequirements(props.getElfLvl() + 1)) {
-							props.increaseElfLvl();
-							ChatUtil.sendTranslated(EnumChatFormatting.BLUE, player, "dh.chat.elflvl1");
-						}
-						break;
-					}
-					case 3: {
-						if(totalLvl(player) >= DHConfig.getElfRequirements(props.getElfLvl() + 1)) {
-							props.increaseElfLvl();
-							ChatUtil.sendTranslated(EnumChatFormatting.BLUE, player, "dh.chat.elflvl1");
-						}
-						break;
-					}
-					case 4: {
-						if(props.getMobsKilled() >= DHConfig.getElfRequirements(props.getElfLvl() + 1)) {
-							props.increaseElfLvl();
-							ChatUtil.sendTranslated(EnumChatFormatting.BLUE, player, "dh.chat.elflvl1");
-						}
-						break;
-					}
-					case 5: {
-						if(props.getFoodEaten() >= DHConfig.getElfRequirements(props.getElfLvl() + 1)) {
-							props.increaseElfLvl();
-							ChatUtil.sendTranslated(EnumChatFormatting.BLUE, player, "dh.chat.elflvl1");
-						}
-						break;
-					}
-					case 6: {
-						if(hasAmountOfPotions(player, 10, true)) {
-							timeSurvived++;
-							if(timeSurvived > DHConfig.getElfRequirements(props.getElfLvl() + 1)) {
-								timeSurvived = 0;
-								props.increaseElfLvl();
-								ChatUtil.sendTranslated(EnumChatFormatting.BLUE, player, "dh.chat.elflvl1");
-							}
-						}
-						break;
-					}
-					case 7: {
-						if(WorldProviderDreamWorld.getPlayerIsSpiritWalking(player)) {
-							timeSurvived++;
-							if(timeSurvived > DHConfig.getElfRequirements(props.getElfLvl() + 1)) {
-								timeSurvived = 0;
-								props.increaseElfLvl();
-								ChatUtil.sendTranslated(EnumChatFormatting.BLUE, player, "dh.chat.elflvl1");
-							}
-						}
-						break;
-					}
-					case 8: {
-						if(props.getFoodCollection() != null) {
-							if(props.getFoodCollection()
-									.size() > DHConfig.getElfRequirements(props.getElfLvl() + 1)) {
-								props.increaseElfLvl();
-								ChatUtil.sendTranslated(EnumChatFormatting.BLUE, player, "dh.chat.elflvl1");
-							}
-						}
-						break;
-					}
-					case 9: {
-						if(props.getSpellsUsed() >= DHConfig.getElfRequirements(props.getElfLvl() + 1)) {
-							props.setAllNull();
-							props.increaseElfLvl();
-							ChatUtil.sendTranslated(EnumChatFormatting.BLUE, player, "dh.chat.elflvl1");
-						}
-						break;
-					}
-				}
+
 				if(witchProps.isVampire() && witchProps.getWerewolfLevel() > 0 && Math.random() < 1.0 / 2592000) {
 					ChatUtil.sendTranslated(EnumChatFormatting.AQUA, player, "dh.chat.prikol");
-				}
-				if(props.getElfLvl() == 10 && Infusion.getInfusionID(player) > 0) {
-					NBTTagCompound nbt = getNBT(player);
-					nbt.setInteger("witcheryInfusionChargesMax", 400);
-				}
-				if(props.getElfLvl() >= 1 && Infusion.getInfusionID(player) > 0 && System.currentTimeMillis() - elfInfusionCd > 5 * 1000 && Infusion.getCurrentEnergy(player) < Infusion.getMaxEnergy(player)) { //secs*1000 not Sex damn you pervert
-					elfInfusionCd = System.currentTimeMillis();
-					if(!(Infusion.getMaxEnergy(player) <= Infusion.getCurrentEnergy(player) + props.getElfLvl())) {
-						Infusion.setCurrentEnergy(player, Infusion.getCurrentEnergy(player) + props.getElfLvl());
-					}
-					else {
-						Infusion.setCurrentEnergy(player, Infusion.getMaxEnergy(player));
-					}
-				}
-				if(Infusion.getMaxEnergy(player) < Infusion.getCurrentEnergy(player)) {
-					Infusion.setCurrentEnergy(player, Infusion.getMaxEnergy(player));
 				}
 				if(!(player.getMaxHealth() > 0) || player.getHealth() != player.getHealth()) {
 					props.deadInside(player);
@@ -738,50 +605,6 @@ public class DHEvents {
 		}
 	}
 
-	@SubscribeEvent
-	public void bowUseStart(ArrowNockEvent event) {
-		EntityPlayer player = event.entityPlayer;
-		player.getEntityData().setLong("DHArrow", System.currentTimeMillis());
-		player.getEntityData().setBoolean("DHArrowShow", true);
-		player.getEntityData().setBoolean("DHArrowShow2", true);
-	}
-
-	long firstShot = 1000;
-	long secondShot = 2000;
-
-	@SubscribeEvent
-	public void bowUse(ArrowLooseEvent event) {
-		EntityPlayer player = event.entityPlayer;
-		ExtendedPlayer props = ExtendedPlayer.get(player);
-		long time = System.currentTimeMillis() - player.getEntityData().getLong("DHArrow");
-		player.getEntityData().setLong("DHArrow", 0);
-		long perfectTime = secondShot + 150;
-		if(props.getElfLvl() >= 10 && (time > secondShot || player.getEntityData().getInteger("DHShot") > 0)) {
-
-			if(player.getEntityData().getInteger("DHShot") > 0) {
-				DHUtils.spawnArrow(player, 3);
-				player.getEntityData().setInteger("DHShot", player.getEntityData().getInteger("DHShot") - 1);
-				event.setCanceled(true);
-			}
-			else if(time < perfectTime) {
-				DHUtils.spawnArrow(player, 3);
-				player.getEntityData().setInteger("DHShot", 5);
-				event.setCanceled(true);
-			}
-			else {
-				DHUtils.spawnArrow(player, 2);
-				event.setCanceled(true);
-			}
-			return;
-		}
-		if(props.getElfLvl() >= 7 && time > firstShot) {
-			DHUtils.spawnArrow(player, 1);
-			event.setCanceled(true);
-		}
-	}
-
-	public long aoeCD = 0;
-
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void hurt(LivingHurtEvent event) {
 		if(!event.isCanceled()) {
@@ -800,68 +623,6 @@ public class DHEvents {
 							player.getEntityData()
 								  .setInteger("DHMagicAvenger", entity.getEntityData()
 																	  .getInteger("DHMagicAvenger") + 1);
-						}
-					}
-					ExtendedPlayer props = ExtendedPlayer.get(attacker);
-					if(event.source.isProjectile()) {
-						float radius = 8;
-						float damageAoe = 0.3F;
-						if(props.getElfLvl() >= 9) {
-							radius *= 2;
-							damageAoe *= 2;
-						}
-						List entities = event.entity.worldObj.getEntitiesWithinAABB(EntityLiving.class, event.entity.boundingBox.expand(radius, radius, radius));
-						if(props.getElfLvl() >= 1) {
-							event.ammount = event.ammount * props.getElfLvl();
-						}
-						if(props.getElfLvl() >= 3) {
-							event.source.setMagicDamage();
-						}
-						if(props.getElfLvl() >= 6 && !event.source.isDamageAbsolute()) {
-							DHUtils.spawnSphere(entity, entity.getPosition(1), (int)(radius * 20), radius, Color.BLUE, 1, 6, 60, 1);
-							for(Object o: entities) {
-								if(o != attacker && o != event.entity) {
-									EntityLiving target = (EntityLiving)o;
-									target.setLastAttacker(attacker);
-									ParticleEffect.MAGIC_CRIT.send(null, target, 2, 2, 64);
-									target.attackEntityFrom(DamageSource.causePlayerDamage(attacker)
-																		.setDamageIsAbsolute()
-																		.setProjectile(), event.ammount * damageAoe);
-								}
-							}
-						}
-						if(props.getElfLvl() >= 9 && event.entity instanceof EntityPlayer) {
-							EntityPlayer target = (EntityPlayer)event.entity;
-							com.emoniph.witchery.common.ExtendedPlayer wprops = com.emoniph.witchery.common.ExtendedPlayer.get(target);
-							if(wprops.isVampire()) {
-								wprops.setBloodReserve(0);
-								/*if(Math.random() < 0.05) {
-									wprops.setVampireLevel(wprops.getVampireLevel() - 1);
-								}*/
-								target.attackEntityFrom(EntityUtil.DamageSourceVampireFire.magic, event.ammount * 10);
-							}
-							if(wprops.getWerewolfLevel() > 0) {
-								/*if(Math.random() < 0.05) {
-									wprops.setWerewolfLevel(wprops.getWerewolfLevel() - 1);
-								}*/
-								target.attackEntityFrom(EntityDamageSourceIndirectSilver.magic, event.ammount * 10);
-							}
-							if((wprops.isVampire() || wprops.getWerewolfLevel() > 0) && target.getHealth() <= target.getMaxHealth() * 0.1) {
-								props.deadInside(target);
-							}
-						}
-						if(props.getElfLvl() == 10) {
-							if(event.entityLiving instanceof EntityPlayer && Math.random() < 0.1 && ((EntityPlayer)event.entity).getHealth() > ((EntityPlayer)event.entity).getMaxHealth() * 0.3) {
-								EntityUtil.instantDeath(event.entityLiving, attacker);
-							}
-						}
-					}
-					else {
-						if(props.getElfLvl() >= 1 && !(event.source.isMagicDamage())) {
-							if(attacker.getHeldItem() != null && attacker.getHeldItem()
-																		 .getItem() != DHItems.elderWand) {
-								event.ammount = event.ammount * 0.05F;
-							}
 						}
 					}
 				}
@@ -889,26 +650,6 @@ public class DHEvents {
 				if(player.getEntityData().getInteger("invincible") > 0) {
 					event.ammount = 0;
 					event.setCanceled(true);
-				}
-				ExtendedPlayer props = ExtendedPlayer.get(player);
-				if(props.getElfLvl() >= 7) {
-					if(player.getHeldItem() != null) {
-						if(player.getHeldItem().getItem() instanceof ItemBow && Math.random() < 0.75) {
-							event.ammount = 0;
-							event.source.setFireDamage();
-							event.setCanceled(true);
-						}
-					}
-				}
-				if(props.getElfLvl() >= 1) {
-					if(event.source.isMagicDamage()) {
-						event.ammount = event.ammount * 0.1F;
-					}
-					else {
-						if(event.ammount * 10 < Float.MAX_VALUE) {
-							event.ammount = event.ammount * 2;
-						}
-					}
 				}
 				if(player.getEntityData().getLong("DHBanka") > System.currentTimeMillis()) {
 					int warp = Thaumcraft.proxy.getPlayerKnowledge().getWarpTemp(player.getCommandSenderName())
@@ -1091,13 +832,13 @@ public class DHEvents {
 
 	@SubscribeEvent
 	public void onEntityConstructing(EntityEvent.EntityConstructing event) {
-		if(event.entity != null) {
-			if(event.entity instanceof EntityPlayer) {
-				if(ExtendedPlayer.get((EntityPlayer)event.entity) == null) {
-					ExtendedPlayer.register((EntityPlayer)event.entity);
-				}
-			}
+		if(event.entity == null) {
+			return;
 		}
+		if(!(event.entity instanceof EntityPlayer) || ExtendedPlayer.get((EntityPlayer)event.entity) != null) {
+			return;
+		}
+		ExtendedPlayer.register((EntityPlayer)event.entity);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -1108,43 +849,27 @@ public class DHEvents {
 				ExtendedPlayer props = ExtendedPlayer.get(player);
 				props.setCurrentDuration(0);
 				props.setSource(null);
-				for(Object o: getEntities(64, EntityPlayer.class, player)) {
-					if(o instanceof EntityPlayer) {
-						EntityPlayer playerIterator = (EntityPlayer)o;
-						ExtendedPlayer props2 = ExtendedPlayer.get(playerIterator);
-						if(props2.getSource() == player) {
-							props2.setSource(null);
-							props2.setCurrentDuration(0);
-						}
+				for(EntityPlayer playerIterator: DHUtils.getEntitiesAround(EntityPlayer.class, player, 64)) {
+					if(playerIterator == player) {
+						continue;
+					}
+					ExtendedPlayer props2 = ExtendedPlayer.get(playerIterator);
+					if(props2.getSource() == player) {
+						props2.setSource(null);
+						props2.setCurrentDuration(0);
 					}
 				}
 			}
 			ResurrectionStone rs = new ResurrectionStone();
-			try {
-				if(BaublesApi.getBaubles(player).getStackInSlot(1).getItem() != null) {
-					ItemStack stack = BaublesApi.getBaubles(player).getStackInSlot(1);
-					if(BaublesApi.getBaubles(player)
-								 .getStackInSlot(1)
-								 .getItem() == DHItems.resurrectionStone && rs.getCharges(stack) > 0) {
-						rs.setCharges(stack, rs.getCharges(stack) - 1);
-						event.setCanceled(true);
-						player.setHealth(player.getMaxHealth());
-						player.getEntityData().setInteger("invincible", 100);
-					}
+			for(int i = 1; i < 3; ++i) {
+				ItemStack bauble = BaublesApi.getBaubles(player).getStackInSlot(1);
+				if(bauble.getItem() != DHItems.resurrectionStone || rs.getCharges(bauble) <= 0) {
+					continue;
 				}
-				if(BaublesApi.getBaubles(player).getStackInSlot(2).getItem() != null) {
-					ItemStack stack = BaublesApi.getBaubles(player).getStackInSlot(2);
-					if(BaublesApi.getBaubles(player)
-								 .getStackInSlot(1)
-								 .getItem() == DHItems.resurrectionStone && rs.getCharges(stack) > 0) {
-						rs.setCharges(stack, rs.getCharges(stack) - 1);
-						event.setCanceled(true);
-						player.setHealth(player.getMaxHealth());
-						player.getEntityData().setInteger("invincible", 100);
-					}
-				}
-			}
-			catch(NullPointerException e) {
+				rs.setCharges(bauble, rs.getCharges(bauble) - 1);
+				event.setCanceled(true);
+				player.setHealth(player.getMaxHealth());
+				player.getEntityData().setInteger("invincible", 100);
 			}
 			int lifes = player.getEntityData().getInteger("Horcrux");
 			if(lifes > 0) {
@@ -1201,156 +926,103 @@ public class DHEvents {
 	}
 
 	@SubscribeEvent
-	public void onFoodEaten(PlayerUseItemEvent.Finish event) {
-		EntityPlayer player = event.entityPlayer;
-		if(player.worldObj.isRemote) {
-			return;
-		}
-		ExtendedPlayer props = ExtendedPlayer.get(player);
-		if(props.getElfLvl() == 5 && event.item.getItem() instanceof ItemAppleGold && event.item.getItemDamage() > 0) {
-			props.setFoodEaten(props.getFoodEaten() + 1);
-		}
-		if(props.getElfLvl() == 8) {
-			props.addFoodToCollection(event.item.getUnlocalizedName());
-		}
-	}
-
-	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
-	public void lowestDeath(LivingDeathEvent event) {
-		if(event.isCanceled() && event.entity != null && event.source.getEntity() != null) {
-			if(event.entity instanceof EntityPlayer && event.source.getEntity() instanceof EntityPlayer) {
-				EntityPlayer player = (EntityPlayer)event.entity;
-				EntityPlayer caster = (EntityPlayer)event.source.getEntity();
-				ExtendedPlayer props = ExtendedPlayer.get(caster);
-				com.emoniph.witchery.common.ExtendedPlayer witcheryProps = com.emoniph.witchery.common.ExtendedPlayer.get(player);
-				if(props.getElfLvl() > 0 && witcheryProps.isVampire()) {
-					event.setCanceled(false);
-				}
-			}
-		}
-	}
-
-	@SubscribeEvent
 	public void tooltipEvent(ItemTooltipEvent event) {
 		Item item = event.itemStack.getItem();
-		if(item.getUnlocalizedName().equals("tile.visconverter")) {
-			if(I18n.format("dh.util.language").equals("Ru")) {
-				event.toolTip.add("Если поставить на Алтарь, даст максимальную базовую энергию!");
-				event.toolTip.add("Бонус: +10 к базе за каждый сантивис в ближайшем узле");
-				event.toolTip.add("Если поставить на маг. верстак, будет заряжать палку 10 вис в секунду за 100 энергии");
-			}
-			else {
-				event.toolTip.add("Place on the Altar to get maximum base energy!");
-				event.toolTip.add("Bonus: +10 to base energy for each santi vis in nearest aura");
-				event.toolTip.add("Place on magic workbench to get 10 vis per sec for your wand in cost of 100 energy");
-			}
+		if(item != Item.getItemFromBlock(DHBlocks.visConverter)) {
+			return;
+		}
+		for(int i = 1; i < 4; ++i) { // it's over...
+			event.toolTip.add(StatCollector.translateToLocal("dh.desc.visConverter" + i));
 		}
 	}
 
 	@SubscribeEvent
-	public void blockBreak(BlockEvent.BreakEvent event) {
-		EntityPlayer player = event.getPlayer();
-		if(!player.capabilities.isCreativeMode && player.getHeldItem() != null && player.getHeldItem()
-																						.getItem() == Witchery.Items.KOBOLDITE_PICKAXE && !event.world.isRemote && !player.worldObj.isRemote && hasDeathlyHallow(player) && (event.block.getUnlocalizedName()
-																																																										.toLowerCase()
-																																																										.contains("ore")
-		)) {
-			ItemStack stack = player.getHeldItem();
-			double chance = 1;
-			chance += EnchantmentHelper.getEnchantmentLevel(Enchantment.fortune.effectId, stack);
-			for(Object o: player.getActivePotionEffects()) {
-				PotionEffect potion = (PotionEffect)o;
-				if(potion.getPotionID() == Witchery.Potions.FORTUNE.id) {
-					chance *= 2;
-				}
-			}
-			chance /= 1000;
-			if(Math.random() < chance) {
-				if(Math.random() > chance) {
-					player.entityDropItem(Witchery.Items.GENERIC.itemKobolditeDust.createStack(), 1);
-				}
-				else {
-					if(Math.random() > chance) {
-						player.entityDropItem(Witchery.Items.GENERIC.itemKobolditeNugget.createStack(), 1);
-					}
-					else {
-						player.entityDropItem(Witchery.Items.GENERIC.itemKobolditeIngot.createStack(), 1);
-					}
-				}
-				event.world.setBlock(event.x, event.y, event.z, Blocks.air);
-			}
-            /*if(FurnaceRecipes.smelting().getSmeltingResult(new ItemStack(event.block)) != null){
-                ItemStack smelt = FurnaceRecipes.smelting().getSmeltingResult(new ItemStack(event.block,2));
-                EntityItem entityItem = new EntityItem(event.world, event.x, event.y, event.z, smelt);
-                event.world.spawnEntityInWorld(entityItem);
-            }*/
+	public void blockBreak(BlockEvent.BreakEvent e) {
+		EntityPlayer player = e.getPlayer();
+		if(player.capabilities.isCreativeMode
+				|| e.world.isRemote || player.worldObj.isRemote
+				// Если моя руда не содержит в ключе локализации слово ore? Мне нахер пойти тогда?)
+				|| !hasDeathlyHallow(player) || (!e.block.getUnlocalizedName().toLowerCase().contains("ore"))
+		) {
+			return;
 		}
+		ItemStack stack = player.getHeldItem();
+		if(stack == null || stack.getItem() != Witchery.Items.KOBOLDITE_PICKAXE) {
+			return;
+		}
+		double chance = (1F + EnchantmentHelper.getEnchantmentLevel(Enchantment.fortune.effectId, stack)) / 1000F;
+		@SuppressWarnings("unchecked")
+		Collection<PotionEffect> effects = player.getActivePotionEffects();
+		for(PotionEffect effect: effects) {
+			if(effect.getPotionID() == Witchery.Potions.FORTUNE.id) {
+				chance *= 2;
+			}
+		}
+		// rolling 1d20
+		if(Math.random() > chance) { // dice cancer
+			return;
+		}
+		// TODO are you really sure that it IS needed here?
+		e.world.setBlock(e.x, e.y, e.z, Blocks.air);
+		if(Math.random() > chance) { // rerolling 1d20
+			player.entityDropItem(Witchery.Items.GENERIC.itemKobolditeDust.createStack(), 1);
+			return;
+		}
+		if(Math.random() > chance) { // rerolling 1d20
+			player.entityDropItem(Witchery.Items.GENERIC.itemKobolditeNugget.createStack(), 1);
+			return;
+		}
+		player.entityDropItem(Witchery.Items.GENERIC.itemKobolditeIngot.createStack(), 1); // nat 20!
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void playerInteract(PlayerInteractEvent event) {
-		if(DHIntegration.thaumcraft && event.entityPlayer.getHeldItem() != null) {
-			ItemStack stack = event.entityPlayer.getHeldItem();
-			if(stack.getItem().getUnlocalizedName().equals("item.witchery:ingredient") && stack.getItemDamage() == 14) {
-				EntityPlayer player = event.entityPlayer;
-				MovingObjectPosition rayTrace = rayTrace(player, 4.0);
-				if(rayTrace != null) {
-					if(rayTrace.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-						int blockX = rayTrace.blockX;
-						int blockY = rayTrace.blockY;
-						int blockZ = rayTrace.blockZ;
-						TileEntity tileEntity = player.worldObj.getTileEntity(blockX, blockY, blockZ);
-						if(tileEntity != null && tileEntity instanceof BlockGrassper.TileEntityGrassper) {
-							BlockGrassper.TileEntityGrassper grassper = (BlockGrassper.TileEntityGrassper)tileEntity;
-							ItemStack focus;
-							if(((BlockGrassper.TileEntityGrassper)tileEntity).getStackInSlot(0)
-																			 .getItem() == ConfigItems.itemFocusPech) {
-								stack.stackSize = stack.stackSize - 1;
-								focus = new ItemStack(DHItems.inferioisMutandis);
-								ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_FIZZ, event.world, blockX, blockY, blockZ, 1.0, 1.0, 8);
-								grassper.decrStackSize(0, 1);
-								event.world.setBlock(blockX, blockY, blockZ, Blocks.air);
-								player.inventory.addItemStackToInventory(focus);
-							}
-							else if(((BlockGrassper.TileEntityGrassper)tileEntity).getStackInSlot(0)
-																				  .getItem() == DHItems.inferioisMutandis) {
-								stack.stackSize = stack.stackSize - 1;
-								focus = new ItemStack(ConfigItems.itemFocusPech);
-								ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_FIZZ, event.world, blockX, blockY, blockZ, 1.0, 1.0, 8);
-								grassper.decrStackSize(0, 1);
-								event.world.setBlock(blockX, blockY, blockZ, Blocks.air);
-								player.inventory.addItemStackToInventory(focus);
-							}
-						}
-					}
-				}
-			}
+		if(!DHIntegration.thaumcraft || event.entityPlayer.getHeldItem() == null) {
+			return;
 		}
-        /*EntityPlayer player = event.entityPlayer;
-        ExtendedPlayer props = ExtendedPlayer.get(player);
-        for(Object o: getEntities(1, EntityAnimal.class,player)){
-            if(o instanceof EntityAnimal){
-                EntityAnimal entity = (EntityAnimal) o;
-                try{
-                    Field privateField = EntityAITempt.class.getDeclaredField("field_151484_k");
-                    privateField.setAccessible(true);
-                    List entries = entity.tasks.taskEntries;
-                    for(int i = 0;i < entries.size();i++){
-                        *//*if(entries.get(i) == new EntityAITasks.EntityAITaskEntry(3,null)){
+		ItemStack stack = event.entityPlayer.getHeldItem();
+		if(!stack.getItem().getUnlocalizedName().equals("item.witchery:ingredient") || stack.getItemDamage() != 14) {
+			return;
+		}
+		EntityPlayer player = event.entityPlayer;
+		MovingObjectPosition mop = rayTrace(player, 4.0);
+		if(mop == null) {
+			return;
+		}
+		if(mop.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) {
+			return;
+		}
+		int blockX = mop.blockX;
+		int blockY = mop.blockY;
+		int blockZ = mop.blockZ;
+		TileEntity tile = player.worldObj.getTileEntity(blockX, blockY, blockZ);
+		if(!(tile instanceof BlockGrassper.TileEntityGrassper)) {
+			return;
+		}
+		IInventory grassper = (IInventory)tile;
+		ItemStack inSlot = grassper.getStackInSlot(0);
+		ItemStack focus;
+		if(inSlot.getItem() == ConfigItems.itemFocusPech) {
+			focus = new ItemStack(DHItems.inferioisMutandis);
+		}
+		else if(inSlot.getItem() == DHItems.inferioisMutandis) {
+			focus = new ItemStack(ConfigItems.itemFocusPech);
+		}
+		else {
+			return; // ну типа а все)))
+		}
+		stack.stackSize = stack.stackSize - 1;
+		ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_FIZZ, event.world, blockX, blockY, blockZ, 1.0, 1.0, 8);
+		grassper.decrStackSize(0, 1);
+		event.world.setBlock(blockX, blockY, blockZ, Blocks.air);
+		player.inventory.addItemStackToInventory(focus);
+	}
 
-                        }*//*
-                    }
-                    Item item = (Item) privateField.get(entity.tasks.taskEntries.get(3));
-                    System.out.println(item.getUnlocalizedName());
-                    if(player.getHeldItem().getItem() == item){
-                        System.out.println("srabotalo");
-                        props.setMobsFed(props.getMobsFed()+1);
-                    }
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        }*/
+	public MovingObjectPosition rayTrace(EntityPlayer player, double distance) {
+		Vec3 startVec = Vec3.createVectorHelper(player.posX, player.posY + player.getEyeHeight(), player.posZ);
+		Vec3 lookVec = player.getLook(1.0F);
+		Vec3 endVec = startVec.addVector(lookVec.xCoord * distance, lookVec.yCoord * distance, lookVec.zCoord * distance);
+		return player.worldObj.rayTraceBlocks(startVec, endVec);
 	}
 
 	public boolean isHallow(ItemStack stack) {
@@ -1369,7 +1041,7 @@ public class DHEvents {
 						nbt.setString("dhowner", player.getDisplayName());
 						stack.setTagCompound(nbt);
 					}
-					else if(stack.hasTagCompound() && !(stack.getTagCompound().hasKey("dhowner"))) {
+					else if(!stack.getTagCompound().hasKey("dhowner")) {
 						NBTTagCompound nbt = stack.getTagCompound();
 						nbt.setString("dhowner", player.getDisplayName());
 						stack.setTagCompound(nbt);
@@ -1413,96 +1085,42 @@ public class DHEvents {
 		}
 	}
 
-	public MovingObjectPosition rayTrace(EntityPlayer player, double distance) {
-		Vec3 startVec = Vec3.createVectorHelper(player.posX, player.posY + player.getEyeHeight(), player.posZ);
-		Vec3 lookVec = player.getLook(1.0F);
-		Vec3 endVec = startVec.addVector(lookVec.xCoord * distance, lookVec.yCoord * distance, lookVec.zCoord * distance);
-		return player.worldObj.rayTraceBlocks(startVec, endVec);
-	}
-
 	public boolean hasDeathlyHallow(EntityPlayer player) {
 		int count = 0;
 		for(int i = 0; i < player.inventory.getSizeInventory(); i++) {
-			if(player.inventory.getStackInSlot(i) != null) {
-				ItemStack stack = player.inventory.getStackInSlot(i);
-				if(isHallow(stack)) {
-					if(!stack.hasTagCompound()) {
-						NBTTagCompound nbt = new NBTTagCompound();
-						nbt.setString("dhowner", player.getDisplayName());
-						stack.setTagCompound(nbt);
-					}
-					else if(stack.hasTagCompound() && !(stack.getTagCompound().hasKey("dhowner"))) {
-						NBTTagCompound nbt = stack.getTagCompound();
-						nbt.setString("dhowner", player.getDisplayName());
-						stack.setTagCompound(nbt);
-					}
-					else if(stack.hasTagCompound() && stack.getTagCompound().hasKey("dhowner")) {
-						String dhowner = stack.getTagCompound().getString("dhowner");
-						count++;
-					}
-				}
+			if(player.inventory.getStackInSlot(i) == null) {
+				continue;
+			}
+			ItemStack stack = player.inventory.getStackInSlot(i);
+			if(!isHallow(stack)) {
+				continue;
+			}
+			if(!stack.hasTagCompound()) {
+				NBTTagCompound nbt = new NBTTagCompound();
+				nbt.setString("dhowner", player.getDisplayName());
+				stack.setTagCompound(nbt);
+			}
+			else if(stack.hasTagCompound() && !(stack.getTagCompound().hasKey("dhowner"))) {
+				NBTTagCompound nbt = stack.getTagCompound();
+				nbt.setString("dhowner", player.getDisplayName());
+				stack.setTagCompound(nbt);
+			}
+			else if(stack.hasTagCompound() && stack.getTagCompound().hasKey("dhowner")) {
+				String dhowner = stack.getTagCompound().getString("dhowner");
+				count++;
 			}
 		}
-		for(int i = 1; i < 4; i++) {
-			if(BaublesApi.getBaubles(player).getStackInSlot(i) != null) {
-				ItemStack stack = BaublesApi.getBaubles(player).getStackInSlot(i);
-				if(isHallow(stack)) {
-					if(stack.hasTagCompound() && stack.getTagCompound().hasKey("dhowner")) {
-						count++;
-					}
-				}
+		IInventory baubles = BaublesApi.getBaubles(player);
+		for(int i = 1; i < baubles.getSizeInventory(); i++) {
+			if(baubles.getStackInSlot(i) == null) {
+				continue;
+			}
+			ItemStack stack = BaublesApi.getBaubles(player).getStackInSlot(i);
+			if(isHallow(stack) && stack.hasTagCompound() && stack.getTagCompound().hasKey("dhowner")) {
+				count++;
 			}
 		}
 		return count > 0;
 	}
 
-	public short totalLvl(EntityPlayer player) {
-		short totalLvl = 0;
-		InventoryPlayer inventory = player.inventory;
-		for(int i = 0; i < inventory.getSizeInventory(); i++) {
-			ItemStack stack = inventory.getStackInSlot(i);
-
-			if(stack != null && stack.isItemEnchanted()) {
-				NBTTagList enchantments = stack.getEnchantmentTagList();
-
-				for(int j = 0; j < enchantments.tagCount(); j++) {
-					NBTTagCompound enchantment = enchantments.getCompoundTagAt(j);
-					short lvl = enchantment.getShort("lvl");
-					totalLvl += lvl;
-				}
-			}
-		}
-		return totalLvl;
-	}
-
-	public boolean hasAmountOfPotions(EntityPlayer player, int amount, boolean bad) {
-		Collection potions = player.getActivePotionEffects();
-		int count = 0;
-		for(Object o: potions) {
-			PotionEffect effect = (PotionEffect)o;
-			if(Potion.potionTypes[effect.getPotionID()].isBadEffect() && bad) {
-				count++;
-			}
-			else if(!Potion.potionTypes[effect.getPotionID()].isBadEffect() && !bad) {
-				count++;
-			}
-		}
-		return count >= amount;
-	}
-
-
-	private int findItemStackSlot(IInventory inventory, ItemStack stack) {
-		for(int i = 0; i < inventory.getSizeInventory(); i++) {
-			ItemStack existingStack = inventory.getStackInSlot(i);
-			if(ItemStack.areItemStacksEqual(stack, existingStack)) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	public List getEntities(double radius, Class target, EntityPlayer player) {
-		List entities = player.worldObj.getEntitiesWithinAABB(target, player.boundingBox.expand(radius, radius, radius));
-		return entities;
-	}
 }

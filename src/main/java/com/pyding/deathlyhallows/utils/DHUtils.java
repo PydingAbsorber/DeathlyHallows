@@ -5,80 +5,42 @@ import com.emoniph.witchery.util.CreatureUtil;
 import com.emoniph.witchery.util.EntityUtil;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import com.pyding.deathlyhallows.entities.EntityEmpoweredArrow;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketParticle;
-import com.pyding.deathlyhallows.particles.ParticleBlueMagic;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 public class DHUtils {
-	public static List<EntityLivingBase> getEntitiesAround(Entity entity, float radius, boolean self) {
-		List<EntityLivingBase> list = new ArrayList<>();
-		for(Object o: entity.worldObj.getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(entity.posX - radius, entity.posY - radius, entity.posZ - radius, entity.posX + radius, entity.posY + radius, entity.posZ + radius))) {
-			if(o instanceof EntityLivingBase) {
-				if(o.equals(entity) && !self) {
-					continue;
-				}
-				list.add((EntityLivingBase)o);
-			}
-		}
-		return list;
-	}
 
-	public static Vec3 rayCords(EntityLivingBase entity, double distance, boolean stopOnBlocks) {
-		Vec3 startVec = Vec3.createVectorHelper(entity.posX, entity.posY + entity.getEyeHeight(), entity.posZ);
-		Vec3 lookVec = entity.getLookVec();
-		Vec3 endVec = startVec.addVector(lookVec.xCoord * distance, lookVec.yCoord * distance, lookVec.zCoord * distance);
-		MovingObjectPosition hitResult;
-		if(stopOnBlocks) {
-			hitResult = entity.worldObj.rayTraceBlocks(startVec, endVec, true);
-		}
-		else {
-			hitResult = entity.worldObj.func_147447_a(startVec, endVec, false, false, false);
-		}
-		if(hitResult != null) {
-			return hitResult.hitVec;
-		}
-		else {
-			return endVec;
-		}
-	}
-
-	public static String resource(String id) {
-		String s = StatCollector.translateToLocal(id);
-		return s.replace("|", "\n").replace("{", "§");
+	@SuppressWarnings("unchecked")
+	public static <T extends Entity> List<T> getEntitiesAround(Class<T> clazz, Entity entity, float radius) {
+		return entity.worldObj.getEntitiesWithinAABB(clazz, AxisAlignedBB.getBoundingBox(entity.posX - radius, entity.posY - radius, entity.posZ - radius, entity.posX + radius, entity.posY + radius, entity.posZ + radius));
 	}
 
 	public static void sync(Entity entity) {
+		// TODO wtf?
 		if(entity.getEntityData() == null || entity.worldObj.isRemote) {
 			return;
 		}
@@ -152,7 +114,6 @@ public class DHUtils {
 			struct.add(layer.toString());
 		}
 
-
 		StringBuilder sb = getStringBuilder(struct);
 		System.out.println(sb);
 	}
@@ -161,11 +122,7 @@ public class DHUtils {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
 		for(int i = 0; i < struct.size(); i++) {
-			String formattedString = struct.get(i)
-										   .replace("[", "{")
-										   .replace("]", "}")
-										   .replace("null", "null");
-
+			String formattedString = struct.get(i).replace("[", "{").replace("]", "}");
 			StringBuilder formattedWithQuotes = new StringBuilder();
 			boolean insideWord = false;
 			boolean insideQuotes = false;
@@ -231,7 +188,7 @@ public class DHUtils {
 		return itemList;
 	}
 
-	public static void spawnEntity(World world, int x, int y, int z, Class entityClass) {
+	public static void spawnEntity(World world, int x, int y, int z, Class<? extends EntityCreature> entityClass) {
 		final EntityCreature creature = Infusion.spawnCreature(world, entityClass, x, y, z, null, 1, 2, ParticleEffect.INSTANT_SPELL, SoundEffect.NOTE_HARP);
 		CreatureUtil.spawnWithEgg(creature, true);
 	}
@@ -240,11 +197,10 @@ public class DHUtils {
 
 	public static List<String> getEntitiesNames() {
 		if(entities.isEmpty()) {
-			for(Object obj: EntityList.stringToClassMapping.entrySet()) {
-				java.util.Map.Entry<String, Class<?>> entry = (java.util.Map.Entry<String, Class<?>>)obj;
-				Class<?> entityClass = entry.getValue();
-
-				if(EntityLiving.class.isAssignableFrom(entityClass)) {
+			@SuppressWarnings("unchecked")
+			Set<Map.Entry<String, Class<?>>> mapping = (Set<Map.Entry<String, Class<?>>>)EntityList.stringToClassMapping.entrySet();
+			for(Map.Entry<String, Class<?>> entry: mapping) {
+				if(EntityLiving.class.isAssignableFrom(entry.getValue())) {
 					entities.add(entry.getKey());
 				}
 			}
@@ -264,25 +220,10 @@ public class DHUtils {
 	}
 
 	public static void deadInside(EntityLivingBase victim, EntityPlayer player) {
-		if(victim instanceof EntityPlayer) {
-			EntityPlayer playerTarget = (EntityPlayer)victim;
-			if(playerTarget.capabilities.isCreativeMode) {
-				return;
-			}
+		if(victim instanceof EntityPlayer && ((EntityPlayer)victim).capabilities.isCreativeMode) {
+			return;
 		}
 		EntityUtil.instantDeath(victim, player);
-	}
-
-
-	public static void modifyAttribute(EntityLivingBase entity, IAttribute attribute, String name, float amount, int method, boolean add) {
-		Multimap<String, AttributeModifier> attributes = HashMultimap.create();
-		attributes.put(attribute.getAttributeUnlocalizedName(), new AttributeModifier(name, amount, method));
-		if(add) {
-			entity.getAttributeMap().applyAttributeModifiers(attributes);
-		}
-		else {
-			entity.getAttributeMap().removeAttributeModifiers(attributes);
-		}
 	}
 
 	public static void spawnSphere(Entity entity, Vec3 pos, int count, float radius, Color color, float resizeSpeed, float scale, int age, int type) {
@@ -307,16 +248,5 @@ public class DHUtils {
 		NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(entity.dimension, x, y, z, 64);
 		DHPacketProcessor.sendToAllAround(new PacketParticle(x, y, z, color, resizeSpeed, scale, age, type, motionX, motionY, motionZ), targetPoint);
 	}
-
-	@SideOnly(Side.CLIENT)
-	public static void spawnParticleClient(Entity entity, double x, double y, double z, Color color, float resizeSpeed, float scale, int age, int type, float motionX, float motionY, float motionZ) {
-		if(type == 1) {
-			ParticleBlueMagic particle = new ParticleBlueMagic(entity.worldObj, x, y, z, color, resizeSpeed, scale, age);
-			particle.motionX = motionX;
-			particle.motionY = motionY;
-			particle.motionZ = motionZ;
-			particle.noClip = true;
-			Minecraft.getMinecraft().effectRenderer.addEffect(particle);
-		}
-	}
+	
 }
