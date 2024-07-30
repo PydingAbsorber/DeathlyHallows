@@ -1,6 +1,7 @@
 package com.pyding.deathlyhallows.utils;
 
 import com.pyding.deathlyhallows.items.ItemFoodBertieBotts;
+import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
@@ -16,7 +17,7 @@ public class DHConfig {
 	public static String spawnlesia;
 	public static int deathDifficulty;
 	public static String spells;
-	public static String elfLvl;
+	public static int[] elfQuestConditions = new int[] {20,1000,-128,1000,1000,64,20000,20000,100,1000};
 	public static boolean hob;
 	public static String sonatRitual;
 	public static int screamilyMana;
@@ -62,7 +63,7 @@ public class DHConfig {
 		spawnlesia = config.getString("spawnlesia", CATEGORY_STAFF, "", "Black list for Spawnlesia, type names are separated with ',' for example: Zombie, EnderDragon ");
 		spawnlesiaMana = config.getInt("spawnlesiaMana", CATEGORY_STAFF, 1000000, 1, Integer.MAX_VALUE, "Mana requirements for Spawnlesia per spawn");
 		deathDifficulty = config.getInt("deathDifficulty", CATEGORY_STAFF, 3, 1, 3, "Absolute Death difficulty (3 - Gigachad Man, 2 - weak casual, 1 - newborn toddler)");
-		elfLvl = config.getString("elfLvl", CATEGORY_STAFF, "1-20,2-1000,3--1000,4-1000,5-1000,6-64,7-20000,8-20000,9-100,10-1000", "Change this numbers for elf level requirements (First number is elf level you want)");
+		elfQuestConditions = getIntArray("elfLvl", CATEGORY_STAFF, elfQuestConditions, "Change elf quest requirements, position of requirement corresponds to elf level");
 		hob = config.getBoolean("hob", CATEGORY_STAFF, true, "Hobgoblin chains immortality");
 		screamilyMana = config.getInt("screamilyMana", CATEGORY_STAFF, 10000, 1, Integer.MAX_VALUE, "Screamily mana per banshee scream");
 		sonatRitual = config.getString("sonatRitual", CATEGORY_STAFF, "", "Black list for ritual Sonat of Dispair, type names are separated with ',' for example: Zombie, EnderDragon ");
@@ -86,25 +87,21 @@ public class DHConfig {
 		cost8 = config.getInt("cost8", CATEGORY_STAFF, 24100, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
 		covenWitch = config.getBoolean("covenWitch", CATEGORY_STAFF, true, "Should this ritual be enabled");
 		cost9 = config.getInt("cost9", CATEGORY_STAFF, 5000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
-		Property p = config.get(CATEGORY_STAFF, "bertieBottsEffectBlacklist", ItemFoodBertieBotts.getDefaultBlackList());
-		p.comment = "Blacklisted Potion Effects";
-		for(int i: p.getIntList()) {
+		// why not?
+		for(int i: getIntArray("bertieBottsEffectBlacklist", CATEGORY_STAFF, ItemFoodBertieBotts.getDefaultBlackList(), "Blacklisted Potion Effects")) {
 			ItemFoodBertieBotts.addToBlackList(i);
 		}
 		config.save();
 	}
+	
+	private static int[] getIntArray(String name, String category, int[] defaultValue, String comment) {
+		Property p = config.get(category, name, defaultValue);
+		p.comment = comment;
+		return p.getIntList();
+	}
 
 
 	public static int getElfRequirements(int level) {
-		for(String jopa: elfLvl.split(",")) {
-			if(!jopa.contains(level + "-")) {
-				continue;
-			}
-			StringBuilder text = new StringBuilder(jopa);
-			text.deleteCharAt(0);
-			text.deleteCharAt(0);
-			return Integer.parseInt(String.valueOf(text));
-		}
-		return 0;
+		return elfQuestConditions[MathHelper.clamp_int(level,0, elfQuestConditions.length - 1)];
 	}
 }
