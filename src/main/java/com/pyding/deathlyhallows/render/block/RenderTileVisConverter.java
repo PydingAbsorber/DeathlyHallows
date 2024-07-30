@@ -30,16 +30,17 @@ public class RenderTileVisConverter extends TileEntitySpecialRenderer {
 		long ticks = ((TileEntityVisConverter)e).clientTicks;
 		glPushMatrix();
 		glTranslated(x + 0.5D, y + 0.5D, z + 0.5D);
+		renderShard(ticks);
 		renderHearts(ticks);
 		renderBranches();
-		renderShard(ticks);
+
 		glPopMatrix();
 	}
 
 	private void renderShard(long ticks) {
 		bindTexture(TEXTURE_SHARD);
 		glPushMatrix();
-		glTranslatef(0F, 0.4F, 0.5F);
+		glTranslatef(0F, 0.2F, 0F);
 		glScalef(0.4F, 0.4F, 0.4F);
 		glRotatef(ticks % 360F, 0.0F, 1.0F, 0.0F);
 		shard.renderAll();
@@ -50,10 +51,11 @@ public class RenderTileVisConverter extends TileEntitySpecialRenderer {
 		bindTexture(TEXTURE_BRANCH);
 		for(int i = 0; i < 4; ++i) {
 			glPushMatrix();
-			glTranslated(0.0F*((i / 2) - 0.5F), -0.5F, 0.0F*((i % 2) - 0.5F));
+			glRotatef(180, 1F, 0F, 0F);
 			glRotatef(90F * i, 0F, 1F, 0F);
-			glRotatef(140F, -1F, 0F, 1F);
-			glScalef(1.2F, 1.2F, 1.15F);
+			glTranslated(0.5F, -0.5F, 0.5F);
+			glRotatef(140F, 1F, 0F, -1F);
+			glScalef(1.2F, 1.2F, 1.2F);
 			branch.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 			glPopMatrix();
 		}
