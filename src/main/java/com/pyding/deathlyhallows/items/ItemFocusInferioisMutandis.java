@@ -6,9 +6,9 @@ import com.emoniph.witchery.util.Config;
 import com.emoniph.witchery.util.MutableBlock;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
+import com.pyding.deathlyhallows.DeathlyHallows;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -28,20 +28,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class InferioisMutandis extends ItemFocusPech {
-	IIcon depthIcon = null;
+import static com.pyding.deathlyhallows.DeathlyHallows.tabDeathlyHallows;
+
+public class ItemFocusInferioisMutandis extends ItemFocusPech {
+	private IIcon depthIcon = null;
 	private static final AspectList cost;
 	private static final AspectList costAll;
-	public static FocusUpgradeType nightshade;
+	private static final FocusUpgradeType nightshade;
 
 	@Override
 	public void registerIcons(IIconRegister ir) {
-		this.icon = ir.registerIcon("dh:focus_mutant");
+		this.icon = ir.registerIcon(DeathlyHallows.MODID + ":" + iconString);
 		this.depthIcon = ir.registerIcon("thaumcraft:focus_pech_depth");
 	}
 
-	public InferioisMutandis() {
-
+	public ItemFocusInferioisMutandis() {
+		setUnlocalizedName("focusMutandis");
+		setTextureName("focusMutandis");
+		setCreativeTab(tabDeathlyHallows);
 	}
 
 	@Override

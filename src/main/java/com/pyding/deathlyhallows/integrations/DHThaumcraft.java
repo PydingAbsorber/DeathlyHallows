@@ -2,9 +2,9 @@ package com.pyding.deathlyhallows.integrations;
 
 import com.emoniph.witchery.Witchery;
 import com.pyding.deathlyhallows.blocks.BlockVisConverter;
-import com.pyding.deathlyhallows.blocks.tiles.VisConverterTile;
+import com.pyding.deathlyhallows.blocks.tiles.TileEntityVisConverter;
 import com.pyding.deathlyhallows.items.DHItems;
-import com.pyding.deathlyhallows.items.InferioisMutandis;
+import com.pyding.deathlyhallows.items.ItemFocusInferioisMutandis;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.ItemStack;
 import thaumcraft.api.ThaumcraftApi;
@@ -24,12 +24,9 @@ public final class DHThaumcraft {
 		visConverter = new BlockVisConverter().setBlockName("visconverter")
 											  .setBlockTextureName("dh:visc")
 											  .setCreativeTab(tabDeathlyHallows);
-		inferioisMutandis = new InferioisMutandis().setUnlocalizedName("focusMutandis")
-												   .setTextureName("dh:focus_mutant")
-												   .setMaxStackSize(1)
-												   .setCreativeTab(tabDeathlyHallows);
+		inferioisMutandis = new ItemFocusInferioisMutandis();
 		GameRegistry.registerBlock(visConverter, "visconverter");
-		GameRegistry.registerTileEntity(VisConverterTile.class, "visconverterTile");
+		GameRegistry.registerTileEntity(TileEntityVisConverter.class, "visconverterTile");
 		GameRegistry.registerItem(inferioisMutandis, inferioisMutandis.getUnlocalizedName().substring(5));
 
 	}

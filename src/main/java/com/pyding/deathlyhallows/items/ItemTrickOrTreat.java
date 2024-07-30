@@ -125,9 +125,15 @@ public class ItemTrickOrTreat extends ItemBase {
 			deathlyHallowItems.add(new ItemStack(DHItems.inferioisMutandis));
 		}
 		for(ItemGeneral.SubItem bottom: Witchery.Items.GENERIC.subItems) {
+			if(bottom == null) {
+				continue;
+			}
 			witcheryItems.add(bottom.createStack());
 		}
 		for(ItemVanillaPotion.SubItem submissive: Witchery.Items.POTIONS.subItems) {
+			if(submissive == null) {
+				continue;
+			}
 			witcheryItems.add(submissive.createStack());
 		}
 	}

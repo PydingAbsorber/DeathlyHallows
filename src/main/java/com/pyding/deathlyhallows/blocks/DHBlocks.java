@@ -1,6 +1,6 @@
 package com.pyding.deathlyhallows.blocks;
 
-import com.pyding.deathlyhallows.blocks.tiles.VisConverterTile;
+import com.pyding.deathlyhallows.blocks.tiles.TileEntityVisConverter;
 import com.pyding.deathlyhallows.render.block.RenderTileVisConverter;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -32,7 +32,7 @@ public final class DHBlocks {
 
 	@SideOnly(Side.CLIENT)
 	public static void initClient() {
-		renderTile(VisConverterTile.class, new RenderTileVisConverter());
+		renderTile(TileEntityVisConverter.class, new RenderTileVisConverter());
 	}
 
 	@SideOnly(Side.CLIENT)
