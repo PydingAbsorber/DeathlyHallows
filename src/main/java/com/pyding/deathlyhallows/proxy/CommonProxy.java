@@ -21,9 +21,9 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 public class CommonProxy {
 
 	public void preInit(FMLPreInitializationEvent event) {
+		DHIntegration.preInit();
 		DHConfig.init(event.getSuggestedConfigurationFile());
 		DHPacketProcessor.preInit();
-		DHIntegration.preInit();
 	}
 
 	public void init(FMLInitializationEvent event) {
@@ -35,6 +35,7 @@ public class CommonProxy {
 		DHDeathEvents.init();
 		DHGoblinEvents.init();
 		DHPacketProcessor.init();
+		DHIntegration.init();
 	}
 
 	public void postInit(FMLPostInitializationEvent event) {

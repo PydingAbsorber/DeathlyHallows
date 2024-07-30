@@ -69,7 +69,7 @@ public class DeathlyHallows {
 	public static CreativeTabs tabDeathlyHallows = new CreativeTabs("tabDeathlyHallows") {
 		@Override
 		public Item getTabIconItem() {
-			return DHItems.tabItem;
+			return DHItems.itemLogo;
 		}
 	};
 

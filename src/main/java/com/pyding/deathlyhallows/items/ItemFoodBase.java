@@ -3,6 +3,7 @@ package com.pyding.deathlyhallows.items;
 import com.pyding.deathlyhallows.DeathlyHallows;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
@@ -19,20 +20,26 @@ public class ItemFoodBase extends ItemFood {
 		setMaxStackSize(maxStackSize);
 		setCreativeTab(tab);
 	}
-	
+
 	public ItemFoodBase(String unlocalizedName, int hunger, float saturation) {
 		this(unlocalizedName, hunger, saturation, 64, DeathlyHallows.tabDeathlyHallows);
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean devMode) {
 		addTooltip(stack, player, list, devMode);
 	}
-	
+
 	protected void addTooltip(ItemStack stack, EntityPlayer p, List<String> l, boolean devMode) {
-		
+
 	}
-	
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IIconRegister ir) {
+		itemIcon = ir.registerIcon(DeathlyHallows.MODID + ":" + iconString);
+	}
+
 }

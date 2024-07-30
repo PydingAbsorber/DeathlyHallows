@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 
 public class ItemBaubleBase extends ItemBase implements IBauble {
 	
-	private BaubleType type;
+	private final BaubleType type;
 
 	public ItemBaubleBase(String unlocalizedName, BaubleType type) {
 		super(unlocalizedName, 1);

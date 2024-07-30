@@ -19,7 +19,7 @@ import com.pyding.deathlyhallows.entities.EntityNimbus;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.items.ItemDeadlyPrism;
-import com.pyding.deathlyhallows.items.ItemNimbus3000;
+import com.pyding.deathlyhallows.items.ItemNimbus;
 import com.pyding.deathlyhallows.items.ItemBaubleResurrectionStone;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketAnimaMobRender;
@@ -341,7 +341,7 @@ public final class DHEvents {
 			if(itemStack != null && itemStack.getItem() == DHItems.nimbus) {
 				found = true;
 				if(p.getEntityData().getBoolean("dhkey2")) {
-					ItemNimbus3000 nimbus3000 = (ItemNimbus3000)itemStack.getItem();
+					ItemNimbus nimbus3000 = (ItemNimbus)itemStack.getItem();
 					nimbus3000.onItemRightClick(itemStack, p.worldObj, p);
 				}
 			}
@@ -885,7 +885,7 @@ public final class DHEvents {
 			return;
 		}
 		EntityPlayer player = e.entityPlayer;
-		MovingObjectPosition mop = rayTrace(player, 4.0);
+		MovingObjectPosition mop = DHUtils.rayTrace(player, 4.0);
 		if(mop == null) {
 			return;
 		}
@@ -916,13 +916,6 @@ public final class DHEvents {
 		grassper.decrStackSize(0, 1);
 		e.world.setBlock(blockX, blockY, blockZ, Blocks.air);
 		player.inventory.addItemStackToInventory(focus);
-	}
-
-	public MovingObjectPosition rayTrace(EntityPlayer player, double distance) {
-		Vec3 startVec = Vec3.createVectorHelper(player.posX, player.posY + player.getEyeHeight(), player.posZ);
-		Vec3 lookVec = player.getLook(1.0F);
-		Vec3 endVec = startVec.addVector(lookVec.xCoord * distance, lookVec.yCoord * distance, lookVec.zCoord * distance);
-		return player.worldObj.rayTraceBlocks(startVec, endVec);
 	}
 
 }

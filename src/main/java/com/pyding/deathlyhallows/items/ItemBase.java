@@ -3,6 +3,7 @@ package com.pyding.deathlyhallows.items;
 import com.pyding.deathlyhallows.DeathlyHallows;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -33,6 +34,12 @@ public class ItemBase extends Item {
 	@SideOnly(Side.CLIENT)
 	protected void addTooltip(ItemStack stack, EntityPlayer p, List<String> l, boolean devMode) {
 		
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IIconRegister ir) {
+		itemIcon = ir.registerIcon(DeathlyHallows.MODID + ":" + iconString);
 	}
 	
 }

@@ -12,7 +12,6 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import vazkii.botania.common.item.block.ItemBlockSpecialFlower;
 
-import static com.pyding.deathlyhallows.DeathlyHallows.tabDeathlyHallows;
 import static com.pyding.deathlyhallows.blocks.DHBlocks.visConverter;
 import static com.pyding.deathlyhallows.items.DHItems.deathShard;
 import static com.pyding.deathlyhallows.items.DHItems.hobgoblinSoul;
@@ -21,9 +20,7 @@ import static thaumcraft.api.aspects.Aspect.*;
 
 public final class DHThaumcraft {
 	public static void init() {
-		visConverter = new BlockVisConverter().setBlockName("visconverter")
-											  .setBlockTextureName("dh:visc")
-											  .setCreativeTab(tabDeathlyHallows);
+		visConverter = new BlockVisConverter();
 		inferioisMutandis = new ItemFocusInferioisMutandis();
 		GameRegistry.registerBlock(visConverter, "visconverter");
 		GameRegistry.registerTileEntity(TileEntityVisConverter.class, "visconverterTile");
@@ -43,6 +40,7 @@ public final class DHThaumcraft {
 	}
 
 	public static void aspects() {
+		// TODO fix aspects
 		addAspects(
 				new ItemStack(DHItems.elderWand),
 				MAGIC, 13,
@@ -98,6 +96,14 @@ public final class DHThaumcraft {
 				FLIGHT, 32,
 				TREE, 7,
 				WEATHER, 10
+		);
+		addAspects(
+				new ItemStack(DHItems.lightningInBag),
+				CLOTH, 4,
+				WEATHER, 8,
+				getAspect("electrum"), 2,
+				getAspect("magneto"), 4
+				
 		);
 		addAspects(
 				new ItemStack(ItemBlockSpecialFlower.ofType("screamily").getItem()),

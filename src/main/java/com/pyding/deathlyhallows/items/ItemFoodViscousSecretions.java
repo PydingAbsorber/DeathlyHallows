@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ItemFoodViscousSecretions extends ItemFoodBase {
 	public ItemFoodViscousSecretions() {
-		super("ViscousSecretions", 20, 40);
+		super("viscousSecretions", 20, 40);
 		setAlwaysEdible();
 	}
 

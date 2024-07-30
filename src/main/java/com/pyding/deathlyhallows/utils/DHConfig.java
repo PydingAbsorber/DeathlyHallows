@@ -7,6 +7,11 @@ import net.minecraftforge.common.config.Property;
 import java.io.File;
 
 public class DHConfig {
+
+	private static final String
+			CATEGORY_STAFF = "staff",
+			CATEGORY_ELF = "elf";
+
 	public static Configuration config;
 	public static String spawnlesia;
 	public static int deathDifficulty;
@@ -50,54 +55,55 @@ public class DHConfig {
 	}
 
 	public static void syncConfig() {
-		config.addCustomCategoryComment("staff", "Deathly Hallows config");
-		shouldRemove = config.getBoolean("removeDuplicated", "staff", true, "Should have only one hallow");
-		
-		spells = config.getString("spells", "staff", "", "Black list for Spells Id in Elder Wand, for example: 36, 37, 42 ");
-		spawnlesia = config.getString("spawnlesia", "staff", "", "Black list for Spawnlesia, type names are separated with ',' for example: Zombie, EnderDragon ");
-		spawnlesiaMana = config.getInt("spawnlesiaMana", "staff", 1000000, 1, Integer.MAX_VALUE, "Mana requirements for Spawnlesia per spawn");
-		deathDifficulty = config.getInt("deathDifficulty", "staff", 3, 1, 3, "Absolute Death difficulty (3 - Gigachad Man, 2 - weak casual, 1 - newborn toddler)");
-		elfLvl = config.getString("elfLvl", "staff", "1-20,2-1000,3--1000,4-1000,5-1000,6-64,7-20000,8-20000,9-100,10-1000", "Change this numbers for elf lvl requirements (First number is elf lvl you want)");
-		hob = config.getBoolean("hob", "staff", true, "Hobgoblin chains immortality");
-		screamilyMana = config.getInt("screamilyMana", "staff", 10000, 1, Integer.MAX_VALUE, "Screamily mana per banshee scream");
-		sonatRitual = config.getString("sonatRitual", "staff", "", "Black list for ritual Sonat of Dispair, type names are separated with ',' for example: Zombie, EnderDragon ");
+		config.addCustomCategoryComment(CATEGORY_STAFF, "Deathly Hallows config");
+		shouldRemove = config.getBoolean("removeDuplicated", CATEGORY_STAFF, true, "Should have only one hallow");
 
-		bathHouse = config.getBoolean("bathHouse", "staff", true, "Should this ritual be enabled");
-		cost1 = config.getInt("cost1", "staff", 25000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
-		despairSonata = config.getBoolean("despairSonata", "staff", true, "Should this ritual be enabled");
-		cost2 = config.getInt("cost2", "staff", 3000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
-		randomSpirits = config.getInt("randomSpirits", "staff", 3, 1, Integer.MAX_VALUE, "Amount of random Spirits from Despair Sonata ritual");
-		fishCatch = config.getBoolean("fishCatch", "staff", true, "Should this ritual be enabled");
-		cost3 = config.getInt("cost3", "staff", 1000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
-		soulCurse = config.getBoolean("soulCurse", "staff", true, "Should this ritual be enabled");
-		cost4 = config.getInt("cost4", "staff", 50000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
-		iceCastle = config.getBoolean("iceCastle", "staff", true, "Should this ritual be enabled");
-		cost5 = config.getInt("cost5", "staff", 7000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
-		healMending = config.getBoolean("healMending", "staff", true, "Should this ritual be enabled");
-		cost6 = config.getInt("cost6", "staff", 18000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
-		huntMagicCreatures = config.getBoolean("huntMagicCreatures", "staff", true, "Should this ritual be enabled");
-		cost7 = config.getInt("cost7", "staff", 30000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
-		purify = config.getBoolean("purify", "staff", true, "Should this ritual be enabled");
-		cost8 = config.getInt("cost8", "staff", 24100, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
-		covenWitch = config.getBoolean("covenWitch", "staff", true, "Should this ritual be enabled");
-		cost9 = config.getInt("cost9", "staff", 5000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
-		Property p = config.get("staff", "bertieBottsEffectBlacklist", ItemFoodBertieBotts.getDefaultBlackList());
+		spells = config.getString("spells", CATEGORY_STAFF, "", "Black list for Spells Id in Elder Wand, for example: 36, 37, 42 ");
+		spawnlesia = config.getString("spawnlesia", CATEGORY_STAFF, "", "Black list for Spawnlesia, type names are separated with ',' for example: Zombie, EnderDragon ");
+		spawnlesiaMana = config.getInt("spawnlesiaMana", CATEGORY_STAFF, 1000000, 1, Integer.MAX_VALUE, "Mana requirements for Spawnlesia per spawn");
+		deathDifficulty = config.getInt("deathDifficulty", CATEGORY_STAFF, 3, 1, 3, "Absolute Death difficulty (3 - Gigachad Man, 2 - weak casual, 1 - newborn toddler)");
+		elfLvl = config.getString("elfLvl", CATEGORY_STAFF, "1-20,2-1000,3--1000,4-1000,5-1000,6-64,7-20000,8-20000,9-100,10-1000", "Change this numbers for elf level requirements (First number is elf level you want)");
+		hob = config.getBoolean("hob", CATEGORY_STAFF, true, "Hobgoblin chains immortality");
+		screamilyMana = config.getInt("screamilyMana", CATEGORY_STAFF, 10000, 1, Integer.MAX_VALUE, "Screamily mana per banshee scream");
+		sonatRitual = config.getString("sonatRitual", CATEGORY_STAFF, "", "Black list for ritual Sonat of Dispair, type names are separated with ',' for example: Zombie, EnderDragon ");
+
+		bathHouse = config.getBoolean("bathHouse", CATEGORY_STAFF, true, "Should this ritual be enabled");
+		cost1 = config.getInt("cost1", CATEGORY_STAFF, 25000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
+		despairSonata = config.getBoolean("despairSonata", CATEGORY_STAFF, true, "Should this ritual be enabled");
+		cost2 = config.getInt("cost2", CATEGORY_STAFF, 3000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
+		randomSpirits = config.getInt("randomSpirits", CATEGORY_STAFF, 3, 1, Integer.MAX_VALUE, "Amount of random Spirits from Despair Sonata ritual");
+		fishCatch = config.getBoolean("fishCatch", CATEGORY_STAFF, true, "Should this ritual be enabled");
+		cost3 = config.getInt("cost3", CATEGORY_STAFF, 1000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
+		soulCurse = config.getBoolean("soulCurse", CATEGORY_STAFF, true, "Should this ritual be enabled");
+		cost4 = config.getInt("cost4", CATEGORY_STAFF, 50000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
+		iceCastle = config.getBoolean("iceCastle", CATEGORY_STAFF, true, "Should this ritual be enabled");
+		cost5 = config.getInt("cost5", CATEGORY_STAFF, 7000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
+		healMending = config.getBoolean("healMending", CATEGORY_STAFF, true, "Should this ritual be enabled");
+		cost6 = config.getInt("cost6", CATEGORY_STAFF, 18000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
+		huntMagicCreatures = config.getBoolean("huntMagicCreatures", CATEGORY_STAFF, true, "Should this ritual be enabled");
+		cost7 = config.getInt("cost7", CATEGORY_STAFF, 30000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
+		purify = config.getBoolean("purify", CATEGORY_STAFF, true, "Should this ritual be enabled");
+		cost8 = config.getInt("cost8", CATEGORY_STAFF, 24100, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
+		covenWitch = config.getBoolean("covenWitch", CATEGORY_STAFF, true, "Should this ritual be enabled");
+		cost9 = config.getInt("cost9", CATEGORY_STAFF, 5000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
+		Property p = config.get(CATEGORY_STAFF, "bertieBottsEffectBlacklist", ItemFoodBertieBotts.getDefaultBlackList());
 		p.comment = "Blacklisted Potion Effects";
-		for(int i : p.getIntList()) {
+		for(int i: p.getIntList()) {
 			ItemFoodBertieBotts.addToBlackList(i);
 		}
 		config.save();
 	}
 
 
-	public static int getElfRequirements(int lvl) {
+	public static int getElfRequirements(int level) {
 		for(String jopa: elfLvl.split(",")) {
-			if(jopa.contains(lvl + "-")) {
-				StringBuilder text = new StringBuilder(jopa);
-				text.deleteCharAt(0);
-				text.deleteCharAt(0);
-				return Integer.valueOf(String.valueOf(text));
+			if(!jopa.contains(level + "-")) {
+				continue;
 			}
+			StringBuilder text = new StringBuilder(jopa);
+			text.deleteCharAt(0);
+			text.deleteCharAt(0);
+			return Integer.parseInt(String.valueOf(text));
 		}
 		return 0;
 	}

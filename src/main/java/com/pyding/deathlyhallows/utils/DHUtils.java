@@ -25,6 +25,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
@@ -308,7 +309,6 @@ public class DHUtils {
                 p.inventoryContainer.detectAndSendChanges();
                 ChatUtil.sendTranslated(EnumChatFormatting.RED, p, "dh.chat.dupe");
             }
-
         }
     }
 
@@ -345,4 +345,12 @@ public class DHUtils {
         }
         return count > 0;
     }
+
+	// TODO probably stolen code from Minecraft; Finding exact reference is CRUCIAL
+	public static MovingObjectPosition rayTrace(EntityPlayer player, double distance) {
+		Vec3 startVec = Vec3.createVectorHelper(player.posX, player.posY + player.getEyeHeight(), player.posZ);
+		Vec3 lookVec = player.getLook(1.0F);
+		Vec3 endVec = startVec.addVector(lookVec.xCoord * distance, lookVec.yCoord * distance, lookVec.zCoord * distance);
+		return player.worldObj.rayTraceBlocks(startVec, endVec);
+	}
 }

@@ -4,7 +4,6 @@ import com.emoniph.witchery.blocks.BlockAltar;
 import com.emoniph.witchery.common.IPowerSource;
 import com.emoniph.witchery.common.PowerSources;
 import com.emoniph.witchery.util.ParticleEffect;
-import net.minecraft.block.Block;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,10 +15,6 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.tiles.TileArcaneWorkbench;
 import thaumcraft.common.tiles.TileNodeEnergized;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Map;
 
 public class TileEntityVisConverter extends TileEntity {
 	@Override
@@ -145,42 +140,5 @@ public class TileEntityVisConverter extends TileEntity {
 	public boolean canUpdate() {
 		return true;
 	}
-
-	@Override
-	public void writeToNBT(NBTTagCompound p_145841_1_) {
-		super.writeToNBT(p_145841_1_);
-	}
-
-	@Override
-	public void readFromNBT(NBTTagCompound p_145839_1_) {
-		super.readFromNBT(p_145839_1_);
-	}
-
-	public void vzlomJopi2(BlockAltar.TileEntityAltar altar, int power) throws NoSuchFieldException, IllegalAccessException {
-		Class<?> tileEntityAltarClass = BlockAltar.TileEntityAltar.class;
-		Field rechargeScale = tileEntityAltarClass.getDeclaredField("rechargeScale");
-		rechargeScale.setAccessible(true);
-		rechargeScale.setInt(altar, altar.getCoreSpeed() + power / 10);
-		Field maxPowerField = tileEntityAltarClass.getDeclaredField("maxPower");
-		maxPowerField.setAccessible(true);
-		maxPowerField.setFloat(altar, altar.getCoreMaxPower() + power * 10);
-	}
-
-	public void vzlomJopi(int power) {
-		try {
-			Class<?> blockAltarClass = BlockAltar.class;
-			Class<?>[] declaredClasses = blockAltarClass.getDeclaredClasses();
-			for(Class<?> declaredClass: declaredClasses) {
-				if(declaredClass.getSimpleName().equals("PowerSource")) {
-					Method createInMapMethod = declaredClass.getDeclaredMethod("createInMap", Map.class, Block.class, int.class, int.class);
-					Object powerSourceInstance = declaredClass.newInstance();
-					createInMapMethod.setAccessible(true);
-					//createInMapMethod.invoke(powerSourceInstance,);
-				}
-			}
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
+	
 }

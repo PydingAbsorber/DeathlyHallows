@@ -14,7 +14,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 public final class DHItems {
 
 	public static Item
-			tabItem,
+			itemLogo,
 			invisibilityMantle,
 			elderWand,
 			resurrectionStone,
@@ -41,26 +41,26 @@ public final class DHItems {
 	}
 
 	public static void init() {
-		register(tabItem = new ItemBase("itemLogo", 1));
+		register(itemLogo = new ItemBase("itemLogo", 1));
 		register(invisibilityMantle = new ItemBaubleInvisibilityMantle());
 		register(elderWand = new ItemElderWand());
 		register(resurrectionStone = new ItemBaubleResurrectionStone());
 		register(elfLevelItem = new ItemElfLevel());
 		register(bertieBots = new ItemFoodBertieBotts());
 		register(gastronomicTemptation = new ItemGastronomicTemptation());
-		register(soupWithSawdust = new ItemFoodSoapWithSawdust());
+		register(soupWithSawdust = new ItemFoodSoupWithSawdust());
 		register(viscousSecretions = new ItemFoodViscousSecretions());
+		register(hobgoblinSoul = new ItemHobgoblinSoul());
 		register(hobgoblinChains = new ItemHobgoblinChains());
 		register(deadlyPrism = new ItemDeadlyPrism());
-		register(hobgoblinSoul = new ItemHobgoblinSoul());
-		register(nimbus = new ItemNimbus3000());
+		register(nimbus = new ItemNimbus());
 		register(deathShard = new ItemDeathShard());
 		register(tarotCards = new ItemTarotCards());
 		register(monsterBook = new ItemMonsterBook());
 		register(trickOrTreat = new ItemTrickOrTreat());
 		register(elderBook = new ItemElderBook());
-		register(lightningInBag = new ItemLightningInBag());
 		register(elderChalk = new ItemElderChalk());
+		register(lightningInBag = new ItemLightningInBag());
 	}
 
 	@SideOnly(Side.CLIENT)

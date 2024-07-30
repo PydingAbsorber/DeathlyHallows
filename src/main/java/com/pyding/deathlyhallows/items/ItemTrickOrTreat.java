@@ -106,7 +106,7 @@ public class ItemTrickOrTreat extends ItemBase {
 		deathlyHallowItems.add(new ItemStack(DHItems.invisibilityMantle));
 		deathlyHallowItems.add(new ItemStack(DHItems.elderWand));
 		deathlyHallowItems.add(new ItemStack(DHItems.resurrectionStone));
-		deathlyHallowItems.add(new ItemStack(DHItems.tabItem));
+		deathlyHallowItems.add(new ItemStack(DHItems.itemLogo));
 		deathlyHallowItems.add(new ItemStack(DHItems.elfLevelItem));
 		deathlyHallowItems.add(new ItemStack(DHItems.bertieBots));
 		deathlyHallowItems.add(new ItemStack(DHItems.gastronomicTemptation));

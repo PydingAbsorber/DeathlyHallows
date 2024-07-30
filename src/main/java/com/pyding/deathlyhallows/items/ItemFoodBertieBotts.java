@@ -15,7 +15,7 @@ public class ItemFoodBertieBotts extends ItemFoodBase {
 	private static final List<Integer> blackList = new ArrayList<>();
 	
 	public ItemFoodBertieBotts() {
-		super("BertieBotts", 8, 20);
+		super("bertieBotts", 8, 20);
 		setAlwaysEdible();
 	}
 
