@@ -17,9 +17,13 @@ import thaumcraft.common.tiles.TileArcaneWorkbench;
 import thaumcraft.common.tiles.TileNodeEnergized;
 
 public class TileEntityVisConverter extends TileEntity {
+	
+	public long clientTicks = 0L;
+	
 	@Override
 	public void updateEntity() {
 		if(worldObj.isRemote) {
+			++clientTicks;
 			return;
 		}
 		TileEntity down = worldObj.getTileEntity(xCoord, yCoord - 1, zCoord);

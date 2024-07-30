@@ -2,6 +2,9 @@ package com.pyding.deathlyhallows.render.block;
 
 import com.emoniph.witchery.client.model.ModelDemonHeart;
 import com.emoniph.witchery.client.model.ModelMysticBranch;
+import com.pyding.deathlyhallows.DeathlyHallows;
+import com.pyding.deathlyhallows.blocks.tiles.TileEntityVisConverter;
+import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.render.ModelWrapperDisplayList;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
@@ -9,74 +12,65 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.AdvancedModelLoader;
 import net.minecraftforge.client.model.IModelCustom;
 import net.minecraftforge.client.model.obj.WavefrontObject;
-import org.lwjgl.opengl.GL11;
+
+import static org.lwjgl.opengl.GL11.*;
 
 public class RenderTileVisConverter extends TileEntitySpecialRenderer {
-	final ModelDemonHeart heart = new ModelDemonHeart();
-	final ModelMysticBranch branch = new ModelMysticBranch();
-	private final ResourceLocation modelPath = new ResourceLocation("dh", "models/deathShard.obj");
-	private final IModelCustom shard = new ModelWrapperDisplayList((WavefrontObject)AdvancedModelLoader.loadModel(modelPath));
 
-	private static final ResourceLocation TEXTURE_URL = new ResourceLocation("witchery", "textures/blocks/demonHeart.png");
-	private static final ResourceLocation TEXTURE_URL2 = new ResourceLocation("witchery", "textures/entities/mysticbranch.png");
-	private static final ResourceLocation TEXTURE_URL3 = new ResourceLocation("dh", "textures/items/shard.png");
-	public static int ticks;
+	private final ResourceLocation
+			MODEL_DEATH_SHARD = new ResourceLocation(DeathlyHallows.MODID, "models/deathShard.obj"),
+			TEXTURE_DEMONHEART = new ResourceLocation(DHIntegration.WITCHERY, "textures/blocks/demonHeart.png"),
+			TEXTURE_BRANCH = new ResourceLocation(DHIntegration.WITCHERY, "textures/entities/mysticbranch.png"),
+			TEXTURE_SHARD = new ResourceLocation(DeathlyHallows.MODID, "textures/items/deathShard.png");
+	private final IModelCustom shard = new ModelWrapperDisplayList((WavefrontObject)AdvancedModelLoader.loadModel(MODEL_DEATH_SHARD));
+	private final ModelDemonHeart heart = new ModelDemonHeart();
+	private final ModelMysticBranch branch = new ModelMysticBranch();
 
-
-	public void renderTileEntityAt(TileEntity tileEntity, double d, double d1, double d2, float f) {
-		ticks++;
-		GL11.glPushMatrix();
-		this.bindTexture(TEXTURE_URL);
-		GL11.glTranslated(d + 0.6, d1 - 0.5, d2 + 0.8);
-		GL11.glScalef(0.6F, 0.6F, 0.6F);
-		this.heart.render(null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, 0);
-		GL11.glPopMatrix();
-		GL11.glPushMatrix();
-		GL11.glTranslated(d + 0.6, d1 - 0.5, d2);
-		GL11.glScalef(0.6F, 0.6F, 0.6F);
-		this.heart.render(null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, 0);
-		GL11.glPopMatrix();
-		GL11.glPushMatrix();
-		GL11.glTranslated(d + 0.1, d1 - 0.5, d2 + 0.4);
-		GL11.glScalef(0.6F, 0.6F, 0.6F);
-		this.heart.render(null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, 0);
-		GL11.glPopMatrix();
-		GL11.glPushMatrix();
-		GL11.glTranslated(d + 1, d1 - 0.5, d2 + 0.4);
-		GL11.glScalef(0.6F, 0.6F, 0.6F);
-		this.heart.render(null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, 0);
-		GL11.glPopMatrix();
-		GL11.glPushMatrix();
-		this.bindTexture(TEXTURE_URL2);
-		GL11.glTranslated(d, d1, d2);
-		GL11.glRotatef(140, -1.0F, 0.0F, 1.0F);
-		GL11.glScalef(1.2F, 1.2F, 1.2F);
-		this.branch.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-		GL11.glPopMatrix();
-		GL11.glPushMatrix();
-		GL11.glTranslated(d + 1, d1, d2);
-		GL11.glRotatef(140, -1.0F, 0.0F, -1.0F);
-		GL11.glScalef(1.2F, 1.2F, 1.2F);
-		this.branch.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-		GL11.glPopMatrix();
-		GL11.glPushMatrix();
-		GL11.glTranslated(d + 1, d1, d2 + 1);
-		GL11.glRotatef(140, 1.0F, 0.0F, -1.0F);
-		GL11.glScalef(1.2F, 1.2F, 1.2F);
-		this.branch.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-		GL11.glPopMatrix();
-		GL11.glPushMatrix();
-		GL11.glTranslated(d, d1, d2 + 1);
-		GL11.glRotatef(140, 1.0F, 0.0F, 1.0F);
-		GL11.glScalef(1.2F, 1.2F, 1.2F);
-		this.branch.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-		GL11.glPopMatrix();
-		GL11.glPushMatrix();
-		this.bindTexture(TEXTURE_URL3);
-		GL11.glTranslated(d + 0.5, d1 + 1, d2 + 0.5);
-		GL11.glScalef(0.4F, 0.4F, 0.4F);
-		GL11.glRotatef(ticks, 0.0F, 1.0F, 0.0F);
-		shard.renderAll();
-		GL11.glPopMatrix();
+	public void renderTileEntityAt(TileEntity e, double x, double y, double z, float partial) {
+		long ticks = ((TileEntityVisConverter)e).clientTicks;
+		glPushMatrix();
+		glTranslated(x + 0.5D, y + 0.5D, z + 0.5D);
+		renderHearts(ticks);
+		renderBranches();
+		renderShard(ticks);
+		glPopMatrix();
 	}
+
+	private void renderShard(long ticks) {
+		bindTexture(TEXTURE_SHARD);
+		glPushMatrix();
+		glTranslatef(0F, 0.4F, 0.5F);
+		glScalef(0.4F, 0.4F, 0.4F);
+		glRotatef(ticks % 360F, 0.0F, 1.0F, 0.0F);
+		shard.renderAll();
+		glPopMatrix();
+	}
+
+	private void renderBranches() {
+		bindTexture(TEXTURE_BRANCH);
+		for(int i = 0; i < 4; ++i) {
+			glPushMatrix();
+			glTranslated(0.0F*((i / 2) - 0.5F), -0.5F, 0.0F*((i % 2) - 0.5F));
+			glRotatef(90F * i, 0F, 1F, 0F);
+			glRotatef(140F, -1F, 0F, 1F);
+			glScalef(1.2F, 1.2F, 1.15F);
+			branch.render(null, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+			glPopMatrix();
+		}
+	}
+
+	private void renderHearts(long ticks) {
+		glRotatef(180F, 1F, 0F, 0F);
+		bindTexture(TEXTURE_DEMONHEART);
+		for(int i = 0; i < 4; ++i) {
+			glPushMatrix();
+			glRotatef(90F * i, 0F, 1F, 0F);
+			glTranslatef(0.1F - 0.5F, -0.4F, -0.09F);
+			glScalef(0.6F, 0.6F, 0.6F);
+			// period is about 25L, 25/4 ~ 6
+			heart.render(null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, ticks + 6L * i);
+			glPopMatrix();
+		}
+	}
+
 }
