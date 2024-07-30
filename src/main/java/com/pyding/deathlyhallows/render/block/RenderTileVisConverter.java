@@ -17,15 +17,16 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class RenderTileVisConverter extends TileEntitySpecialRenderer {
 
-	private final ResourceLocation
+	public static final ResourceLocation
 			MODEL_DEATH_SHARD = new ResourceLocation(DeathlyHallows.MODID, "models/deathShard.obj"),
 			TEXTURE_DEMONHEART = new ResourceLocation(DHIntegration.WITCHERY, "textures/blocks/demonHeart.png"),
 			TEXTURE_BRANCH = new ResourceLocation(DHIntegration.WITCHERY, "textures/entities/mysticbranch.png"),
 			TEXTURE_SHARD = new ResourceLocation(DeathlyHallows.MODID, "textures/items/deathShard.png");
-	private final IModelCustom shard = new ModelWrapperDisplayList((WavefrontObject)AdvancedModelLoader.loadModel(MODEL_DEATH_SHARD));
-	private final ModelDemonHeart heart = new ModelDemonHeart();
-	private final ModelMysticBranch branch = new ModelMysticBranch();
+	public final IModelCustom shard = new ModelWrapperDisplayList((WavefrontObject)AdvancedModelLoader.loadModel(MODEL_DEATH_SHARD));
+	public final ModelDemonHeart heart = new ModelDemonHeart();
+	public final ModelMysticBranch branch = new ModelMysticBranch();
 
+	@Override
 	public void renderTileEntityAt(TileEntity e, double x, double y, double z, float partial) {
 		long ticks = ((TileEntityVisConverter)e).clientTicks;
 		glPushMatrix();
@@ -33,7 +34,6 @@ public class RenderTileVisConverter extends TileEntitySpecialRenderer {
 		renderShard(ticks);
 		renderHearts(ticks);
 		renderBranches();
-
 		glPopMatrix();
 	}
 
@@ -67,7 +67,7 @@ public class RenderTileVisConverter extends TileEntitySpecialRenderer {
 		for(int i = 0; i < 4; ++i) {
 			glPushMatrix();
 			glRotatef(90F * i, 0F, 1F, 0F);
-			glTranslatef(0.1F - 0.5F, -0.4F, -0.09F);
+			glTranslatef(0.1F - 0.4F, -0.4F, -0.09F);
 			glScalef(0.6F, 0.6F, 0.6F);
 			// period is about 25L, 25/4 ~ 6
 			heart.render(null, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F, ticks + 6L * i);

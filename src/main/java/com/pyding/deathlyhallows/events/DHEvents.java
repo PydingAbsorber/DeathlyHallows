@@ -4,7 +4,11 @@ import baubles.api.BaublesApi;
 import com.emoniph.witchery.Witchery;
 import com.emoniph.witchery.blocks.BlockGrassper;
 import com.emoniph.witchery.dimension.WorldProviderDreamWorld;
-import com.emoniph.witchery.entity.*;
+import com.emoniph.witchery.entity.EntityBanshee;
+import com.emoniph.witchery.entity.EntityDeath;
+import com.emoniph.witchery.entity.EntityNightmare;
+import com.emoniph.witchery.entity.EntityPoltergeist;
+import com.emoniph.witchery.entity.EntitySpirit;
 import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.item.ItemDeathsClothes;
 import com.emoniph.witchery.util.ChatUtil;
@@ -18,9 +22,9 @@ import com.pyding.deathlyhallows.entities.EntityAbsoluteDeath;
 import com.pyding.deathlyhallows.entities.EntityNimbus;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
+import com.pyding.deathlyhallows.items.ItemBaubleResurrectionStone;
 import com.pyding.deathlyhallows.items.ItemDeadlyPrism;
 import com.pyding.deathlyhallows.items.ItemNimbus;
-import com.pyding.deathlyhallows.items.ItemBaubleResurrectionStone;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketAnimaMobRender;
 import com.pyding.deathlyhallows.network.packets.PacketPlayerRender;
@@ -37,7 +41,11 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -51,12 +59,20 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.ServerConfigurationManager;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.ISpecialArmor;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingHealEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -733,7 +749,6 @@ public final class DHEvents {
 		}
 		if(orHorcruxLives(p)) {
 			e.isCanceled();
-			return;
 		}
 	}
 
@@ -756,9 +771,10 @@ public final class DHEvents {
 
 	private static boolean probablyRessurectByStone(EntityPlayer p) {
 		ItemBaubleResurrectionStone rs = new ItemBaubleResurrectionStone();
-		for(int i = 1; i < 3; ++i) {
-			ItemStack bauble = BaublesApi.getBaubles(p).getStackInSlot(1);
-			if(bauble.getItem() != DHItems.resurrectionStone || rs.getCharges(bauble) <= 0) {
+		IInventory baubles = BaublesApi.getBaubles(p);
+		for(int i = 1; i < baubles.getSizeInventory(); ++i) {
+			ItemStack bauble = baubles.getStackInSlot(i);
+			if(bauble == null || bauble.getItem() != DHItems.resurrectionStone || rs.getCharges(bauble) <= 0) {
 				continue;
 			}
 			rs.setCharges(bauble, rs.getCharges(bauble) - 1);

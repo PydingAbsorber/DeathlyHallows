@@ -73,6 +73,7 @@ public class ItemFocusInferioisMutandis extends ItemFocusPech {
 			return null;
 		}
 		// TODO attach extremis as update and architect
+		// TODO fix rituals because of shift+click fails
 		MovingObjectPosition mop = DHUtils.rayTrace(player, 4.0);
 		if(mop == null || mop.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK || !wand.consumeAllVis(stack, player, getVisCost(stack), false, false)) {
 			return null;
@@ -85,7 +86,7 @@ public class ItemFocusInferioisMutandis extends ItemFocusPech {
 		}
 		return stack;
 	}
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public void addInformation(ItemStack stack, EntityPlayer player, List l, boolean devMode) {

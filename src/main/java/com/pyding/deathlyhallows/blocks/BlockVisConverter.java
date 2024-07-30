@@ -13,6 +13,7 @@ import net.minecraft.world.World;
 import static com.pyding.deathlyhallows.DeathlyHallows.tabDeathlyHallows;
 
 public class BlockVisConverter extends BlockContainer {
+	
 	public BlockVisConverter() {
 		super(Material.wood);
 		setBlockName("visConverter");
