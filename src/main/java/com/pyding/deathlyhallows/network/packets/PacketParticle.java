@@ -12,19 +12,18 @@ import net.minecraft.client.Minecraft;
 import java.awt.*;
 
 public class PacketParticle implements IMessage, IMessageHandler<PacketParticle, IMessage> {
-	double x;
-	double y;
-	double z;
-	int color;
-	float resizeSpeed;
-	float scale;
-	int age;
-	int type;
-	float motionX;
-	float motionY;
-	float motionZ;
+	double x, y, z;
+	float motionX, motionY, motionZ;
+	float
+			resizeSpeed,
+			scale;
+	int
+			color,
+			age,
+			type;
 
 	public PacketParticle() {
+		
 	}
 
 	public PacketParticle(double x, double y, double z, Color color, float resizeSpeed, float scale, int age, int type, float motionX, float motionY, float motionZ) {
@@ -75,13 +74,15 @@ public class PacketParticle implements IMessage, IMessageHandler<PacketParticle,
 	@SideOnly(Side.CLIENT)
 	public IMessage onMessage(PacketParticle message, MessageContext ctx) {
 		if(message.type == 1) {
-			ParticleBlueMagic particle = new ParticleBlueMagic(Minecraft.getMinecraft().theWorld, message.x, message.y, message.z, new Color(message.color), message.resizeSpeed, message.scale, message.age);
+			Minecraft mc = Minecraft.getMinecraft();
+			ParticleBlueMagic particle = new ParticleBlueMagic(mc.theWorld, message.x, message.y, message.z, new Color(message.color), message.resizeSpeed, message.scale, message.age);
 			particle.motionX = message.motionX;
 			particle.motionY = message.motionY;
 			particle.motionZ = message.motionZ;
 			particle.noClip = true;
-			Minecraft.getMinecraft().effectRenderer.addEffect(particle);
+			mc.effectRenderer.addEffect(particle);
 		}
 		return null;
 	}
+	
 }

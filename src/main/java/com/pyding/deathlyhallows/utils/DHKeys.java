@@ -42,5 +42,6 @@ public class DHKeys {
 			DHPacketProcessor.sendToServer(new PacketKeyBindings(sprint, 3));
 		}
 	}
+	
 }
 

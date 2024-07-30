@@ -8,13 +8,13 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class PacketPlayerNBTSync implements IMessage, IMessageHandler<PacketPlayerNBTSync, IMessage> {
 	public NBTTagCompound nbtData;
 
 	public PacketPlayerNBTSync() {
+		
 	}
 
 	public PacketPlayerNBTSync(NBTTagCompound nbt) {
@@ -37,8 +37,8 @@ public class PacketPlayerNBTSync implements IMessage, IMessageHandler<PacketPlay
 		if(message.nbtData == null) {
 			return null;
 		}
-		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-		player.readFromNBT(message.nbtData);
+		Minecraft.getMinecraft().thePlayer.readFromNBT(message.nbtData);
 		return null;
 	}
+	
 }

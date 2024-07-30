@@ -18,6 +18,7 @@ public class PacketAnimaMobRender implements IMessage, IMessageHandler<PacketAni
 	public int id;
 
 	public PacketAnimaMobRender() {
+		
 	}
 
 	public PacketAnimaMobRender(NBTTagCompound nbt, int identifier) {
@@ -50,4 +51,5 @@ public class PacketAnimaMobRender implements IMessage, IMessageHandler<PacketAni
 		}
 		return null;
 	}
+	
 }

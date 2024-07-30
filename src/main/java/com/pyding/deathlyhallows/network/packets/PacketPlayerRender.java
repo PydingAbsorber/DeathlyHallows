@@ -15,6 +15,7 @@ public class PacketPlayerRender implements IMessage, IMessageHandler<PacketPlaye
 
 
 	public PacketPlayerRender() {
+		
 	}
 
 	public PacketPlayerRender(NBTTagCompound nbt) {
@@ -40,4 +41,5 @@ public class PacketPlayerRender implements IMessage, IMessageHandler<PacketPlaye
 		}
 		return null;
 	}
+	
 }

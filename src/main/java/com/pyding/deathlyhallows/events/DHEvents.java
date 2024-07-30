@@ -338,13 +338,15 @@ public final class DHEvents {
 		}
 		boolean found = false;
 		for(ItemStack itemStack: p.inventory.mainInventory) {
-			if(itemStack != null && itemStack.getItem() == DHItems.nimbus) {
-				found = true;
-				if(p.getEntityData().getBoolean("dhkey2")) {
-					ItemNimbus nimbus3000 = (ItemNimbus)itemStack.getItem();
-					nimbus3000.onItemRightClick(itemStack, p.worldObj, p);
-				}
+			if(itemStack == null || itemStack.getItem() != DHItems.nimbus) {
+				continue;
 			}
+			found = true;
+			if(!p.getEntityData().getBoolean("dhkey2")) {
+				continue;
+			}
+			ItemNimbus nimbus = (ItemNimbus)itemStack.getItem();
+			nimbus.onItemRightClick(itemStack, p.worldObj, p);
 		}
 		if(!found && p.ridingEntity instanceof EntityNimbus) {
 			Entity nimbus = p.ridingEntity;

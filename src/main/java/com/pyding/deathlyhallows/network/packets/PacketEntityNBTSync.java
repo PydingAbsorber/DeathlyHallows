@@ -17,6 +17,7 @@ public class PacketEntityNBTSync implements IMessage, IMessageHandler<PacketEnti
 	public int id;
 
 	public PacketEntityNBTSync() {
+		
 	}
 
 	public PacketEntityNBTSync(NBTTagCompound nbt, int identifier) {
@@ -46,4 +47,5 @@ public class PacketEntityNBTSync implements IMessage, IMessageHandler<PacketEnti
 		entity.readFromNBT(message.nbtData);
 		return null;
 	}
+	
 }
