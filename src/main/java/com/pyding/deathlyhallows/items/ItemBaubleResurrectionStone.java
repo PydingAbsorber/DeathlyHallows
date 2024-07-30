@@ -71,7 +71,7 @@ public class ItemBaubleResurrectionStone extends ItemBaubleBase {
 		if(getIndex(stack) == 0) {
 			pName = players.get(getIndex(stack)).getDisplayName();
 			setPlayer(stack, pName);
-			p.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocalFormatted("dh.desc.resurrectionStone1", pName) ));
+			p.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocalFormatted("dh.desc.resurrectionStone1", pName)));
 			if(getIndex(stack) + 1 <= maxIndex) {
 				setIndex(stack, getIndex(stack) + 1);
 			}
@@ -93,7 +93,7 @@ public class ItemBaubleResurrectionStone extends ItemBaubleBase {
 
 		return super.onItemRightClick(stack, world, p);
 	}
-	
+
 	@Override
 	public void onWornTick(ItemStack stack, EntityLivingBase e) {
 		if(getCharges(stack) >= 3) {
@@ -129,7 +129,7 @@ public class ItemBaubleResurrectionStone extends ItemBaubleBase {
 
 	public int getCharges(ItemStack stack) {
 		NBTTagCompound nbt = stack.getTagCompound();
-		if(nbt == null) { 
+		if(nbt == null) {
 			return 0;
 		}
 		return nbt.getInteger("charge");
@@ -152,27 +152,25 @@ public class ItemBaubleResurrectionStone extends ItemBaubleBase {
 		return null;
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
-		// TODO wtf?
+	protected void addTooltip(ItemStack stack, EntityPlayer p, List<String> l, boolean devMode) {
 		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-			list.add(StatCollector.translateToLocal("dh.desc.stone1"));
-			list.add(StatCollector.translateToLocal("dh.desc.stone2"));
-			list.add(StatCollector.translateToLocal("dh.desc.stone3"));
+			l.add(StatCollector.translateToLocal("dh.desc.stone1"));
+			l.add(StatCollector.translateToLocal("dh.desc.stone2"));
+			l.add(StatCollector.translateToLocal("dh.desc.stone3"));
 		}
 		else {
-			list.add(StatCollector.translateToLocal("dh.desc.stone4") + getCharges(stack));
-			list.add(StatCollector.translateToLocal("dh.desc.stone5") + getPlayer(stack));
-			list.add(StatCollector.translateToLocal("dh.desc.stone6"));
+			l.add(StatCollector.translateToLocalFormatted("dh.desc.stone4", getCharges(stack)));
+			l.add(StatCollector.translateToLocalFormatted("dh.desc.stone5", getPlayer(stack)));
+			l.add(StatCollector.translateToLocal("dh.desc.stone6"));
 		}
-		if(stack.hasTagCompound()) {
-			if(stack.getTagCompound().hasKey("dhowner")) {
-				list.add(StatCollector.translateToLocal("dh.desc.stone7") + stack.getTagCompound().getString("dhowner"));
-			}
+		String owner = stack.hasTagCompound() ? stack.getTagCompound().getString("dhowner") : "";
+		if(owner.equals("")) {
+			owner = StatCollector.translateToLocal("dh.desc.defaultOwner");
 		}
-		else {
-			list.add(StatCollector.translateToLocal("dh.desc.stone8"));
-		}
-		list.add(StatCollector.translateToLocal("dh.desc.stone9"));
+		l.add(StatCollector.translateToLocalFormatted("dh.desc.stone7", owner));
+		l.add(StatCollector.translateToLocal("dh.desc.stone8"));
 	}
+	
 }

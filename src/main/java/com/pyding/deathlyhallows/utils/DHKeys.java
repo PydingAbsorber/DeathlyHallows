@@ -12,11 +12,13 @@ import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
 
 public class DHKeys {
+	
+	private static final String KEY_GROUP = "dh.keyGroup";
 	private static final DHKeys INSTANCE = new DHKeys();
 
 	public static final KeyBinding
-			WAND = new KeyBinding("dh.key.wand1", Keyboard.KEY_V, "dh.key.wand"),
-			BROOM = new KeyBinding("dh.key.broom", Keyboard.KEY_C, "dh.key.wand");
+			WAND = new KeyBinding("dh.key.wand", Keyboard.KEY_V, KEY_GROUP),
+			BROOM = new KeyBinding("dh.key.broom", Keyboard.KEY_C, KEY_GROUP);
 
 	private DHKeys() {
 

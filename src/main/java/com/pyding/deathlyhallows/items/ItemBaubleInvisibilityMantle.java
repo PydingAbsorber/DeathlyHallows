@@ -63,13 +63,12 @@ public class ItemBaubleInvisibilityMantle extends ItemBaubleBase {
 			l.add(StatCollector.translateToLocal("dh.desc.mantle6"));
 			l.add(StatCollector.translateToLocal("dh.desc.mantle7"));
 		}
-		if(stack.hasTagCompound() && stack.getTagCompound().hasKey("dhowner")) {
-			l.add(StatCollector.translateToLocalFormatted("dh.desc.mantle8", stack.getTagCompound().getString("dhowner")));
+		String owner = stack.hasTagCompound() ? stack.getTagCompound().getString("dhowner") : "";
+		if(owner.equals("")) {
+			owner = StatCollector.translateToLocal("dh.desc.defaultOwner");
 		}
-		else {
-			l.add(StatCollector.translateToLocal("dh.desc.mantle9"));
-		}
-		l.add(StatCollector.translateToLocal("dh.desc.mantle10"));
+		l.add(StatCollector.translateToLocalFormatted("dh.desc.mantle8", owner));
+		l.add(StatCollector.translateToLocal("dh.desc.mantle9"));
 	}
 	
 }

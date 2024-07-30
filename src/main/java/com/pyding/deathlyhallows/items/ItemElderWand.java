@@ -49,14 +49,12 @@ public class ItemElderWand extends ItemBase {
 		l.add(StatCollector.translateToLocalFormatted("dh.desc.wand1", Keyboard.getKeyName(DHKeys.WAND.getKeyCode())));
 		l.add(StatCollector.translateToLocal("dh.desc.wand2"));
 		l.add(StatCollector.translateToLocal("dh.desc.wand3"));
-		if(stack.hasTagCompound() && stack.getTagCompound().hasKey("dhowner")) {
-			l.add(StatCollector.translateToLocalFormatted("dh.desc.wand4", stack.getTagCompound()
-																				.getString("dhowner")));
+		String owner = stack.hasTagCompound() ? stack.getTagCompound().getString("dhowner") : "";
+		if(owner.equals("")) {
+			owner = StatCollector.translateToLocal("dh.desc.defaultOwner");
 		}
-		else {
-			l.add(StatCollector.translateToLocal("dh.desc.wand5"));
-		}
-		l.add(StatCollector.translateToLocal("dh.desc.wand6"));
+		l.add(StatCollector.translateToLocalFormatted("dh.desc.stone4", owner));
+		l.add(StatCollector.translateToLocal("dh.desc.wand5"));
 	}
 	
 	// TODO Oh shit...
@@ -297,4 +295,5 @@ public class ItemElderWand extends ItemBase {
 			}
 		}
 	}
+	
 }

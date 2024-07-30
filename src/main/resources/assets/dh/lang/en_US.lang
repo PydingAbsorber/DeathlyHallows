@@ -12,7 +12,7 @@ item.hobgoblinSoul.name=§2Hobgoblin Soul
 item.hobgoblinChains.name=§9Hobgoblin Chains
 item.deadlyPrism.name=§5Deadly Prism
 item.nimbus.name=§eNimbus3000
-item.deathShard.name=§0Death Shard
+item.deathShard.name=§8Death Shard
 item.tarotCards.name=Mystic Cards(WIP)
 item.monsterBook.name=§bThe Monster Book of Monsters
 item.trickOrTreat.name=§eTrick Or Treat!
@@ -32,8 +32,8 @@ entity.dh.EmpoweredArrow.name=Empowered Arrow
 # Creative Tabs
 itemGroup.tabDeathlyHallows=§cDeathly Hallows
 # Key Binds
-dh.key.wand=§cDeathly Hallows
-dh.key.wand1=Elder Wand's quick spell
+dh.keyGroup=§cDeathly Hallows
+dh.key.wand=Elder Wand's quick spell
 dh.key.broom=Summon Nibmus3000
 # Chat messages
 dh.chat.login=§5all hail Pyding! Welcome to the club!
@@ -55,7 +55,7 @@ dh.chat.elfLevelItem=§9Set Elf level to %d
 dh.chat.deadlyPrism1=Damage type is set to: §5%s
 dh.chat.deadlyPrism2=Type damage type (number) in chat:
 # Item tooltips
-dh.desc.elfLevelItem="You have §9%d§r Elf Level"
+dh.desc.elfLevelItem=You have §9%d§7 Elf Level
 
 dh.desc.light=Lightning that was caught in the bag!
 dh.desc.light2=Shiny...
@@ -69,15 +69,16 @@ dh.desc.trick3=§6Can be obtained via Halloween event from killing monsters and 
 dh.desc.trick4=§6Drops with 0.01% * max hp of monster/boss chance
 dh.desc.trick5=§6Press §eShift§6 for additional information
 
-dh.desc.stone1=Press §ashift+RMB §7with ring in hand to select a player
+dh.desc.defaultOwner=§8Death§7
+
+dh.desc.stone1=Press §aShift+RMB §7with ring in hand to select a player
 dh.desc.stone2=Press §aRMB §7to search for the selected player for a cost of §a1 resurrection
 dh.desc.stone3=§aResurrections work only if the ring is equipped
-dh.desc.stone4=Resurrections left:§a
-dh.desc.stone5=Chosen Player:§a
-dh.desc.stone6=Press §ashift §7for additional information
-dh.desc.stone7=Owner §9
-dh.desc.stone8=Owner §9Death
-dh.desc.stone9=You can have only one Hallow at the time
+dh.desc.stone4=Resurrections left: §a%s
+dh.desc.stone5=Chosen Player: §a%s
+dh.desc.stone6=Press §aShift §7for additional information
+dh.desc.stone7=Owner §9%s
+dh.desc.stone8=You can have only one Hallow at the time
 
 dh.desc.broom0=Cooldown : §e%s  §7seconds more
 dh.desc.broom1=Powers remain for : §e%s  §7seconds more
@@ -93,12 +94,11 @@ dh.desc.mantle1=You gain absolute invisibility and attacks negation only for 50 
 dh.desc.mantle2=With absolute invisibility mobs cant see or target you but tools still visible
 dh.desc.mantle3=Absolute invisibility cant be dispelled
 dh.desc.mantle4=Cooldown of the skill is 1 minute
-dh.desc.mantle5=Press §9shift §7when worn to get invisibility and attacks negation
-dh.desc.mantle6=Press §9shift §7when ability is active to enter ghost form
-dh.desc.mantle7=Press §9shift §7for additional information
+dh.desc.mantle5=Press §9Shift §7when worn to get invisibility and attacks negation
+dh.desc.mantle6=Press §9Shift §7when ability is active to enter ghost form
+dh.desc.mantle7=Press §9Shift §7for additional information
 dh.desc.mantle8=Owner §9%s
-dh.desc.mantle9=Owner §9Death
-dh.desc.mantle10=You can have only one Hallow at the time
+dh.desc.mantle9=You can have only one Hallow at the time
 
 dh.desc.mutandis1=Mutandis and Mutating Sprig with a cost of vis? Useful maybe...
 dh.desc.mutandis2=Shift+RMB to change mode
@@ -110,12 +110,11 @@ dh.desc.gastro=Gastronomic Temptation
 dh.desc.death=Death loves them!
 dh.desc.prism=Deals any amount of damage with any Damage Source. (Only Creative)
 
-dh.desc.wand1=Scroll list of spells by §cshift+LMB/LMB §7and cast by pressing §c%s
+dh.desc.wand1=Scroll list of spells by §cShift+LMB/LMB§7 and cast by pressing §c%s
 dh.desc.wand2=Get access to §c8 §7new powerful spells
 dh.desc.wand3=All spells are described in the Elder Book: Spells
 dh.desc.wand4=Owner §9%s
-dh.desc.wand5=Owner §9Death
-dh.desc.wand6=You can have only one Hallow at the time
+dh.desc.wand5=You can have only one Hallow at the time
 
 dh.desc.visConverter1=Place on the Altar to get maximum base energy!
 dh.desc.visConverter2=Bonus: +10 to base energy for each santi vis in nearest aura
