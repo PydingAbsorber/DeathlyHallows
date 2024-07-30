@@ -102,6 +102,6 @@ public class DHConfig {
 
 
 	public static int getElfRequirements(int level) {
-		return elfQuestConditions[MathHelper.clamp_int(level,0, elfQuestConditions.length - 1)];
+		return elfQuestConditions[MathHelper.clamp_int(level - 1,0, elfQuestConditions.length - 1)];
 	}
 }
