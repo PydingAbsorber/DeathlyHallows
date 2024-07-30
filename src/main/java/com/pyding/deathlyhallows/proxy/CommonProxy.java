@@ -1,5 +1,6 @@
 package com.pyding.deathlyhallows.proxy;
 
+import com.pyding.deathlyhallows.blocks.DHBlocks;
 import com.pyding.deathlyhallows.entities.DHEntities;
 import com.pyding.deathlyhallows.events.DHDeathEvents;
 import com.pyding.deathlyhallows.events.DHElfEvents;
@@ -26,6 +27,7 @@ public class CommonProxy {
 	}
 
 	public void init(FMLInitializationEvent event) {
+		DHBlocks.init();
 		DHItems.init();
 		DHEntities.init();
 		DHEvents.init();

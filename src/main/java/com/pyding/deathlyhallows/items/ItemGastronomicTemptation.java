@@ -1,29 +1,30 @@
 package com.pyding.deathlyhallows.items;
 
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StatCollector;
 
 import java.util.Random;
 
-public class GastronomicTemptation extends Item {
+public class ItemGastronomicTemptation extends ItemBase {
+
+
+	public ItemGastronomicTemptation() {
+		super("gastronomicTemptation", 64);
+	}
+
 	@Override
 	public String getItemStackDisplayName(ItemStack stack) {
-		return getRainbowString(I18n.format("dh.desc.gastro"));
+		return getRainbowString(StatCollector.translateToLocal(super.getItemStackDisplayName(stack)));
 	}
 
 	private String getRainbowString(String text) {
 		StringBuilder coloredText = new StringBuilder();
-
-		Random random = new Random();
 		EnumChatFormatting[] colors = EnumChatFormatting.values();
-
 		for(char letter: text.toCharArray()) {
-			EnumChatFormatting color = colors[random.nextInt(colors.length - 1) + 1];
+			EnumChatFormatting color = colors[new Random(System.currentTimeMillis() / 2000).nextInt(colors.length - 6) + 1];
 			coloredText.append(color).append(letter);
 		}
-
 		return coloredText.toString();
 	}
 	

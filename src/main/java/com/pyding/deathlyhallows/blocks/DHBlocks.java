@@ -13,7 +13,7 @@ import net.minecraft.tileentity.TileEntity;
 public final class DHBlocks {
 
 	public static Block
-			elderRitualBlock,
+			elderRitualRune,
 			visConverter;
 
 	private DHBlocks() {
@@ -21,9 +21,9 @@ public final class DHBlocks {
 	}
 
 	public static void init() {
-		elderRitualBlock = new BlockElderRitual().setBlockName("elder_ritual_block")
-												 .setBlockTextureName("dh:ritual");
-		registerTile(BlockElderRitual.TileEntityCircle.class, "elder_ritual_block_tile");
+		elderRitualRune = new BlockElderRitual().setBlockName("elderRitualRune")
+												.setBlockTextureName("dh:ritual");
+		registerTile(BlockElderRitual.TileEntityCircle.class, "elderRitualTile");
 	}
 
 	private static void registerTile(Class<? extends TileEntity> tile, String name) {

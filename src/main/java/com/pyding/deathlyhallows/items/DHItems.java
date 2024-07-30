@@ -11,8 +11,6 @@ import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.MinecraftForgeClient;
 
-import static com.pyding.deathlyhallows.DeathHallows.tabDeathlyHallows;
-
 public final class DHItems {
 
 	public static Item
@@ -20,7 +18,7 @@ public final class DHItems {
 			invisibilityMantle,
 			elderWand,
 			resurrectionStone,
-			creativeItem,
+			elfLevelItem,
 			bertieBots,
 			gastronomicTemptation,
 			soupWithSawdust,
@@ -30,7 +28,7 @@ public final class DHItems {
 			hobgoblinSoul,
 			nimbus,
 			deathShard,
-			cards,
+			tarotCards,
 			inferioisMutandis,
 			monsterBook,
 			trickOrTreat,
@@ -39,108 +37,30 @@ public final class DHItems {
 			elderChalk;
 
 	private DHItems() {
+		
 	}
 
 	public static void init() {
-		invisibilityMantle = new InvisibilityMantle().setUnlocalizedName("InvisibilityMantle")
-													 .setTextureName("dh:mantle")
-													 .setMaxStackSize(1)
-													 .setCreativeTab(tabDeathlyHallows);
-		elderWand = new ElderWand().setUnlocalizedName("ElderWand")
-								   .setTextureName("dh:wand")
-								   .setMaxStackSize(1)
-								   .setCreativeTab(tabDeathlyHallows);
-		resurrectionStone = new ResurrectionStone().setUnlocalizedName("ResurrectionStone")
-												   .setTextureName("dh:ring")
-												   .setMaxStackSize(1)
-												   .setCreativeTab(tabDeathlyHallows);
-		tabItem = new Item().setUnlocalizedName("TabItem").setTextureName("dh:logo").setMaxStackSize(1);
-		creativeItem = new ItemElfLevel().setUnlocalizedName("elfLevelItem")
-										 .setTextureName("dh:creative2")
-										 .setMaxStackSize(1)
-										 .setCreativeTab(tabDeathlyHallows);
-		bertieBots = new ItemBertieBotts(8, 20).setUnlocalizedName("BertieBotts")
-										   .setTextureName("dh:candy")
-										   .setMaxStackSize(64)
-										   .setCreativeTab(tabDeathlyHallows);
-		gastronomicTemptation = new GastronomicTemptation().setUnlocalizedName("GastronomicTemptation")
-														   .setTextureName("dh:gastro")
-														   .setMaxStackSize(64)
-														   .setCreativeTab(tabDeathlyHallows);
-		soupWithSawdust = new SoapWithSawdust().setUnlocalizedName("Soup")
-											   .setTextureName("dh:soup")
-											   .setMaxStackSize(64)
-											   .setCreativeTab(null);
-		viscousSecretions = new ViscousSecretions().setUnlocalizedName("ViscousSecretions")
-												   .setTextureName("dh:secret")
-												   .setMaxStackSize(64)
-												   .setCreativeTab(tabDeathlyHallows);
-		hobgoblinChains = new HobgoblinChains().setUnlocalizedName("HobgoblinChains")
-											   .setTextureName("dh:chains")
-											   .setMaxStackSize(64)
-											   .setCreativeTab(tabDeathlyHallows);
-		deadlyPrism = new DeadlyPrism().setUnlocalizedName("DeadlyPrism")
-									   .setTextureName("dh:prism1")
-									   .setMaxStackSize(1)
-									   .setCreativeTab(tabDeathlyHallows);
-		hobgoblinSoul = new HobgoblinSoul().setUnlocalizedName("HobgoblinSoul")
-										   .setTextureName("dh:goblinsoul")
-										   .setMaxStackSize(64)
-										   .setCreativeTab(tabDeathlyHallows);
-		nimbus = new Nimbus3000().setUnlocalizedName("Nimbus3000")
-								 .setTextureName("dh:nimbus")
-								 .setMaxStackSize(1)
-								 .setCreativeTab(tabDeathlyHallows);
-		deathShard = new DeathShard().setUnlocalizedName("deathShard")
-									 .setTextureName("dh:shard")
-									 .setMaxStackSize(16)
-									 .setCreativeTab(tabDeathlyHallows);
-		cards = new ItemCards().setUnlocalizedName("cards")
-							   .setTextureName("dh:cards_daybreak")
-							   .setMaxStackSize(1)
-							   .setCreativeTab(tabDeathlyHallows);
-		monsterBook = new MonsterBook().setUnlocalizedName("monsterBook")
-									   .setTextureName("dh:monsterbook")
-									   .setMaxStackSize(1)
-									   .setCreativeTab(tabDeathlyHallows);
-		trickOrTreat = new ItemTrickOrTreat().setUnlocalizedName("trick")
-											 .setTextureName("dh:trick")
-											 .setMaxStackSize(64)
-											 .setCreativeTab(tabDeathlyHallows);
-		elderBook = new ElderBook().setUnlocalizedName("elder_book")
-								   .setTextureName("dh:book")
-								   .setMaxStackSize(1)
-								   .setCreativeTab(tabDeathlyHallows);
-		lightningInBag = new LightningInBag().setUnlocalizedName("lightning_in_bag")
-											 .setTextureName("dh:bag")
-											 .setMaxStackSize(1)
-											 .setCreativeTab(tabDeathlyHallows);
-
-		elderChalk = new ElderChalk(DHBlocks.elderRitualBlock).setUnlocalizedName("elder_chalk")
-															  .setTextureName("dh:chalk")
-															  .setMaxStackSize(1)
-															  .setCreativeTab(tabDeathlyHallows);
-
-		register(invisibilityMantle);
-		register(elderWand);
-		register(resurrectionStone);
-		register(tabItem);
-		register(creativeItem);
-		register(bertieBots);
-		register(gastronomicTemptation);
-		register(soupWithSawdust);
-		register(viscousSecretions);
-		register(hobgoblinChains);
-		register(deadlyPrism);
-		register(hobgoblinSoul);
-		register(nimbus);
-		register(deathShard);
-		register(cards);
-		register(monsterBook);
-		register(trickOrTreat);
-		register(elderBook);
-		register(lightningInBag);
-		register(elderChalk);
+		register(tabItem = new ItemBase("itemLogo", 1));
+		register(invisibilityMantle = new ItemBaubleInvisibilityMantle());
+		register(elderWand = new ItemElderWand());
+		register(resurrectionStone = new ItemBaubleResurrectionStone());
+		register(elfLevelItem = new ItemElfLevel());
+		register(bertieBots = new ItemFoodBertieBotts());
+		register(gastronomicTemptation = new ItemGastronomicTemptation());
+		register(soupWithSawdust = new ItemFoodSoapWithSawdust());
+		register(viscousSecretions = new ItemFoodViscousSecretions());
+		register(hobgoblinChains = new ItemHobgoblinChains());
+		register(deadlyPrism = new ItemDeadlyPrism());
+		register(hobgoblinSoul = new ItemHobgoblinSoul());
+		register(nimbus = new ItemNimbus3000());
+		register(deathShard = new ItemDeathShard());
+		register(tarotCards = new ItemTarotCards());
+		register(monsterBook = new ItemMonsterBook());
+		register(trickOrTreat = new ItemTrickOrTreat());
+		register(elderBook = new ItemElderBook());
+		register(lightningInBag = new ItemLightningInBag());
+		register(elderChalk = new ItemElderChalk());
 	}
 
 	@SideOnly(Side.CLIENT)

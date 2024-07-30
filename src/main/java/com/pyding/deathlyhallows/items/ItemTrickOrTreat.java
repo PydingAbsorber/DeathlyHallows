@@ -12,7 +12,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
@@ -22,10 +21,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class ItemTrickOrTreat extends Item {
+public class ItemTrickOrTreat extends ItemBase {
 
-	private static final List<ItemStack> witcheryItems = new ArrayList<>();
-	private static final List<ItemStack> deathlyHallowItems = new ArrayList<>();
+	private static final List<ItemStack> 
+			witcheryItems = new ArrayList<>(),
+			deathlyHallowItems = new ArrayList<>();
+
+	public ItemTrickOrTreat() {
+		super("trickOrTreat", 64);
+	}
+
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
@@ -52,7 +57,7 @@ public class ItemTrickOrTreat extends Item {
 
 	public List<ItemStack> getWitcheryItems(EntityPlayer player) {
 		if(hasRing(player) != null) {
-			ResurrectionStone stone = new ResurrectionStone();
+			ItemBaubleResurrectionStone stone = new ItemBaubleResurrectionStone();
 			ItemStack stack = new ItemStack(Witchery.Items.TAGLOCK_KIT, 1, 1);
 			Witchery.Items.TAGLOCK_KIT.setTaglockForEntity(stack, player, stone.getPlayer(hasRing(player)), false, 1);
 			if(!witcheryItems.contains(stack)) {
@@ -102,7 +107,7 @@ public class ItemTrickOrTreat extends Item {
 		deathlyHallowItems.add(new ItemStack(DHItems.elderWand));
 		deathlyHallowItems.add(new ItemStack(DHItems.resurrectionStone));
 		deathlyHallowItems.add(new ItemStack(DHItems.tabItem));
-		deathlyHallowItems.add(new ItemStack(DHItems.creativeItem));
+		deathlyHallowItems.add(new ItemStack(DHItems.elfLevelItem));
 		deathlyHallowItems.add(new ItemStack(DHItems.bertieBots));
 		deathlyHallowItems.add(new ItemStack(DHItems.gastronomicTemptation));
 		deathlyHallowItems.add(new ItemStack(DHItems.soupWithSawdust));
@@ -112,7 +117,7 @@ public class ItemTrickOrTreat extends Item {
 		deathlyHallowItems.add(new ItemStack(DHItems.hobgoblinSoul));
 		deathlyHallowItems.add(new ItemStack(DHItems.nimbus));
 		deathlyHallowItems.add(new ItemStack(DHItems.deathShard));
-		deathlyHallowItems.add(new ItemStack(DHItems.cards));
+		deathlyHallowItems.add(new ItemStack(DHItems.tarotCards));
 		deathlyHallowItems.add(new ItemStack(DHItems.monsterBook));
 		deathlyHallowItems.add(new ItemStack(DHItems.trickOrTreat));
 		deathlyHallowItems.add(new ItemStack(DHItems.lightningInBag));

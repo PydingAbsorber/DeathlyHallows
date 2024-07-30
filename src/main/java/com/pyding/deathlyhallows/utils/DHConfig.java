@@ -1,6 +1,8 @@
 package com.pyding.deathlyhallows.utils;
 
+import com.pyding.deathlyhallows.items.ItemFoodBertieBotts;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
 
 import java.io.File;
 
@@ -12,11 +14,8 @@ public class DHConfig {
 	public static String elfLvl;
 	public static boolean hob;
 	public static String sonatRitual;
-
 	public static int screamilyMana;
-
 	public static int spawnlesiaMana;
-
 	public static boolean bathHouse;
 	public static int cost1;
 	public static boolean despairSonata;
@@ -82,7 +81,11 @@ public class DHConfig {
 		cost8 = config.getInt("cost8", "staff", 24100, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
 		covenWitch = config.getBoolean("covenWitch", "staff", true, "Should this ritual be enabled");
 		cost9 = config.getInt("cost9", "staff", 5000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
-		
+		Property p = config.get("staff", "bertieBottsEffectBlacklist", ItemFoodBertieBotts.getDefaultBlackList());
+		p.comment = "Blacklisted Potion Effects";
+		for(int i : p.getIntList()) {
+			ItemFoodBertieBotts.addToBlackList(i);
+		}
 		config.save();
 	}
 

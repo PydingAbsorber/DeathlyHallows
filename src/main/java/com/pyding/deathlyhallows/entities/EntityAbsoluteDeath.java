@@ -5,7 +5,7 @@ import com.emoniph.witchery.util.ChatUtil;
 import com.emoniph.witchery.util.IHandleDT;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
-import com.pyding.deathlyhallows.DeathHallows;
+import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.utils.DHUtils;
@@ -442,8 +442,8 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 			bestDamage = nbt.getFloat("damageDealt");
 			mvp = p;
 			// TODO log
-			DeathHallows.LOG.info(bestDamage);
-			DeathHallows.LOG.info(mvp);
+			DeathlyHallows.LOG.info(bestDamage);
+			DeathlyHallows.LOG.info(mvp);
 		}
 	}
 

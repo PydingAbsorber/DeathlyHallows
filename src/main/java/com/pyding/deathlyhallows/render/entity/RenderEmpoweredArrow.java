@@ -1,6 +1,6 @@
 package com.pyding.deathlyhallows.render.entity;
 
-import com.pyding.deathlyhallows.DeathHallows;
+import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.entities.EntityEmpoweredArrow;
 import com.pyding.deathlyhallows.render.ModelWrapperDisplayList;
 import com.pyding.deathlyhallows.render.entity.model.ModelEmpoweredArrow;
@@ -16,9 +16,9 @@ import static org.lwjgl.opengl.GL11.*;
 public class RenderEmpoweredArrow extends Render {
 
 	private final ResourceLocation
-			effectTexture = new ResourceLocation(DeathHallows.MODID, "textures/models/empoweredArrow/effect.png"),
-			mainTexture = new ResourceLocation(DeathHallows.MODID, "textures/models/empoweredArrow/arrow.png"),
-			modelPath = new ResourceLocation(DeathHallows.MODID, "models/empoweredArrowEffect.obj");
+			effectTexture = new ResourceLocation(DeathlyHallows.MODID, "textures/models/empoweredArrow/effect.png"),
+			mainTexture = new ResourceLocation(DeathlyHallows.MODID, "textures/models/empoweredArrow/arrow.png"),
+			modelPath = new ResourceLocation(DeathlyHallows.MODID, "models/empoweredArrowEffect.obj");
 	private final IModelCustom effectModel = new ModelWrapperDisplayList((WavefrontObject)AdvancedModelLoader.loadModel(modelPath));
 	private final ModelEmpoweredArrow arrowModel = new ModelEmpoweredArrow();
 

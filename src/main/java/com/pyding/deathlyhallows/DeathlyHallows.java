@@ -17,9 +17,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod(
-		modid = DeathHallows.MODID,
-		name = DeathHallows.NAME,
-		version = DeathHallows.VERSION,
+		modid = DeathlyHallows.MODID,
+		name = DeathlyHallows.NAME,
+		version = DeathlyHallows.VERSION,
 		dependencies = "required-after:witchery;"
 				+ "required-after:Baubles;"
 				+ "after:Thaumcraft;"
@@ -27,7 +27,7 @@ import org.apache.logging.log4j.Logger;
 				+ "after:Botania;"
 				+ "after:AdvancedBotany"
 )
-public class DeathHallows {
+public class DeathlyHallows {
 
 	public static final String
 			MODID = "dh",
@@ -35,7 +35,7 @@ public class DeathHallows {
 			VERSION = "1.0.1";
 
 	@Mod.Instance("dh")
-	public static DeathHallows Instance;
+	public static DeathlyHallows Instance;
 	
 	@SidedProxy(
 			clientSide = "com.pyding.deathlyhallows.proxy.ClientProxy",

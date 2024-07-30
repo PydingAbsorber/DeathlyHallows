@@ -1,8 +1,8 @@
 package com.pyding.deathlyhallows.proxy;
 
-import com.pyding.deathlyhallows.DeathHallows;
+import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.guis.ElderWitchbookGui;
-import com.pyding.deathlyhallows.items.ElderBook;
+import com.pyding.deathlyhallows.items.ItemElderBook;
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -21,7 +21,7 @@ public class GuiHandler implements IGuiHandler {
 	}
 
 	public static void init() {
-		NetworkRegistry.INSTANCE.registerGuiHandler(DeathHallows.MODID, instance);
+		NetworkRegistry.INSTANCE.registerGuiHandler(DeathlyHallows.MODID, instance);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -29,7 +29,7 @@ public class GuiHandler implements IGuiHandler {
 	public Object getClientGuiElement(int id, EntityPlayer p, World world, int x, int y, int z) {
 		if(Objects.requireNonNull(GUI.values()[id]) == GUI.ELDER_RITUALS) {
 			ItemStack b = p.getHeldItem();
-			if(b != null && b.getItem() instanceof ElderBook) {
+			if(b != null && b.getItem() instanceof ItemElderBook) {
 				return new ElderWitchbookGui(p, b);
 			}
 			return null;

@@ -51,6 +51,8 @@ dh.chat.creative=Absolute Death: Are you afraid without creative mode? That's ok
 dh.chat.sethealth=Absolute Death: Set Health is not gonna help you little moron...
 dh.chat.freak=Absolute Death: Are you mad? YOU TRIED THAT ON ME?
 dh.chat.elfLevelItem=§9Set Elf level to %d
+dh.chat.deadlyPrism1=Damage type is set to: §5%s
+dh.chat.deadlyPrism2=Type damage type (number) in chat:
 # Item tooltips
 dh.desc.elfLevelItem="You have §9%d§r Elf Level"
 
@@ -117,6 +119,9 @@ dh.desc.wand6=You can have only one Hallow at the time
 dh.desc.visConverter1=Place on the Altar to get maximum base energy!
 dh.desc.visConverter2=Bonus: +10 to base energy for each santi vis in nearest aura
 dh.desc.visConverter3=Place on magic workbench to get 10 vis per sec for your wand in cost of 100 energy
+
+dh.desc.resurrectionStone1=§aChosen Player: §r%s
+dh.desc.resurrectionStone2=§4Player is offline/Not enough charges
 # Rites
 dh.rite.soup=The mighty soup!{r||Get some nutrients!
 dh.rite.death=§5Rite of Gloomy Rebirth{r||

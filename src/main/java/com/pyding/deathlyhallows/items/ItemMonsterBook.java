@@ -5,7 +5,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.StatCollector;
@@ -13,7 +12,11 @@ import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 
-public class MonsterBook extends Item {
+public class ItemMonsterBook extends ItemBase {
+
+	public ItemMonsterBook() {
+		super("monsterBook", 1);
+	}
 
 	@Override
 	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity) {
@@ -26,18 +29,20 @@ public class MonsterBook extends Item {
 		return false;
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
-		ExtendedPlayer props = ExtendedPlayer.get(player);
+	protected void addTooltip(ItemStack stack, EntityPlayer p, List<String> l, boolean devMode) {
+		ExtendedPlayer props = ExtendedPlayer.get(p);
 		float damage = props.getMonstersCount();
-		list.add(StatCollector.translateToLocal("dh.desc.book1"));
-		list.add(StatCollector.translateToLocalFormatted("dh.desc.book2", damage));
+		l.add(StatCollector.translateToLocal("dh.desc.book1"));
+		l.add(StatCollector.translateToLocalFormatted("dh.desc.book2", damage));
 		if(!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 			return;
 		}
-		list.add(StatCollector.translateToLocal("dh.desc.book3"));
+		l.add(StatCollector.translateToLocal("dh.desc.book3"));
 		if(props.getElfLvl() > 0) {
-			list.add(StatCollector.translateToLocal("dh.desc.book4"));
+			l.add(StatCollector.translateToLocal("dh.desc.book4"));
 		}
 	}
+	
 }

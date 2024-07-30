@@ -18,9 +18,9 @@ import com.pyding.deathlyhallows.entities.EntityAbsoluteDeath;
 import com.pyding.deathlyhallows.entities.EntityNimbus;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
-import com.pyding.deathlyhallows.items.DeadlyPrism;
-import com.pyding.deathlyhallows.items.Nimbus3000;
-import com.pyding.deathlyhallows.items.ResurrectionStone;
+import com.pyding.deathlyhallows.items.ItemDeadlyPrism;
+import com.pyding.deathlyhallows.items.ItemNimbus3000;
+import com.pyding.deathlyhallows.items.ItemBaubleResurrectionStone;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketAnimaMobRender;
 import com.pyding.deathlyhallows.network.packets.PacketPlayerRender;
@@ -341,7 +341,7 @@ public final class DHEvents {
 			if(itemStack != null && itemStack.getItem() == DHItems.nimbus) {
 				found = true;
 				if(p.getEntityData().getBoolean("dhkey2")) {
-					Nimbus3000 nimbus3000 = (Nimbus3000)itemStack.getItem();
+					ItemNimbus3000 nimbus3000 = (ItemNimbus3000)itemStack.getItem();
 					nimbus3000.onItemRightClick(itemStack, p.worldObj, p);
 				}
 			}
@@ -647,10 +647,10 @@ public final class DHEvents {
 			return;
 		}
 		player.getEntityData().setBoolean("DeadlyPrism", false);
-		if(player.getHeldItem() == null || !(player.getHeldItem().getItem() instanceof DeadlyPrism)) {
+		if(player.getHeldItem() == null || !(player.getHeldItem().getItem() instanceof ItemDeadlyPrism)) {
 			return;
 		}
-		DeadlyPrism prism = (DeadlyPrism)player.getHeldItem().getItem();
+		ItemDeadlyPrism prism = (ItemDeadlyPrism)player.getHeldItem().getItem();
 		if(message.matches("-?\\d+(\\.\\d+)?")) {
 			prism.damageAmount = Float.parseFloat(message);
 			player.addChatComponentMessage(new ChatComponentText("Damage set to: §5" + prism.damageAmount));
@@ -753,7 +753,7 @@ public final class DHEvents {
 	}
 
 	private static boolean probablyRessurectByStone(EntityPlayer p) {
-		ResurrectionStone rs = new ResurrectionStone();
+		ItemBaubleResurrectionStone rs = new ItemBaubleResurrectionStone();
 		for(int i = 1; i < 3; ++i) {
 			ItemStack bauble = BaublesApi.getBaubles(p).getStackInSlot(1);
 			if(bauble.getItem() != DHItems.resurrectionStone || rs.getCharges(bauble) <= 0) {

@@ -12,7 +12,7 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import vazkii.botania.common.item.block.ItemBlockSpecialFlower;
 
-import static com.pyding.deathlyhallows.DeathHallows.tabDeathlyHallows;
+import static com.pyding.deathlyhallows.DeathlyHallows.tabDeathlyHallows;
 import static com.pyding.deathlyhallows.blocks.DHBlocks.visConverter;
 import static com.pyding.deathlyhallows.items.DHItems.deathShard;
 import static com.pyding.deathlyhallows.items.DHItems.hobgoblinSoul;
