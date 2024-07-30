@@ -5,7 +5,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public class Cards extends Item {
+public class ItemCards extends Item {
 	@Override
 	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
 		//DHUtil.spawnSphere(player,player.getPosition(1),30, 5, Color.BLUE,1,2,60,1);

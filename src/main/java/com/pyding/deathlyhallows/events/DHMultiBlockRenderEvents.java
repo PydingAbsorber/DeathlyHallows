@@ -17,12 +17,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.*;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -38,10 +33,11 @@ public final class DHMultiBlockRenderEvents {
 	public static boolean rendering = false;
 	private static final MultiBlockBlockAccess blockAccess = new MultiBlockBlockAccess();
 	private static final RenderBlocks blockRender = RenderBlocks.getInstance();
-	public static MultiBlockSet currentMultiblock;
+	public static MultiBlockSet currentMultiBlock;
 	public static ChunkCoordinates anchor;
-	public static int angle;
-	public static int dimension;
+	private static int
+			angle,
+			dimension;
 
 	private static final DHMultiBlockRenderEvents INSTANCE = new DHMultiBlockRenderEvents();
 
@@ -53,8 +49,8 @@ public final class DHMultiBlockRenderEvents {
 		MinecraftForge.EVENT_BUS.register(INSTANCE);
 	}
 
-	public static void setMultiblock(MultiBlockSet set) {
-		currentMultiblock = set;
+	public static void setMultiBlock(MultiBlockSet set) {
+		currentMultiBlock = set;
 		anchor = null;
 		angle = 0;
 		if(mc.theWorld == null) {
@@ -73,17 +69,17 @@ public final class DHMultiBlockRenderEvents {
 	}
 
 	@SubscribeEvent
-	public void onPlayerInteract(PlayerInteractEvent event) {
-		if(currentMultiblock == null || anchor != null || event.action != Action.RIGHT_CLICK_BLOCK || event.entityPlayer != Minecraft.getMinecraft().thePlayer) {
+	public void onPlayerInteract(PlayerInteractEvent e) {
+		if(currentMultiBlock == null || anchor != null || e.action != Action.RIGHT_CLICK_BLOCK || e.entityPlayer != mc.thePlayer) {
 			return;
 		}
-		anchor = new ChunkCoordinates(event.x, event.y + 1, event.z);
-		angle = MathHelper.floor_double(event.entityPlayer.rotationYaw * 4.0 / 360.0 + 0.5) & 3;
-		event.setCanceled(true);
+		anchor = new ChunkCoordinates(e.x, e.y + 1, e.z);
+		angle = MathHelper.floor_double(e.entityPlayer.rotationYaw * 4.0 / 360.0 + 0.5) & 3;
+		e.setCanceled(true);
 	}
 
 	private void renderPlayerLook(EntityPlayer p, MovingObjectPosition mop) {
-		if(currentMultiblock == null || dimension != p.worldObj.provider.dimensionId) {
+		if(currentMultiBlock == null || dimension != p.worldObj.provider.dimensionId) {
 			return;
 		}
 		int anchorX = anchor != null ? anchor.posX : mop.blockX;
@@ -96,7 +92,7 @@ public final class DHMultiBlockRenderEvents {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glDisable(GL_LIGHTING);
 		rendering = true;
-		MultiBlock mb = anchor != null ? currentMultiblock.getForIndex(angle) : currentMultiblock.getForEntity(p);
+		MultiBlock mb = anchor != null ? currentMultiBlock.getForIndex(angle) : currentMultiBlock.getForEntity(p);
 		boolean didAny = false;
 
 		blockAccess.update(p.worldObj, mb, anchorX, anchorY, anchorZ);
@@ -113,7 +109,7 @@ public final class DHMultiBlockRenderEvents {
 		if(didAny) {
 			return;
 		}
-		setMultiblock(null);
+		setMultiBlock(null);
 		p.addChatComponentMessage(new ChatComponentTranslation("botaniamisc.structureComplete").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GREEN)));
 	}
 
@@ -149,7 +145,7 @@ public final class DHMultiBlockRenderEvents {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		Block block = comp.getBlock();
 		int meta = comp.getMeta();
-		Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.locationBlocksTexture);
+		mc.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
 		blockRender.useInventoryTint = false;
 		if(block == null) {
 			return;
@@ -183,41 +179,44 @@ public final class DHMultiBlockRenderEvents {
 			tessellator.draw();
 			blockRender.renderAllFaces = false;
 			blockRender.blockAccess = oldBlockAccess;
-
-		}
-		else {
-			int color = block.getRenderColor(meta);
-			float red = (color >> 16 & 255) / 255.0F;
-			float green = (color >> 8 & 255) / 255.0F;
-			float blue = (color & 255) / 255.0F;
-			glColor4f(red, green, blue, alpha);
-			glTranslated(x + 0.5, y + 0.5, z + 0.5);
-			blockRender.renderBlockAsItem(block, meta, 1F);
-			glTranslated(-0.5, -0.5, -0.5);
-			glPushMatrix();
-			try {
-				if(block.getRenderType() == -1 && block.hasTileEntity(meta)) {
-					TileEntity tile = block.createTileEntity(Minecraft.getMinecraft().theWorld, meta);
-					if(TileEntityRendererDispatcher.instance.hasSpecialRenderer(tile)) {
-						tile.blockMetadata = meta;
-						if(comp.tag != null) {
-							tile.readFromNBT(comp.tag);
-						}
-						TileEntityRendererDispatcher.instance.getSpecialRenderer(tile)
-															 .renderTileEntityAt(tile, 0, 0, 0, 0);
-						glDisable(GL_LIGHTING);
-					}
-				}
-			}
-			catch(Exception ignored) {
-
-			}
-			glPopMatrix();
+			return;
 		}
 
+		int color = block.getRenderColor(meta);
+		float red = (color >> 16 & 255) / 255.0F;
+		float green = (color >> 8 & 255) / 255.0F;
+		float blue = (color & 255) / 255.0F;
+		glColor4f(red, green, blue, alpha);
+		glTranslated(x + 0.5, y + 0.5, z + 0.5);
+		blockRender.renderBlockAsItem(block, meta, 1F);
+		glTranslated(-0.5, -0.5, -0.5);
+		glPushMatrix();
+		try {
+			renderTileEntity(comp, block, meta);
+		}
+		catch(Exception ignored) {
+
+		}
+		glPopMatrix();
 		glColor4f(1F, 1F, 1F, 1F);
 		glEnable(GL_DEPTH_TEST);
 		glPopMatrix();
+	}
+
+	private static void renderTileEntity(MultiBlockComponent comp, Block block, int meta) {
+		if(block.getRenderType() != -1 || !block.hasTileEntity(meta)) {
+			return;
+		}
+		TileEntity tile = block.createTileEntity(mc.theWorld, meta);
+		if(!TileEntityRendererDispatcher.instance.hasSpecialRenderer(tile)) {
+			return;
+		}
+		tile.blockMetadata = meta;
+		if(comp.tag != null) {
+			tile.readFromNBT(comp.tag);
+		}
+		TileEntityRendererDispatcher.instance.getSpecialRenderer(tile).renderTileEntityAt(tile, 0, 0, 0, 0);
+		glDisable(GL_LIGHTING);
 	}
 
 }

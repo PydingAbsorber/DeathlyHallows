@@ -1,6 +1,6 @@
 package com.pyding.deathlyhallows.entities;
 
-import com.pyding.deathlyhallows.DeathHallowsMod;
+import com.pyding.deathlyhallows.DeathHallows;
 import com.pyding.deathlyhallows.render.entity.RenderAbsoluteDeath;
 import com.pyding.deathlyhallows.render.entity.RenderAnimaInteritus;
 import com.pyding.deathlyhallows.render.entity.RenderAnimaInteritusMob;
@@ -38,7 +38,7 @@ public class DHEntities {
 	}
 
 	private static void register(Class<? extends Entity> clazz, String name, int updateDistance, int updateFrequency, boolean updateVelocity) {
-		EntityRegistry.registerModEntity(clazz, name, ID++, DeathHallowsMod.Instance, updateDistance, updateFrequency, updateVelocity);
+		EntityRegistry.registerModEntity(clazz, name, ID++, DeathHallows.Instance, updateDistance, updateFrequency, updateVelocity);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -4,7 +4,7 @@ import com.emoniph.witchery.ritual.RiteRegistry;
 import com.emoniph.witchery.util.Const;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
-import com.pyding.deathlyhallows.blocks.ElderRitualBlock;
+import com.pyding.deathlyhallows.blocks.BlockElderRitual;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
@@ -56,7 +56,7 @@ public class ElderSacrificeLiving extends ElderSacrifice {
 
 
 		@Override
-		public Result elderProcess(World worldObj, int xCoord, int yCoord, int zCoord, long ticks, ElderRitualBlock.TileEntityCircle.ActivatedElderRitual ritual) {
+		public Result elderProcess(World worldObj, int xCoord, int yCoord, int zCoord, long ticks, BlockElderRitual.TileEntityCircle.ActivatedElderRitual ritual) {
 			if(ticks % 20L != 0L) {
 				return Result.STARTING;
 			}

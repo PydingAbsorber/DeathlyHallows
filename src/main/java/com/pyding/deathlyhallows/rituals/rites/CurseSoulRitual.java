@@ -8,12 +8,10 @@ import com.emoniph.witchery.ritual.RitualStep;
 import com.emoniph.witchery.util.ChatUtil;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
-import com.pyding.deathlyhallows.blocks.ElderRitualBlock;
+import com.pyding.deathlyhallows.blocks.BlockElderRitual;
 import com.pyding.deathlyhallows.utils.properties.ExtendedPlayer;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
@@ -41,7 +39,7 @@ public class CurseSoulRitual extends ElderRite {
 
 
 		@Override
-		public Result elderProcess(World world, int posX, int posY, int posZ, long ticks, ElderRitualBlock.TileEntityCircle.ActivatedElderRitual ritual) {
+		public Result elderProcess(World world, int posX, int posY, int posZ, long ticks, BlockElderRitual.TileEntityCircle.ActivatedElderRitual ritual) {
 			if(ticks % 20L != 0L) {
 				return Result.STARTING;
 			}

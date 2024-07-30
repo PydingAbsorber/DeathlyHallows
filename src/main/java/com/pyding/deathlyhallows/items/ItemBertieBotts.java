@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BertieBotts extends ItemFood {
-	public BertieBotts(int hunger, float saturation) {
+public class ItemBertieBotts extends ItemFood {
+	public ItemBertieBotts(int hunger, float saturation) {
 		super(hunger, saturation, true);
 	}
 

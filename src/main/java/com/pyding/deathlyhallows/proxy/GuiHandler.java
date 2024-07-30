@@ -1,6 +1,6 @@
 package com.pyding.deathlyhallows.proxy;
 
-import com.pyding.deathlyhallows.DeathHallowsMod;
+import com.pyding.deathlyhallows.DeathHallows;
 import com.pyding.deathlyhallows.guis.ElderWitchbookGui;
 import com.pyding.deathlyhallows.items.ElderBook;
 import cpw.mods.fml.common.network.IGuiHandler;
@@ -21,7 +21,7 @@ public class GuiHandler implements IGuiHandler {
 	}
 
 	public static void init() {
-		NetworkRegistry.INSTANCE.registerGuiHandler(DeathHallowsMod.ID, instance);
+		NetworkRegistry.INSTANCE.registerGuiHandler(DeathHallows.MODID, instance);
 	}
 
 	@SideOnly(Side.CLIENT)

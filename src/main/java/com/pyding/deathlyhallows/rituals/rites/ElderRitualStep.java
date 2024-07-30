@@ -4,7 +4,7 @@ import com.emoniph.witchery.blocks.BlockCircle;
 import com.emoniph.witchery.ritual.RitualStep;
 import com.emoniph.witchery.util.ChatUtil;
 import com.emoniph.witchery.util.Coord;
-import com.pyding.deathlyhallows.blocks.ElderRitualBlock;
+import com.pyding.deathlyhallows.blocks.BlockElderRitual;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
@@ -18,7 +18,7 @@ public abstract class ElderRitualStep extends RitualStep {
 		return null;
 	}
 
-	public Result elderRun(World world, int posX, int posY, int posZ, long ticks, ElderRitualBlock.TileEntityCircle.ActivatedElderRitual ritual) {
+	public Result elderRun(World world, int posX, int posY, int posZ, long ticks, BlockElderRitual.TileEntityCircle.ActivatedElderRitual ritual) {
 		this.sourceX = posX;
 		this.sourceZ = posZ;
 		this.sourceY = posY;
@@ -43,5 +43,5 @@ public abstract class ElderRitualStep extends RitualStep {
 		return this.elderProcess(world, posX, posY, posZ, ticks, ritual);
 	}
 
-	public abstract Result elderProcess(final World p0, final int p1, final int p2, final int p3, final long p4, final ElderRitualBlock.TileEntityCircle.ActivatedElderRitual p5);
+	public abstract Result elderProcess(final World p0, final int p1, final int p2, final int p3, final long p4, final BlockElderRitual.TileEntityCircle.ActivatedElderRitual p5);
 }

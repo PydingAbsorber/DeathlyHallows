@@ -116,20 +116,20 @@ public class PageMultiBlock {
 //    }
 
 	public String getButtonStr() {
-		if(DHMultiBlockRenderEvents.currentMultiblock == null) {
+		if(DHMultiBlockRenderEvents.currentMultiBlock == null) {
 			return StatCollector.translateToLocal("botaniamisc.visualize");
 		}
-		return StatCollector.translateToLocal(set.equals(DHMultiBlockRenderEvents.currentMultiblock) ? "botaniamisc.unvisualize" : "botaniamisc.visualize");
+		return StatCollector.translateToLocal(set.equals(DHMultiBlockRenderEvents.currentMultiBlock) ? "botaniamisc.unvisualize" : "botaniamisc.visualize");
 	}
 
 
 	@SideOnly(Side.CLIENT)
 	public void changeVisualization(GuiButton button) {
-		if(DHMultiBlockRenderEvents.currentMultiblock != null && DHMultiBlockRenderEvents.currentMultiblock.equals(set)) {
-			DHMultiBlockRenderEvents.setMultiblock(null);
+		if(DHMultiBlockRenderEvents.currentMultiBlock != null && DHMultiBlockRenderEvents.currentMultiBlock.equals(set)) {
+			DHMultiBlockRenderEvents.setMultiBlock(null);
 		}
 		else {
-			DHMultiBlockRenderEvents.setMultiblock(set);
+			DHMultiBlockRenderEvents.setMultiBlock(set);
 		}
 		button.displayString = getButtonStr();
 	}

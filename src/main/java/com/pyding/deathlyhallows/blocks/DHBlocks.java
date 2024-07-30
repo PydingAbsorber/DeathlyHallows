@@ -21,9 +21,9 @@ public final class DHBlocks {
 	}
 
 	public static void init() {
-		elderRitualBlock = new ElderRitualBlock().setBlockName("elder_ritual_block")
+		elderRitualBlock = new BlockElderRitual().setBlockName("elder_ritual_block")
 												 .setBlockTextureName("dh:ritual");
-		registerTile(ElderRitualBlock.TileEntityCircle.class, "elder_ritual_block_tile");
+		registerTile(BlockElderRitual.TileEntityCircle.class, "elder_ritual_block_tile");
 	}
 
 	private static void registerTile(Class<? extends TileEntity> tile, String name) {

@@ -36,6 +36,7 @@ public class DHConfig {
 	public static boolean covenWitch;
 	public static int cost9;
 	public static int randomSpirits;
+	public static boolean shouldRemove;
 
 	public DHConfig() {
 	}
@@ -51,6 +52,8 @@ public class DHConfig {
 
 	public static void syncConfig() {
 		config.addCustomCategoryComment("staff", "Deathly Hallows config");
+		shouldRemove = config.getBoolean("removeDuplicated", "staff", true, "Should have only one hallow");
+		
 		spells = config.getString("spells", "staff", "", "Black list for Spells Id in Elder Wand, for example: 36, 37, 42 ");
 		spawnlesia = config.getString("spawnlesia", "staff", "", "Black list for Spawnlesia, type names are separated with ',' for example: Zombie, EnderDragon ");
 		spawnlesiaMana = config.getInt("spawnlesiaMana", "staff", 1000000, 1, Integer.MAX_VALUE, "Mana requirements for Spawnlesia per spawn");
@@ -79,7 +82,7 @@ public class DHConfig {
 		cost8 = config.getInt("cost8", "staff", 24100, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
 		covenWitch = config.getBoolean("covenWitch", "staff", true, "Should this ritual be enabled");
 		cost9 = config.getInt("cost9", "staff", 5000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
-
+		
 		config.save();
 	}
 

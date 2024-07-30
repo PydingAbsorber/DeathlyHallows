@@ -6,8 +6,8 @@ import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-public class VisConverter extends BlockContainer {
-	public VisConverter() {
+public class BlockVisConverter extends BlockContainer {
+	public BlockVisConverter() {
 		super(Material.wood);
 	}
 

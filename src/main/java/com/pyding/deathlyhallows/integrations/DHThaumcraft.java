@@ -1,7 +1,7 @@
 package com.pyding.deathlyhallows.integrations;
 
 import com.emoniph.witchery.Witchery;
-import com.pyding.deathlyhallows.blocks.VisConverter;
+import com.pyding.deathlyhallows.blocks.BlockVisConverter;
 import com.pyding.deathlyhallows.blocks.tiles.VisConverterTile;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.items.InferioisMutandis;
@@ -12,7 +12,7 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import vazkii.botania.common.item.block.ItemBlockSpecialFlower;
 
-import static com.pyding.deathlyhallows.DeathHallowsMod.tabDeathlyHallows;
+import static com.pyding.deathlyhallows.DeathHallows.tabDeathlyHallows;
 import static com.pyding.deathlyhallows.blocks.DHBlocks.visConverter;
 import static com.pyding.deathlyhallows.items.DHItems.deathShard;
 import static com.pyding.deathlyhallows.items.DHItems.hobgoblinSoul;
@@ -21,9 +21,9 @@ import static thaumcraft.api.aspects.Aspect.*;
 
 public final class DHThaumcraft {
 	public static void init() {
-		visConverter = new VisConverter().setBlockName("visconverter")
-										 .setBlockTextureName("dh:visc")
-										 .setCreativeTab(tabDeathlyHallows);
+		visConverter = new BlockVisConverter().setBlockName("visconverter")
+											  .setBlockTextureName("dh:visc")
+											  .setCreativeTab(tabDeathlyHallows);
 		inferioisMutandis = new InferioisMutandis().setUnlocalizedName("focusMutandis")
 												   .setTextureName("dh:focus_mutant")
 												   .setMaxStackSize(1)

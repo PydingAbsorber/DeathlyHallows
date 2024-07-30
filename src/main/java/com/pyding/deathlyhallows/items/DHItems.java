@@ -11,7 +11,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.MinecraftForgeClient;
 
-import static com.pyding.deathlyhallows.DeathHallowsMod.tabDeathlyHallows;
+import static com.pyding.deathlyhallows.DeathHallows.tabDeathlyHallows;
 
 public final class DHItems {
 
@@ -55,11 +55,11 @@ public final class DHItems {
 												   .setMaxStackSize(1)
 												   .setCreativeTab(tabDeathlyHallows);
 		tabItem = new Item().setUnlocalizedName("TabItem").setTextureName("dh:logo").setMaxStackSize(1);
-		creativeItem = new CreativeItem().setUnlocalizedName("CreativeItem")
+		creativeItem = new ItemElfLevel().setUnlocalizedName("elfLevelItem")
 										 .setTextureName("dh:creative2")
 										 .setMaxStackSize(1)
 										 .setCreativeTab(tabDeathlyHallows);
-		bertieBots = new BertieBotts(8, 20).setUnlocalizedName("BertieBotts")
+		bertieBots = new ItemBertieBotts(8, 20).setUnlocalizedName("BertieBotts")
 										   .setTextureName("dh:candy")
 										   .setMaxStackSize(64)
 										   .setCreativeTab(tabDeathlyHallows);
@@ -95,18 +95,18 @@ public final class DHItems {
 									 .setTextureName("dh:shard")
 									 .setMaxStackSize(16)
 									 .setCreativeTab(tabDeathlyHallows);
-		cards = new Cards().setUnlocalizedName("cards")
-						   .setTextureName("dh:cards_daybreak")
-						   .setMaxStackSize(1)
-						   .setCreativeTab(tabDeathlyHallows);
+		cards = new ItemCards().setUnlocalizedName("cards")
+							   .setTextureName("dh:cards_daybreak")
+							   .setMaxStackSize(1)
+							   .setCreativeTab(tabDeathlyHallows);
 		monsterBook = new MonsterBook().setUnlocalizedName("monsterBook")
 									   .setTextureName("dh:monsterbook")
 									   .setMaxStackSize(1)
 									   .setCreativeTab(tabDeathlyHallows);
-		trickOrTreat = new TrickOrTreat().setUnlocalizedName("trick")
-										 .setTextureName("dh:trick")
-										 .setMaxStackSize(64)
-										 .setCreativeTab(tabDeathlyHallows);
+		trickOrTreat = new ItemTrickOrTreat().setUnlocalizedName("trick")
+											 .setTextureName("dh:trick")
+											 .setMaxStackSize(64)
+											 .setCreativeTab(tabDeathlyHallows);
 		elderBook = new ElderBook().setUnlocalizedName("elder_book")
 								   .setTextureName("dh:book")
 								   .setMaxStackSize(1)

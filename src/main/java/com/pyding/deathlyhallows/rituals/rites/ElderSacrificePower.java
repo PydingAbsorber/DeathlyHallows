@@ -5,7 +5,7 @@ import com.emoniph.witchery.common.IPowerSource;
 import com.emoniph.witchery.common.PowerSources;
 import com.emoniph.witchery.ritual.RiteRegistry;
 import com.emoniph.witchery.util.Coord;
-import com.pyding.deathlyhallows.blocks.ElderRitualBlock;
+import com.pyding.deathlyhallows.blocks.BlockElderRitual;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
@@ -47,7 +47,7 @@ public class ElderSacrificePower extends ElderSacrifice {
 
 
 		@Override
-		public Result elderProcess(World world, int posX, int posY, int posZ, long ticks, ElderRitualBlock.TileEntityCircle.ActivatedElderRitual ritual) {
+		public Result elderProcess(World world, int posX, int posY, int posZ, long ticks, BlockElderRitual.TileEntityCircle.ActivatedElderRitual ritual) {
 			if(ticks % (long)this.sacrifice.powerFrequencyInTicks != 0L) {
 				return Result.STARTING;
 			}

@@ -16,6 +16,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemAppleGold;
 import net.minecraft.item.ItemBow;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -28,98 +29,97 @@ import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
 import java.awt.*;
 
 public final class DHElfEvents {
-	
+
 	private static final DHElfEvents INSTANCE = new DHElfEvents();
 
-	private static final long 
-			firstShot = 1000,
-			secondShot = 2000;
-	
+	private static final long
+			firstShot = 50,
+			secondShot = 1000;
+
 	private DHElfEvents() {
-		
+
 	}
-	
+
 	public static void init() {
 		MinecraftForge.EVENT_BUS.register(INSTANCE);
 	}
-	
+
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void elfTheLiveEnjoyer(LivingEvent.LivingUpdateEvent event) {
-		if(event.entity.worldObj.isRemote || !(event.entity instanceof EntityPlayer)) {
+	public void elfTheLiveEnjoyer(LivingEvent.LivingUpdateEvent e) {
+		if(e.entity.worldObj.isRemote || !(e.entity instanceof EntityPlayer)) {
 			return;
 		}
-		EntityPlayer player = (EntityPlayer)event.entity;
+		EntityPlayer player = (EntityPlayer)e.entity;
 		arrowEffects(player);
 		ElfUtils.manageElf(player);
 	}
 
-	private void arrowEffects(EntityPlayer player) {
-		if(player.getEntityData().getLong("DHArrow") > 0) {
-			long time = System.currentTimeMillis() - player.getEntityData().getLong("DHArrow");
-			boolean show = player.getEntityData().getBoolean("DHArrowShow");
-			boolean show2 = player.getEntityData().getBoolean("DHArrowShow2");
-			if(time >= firstShot && show) {
-				player.getEntityData().setBoolean("DHArrowShow", false);
-				DHUtils.spawnSphere(player, player.getPosition(1), 20, 3, Color.BLUE, 1, 3, 60, 1);
-				player.worldObj.playSoundAtEntity(player, "dh:arrow.arrow_ready_1", 1F, 1F);
+	private void arrowEffects(EntityPlayer p) {
+		NBTTagCompound entityTag =p.getEntityData(); 
+		if(entityTag.getLong("DHArrow") > 0) {
+			long time = p.ticksExisted - entityTag.getLong("DHArrow");
+			if(time >= firstShot && entityTag.getBoolean("DHArrowShow")) {
+				entityTag.setBoolean("DHArrowShow", false);
+				DHUtils.spawnSphere(p, p.getPosition(1), 20, 3, Color.BLUE, 1, 3, 60, 1);
+				p.worldObj.playSoundAtEntity(p, "dh:arrow.arrow_ready_1", 1F, 1F);
 			}
-			if(time >= secondShot && show2) {
-				player.getEntityData().setBoolean("DHArrowShow2", false);
-				DHUtils.spawnSphere(player, player.getPosition(1), 20, 3, Color.magenta, 1, 3, 60, 1);
-				player.worldObj.playSoundAtEntity(player, "dh:arrow.arrow_ready_2", 1F, 1F);
+			if(time >= secondShot && entityTag.getBoolean("DHArrowShow2")) {
+				entityTag.setBoolean("DHArrowShow2", false);
+				DHUtils.spawnSphere(p, p.getPosition(1), 20, 3, Color.magenta, 1, 3, 60, 1);
+				p.worldObj.playSoundAtEntity(p, "dh:arrow.arrow_ready_2", 1F, 1F);
 			}
 		}
 	}
 
 	@SubscribeEvent
-	public void elfTheArcherShooter(ArrowNockEvent event) {
-		EntityPlayer player = event.entityPlayer;
-		player.getEntityData().setLong("DHArrow", System.currentTimeMillis());
-		player.getEntityData().setBoolean("DHArrowShow", true);
-		player.getEntityData().setBoolean("DHArrowShow2", true);
+	public void elfTheArcherShooter(ArrowNockEvent e) {
+		NBTTagCompound entityTag = e.entityPlayer.getEntityData();
+		entityTag.setLong("DHArrow", e.entityPlayer.ticksExisted);
+		entityTag.setBoolean("DHArrowShow", true);
+		entityTag.setBoolean("DHArrowShow2", true);
 	}
 
 	@SubscribeEvent
-	public void elfTheArcherShooter2(ArrowLooseEvent event) {
-		EntityPlayer p = event.entityPlayer;
-		long time = System.currentTimeMillis() - p.getEntityData().getLong("DHArrow");
+	public void elfTheArcherShooter2(ArrowLooseEvent e) {
+		EntityPlayer p = e.entityPlayer;
+		long time = e.entityPlayer.ticksExisted - p.getEntityData().getLong("DHArrow");
 		p.getEntityData().setLong("DHArrow", 0);
 		long perfectTime = secondShot + 150;
-		if(time > 9 && (time > secondShot || p.getEntityData().getInteger("DHShot") > 0)) {
-			if(p.getEntityData().getInteger("DHShot") > 0) {
-				DHUtils.spawnArrow(p, 3);
-				p.getEntityData().setInteger("DHShot", p.getEntityData().getInteger("DHShot") - 1);
-				event.setCanceled(true);
-			}
-			else if(time < perfectTime) {
-				DHUtils.spawnArrow(p, 3);
-				p.getEntityData().setInteger("DHShot", 5);
-				event.setCanceled(true);
-			}
-			else {
-				DHUtils.spawnArrow(p, 2);
-				event.setCanceled(true);
+		if(time <= 9 || (time <= secondShot && p.getEntityData().getInteger("DHShot") <= 0)) {
+			if(time > firstShot) {
+				DHUtils.spawnArrow(p, 1);
+				e.setCanceled(true);
 			}
 			return;
 		}
-		if(time > 6 && time > firstShot) {
-			DHUtils.spawnArrow(p, 1);
-			event.setCanceled(true);
+		if(p.getEntityData().getInteger("DHShot") > 0) {
+			DHUtils.spawnArrow(p, 3);
+			p.getEntityData().setInteger("DHShot", p.getEntityData().getInteger("DHShot") - 1);
+			e.setCanceled(true);
+		}
+		else if(time < perfectTime) {
+			DHUtils.spawnArrow(p, 3);
+			p.getEntityData().setInteger("DHShot", 5);
+			e.setCanceled(true);
+		}
+		else {
+			DHUtils.spawnArrow(p, 2);
+			e.setCanceled(true);
 		}
 	}
 
 
 	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
-	public void elfTheVampireHunter(LivingDeathEvent event) {
-		if(!event.isCanceled() || event.entity == null || event.source.getEntity() == null) {
+	public void elfTheVampireHunter(LivingDeathEvent e) {
+		if(!e.isCanceled() || e.entity == null || e.source.getEntity() == null) {
 			return;
 		}
-		Entity source = event.source.getEntity();
-		if(!(event.entity instanceof EntityPlayer) || !(source instanceof EntityLivingBase)) {
+		Entity source = e.source.getEntity();
+		if(!(e.entity instanceof EntityPlayer) || !(source instanceof EntityLivingBase)) {
 			return;
 		}
-		if(ElfUtils.isElf((EntityLivingBase)source) && CreatureUtil.isVampire(event.entity)) {
-			event.setCanceled(false);
+		if(ElfUtils.isElf((EntityLivingBase)source) && CreatureUtil.isVampire(e.entity)) {
+			e.setCanceled(false);
 		}
 	}
 
@@ -163,14 +163,13 @@ public final class DHElfEvents {
 		}
 		if(elfLevel > 5 && !e.source.isDamageAbsolute()) {
 			DHUtils.spawnSphere(entity, entity.getPosition(1), (int)(radius * 20), radius, Color.BLUE, 1, 6, 60, 1);
-			for(EntityLiving target: DHUtils.getEntitiesAround(EntityLiving.class, entity, radius)) {
-				if(target == entity) {
+			for(EntityLiving el: DHUtils.getEntitiesAround(EntityLiving.class, entity, radius)) {
+				if(el == entity) {
 					continue;
 				}
-
-				target.setLastAttacker(source);
-				ParticleEffect.MAGIC_CRIT.send(null, target, 2, 2, 64);
-				target.attackEntityFrom(DamageSource.causePlayerDamage(source).setDamageIsAbsolute().setProjectile(), e.ammount * damageAoe);
+				el.setLastAttacker(source);
+				ParticleEffect.MAGIC_CRIT.send(null, el, 2, 2, 64);
+				el.attackEntityFrom(DamageSource.causePlayerDamage(source).setDamageIsAbsolute().setProjectile(), e.ammount * damageAoe);
 
 			}
 		}
@@ -186,9 +185,9 @@ public final class DHElfEvents {
 				ExtendedPlayer.get(source).deadInside(e.entityLiving);
 			}
 		}
-		if(elfLevel == 10 
-				&& e.entityLiving instanceof EntityPlayer 
-				&& Math.random() < 0.1 
+		if(elfLevel == 10
+				&& e.entityLiving instanceof EntityPlayer
+				&& Math.random() < 0.1
 				&& e.entityLiving.getHealth() > e.entityLiving.getMaxHealth() * 0.3) {
 			EntityUtil.instantDeath(e.entityLiving, source);
 		}
@@ -220,18 +219,18 @@ public final class DHElfEvents {
 	}
 
 	@SubscribeEvent
-	public void onFoodEaten(PlayerUseItemEvent.Finish event) {
-		EntityPlayer p = event.entityPlayer;
+	public void onFoodEaten(PlayerUseItemEvent.Finish e) {
+		EntityPlayer p = e.entityPlayer;
 		if(p.worldObj.isRemote) {
 			return;
 		}
 		ExtendedPlayer props = ExtendedPlayer.get(p);
 		int elfLevel = ElfUtils.getElfLevel(props);
-		if(elfLevel == 5 && event.item.getItem() instanceof ItemAppleGold && event.item.getItemDamage() > 0) {
+		if(elfLevel == 5 && e.item.getItem() instanceof ItemAppleGold && e.item.getItemDamage() > 0) {
 			props.setFoodEaten(props.getFoodEaten() + 1);
 		}
 		if(elfLevel == 8) {
-			props.addFoodToCollection(event.item.getUnlocalizedName());
+			props.addFoodToCollection(e.item.getUnlocalizedName());
 		}
 	}
 

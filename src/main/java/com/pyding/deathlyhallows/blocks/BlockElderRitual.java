@@ -23,12 +23,10 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
@@ -46,9 +44,10 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class ElderRitualBlock extends BlockBaseContainer {
-	public ElderRitualBlock() {
-		super(Material.vine, ElderRitualBlock.TileEntityCircle.class);
+public class BlockElderRitual extends BlockBaseContainer {
+	
+	public BlockElderRitual() {
+		super(Material.vine, BlockElderRitual.TileEntityCircle.class);
 		this.registerWithCreateTab = false;
 		this.setHardness(3.0f);
 		this.setResistance(1000.0f);
@@ -139,7 +138,7 @@ public class ElderRitualBlock extends BlockBaseContainer {
 	}
 
 	private void activateBlock(final World world, final int posX, final int posY, final int posZ, final EntityPlayer player, boolean summonCoven) {
-		final ElderRitualBlock.TileEntityCircle tileEntity = BlockUtil.getTileEntity(world, posX, posY, posZ, ElderRitualBlock.TileEntityCircle.class);
+		final BlockElderRitual.TileEntityCircle tileEntity = BlockUtil.getTileEntity(world, posX, posY, posZ, BlockElderRitual.TileEntityCircle.class);
 		if(tileEntity != null) {
 			if(tileEntity.isRitualActive()) {
 				tileEntity.deactivate();
@@ -247,13 +246,13 @@ public class ElderRitualBlock extends BlockBaseContainer {
 
 	public static class TileEntityCircle extends TileEntityBase {
 		public boolean previousRedstoneState;
-		private final ArrayList<ElderRitualBlock.TileEntityCircle.ActivatedElderRitual> activeRituals;
-		private final ArrayList<ElderRitualBlock.TileEntityCircle.ActivatedElderRitual> upkeepRituals;
+		private final ArrayList<BlockElderRitual.TileEntityCircle.ActivatedElderRitual> activeRituals;
+		private final ArrayList<BlockElderRitual.TileEntityCircle.ActivatedElderRitual> upkeepRituals;
 		private boolean abortNext;
 
 		public TileEntityCircle() {
-			this.activeRituals = new ArrayList<ElderRitualBlock.TileEntityCircle.ActivatedElderRitual>();
-			this.upkeepRituals = new ArrayList<ElderRitualBlock.TileEntityCircle.ActivatedElderRitual>();
+			this.activeRituals = new ArrayList<BlockElderRitual.TileEntityCircle.ActivatedElderRitual>();
+			this.upkeepRituals = new ArrayList<BlockElderRitual.TileEntityCircle.ActivatedElderRitual>();
 			this.abortNext = false;
 		}
 
@@ -306,7 +305,7 @@ public class ElderRitualBlock extends BlockBaseContainer {
 						final ArrayList<RitualStep> ritualSteps = new ArrayList<RitualStep>();
 						var15.addRiteSteps(ritualSteps, stages[var13]);
 						if(!ritualSteps.isEmpty()) {
-							final ElderRitualBlock.TileEntityCircle.ActivatedElderRitual ActivatedElderRitual = new ElderRitualBlock.TileEntityCircle.ActivatedElderRitual(var15, ritualSteps, var11[var13], (var14 != null) ? var14[var13] : 0, null);
+							final BlockElderRitual.TileEntityCircle.ActivatedElderRitual ActivatedElderRitual = new BlockElderRitual.TileEntityCircle.ActivatedElderRitual(var15, ritualSteps, var11[var13], (var14 != null) ? var14[var13] : 0, null);
 							ActivatedElderRitual.setLocation(locations[var13]);
 							this.upkeepRituals.add(ActivatedElderRitual);
 						}
@@ -320,7 +319,7 @@ public class ElderRitualBlock extends BlockBaseContainer {
 			super.updateEntity();
 			if(!this.worldObj.isRemote) {
 				if(!this.upkeepRituals.isEmpty()) {
-					for(final ElderRitualBlock.TileEntityCircle.ActivatedElderRitual result: this.upkeepRituals) {
+					for(final BlockElderRitual.TileEntityCircle.ActivatedElderRitual result: this.upkeepRituals) {
 						final RitualStep.Result i$ = result.steps.get(0)
 																 .elderRun(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.ticks, result);
 						if(i$ != RitualStep.Result.UPKEEP && Config.instance().traceRites()) {
@@ -348,7 +347,7 @@ public class ElderRitualBlock extends BlockBaseContainer {
 					}
 				}
 				if(!this.activeRituals.isEmpty()) {
-					final ElderRitualBlock.TileEntityCircle.ActivatedElderRitual var6 = this.activeRituals.get(0);
+					final BlockElderRitual.TileEntityCircle.ActivatedElderRitual var6 = this.activeRituals.get(0);
 					ElderRitualStep.Result var7 = var6.steps.get(0)
 															.elderRun(this.worldObj, this.xCoord, this.yCoord, this.zCoord, this.ticks, var6);
 					var6.postProcess(this.worldObj);
@@ -427,7 +426,7 @@ public class ElderRitualBlock extends BlockBaseContainer {
 			}
 			ritual.addSteps(ritualSteps, bounds);
 			if(!ritualSteps.isEmpty() && !this.worldObj.isRemote) {
-				this.activeRituals.add(new ElderRitualBlock.TileEntityCircle.ActivatedElderRitual(ritual, ritualSteps, (player != null) ? player.getCommandSenderName() : null, covenSize, null));
+				this.activeRituals.add(new BlockElderRitual.TileEntityCircle.ActivatedElderRitual(ritual, ritualSteps, (player != null) ? player.getCommandSenderName() : null, covenSize, null));
 				this.worldObj.setBlockMetadataWithNotify(this.xCoord, this.yCoord, this.zCoord, 1, 3);
 			}
 		}

@@ -6,8 +6,7 @@ import com.emoniph.witchery.ritual.RitualStep;
 import com.emoniph.witchery.util.Coord;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
-import com.pyding.deathlyhallows.blocks.ElderRitualBlock;
-import net.minecraft.entity.Entity;
+import com.pyding.deathlyhallows.blocks.BlockElderRitual;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -43,7 +42,7 @@ public class ElderSummonItem extends ElderRite {
 		}
 
 		@Override
-		public Result elderProcess(World world, int posX, int posY, int posZ, long ticks, ElderRitualBlock.TileEntityCircle.ActivatedElderRitual ritual) {
+		public Result elderProcess(World world, int posX, int posY, int posZ, long ticks, BlockElderRitual.TileEntityCircle.ActivatedElderRitual ritual) {
 			if(ticks % 20L != 0L) {
 				return Result.STARTING;
 			}

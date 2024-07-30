@@ -1,11 +1,10 @@
 package com.pyding.deathlyhallows.utils;
 
+import baubles.api.BaublesApi;
 import com.emoniph.witchery.infusion.Infusion;
-import com.emoniph.witchery.util.CreatureUtil;
-import com.emoniph.witchery.util.EntityUtil;
-import com.emoniph.witchery.util.ParticleEffect;
-import com.emoniph.witchery.util.SoundEffect;
+import com.emoniph.witchery.util.*;
 import com.pyding.deathlyhallows.entities.EntityEmpoweredArrow;
+import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketParticle;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -19,9 +18,13 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
@@ -248,5 +251,98 @@ public class DHUtils {
 		NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(entity.dimension, x, y, z, 64);
 		DHPacketProcessor.sendToAllAround(new PacketParticle(x, y, z, color, resizeSpeed, scale, age, type, motionX, motionY, motionZ), targetPoint);
 	}
-	
+
+    public static boolean isHallow(ItemStack stack) {
+        return stack.getItem() == DHItems.resurrectionStone || stack.getItem() == DHItems.elderWand || stack.getItem() == DHItems.invisibilityMantle;
+    }
+
+    public static void removeDuplicatesFromInventory(EntityPlayer p) {
+        int count = 0;
+        for(int i = 0; i < p.inventory.getSizeInventory(); i++) {
+            ItemStack stack = p.inventory.getStackInSlot(i);
+            if(stack == null || !isHallow(stack)) {
+                continue;
+            }
+            if(!stack.hasTagCompound()) {
+                NBTTagCompound nbt = new NBTTagCompound();
+                nbt.setString("dhowner", p.getDisplayName());
+                stack.setTagCompound(nbt);
+            }
+            else if(!stack.getTagCompound().hasKey("dhowner")) {
+                NBTTagCompound nbt = stack.getTagCompound();
+                nbt.setString("dhowner", p.getDisplayName());
+                stack.setTagCompound(nbt);
+            }
+            else if(stack.hasTagCompound() && stack.getTagCompound().hasKey("dhowner")) {
+                String dhowner = stack.getTagCompound().getString("dhowner");
+                count++;
+                if(p.getDisplayName().equals(dhowner)) {
+                    if(count > 1) {
+                        p.inventory.setInventorySlotContents(i, null);
+                        p.inventoryContainer.detectAndSendChanges();
+                        ChatUtil.sendTranslated(EnumChatFormatting.RED, p, "dh.chat.dupe");
+                    }
+                }
+                else {
+                    p.inventory.setInventorySlotContents(i, null);
+                    p.inventoryContainer.detectAndSendChanges();
+                }
+            }
+        }
+        IInventory baubles = BaublesApi.getBaubles(p);
+        for(int i = 1; i < baubles.getSizeInventory(); i++) {
+            ItemStack stack = baubles.getStackInSlot(i);
+            if(stack == null
+                    || !isHallow(stack)
+                    || !stack.hasTagCompound()
+                    || !stack.getTagCompound().hasKey("dhowner")
+            ) {
+                continue;
+            }
+            if(!stack.getTagCompound().getString("dhowner").equals(p.getDisplayName())) {
+                baubles.setInventorySlotContents(i, null);
+                p.inventoryContainer.detectAndSendChanges();
+            }
+            if(++count > 1) {
+                baubles.setInventorySlotContents(i, null);
+                p.inventoryContainer.detectAndSendChanges();
+                ChatUtil.sendTranslated(EnumChatFormatting.RED, p, "dh.chat.dupe");
+            }
+
+        }
+    }
+
+    public static boolean hasDeathlyHallow(EntityPlayer p) {
+        int count = 0;
+        for(int i = 0; i < p.inventory.getSizeInventory(); i++) {
+            ItemStack stack = p.inventory.getStackInSlot(i);
+            if(stack == null || !isHallow(stack)) {
+                continue;
+            }
+            if(!stack.hasTagCompound()) {
+                NBTTagCompound nbt = new NBTTagCompound();
+                nbt.setString("dhowner", p.getDisplayName());
+                stack.setTagCompound(nbt);
+            }
+            else if(!stack.getTagCompound().hasKey("dhowner")) {
+                NBTTagCompound nbt = stack.getTagCompound();
+                nbt.setString("dhowner", p.getDisplayName());
+                stack.setTagCompound(nbt);
+            }
+            else if(stack.hasTagCompound() && stack.getTagCompound().hasKey("dhowner")) {
+                count++;
+            }
+        }
+        IInventory baubles = BaublesApi.getBaubles(p);
+        for(int i = 1; i < baubles.getSizeInventory(); i++) {
+            ItemStack stack = baubles.getStackInSlot(i);
+            if(stack == null) {
+                continue;
+            }
+            if(isHallow(stack) && stack.hasTagCompound() && stack.getTagCompound().hasKey("dhowner")) {
+                count++;
+            }
+        }
+        return count > 0;
+    }
 }
