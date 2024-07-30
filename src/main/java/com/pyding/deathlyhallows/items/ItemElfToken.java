@@ -45,14 +45,14 @@ public class ItemElfToken extends ItemBase {
 			}
 			ParticleEffect.INSTANT_SPELL.send(SoundEffect.NOTE_PLING, player, 1.0, 2.0, 8);
 		}
-		player.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocalFormatted("dh.chat.elfLevelItem", props.getElfLvl())));
+		player.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocalFormatted("dh.chat.elfToken", props.getElfLvl())));
 		return super.onItemRightClick(stack, world, player);
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	protected void addTooltip(ItemStack stack, EntityPlayer p, List<String> l, boolean devMode) {
-		l.add(StatCollector.translateToLocalFormatted("dh.desc.elfLevelItem", ElfUtils.getElfLevel(p)));
+		l.add(StatCollector.translateToLocalFormatted("dh.desc.elfToken", ElfUtils.getElfLevel(p)));
 	}
 	
 }
