@@ -6,6 +6,7 @@ import cpw.mods.fml.common.Loader;
 public class DHIntegration {
 
 	public static final String
+			WITCHERY = "witchery", // just for reference
 			THAUMCRAFT = "Thaumcraft",
 			BOTANIA = "Botania",
 			BLOOD_MAGIC = "AWWayofTime",

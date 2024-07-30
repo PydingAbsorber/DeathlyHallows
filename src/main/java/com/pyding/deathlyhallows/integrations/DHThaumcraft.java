@@ -105,13 +105,15 @@ public final class DHThaumcraft {
 				getAspect("magneto"), 4
 				
 		);
-		addAspects(
-				new ItemStack(ItemBlockSpecialFlower.ofType("screamily").getItem()),
-				TRAP, 210,
-				MAGIC, 400,
-				PLANT, 30,
-				ENERGY, 1000
-		);
+		if(DHIntegration.botania) {
+			addAspects(
+					new ItemStack(ItemBlockSpecialFlower.ofType("screamily").getItem()),
+					TRAP, 5,
+					MAGIC, 4,
+					PLANT, 8,
+					ENERGY, 4
+			);
+		}
 	}
 
 	private static void addAspects(ItemStack stack, Object... as) {
