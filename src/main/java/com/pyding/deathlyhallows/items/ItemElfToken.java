@@ -14,10 +14,10 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class ItemElfLevel extends ItemBase {
+public class ItemElfToken extends ItemBase {
 
-	public ItemElfLevel() {
-		super("elfLevelItem", 1);
+	public ItemElfToken() {
+		super("elfToken", 1);
 	}
 
 	@Override

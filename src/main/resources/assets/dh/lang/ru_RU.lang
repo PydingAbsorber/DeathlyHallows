@@ -3,7 +3,7 @@ item.itemLogo.name=§cDeathly Hallows
 item.invisibilityMantle.name=§9Мантия невидимости
 item.elderWand.name=§cБузинная палочка
 item.resurrectionStone.name=§aКамень воскрешения
-item.elfLevelItem.name=§9Креативный уровень Эльфа
+item.elfToken.name=§9Креативный токен Эльфа
 item.bertieBotts.name=§5Берти Боттс
 item.gastronomicTemptation.name=Гастрономическое искушение
 item.soupWithSawdust.name=Суп с опилками
@@ -38,7 +38,7 @@ dh.key.broom=Призвать Нимбус3000
 # Chat messages
 dh.chat.login=§5Да здравствует Пудинг! Добро пожаловать на сервер!
 dh.chat.advertizeTC=§rУ Deathly Hallows есть §5Thaumcraft§r интеграция! Внезапно, правда?..
-dh.chat.advertizeBotania=§rУ Deathly Hallows есть §Botania§r интеграция! Внезапно, правда?..
+dh.chat.advertizeBotania=§rУ Deathly Hallows есть §aBotania§r интеграция! Внезапно, правда?..
 dh.chat.elf1=По твоему телу пробежали мурашки, ты чувтсвуешь, как твоё тело подвергается изменениям
 dh.chat.elf2=Спустя столько потраченной магии твоё тело адаптировалось под неё, теперь ты стал Эльфом!
 dh.chat.wait=Подожди ка!
@@ -51,11 +51,11 @@ dh.chat.food=Ух *ля...
 dh.chat.creative=Абсолютная смерть: Боишься меня без креатива? Это нормально, ты можешь бояться меня столько, сколько душе угодно
 dh.chat.sethealth=Абсолютная смерть: Сетхелс тебе не поможет, дурачок...
 dh.chat.freak=Абсолютная смерть: Ты с ума сошёл? ИСПОЛЬЗОВАТЬ ЭТО НА МНЕ?
-dh.chat.elfLevelItem=§9Твой уровень Эльфа стал %d
+dh.chat.elfToken=§9Твой уровень Эльфа стал %d
 dh.chat.deadlyPrism1=Установленный тип урона: §5%s
 dh.chat.deadlyPrism2=Введи тип урона (числом) в ЧаАаТ:
 # Item tooltips
-dh.desc.elfLevelItem="У тебя §9%d§r уровень Эльфа"
+dh.desc.elfToken=У тебя §9%d§7 уровень Эльфа
 
 dh.desc.light=Сейчас поймаю тебя в сумку и сверкать ты будешь в ней!
 dh.desc.light2=Мне так хочется, чтоб стала ты моей!

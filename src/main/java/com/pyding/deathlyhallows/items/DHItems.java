@@ -18,7 +18,7 @@ public final class DHItems {
 			invisibilityMantle,
 			elderWand,
 			resurrectionStone,
-			elfLevelItem,
+			elfToken,
 			bertieBots,
 			gastronomicTemptation,
 			soupWithSawdust,
@@ -45,7 +45,7 @@ public final class DHItems {
 		register(invisibilityMantle = new ItemBaubleInvisibilityMantle());
 		register(elderWand = new ItemElderWand());
 		register(resurrectionStone = new ItemBaubleResurrectionStone());
-		register(elfLevelItem = new ItemElfLevel());
+		register(elfToken = new ItemElfToken());
 		register(bertieBots = new ItemFoodBertieBotts());
 		register(gastronomicTemptation = new ItemGastronomicTemptation());
 		register(soupWithSawdust = new ItemFoodSoupWithSawdust());
