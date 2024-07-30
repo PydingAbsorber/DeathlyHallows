@@ -21,8 +21,7 @@ public final class DHBlocks {
 	}
 
 	public static void init() {
-		elderRitualRune = new BlockElderRitual().setBlockName("elderRitualRune")
-												.setBlockTextureName("dh:ritual");
+		elderRitualRune = new BlockElderRitual();
 		registerTile(BlockElderRitual.TileEntityCircle.class, "elderRitualTile");
 	}
 
