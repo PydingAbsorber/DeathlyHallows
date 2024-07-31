@@ -1,24 +1,17 @@
 package com.pyding.deathlyhallows.blocks;
 
-import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.blocks.tiles.TileEntityVisConverter;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.block.BlockContainer;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import static com.pyding.deathlyhallows.DeathlyHallows.tabDeathlyHallows;
 
-public class BlockVisConverter extends BlockContainer {
+public class BlockVisConverter extends BlockBase implements ITileEntityProvider {
 	
 	public BlockVisConverter() {
-		super(Material.wood);
-		setBlockName("visConverter");
-		setBlockTextureName("visConverter");
-		setCreativeTab(tabDeathlyHallows);
+		super("visConverter", Material.wood, tabDeathlyHallows);
 	}
 
 	@Override
@@ -39,11 +32,6 @@ public class BlockVisConverter extends BlockContainer {
 	@Override
 	public int getRenderType() {
 		return -1;
-	}
-
-	@SideOnly(Side.CLIENT)
-	public void registerBlockIcons(final IIconRegister ir) {
-		blockIcon = ir.registerIcon(DeathlyHallows.MODID + ":" + textureName);
 	}
 	
 }
