@@ -1,6 +1,11 @@
 package com.pyding.deathlyhallows.items;
 
 import com.pyding.deathlyhallows.blocks.DHBlocks;
+import com.pyding.deathlyhallows.items.baubles.ItemBaubleInvisibilityMantle;
+import com.pyding.deathlyhallows.items.baubles.ItemBaubleResurrectionStone;
+import com.pyding.deathlyhallows.items.food.ItemFoodBertieBotts;
+import com.pyding.deathlyhallows.items.food.ItemFoodSoupWithSawdust;
+import com.pyding.deathlyhallows.items.food.ItemFoodViscousSecretions;
 import com.pyding.deathlyhallows.render.item.RenderEldenWand;
 import com.pyding.deathlyhallows.render.item.RenderItemVisConverter;
 import cpw.mods.fml.common.registry.GameRegistry;

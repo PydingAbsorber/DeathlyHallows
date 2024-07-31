@@ -4,7 +4,7 @@ import com.emoniph.witchery.Witchery;
 import com.pyding.deathlyhallows.blocks.BlockVisConverter;
 import com.pyding.deathlyhallows.blocks.tiles.TileEntityVisConverter;
 import com.pyding.deathlyhallows.items.DHItems;
-import com.pyding.deathlyhallows.items.ItemFocusInferioisMutandis;
+import com.pyding.deathlyhallows.items.foci.ItemFocusInferioisMutandis;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.ItemStack;
 import thaumcraft.api.ThaumcraftApi;

@@ -1,6 +1,6 @@
 package com.pyding.deathlyhallows.utils;
 
-import com.pyding.deathlyhallows.items.ItemFoodBertieBotts;
+import com.pyding.deathlyhallows.items.food.ItemFoodBertieBotts;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;

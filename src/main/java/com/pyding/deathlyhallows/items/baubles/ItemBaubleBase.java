@@ -1,7 +1,8 @@
-package com.pyding.deathlyhallows.items;
+package com.pyding.deathlyhallows.items.baubles;
 
 import baubles.api.BaubleType;
 import baubles.api.IBauble;
+import com.pyding.deathlyhallows.items.ItemBase;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 

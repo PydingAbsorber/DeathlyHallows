@@ -1,4 +1,4 @@
-package com.pyding.deathlyhallows.items;
+package com.pyding.deathlyhallows.items.food;
 
 import com.emoniph.witchery.util.ChatUtil;
 import com.pyding.deathlyhallows.integrations.DHIntegration;

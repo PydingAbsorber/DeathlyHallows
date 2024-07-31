@@ -1,4 +1,4 @@
-package com.pyding.deathlyhallows.items;
+package com.pyding.deathlyhallows.items.baubles;
 
 import baubles.api.BaubleType;
 import cpw.mods.fml.relauncher.Side;

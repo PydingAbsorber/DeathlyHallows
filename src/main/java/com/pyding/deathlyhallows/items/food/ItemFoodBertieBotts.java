@@ -1,4 +1,4 @@
-package com.pyding.deathlyhallows.items;
+package com.pyding.deathlyhallows.items.food;
 
 import com.pyding.deathlyhallows.DeathlyHallows;
 import net.minecraft.entity.player.EntityPlayer;

@@ -1,10 +1,11 @@
-package com.pyding.deathlyhallows.items;
+package com.pyding.deathlyhallows.items.foci;
 
 import com.emoniph.witchery.Witchery;
 import com.emoniph.witchery.item.ItemMutator;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.pyding.deathlyhallows.DeathlyHallows;
+import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.utils.DHUtils;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
