@@ -14,20 +14,9 @@ import net.minecraft.world.World;
 
 public class EntityNimbus extends Entity {
 
-	public float speedModifier(EntityPlayer player) {
-		float modifier = 1;
-		if(Familiar.hasActiveBroomMasteryFamiliar(player)) {
-			modifier += 0.7f;
-		}
-		if(InfusedBrewEffect.Soaring.isActive(player)) {
-			modifier += 0.6f;
-		}
-		return modifier;
-	}
-
 	public EntityNimbus(World world) {
 		super(world);
-		this.setSize(1.2F, 0.5F);
+		setSize(1.2F, 0.5F);
 	}
 
 	@Override
@@ -44,18 +33,19 @@ public class EntityNimbus extends Entity {
 			EntityPlayer player = (EntityPlayer)this.riddenByEntity;
 			rider = player;
 			if(ticksExisted > 4000 * speedModifier(player)) {
-				this.setDead();
-				for(ItemStack itemStack: player.inventory.mainInventory) {
-					if(itemStack != null && itemStack.getItem() == DHItems.nimbus) {
-						NBTTagCompound nbt = itemStack.getTagCompound();
-						nbt.setLong("NimbusCooldown", System.currentTimeMillis() + (nbt.getLong("NimbusDuration") - System.currentTimeMillis()) / 2);
-						nbt.setLong("NimbusDuration", 0);
+				setDead();
+				for(ItemStack stack: player.inventory.mainInventory) {
+					if(stack == null || stack.getItem() != DHItems.nimbus) {
+						continue;
 					}
+					NBTTagCompound tag = stack.getTagCompound();
+					tag.setLong("NimbusCooldown", System.currentTimeMillis() + (tag.getLong("NimbusDuration") - System.currentTimeMillis()) / 2);
+					tag.setLong("NimbusDuration", 0);
 				}
 			}
 			float yaw = player.rotationYaw % 360;
 			float pitch = player.rotationPitch % 360;
-			this.setRotation(yaw, pitch);
+			setRotation(yaw, pitch);
 			double speed = 0.7 * speedModifier(player);
 			if(player.getEntityData().getBoolean("DHSprint")) {
 				speed *= 4;
@@ -63,54 +53,56 @@ public class EntityNimbus extends Entity {
 			double motionX = -Math.sin(Math.toRadians(yaw)) * speed;
 			double motionY = Math.sin(Math.toRadians(-pitch)) * speed * 2;
 			double motionZ = Math.cos(Math.toRadians(yaw)) * speed;
-			this.moveEntity(motionX, motionY, motionZ);
-			this.rotationYaw = yaw - 90;
+			moveEntity(motionX, motionY, motionZ);
+			rotationYaw = yaw - 90;
 			ParticleEffect.FLAME.send(SoundEffect.NONE, this, 1, 1, 64);
+			return;
 		}
-		else {
-			int count = 0;
-			if(rider != null) {
-				for(int i = 0; i < rider.inventory.getSizeInventory(); i++) {
-					if(rider.inventory.getStackInSlot(i) != null && count == 0) {
-						ItemStack stack = rider.inventory.getStackInSlot(i);
-						if(stack.getItem() == DHItems.nimbus && stack.getTagCompound() != null) {
-							if(stack.getTagCompound().getLong("NimbusDuration") > System.currentTimeMillis()) {
-								stack.getTagCompound()
-									 .setLong("NimbusCooldown", (long)(System.currentTimeMillis() + (System.currentTimeMillis() - (stack.getTagCompound()
-																																		.getLong("NimbusDuration") - 160 * 1000 * speedModifier(rider)
-									 )
-									 ) / 2
-									 ));
-							}
-							else {
-								stack.getTagCompound()
-									 .setLong("NimbusCooldown", (long)(System.currentTimeMillis() + (160 * 1000 * speedModifier(rider)) / 2));
-							}
-							stack.getTagCompound().setLong("NimbusDuration", 0);
-							count++;
-						}
-					}
-				}
+
+		int count = 0;
+		if(rider == null) {
+			setDead();
+			return;
+		}
+
+		for(int i = 0; i < rider.inventory.getSizeInventory(); i++) {
+			if(rider.inventory.getStackInSlot(i) == null || count != 0) {
+				continue;
 			}
-			this.setDead();
+			ItemStack stack = rider.inventory.getStackInSlot(i);
+			if(stack.getItem() != DHItems.nimbus || stack.getTagCompound() == null) {
+				continue;
+			}
+			NBTTagCompound tag = stack.getTagCompound();
+			
+			if(tag.getLong("NimbusDuration") > System.currentTimeMillis()) {
+				tag.setLong("NimbusCooldown", (long)(System.currentTimeMillis() + (System.currentTimeMillis() - (tag.getLong("NimbusDuration") - 160 * 1000 * speedModifier(rider))) / 2));
+			}
+			else {
+				tag.setLong("NimbusCooldown", (long)(System.currentTimeMillis() + (160 * 1000 * speedModifier(rider)) / 2));
+			}
+			tag.setLong("NimbusDuration", 0);
+			count++;
 		}
+		setDead();
+	}
+
+	public float speedModifier(EntityPlayer player) {
+		float modifier = 1;
+		if(Familiar.hasActiveBroomMasteryFamiliar(player)) {
+			modifier += 0.7f;
+		}
+		if(InfusedBrewEffect.Soaring.isActive(player)) {
+			modifier += 0.6f;
+		}
+		return modifier;
 	}
 
 	@Override
 	public boolean shouldDismountInWater(Entity rider) {
 		return false;
 	}
-
-	/*@Override
-	public void setBrushColor(int color) {
-		super.setBrushColor(color);
-	}
-
-	@Override
-	public int getBrushColor() {
-		return super.getBrushColor();
-	}*/
-
+	
 	@Override
 	protected boolean canTriggerWalking() {
 		return false;
@@ -132,12 +124,13 @@ public class EntityNimbus extends Entity {
 	}
 
 	public boolean interactFirst(EntityPlayer player) {
-		if(super.riddenByEntity == null || !(super.riddenByEntity instanceof EntityPlayer) || super.riddenByEntity == player) {
-			if(!super.worldObj.isRemote) {
-				player.mountEntity(this);
-			}
-			this.noClip = false;
+		if(riddenByEntity != null && riddenByEntity instanceof EntityPlayer && riddenByEntity != player) {
+			return true;
 		}
+		if(!worldObj.isRemote) {
+			player.mountEntity(this);
+		}
+		noClip = false;
 		return true;
 	}
 }

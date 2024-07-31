@@ -33,8 +33,12 @@ public final class DHWorkbenchRecipes {
 		);
 	}
 
-	private static void addShapelessRecipe(ItemStack output, Object... params) {
+	public static void addShapelessRecipe(ItemStack output, Object... params) {
 		GameRegistry.addShapelessRecipe(output, params);
+	}
+
+	public static void addShapedRecipe(ItemStack output, Object... params) {
+		GameRegistry.addShapedRecipe(output, params);
 	}
 
 }

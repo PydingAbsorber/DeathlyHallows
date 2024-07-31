@@ -74,8 +74,8 @@ public final class DHItems {
 		render(ItemBlock.getItemFromBlock(DHBlocks.visConverter), new RenderItemVisConverter());
 	}
 
-	private static void register(Item item) {
-		GameRegistry.registerItem(item, item.getUnlocalizedName().substring(5));
+	public static void register(Item item) {
+		GameRegistry.registerItem(item, item.getUnlocalizedName().replaceFirst("item.", ""));
 	}
 
 	@SideOnly(Side.CLIENT)

@@ -21,11 +21,15 @@ public final class DHBlocks {
 	}
 
 	public static void init() {
-		elderRitualRune = new BlockElderRitual();
+		register(elderRitualRune = new BlockElderRitual());
 		registerTile(BlockElderRitual.TileEntityCircle.class, "elderRitualTile");
 	}
+	
+	public static void register(Block block) {
+		GameRegistry.registerBlock(block, block.getUnlocalizedName().replaceFirst("tile.", ""));
+	}
 
-	private static void registerTile(Class<? extends TileEntity> tile, String name) {
+	public static void registerTile(Class<? extends TileEntity> tile, String name) {
 		GameRegistry.registerTileEntity(tile, name);
 	}
 
@@ -35,7 +39,7 @@ public final class DHBlocks {
 	}
 
 	@SideOnly(Side.CLIENT)
-	private static void renderTile(Class<? extends TileEntity> clazz, TileEntitySpecialRenderer render) {
+	public static void renderTile(Class<? extends TileEntity> clazz, TileEntitySpecialRenderer render) {
 		ClientRegistry.bindTileEntitySpecialRenderer(clazz, render);
 	}
 

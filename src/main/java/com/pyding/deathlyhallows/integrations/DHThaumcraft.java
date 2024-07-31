@@ -2,10 +2,11 @@ package com.pyding.deathlyhallows.integrations;
 
 import com.emoniph.witchery.Witchery;
 import com.pyding.deathlyhallows.blocks.BlockVisConverter;
+import com.pyding.deathlyhallows.blocks.DHBlocks;
 import com.pyding.deathlyhallows.blocks.tiles.TileEntityVisConverter;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.items.foci.ItemFocusInferioisMutandis;
-import cpw.mods.fml.common.registry.GameRegistry;
+import com.pyding.deathlyhallows.recipes.DHWorkbenchRecipes;
 import net.minecraft.item.ItemStack;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
@@ -20,16 +21,14 @@ import static thaumcraft.api.aspects.Aspect.*;
 
 public final class DHThaumcraft {
 	public static void init() {
-		visConverter = new BlockVisConverter();
-		inferioisMutandis = new ItemFocusInferioisMutandis();
-		GameRegistry.registerBlock(visConverter, "visconverter");
-		GameRegistry.registerTileEntity(TileEntityVisConverter.class, "visconverterTile");
-		GameRegistry.registerItem(inferioisMutandis, inferioisMutandis.getUnlocalizedName().substring(5));
-
+		DHItems.register(inferioisMutandis = new ItemFocusInferioisMutandis());
+		
+		DHBlocks.register(visConverter = new BlockVisConverter());
+		DHBlocks.registerTile(TileEntityVisConverter.class, "visConverterTile");
 	}
 
 	public static void recipes() {
-		GameRegistry.addShapedRecipe(
+		DHWorkbenchRecipes.addShapedRecipe(
 				new ItemStack(visConverter),
 				"BHB",
 				"HSH", 
