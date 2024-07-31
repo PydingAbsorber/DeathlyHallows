@@ -3,7 +3,10 @@ package com.pyding.deathlyhallows.utils.properties;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
-import com.pyding.deathlyhallows.network.packets.PacketPropertiesSync;
+import com.pyding.deathlyhallows.network.packets.PacketPropertiesToClient;
+import com.pyding.deathlyhallows.network.packets.PacketPropertiesToServer;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -52,6 +55,7 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 
 	@Override
 	public void init(Entity entity, World world) {
+		syncToServer();
 	}
 
 	public static void register(EntityPlayer player) {
@@ -63,61 +67,76 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 	}
 
 	@Override
-	public void saveNBTData(NBTTagCompound tag) {
-		NBTTagCompound subtag = new NBTTagCompound();
-		subtag.setInteger("CurrentDuration", currentDuration);
-		subtag.setDouble("X", x);
-		subtag.setDouble("Y", y);
-		subtag.setDouble("Z", z);
-		subtag.setInteger("Dimension", dimension);
-		subtag.setInteger("ElfLvl", elfLevel);
-		subtag.setInteger("Trigger", trigger);
-		subtag.setInteger("ElfCount", elfCount);
-		subtag.setInteger("MobsKilled", mobsKilled);
-		subtag.setInteger("SpellsUsed", spellsUsed);
-		subtag.setInteger("FoodEaten", foodEaten);
-		subtag.setBoolean("Choice", choice);
-		subtag.setInteger("MobsFed", mobsFed);
-		subtag.setString("DHMonsters", monsters);
-		subtag.setBoolean("Logs", damageLog);
-		subtag.setInteger("Page", page);
-		subtag.setBoolean("Avenger", avenger);
-		subtag.setInteger("Cursed", cursed);
-		subtag.setInteger("DHFoodSize", foodCollection.size());
+	public void saveNBTData(NBTTagCompound entityTag) {
+		NBTTagCompound tag = new NBTTagCompound();
+		tag.setInteger("CurrentDuration", currentDuration);
+		tag.setDouble("X", x);
+		tag.setDouble("Y", y);
+		tag.setDouble("Z", z);
+		tag.setInteger("Dimension", dimension);
+		tag.setInteger("ElfLvl", elfLevel);
+		tag.setInteger("Trigger", trigger);
+		tag.setInteger("ElfCount", elfCount);
+		tag.setInteger("MobsKilled", mobsKilled);
+		tag.setInteger("SpellsUsed", spellsUsed);
+		tag.setInteger("FoodEaten", foodEaten);
+		tag.setBoolean("Choice", choice);
+		tag.setInteger("MobsFed", mobsFed);
+		tag.setString("DHMonsters", monsters);
+		tag.setBoolean("Logs", damageLog);
+		tag.setInteger("Page", page);
+		tag.setBoolean("Avenger", avenger);
+		tag.setInteger("Cursed", cursed);
+		tag.setInteger("DHFoodSize", foodCollection.size());
 		int i = 0;
 		for(String food: foodCollection) {
-			subtag.setString("DHFood" + i++, food);
+			tag.setString("DHFood" + i++, food);
 		}
-		tag.setTag(NAME, subtag);
+		entityTag.setTag(NAME, tag);
 	}
 
 	@Override
-	public void loadNBTData(NBTTagCompound tag) {
-		if(!tag.hasKey(NAME)) {
+	public void loadNBTData(NBTTagCompound entityTag) {
+		if(!entityTag.hasKey(NAME)) {
 			return;
 		}
-		NBTTagCompound subtag = (NBTTagCompound)tag.getTag(NAME);
-		currentDuration = subtag.getInteger("CurrentDuration");
-		x = subtag.getDouble("X");
-		y = subtag.getDouble("Y");
-		z = subtag.getDouble("Z");
-		dimension = subtag.getInteger("Dimension");
-		elfLevel = subtag.getInteger("ElfLvl");
-		trigger = subtag.getInteger("Trigger");
-		elfCount = subtag.getInteger("ElfCount");
-		mobsKilled = subtag.getInteger("MobsKilled");
-		spellsUsed = subtag.getInteger("SpellsUsed");
-		foodEaten = subtag.getInteger("FoodEaten");
-		choice = subtag.getBoolean("Choice");
-		mobsFed = subtag.getInteger("MobsFed");
-		damageLog = subtag.getBoolean("Logs");
-		monsters = subtag.getString("DHMonsters");
-		page = subtag.getInteger("Page");
-		avenger = subtag.getBoolean("Avenger");
-		cursed = subtag.getInteger("Cursed");
-		for(int i = 0; i < subtag.getInteger("DHFoodSize"); ++i) {
-			foodCollection.add(i, subtag.getString("DHFood" + i));
+		NBTTagCompound tag = (NBTTagCompound)entityTag.getTag(NAME);
+		currentDuration = tag.getInteger("CurrentDuration");
+		x = tag.getDouble("X");
+		y = tag.getDouble("Y");
+		z = tag.getDouble("Z");
+		dimension = tag.getInteger("Dimension");
+		elfLevel = tag.getInteger("ElfLvl");
+		trigger = tag.getInteger("Trigger");
+		elfCount = tag.getInteger("ElfCount");
+		mobsKilled = tag.getInteger("MobsKilled");
+		spellsUsed = tag.getInteger("SpellsUsed");
+		foodEaten = tag.getInteger("FoodEaten");
+		choice = tag.getBoolean("Choice");
+		mobsFed = tag.getInteger("MobsFed");
+		damageLog = tag.getBoolean("Logs");
+		monsters = tag.getString("DHMonsters");
+		page = tag.getInteger("Page");
+		avenger = tag.getBoolean("Avenger");
+		cursed = tag.getInteger("Cursed");
+		for(int i = 0; i < tag.getInteger("DHFoodSize"); ++i) {
+			foodCollection.add(i, tag.getString("DHFood" + i));
 		}
+	}
+
+	public void syncToClient() {
+		if(player.worldObj.isRemote) {
+			return;
+		}
+		DHPacketProcessor.sendToPlayer(new PacketPropertiesToClient(player, DeathlyProperties.NAME), player);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void syncToServer() {
+		if(!player.worldObj.isRemote) {
+			return;
+		}
+		DHPacketProcessor.sendToServer(new PacketPropertiesToServer(DeathlyProperties.NAME));
 	}
 
 	public void setAllNull() {
@@ -149,7 +168,7 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 	public int getCursed() {
 		return cursed;
 	}
-	
+
 	public boolean getDamageLog() {
 		return damageLog;
 	}
@@ -271,7 +290,7 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 	Multimap<String, AttributeModifier> attributes = HashMultimap.create();
 	private static final float HP_PER_ELF_LEVEL = 4;
 	public static final int MAX_ELF_LEVEL = 10;
-	
+
 	public int getElfLevel() {
 		return elfLevel;
 	}
@@ -286,9 +305,9 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 		if(elfLevel == 0) {
 			setAllNull();
 		}
-		DHPacketProcessor.sendToPlayer(new PacketPropertiesSync(player, NAME), player);
+		syncToClient();
 	}
-	
+
 	public int getTrigger() {
 		return trigger;
 	}

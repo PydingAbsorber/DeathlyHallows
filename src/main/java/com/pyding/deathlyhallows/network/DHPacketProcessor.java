@@ -8,7 +8,8 @@ import com.pyding.deathlyhallows.network.packets.PacketKeyBindings;
 import com.pyding.deathlyhallows.network.packets.PacketParticle;
 import com.pyding.deathlyhallows.network.packets.PacketPlayerNBTSync;
 import com.pyding.deathlyhallows.network.packets.PacketPlayerRender;
-import com.pyding.deathlyhallows.network.packets.PacketPropertiesSync;
+import com.pyding.deathlyhallows.network.packets.PacketPropertiesToClient;
+import com.pyding.deathlyhallows.network.packets.PacketPropertiesToServer;
 import com.pyding.deathlyhallows.network.packets.PacketRenderAbsoluteDeath;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -26,8 +27,9 @@ public class DHPacketProcessor {
 
 	public static void init() {
 		int id = 1;
+		channel.registerMessage(PacketPropertiesToServer.class, PacketPropertiesToServer.class, id++, Side.SERVER);
+		channel.registerMessage(PacketPropertiesToClient.class, PacketPropertiesToClient.class, id++, Side.CLIENT);
 		channel.registerMessage(PacketKeyBindings.class, PacketKeyBindings.class, id++, Side.SERVER);
-		channel.registerMessage(PacketPropertiesSync.class, PacketPropertiesSync.class, id++, Side.CLIENT);
 		channel.registerMessage(PacketDisableFlight.class, PacketDisableFlight.class, id++, Side.CLIENT);
 		channel.registerMessage(PacketPlayerRender.class, PacketPlayerRender.class, id++, Side.CLIENT);
 		channel.registerMessage(PacketAnimaMobRender.class, PacketAnimaMobRender.class, id++, Side.CLIENT);

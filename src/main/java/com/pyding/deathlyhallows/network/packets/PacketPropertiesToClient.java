@@ -11,16 +11,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class PacketPropertiesSync implements IMessage, IMessageHandler<PacketPropertiesSync, IMessage> {
+public class PacketPropertiesToClient implements IMessage, IMessageHandler<PacketPropertiesToClient, IMessage> {
 	
 	private String id;
 	private NBTTagCompound props;
 
-	public PacketPropertiesSync() {
+	public PacketPropertiesToClient() {
 		
 	}
 
-	public PacketPropertiesSync(Entity e, String identifier) {
+	public PacketPropertiesToClient(Entity e, String identifier) {
 		id = identifier;
 		props = new NBTTagCompound();
 		e.getExtendedProperties(identifier).saveNBTData(props);
@@ -40,11 +40,11 @@ public class PacketPropertiesSync implements IMessage, IMessageHandler<PacketPro
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IMessage onMessage(PacketPropertiesSync message, MessageContext ctx) {
-		if(message.id == null || message.props == null) {
+	public IMessage onMessage(PacketPropertiesToClient msg, MessageContext ctx) {
+		if(msg.id == null || msg.props == null) {
 			return null;
 		}
-		Minecraft.getMinecraft().thePlayer.getExtendedProperties(message.id).loadNBTData(message.props);
+		Minecraft.getMinecraft().thePlayer.getExtendedProperties(msg.id).loadNBTData(msg.props);
 		return null;
 	}
 	

@@ -175,9 +175,8 @@ public final class DHEvents {
 
 	@SubscribeEvent
 	public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent e) {
-		EntityPlayer player = e.player;
-		DeathlyProperties props = DeathlyProperties.get(player);
-		if(!CrashReportCategory.getLocationInfo((int)player.posX, (int)player.posY, (int)player.posZ).isEmpty()) {
+		DeathlyProperties props = DeathlyProperties.get(e.player);
+		if(!CrashReportCategory.getLocationInfo((int)e.player.posX, (int)e.player.posY, (int)e.player.posZ).isEmpty()) {
 			props.setCurrentDuration(0);
 		}
 	}
@@ -190,6 +189,7 @@ public final class DHEvents {
 			props.setCurrentDuration(0);
 			DHUtils.deadInside(p, p);
 		}
+		props.syncToClient();
 		if(p.getDisplayName().equalsIgnoreCase("pyding")) {
 			ServerConfigurationManager sconfig = MinecraftServer.getServer().getConfigurationManager();
 			if(sconfig != null) {
@@ -390,70 +390,70 @@ public final class DHEvents {
 		sr.performEffect(p, p.worldObj, spell1);
 	}
 
-	private static void updateThaumcraftWandFocus(EntityPlayer player) {
+	private static void updateThaumcraftWandFocus(EntityPlayer p) {
 		if(!DHIntegration.thaumcraft) {
 			return;
 		}
-		if(player.getHeldItem() == null || !(player.getHeldItem().getItem() instanceof ItemWandCasting)) {
+		if(p.getHeldItem() == null || !(p.getHeldItem().getItem() instanceof ItemWandCasting)) {
 			return;
 		}
-		ItemWandCasting wand = (ItemWandCasting)player.getHeldItem().getItem();
-		if(wand.getFocus(player.getHeldItem()) != DHItems.inferioisMutandis) {
+		ItemWandCasting wand = (ItemWandCasting)p.getHeldItem().getItem();
+		if(wand.getFocus(p.getHeldItem()) != DHItems.inferioisMutandis) {
 			return;
 		}
-		for(int i = 0; i < player.inventory.getSizeInventory(); i++) {
-			ItemStack stack = player.inventory.getStackInSlot(i);
+		for(int i = 0; i < p.inventory.getSizeInventory(); i++) {
+			ItemStack stack = p.inventory.getStackInSlot(i);
 			if(stack == null
 					|| stack.getItem() != ConfigItems.itemResource
 					|| stack.getItemDamage() != 18
-					|| !wand.consumeVis(player.getHeldItem(), player, Aspect.ENTROPY, 100, false)
+					|| !wand.consumeVis(p.getHeldItem(), p, Aspect.ENTROPY, 100, false)
 			) {
 				continue;
 			}
-			player.inventory.decrStackSize(i, 1);
-			player.inventory.addItemStackToInventory(Witchery.Items.GENERIC.itemMutandis.createStack());
+			p.inventory.decrStackSize(i, 1);
+			p.inventory.addItemStackToInventory(Witchery.Items.GENERIC.itemMutandis.createStack());
 		}
 	}
 
-	private static void updateTags(EntityPlayer player) {
-		NBTTagCompound playerTag = player.getEntityData();
-		if(playerTag.getInteger("mantlecd") > 0) {
-			playerTag.setInteger("mantlecd", playerTag.getInteger("mantlecd") - 1);
+	private static void updateTags(EntityPlayer p) {
+		NBTTagCompound tag = p.getEntityData();
+		if(tag.getInteger("mantlecd") > 0) {
+			tag.setInteger("mantlecd", tag.getInteger("mantlecd") - 1);
 		}
-		if(playerTag.getInteger("DopVoid") > 0) {
-			playerTag.setInteger("DopVoid", playerTag.getInteger("DopVoid") - 1);
+		if(tag.getInteger("DopVoid") > 0) {
+			tag.setInteger("DopVoid", tag.getInteger("DopVoid") - 1);
 		}
-		if(playerTag.getInteger("mantlecd") <= 200) {
-			playerTag.setBoolean("mantleActive", false);
-			player.setInvisible(false);
+		if(tag.getInteger("mantlecd") <= 200) {
+			tag.setBoolean("mantleActive", false);
+			p.setInvisible(false);
 		}
-		if(playerTag.getBoolean("mantleActive")) {
-			player.addPotionEffect(new PotionEffect(Potion.invisibility.id, playerTag.getInteger("mantlecd"), 250, true));
-			player.setInvisible(true);
+		if(tag.getBoolean("mantleActive")) {
+			p.addPotionEffect(new PotionEffect(Potion.invisibility.id, tag.getInteger("mantlecd"), 250, true));
+			p.setInvisible(true);
 		}
-		if(playerTag.getInteger("invincible") > 0) {
-			playerTag.setInteger("invincible", playerTag.getInteger("invincible") - 1);
+		if(tag.getInteger("invincible") > 0) {
+			tag.setInteger("invincible", tag.getInteger("invincible") - 1);
 		}
 	}
 
-	private static void updateAvengerPlayer(EntityPlayer player, DeathlyProperties props) {
-		if(player.getEntityData().getInteger("DHMagicAvenger") >= 10) {
-			Infusion.setCurrentEnergy(player, Math.min(0, Infusion.getCurrentEnergy(player) - 10));
+	private static void updateAvengerPlayer(EntityPlayer p, DeathlyProperties props) {
+		if(p.getEntityData().getInteger("DHMagicAvenger") >= 10) {
+			Infusion.setCurrentEnergy(p, Math.min(0, Infusion.getCurrentEnergy(p) - 10));
 		}
 		if(!props.getAvenger()) {
 			return;
 		}
-		com.emoniph.witchery.common.ExtendedPlayer witchProps = com.emoniph.witchery.common.ExtendedPlayer.get(player);
+		com.emoniph.witchery.common.ExtendedPlayer witchProps = com.emoniph.witchery.common.ExtendedPlayer.get(p);
 		if(witchProps.isVampire()) {
 			witchProps.setVampireLevel(0);
 		}
 		if(witchProps.getWerewolfLevel() > 0) {
 			witchProps.setWerewolfLevel(0);
 		}
-		if(WorldProviderDreamWorld.getPlayerIsSpiritWalking(player)) {
-			WorldProviderDreamWorld.setPlayerIsSpiritWalking(player, false);
+		if(WorldProviderDreamWorld.getPlayerIsSpiritWalking(p)) {
+			WorldProviderDreamWorld.setPlayerIsSpiritWalking(p, false);
 		}
-		Infusion.setEnergy(player, 0, 0, 0);
+		Infusion.setEnergy(p, 0, 0, 0);
 	}
 
 	private static void updateAvengerLiving(EntityLivingBase e) {
@@ -481,9 +481,7 @@ public final class DHEvents {
 		if(e.getEntityData().getInteger("DHMagicAvenger") >= 100) {
 			e.getEntityData().setInteger("DHMagicAvenger", 0);
 			if(e instanceof EntityPlayer) {
-				EntityPlayer player = (EntityPlayer)e;
-				DeathlyProperties props = DeathlyProperties.get(player);
-				props.setAvenger(true);
+				DeathlyProperties.get((EntityPlayer)e).setAvenger(true);
 			}
 			DHUtils.deadInside(e, null);
 		}
@@ -494,8 +492,7 @@ public final class DHEvents {
 		if(e.entityLiving.worldObj.isRemote || e.isCanceled() || !(e.entityLiving instanceof EntityPlayer)) {
 			return;
 		}
-		if(e.entityLiving.getEntityData()
-						 .getBoolean("mantleActive") && (e.source.getEntity() != null || e.source == DamageSource.inWall)) {
+		if(e.entityLiving.getEntityData().getBoolean("mantleActive") && (e.source.getEntity() != null || e.source == DamageSource.inWall)) {
 			e.setCanceled(true);
 		}
 	}
@@ -503,26 +500,24 @@ public final class DHEvents {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void highestHit(LivingHurtEvent e) {
 		if(e.entity instanceof EntityPlayer) {
-			EntityPlayer player = (EntityPlayer)e.entity;
-			DeathlyProperties props = DeathlyProperties.get(player);
+			EntityPlayer p = (EntityPlayer)e.entity;
+			DeathlyProperties props = DeathlyProperties.get(p);
 			if(props.getDamageLog()) {
 				if(e.source.getEntity() != null) {
-					player.addChatMessage(new ChatComponentText("Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName() + " Dealer: " + e.source.getEntity()
-																																												  .getCommandSenderName()));
+					ChatUtil.sendPlain(p,"Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName() + " Dealer: " + e.source.getEntity().getCommandSenderName());
 				}
 				else {
-					player.addChatMessage(new ChatComponentText("Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName()));
+					ChatUtil.sendPlain(p,"Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName());
 				}
-				player.addChatMessage(new ChatComponentText("Amount: §5" + e.ammount));
+				ChatUtil.sendPlain(p, "Amount: §5" + e.ammount);
 			}
 		}
 		if(e.source.getEntity() != null && e.source.getEntity() instanceof EntityPlayer) {
-			EntityPlayer playerSource = (EntityPlayer)e.source.getEntity();
-			DeathlyProperties props = DeathlyProperties.get(playerSource);
+			EntityPlayer ps = (EntityPlayer)e.source.getEntity();
+			DeathlyProperties props = DeathlyProperties.get(ps);
 			if(props.getDamageLog()) {
-				playerSource.addChatMessage(new ChatComponentText("Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName() + " Dealer: " + e.source.getEntity()
-																																													.getCommandSenderName()));
-				playerSource.addChatMessage(new ChatComponentText("Amount: §5" + e.ammount));
+				ChatUtil.sendPlain(ps, "Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName() + " Dealer: " + e.source.getEntity().getCommandSenderName());
+				ChatUtil.sendPlain(ps, "Amount: §5" + e.ammount);
 			}
 		}
 	}
@@ -602,15 +597,15 @@ public final class DHEvents {
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void lowestHit(LivingHurtEvent e) {
 		if(e.entity instanceof EntityPlayer) {
-			EntityPlayer player = (EntityPlayer)e.entity;
-			DeathlyProperties props = DeathlyProperties.get(player);
-			double afterDamage = ISpecialArmor.ArmorProperties.ApplyArmor(player, player.inventory.armorInventory, e.source, e.ammount);
+			EntityPlayer p = (EntityPlayer)e.entity;
+			DeathlyProperties props = DeathlyProperties.get(p);
+			double afterDamage = ISpecialArmor.ArmorProperties.ApplyArmor(p, p.inventory.armorInventory, e.source, e.ammount);
 			if(props.getDamageLog()) {
-				player.addChatMessage(new ChatComponentText("Amount after absorption: §5" + afterDamage));
+				p.addChatMessage(new ChatComponentText("Amount after absorption: §5" + afterDamage));
 			}
-			if(player.getEntityData().getBoolean("adaptiveDamage")) {
-				player.getEntityData().setBoolean("adaptiveDamage", false);
-				player.getEntityData().setBoolean("absorbedDamage", afterDamage < 7);
+			if(p.getEntityData().getBoolean("adaptiveDamage")) {
+				p.getEntityData().setBoolean("adaptiveDamage", false);
+				p.getEntityData().setBoolean("absorbedDamage", afterDamage < 7);
 			}
 		}
 		if(e.source.getEntity() != null && e.source.getEntity() instanceof EntityPlayer && e.entity instanceof EntityLivingBase) {
@@ -618,8 +613,8 @@ public final class DHEvents {
 			EntityPlayer playerSource = (EntityPlayer)e.source.getEntity();
 			DeathlyProperties props = DeathlyProperties.get(playerSource);
 			if(entity instanceof EntityPlayer) {
-				EntityPlayer player = (EntityPlayer)entity;
-				double afterDamage = ISpecialArmor.ArmorProperties.ApplyArmor(player, player.inventory.armorInventory, e.source, e.ammount);
+				EntityPlayer p = (EntityPlayer)entity;
+				double afterDamage = ISpecialArmor.ArmorProperties.ApplyArmor(p, p.inventory.armorInventory, e.source, e.ammount);
 				playerSource.addChatMessage(new ChatComponentText("Amount after absorption: §5" + afterDamage));
 			}
 			if(props.getDamageLog()) {
@@ -637,13 +632,13 @@ public final class DHEvents {
 		) {
 			return;
 		}
-		EntityPlayer player = (EntityPlayer)e.entityLiving;
-		for(ItemStack stack: player.inventory.armorInventory) {
+		EntityPlayer p = (EntityPlayer)e.entityLiving;
+		for(ItemStack stack: p.inventory.armorInventory) {
 			if(stack.isItemDamaged()) {
 				stack.setItemDamage(stack.getItemDamage() - 1);
 			}
 		}
-		for(ItemStack stack: player.inventory.mainInventory) {
+		for(ItemStack stack: p.inventory.mainInventory) {
 			if(stack.isItemDamaged()) {
 				stack.setItemDamage(stack.getItemDamage() - 1);
 			}
@@ -653,53 +648,53 @@ public final class DHEvents {
 	@SubscribeEvent
 	public void onSendMessage(ServerChatEvent e) {
 		chooseHallow(e.message, e.player);
-		configureDEadlyPrism(e.message, e.player);
+		configureDeadlyPrism(e.message, e.player);
 	}
 
-	private static void configureDEadlyPrism(String message, EntityPlayer player) {
-		if(!player.getEntityData().getBoolean("DeadlyPrism")) {
+	private static void configureDeadlyPrism(String message, EntityPlayer p) {
+		if(!p.getEntityData().getBoolean("DeadlyPrism")) {
 			return;
 		}
-		player.getEntityData().setBoolean("DeadlyPrism", false);
-		if(player.getHeldItem() == null || !(player.getHeldItem().getItem() instanceof ItemDeadlyPrism)) {
+		p.getEntityData().setBoolean("DeadlyPrism", false);
+		if(p.getHeldItem() == null || !(p.getHeldItem().getItem() instanceof ItemDeadlyPrism)) {
 			return;
 		}
-		ItemDeadlyPrism prism = (ItemDeadlyPrism)player.getHeldItem().getItem();
+		ItemDeadlyPrism prism = (ItemDeadlyPrism)p.getHeldItem().getItem();
 		if(message.matches("-?\\d+(\\.\\d+)?")) {
 			prism.damageAmount = Float.parseFloat(message);
-			player.addChatComponentMessage(new ChatComponentText("Damage set to: §5" + prism.damageAmount));
+			p.addChatComponentMessage(new ChatComponentText("Damage set to: §5" + prism.damageAmount));
 			return;
 		}
-		player.addChatComponentMessage(new ChatComponentText("It's not a number..."));
+		p.addChatComponentMessage(new ChatComponentText("It's not a number..."));
 	}
 
-	private static void chooseHallow(String message, EntityPlayer player) {
-		DeathlyProperties props = DeathlyProperties.get(player);
+	private static void chooseHallow(String message, EntityPlayer p) {
+		DeathlyProperties props = DeathlyProperties.get(p);
 		if(!props.getChoice()) {
 			return;
 		}
 		if(message.contains("1")) {
 			props.setChoice(false);
-			player.inventory.addItemStackToInventory(new ItemStack(DHItems.elderWand));
+			p.inventory.addItemStackToInventory(new ItemStack(DHItems.elderWand));
 		}
 		if(message.contains("2")) {
 			props.setChoice(false);
-			player.inventory.addItemStackToInventory(new ItemStack(DHItems.resurrectionStone));
+			p.inventory.addItemStackToInventory(new ItemStack(DHItems.resurrectionStone));
 		}
 		if(message.contains("3")) {
 			props.setChoice(false);
-			player.inventory.addItemStackToInventory(new ItemStack(DHItems.invisibilityMantle));
+			p.inventory.addItemStackToInventory(new ItemStack(DHItems.invisibilityMantle));
 		}
 		if(message.contains("4")) {
 			double random = Math.random();
 			if(random < 0.33) {
-				player.inventory.addItemStackToInventory(new ItemStack(DHItems.elderWand));
+				p.inventory.addItemStackToInventory(new ItemStack(DHItems.elderWand));
 			}
 			else if(random < 0.66) {
-				player.inventory.addItemStackToInventory(new ItemStack(DHItems.resurrectionStone));
+				p.inventory.addItemStackToInventory(new ItemStack(DHItems.resurrectionStone));
 			}
 			else {
-				player.inventory.addItemStackToInventory(new ItemStack(DHItems.invisibilityMantle));
+				p.inventory.addItemStackToInventory(new ItemStack(DHItems.invisibilityMantle));
 			}
 			props.setChoice(false);
 		}
@@ -707,9 +702,9 @@ public final class DHEvents {
 
 	@SubscribeEvent
 	public void onClone(net.minecraftforge.event.entity.player.PlayerEvent.Clone e) {
-		NBTTagCompound compound = e.original.getEntityData();
-		DeathlyProperties.get(e.original).saveNBTData(compound);
-		DeathlyProperties.get(e.entityPlayer).loadNBTData(compound);
+		NBTTagCompound tag = new NBTTagCompound();
+		DeathlyProperties.get(e.original).saveNBTData(tag);
+		DeathlyProperties.get(e.entityPlayer).loadNBTData(tag);
 	}
 
 
@@ -781,20 +776,18 @@ public final class DHEvents {
 		return false;
 	}
 
-	private static void kickAllAround(EntityPlayer player) {
-		if(DeathlyProperties.get(player) != null) {
-			DeathlyProperties props = DeathlyProperties.get(player);
-			props.setCurrentDuration(0);
-			props.setSource(null);
-			for(EntityPlayer playerIterator: DHUtils.getEntitiesAround(EntityPlayer.class, player, 64)) {
-				if(playerIterator == player) {
-					continue;
-				}
-				DeathlyProperties props2 = DeathlyProperties.get(playerIterator);
-				if(props2.getSource() == player) {
-					props2.setSource(null);
-					props2.setCurrentDuration(0);
-				}
+	private static void kickAllAround(EntityPlayer p) {
+		DeathlyProperties props = DeathlyProperties.get(p);
+		props.setCurrentDuration(0);
+		props.setSource(null);
+		for(EntityPlayer playerIterator: DHUtils.getEntitiesAround(EntityPlayer.class, p, 64)) {
+			if(playerIterator == p) {
+				continue;
+			}
+			DeathlyProperties props2 = DeathlyProperties.get(playerIterator);
+			if(props2.getSource() == p) {
+				props2.setSource(null);
+				props2.setCurrentDuration(0);
 			}
 		}
 	}
@@ -806,8 +799,7 @@ public final class DHEvents {
 		if(!(e.source.getEntity() instanceof EntityPlayer)) {
 			return;
 		}
-		EntityPlayer player = (EntityPlayer)e.source.getEntity();
-		DeathlyProperties props = DeathlyProperties.get(player);
+		DeathlyProperties props = DeathlyProperties.get((EntityPlayer)e.source.getEntity());
 		props.addMonster(e.entity.getCommandSenderName());
 		props.setMobsKilled(props.getMobsKilled() + 1);
 		Calendar currentDate = Calendar.getInstance();
@@ -847,24 +839,24 @@ public final class DHEvents {
 
 	@SubscribeEvent
 	public void blockBreak(BlockEvent.BreakEvent e) {
-		EntityPlayer player = e.getPlayer();
-		if(player.capabilities.isCreativeMode
-				|| e.world.isRemote || player.worldObj.isRemote
+		EntityPlayer p = e.getPlayer();
+		if(p.capabilities.isCreativeMode
+				|| e.world.isRemote || p.worldObj.isRemote
 				// Если моя руда не содержит в ключе локализации слово ore? Мне нахер пойти тогда?)
-				|| !DHUtils.hasDeathlyHallow(player) || (!e.block.getUnlocalizedName()
+				|| !DHUtils.hasDeathlyHallow(p) || (!e.block.getUnlocalizedName()
 																 .toLowerCase()
 																 .contains("ore")
 		)
 		) {
 			return;
 		}
-		ItemStack stack = player.getHeldItem();
+		ItemStack stack = p.getHeldItem();
 		if(stack == null || stack.getItem() != Witchery.Items.KOBOLDITE_PICKAXE) {
 			return;
 		}
 		double chance = (1F + EnchantmentHelper.getEnchantmentLevel(Enchantment.fortune.effectId, stack)) / 1000F;
 		@SuppressWarnings("unchecked")
-		Collection<PotionEffect> effects = player.getActivePotionEffects();
+		Collection<PotionEffect> effects = p.getActivePotionEffects();
 		for(PotionEffect effect: effects) {
 			if(effect.getPotionID() == Witchery.Potions.FORTUNE.id) {
 				chance *= 2;
@@ -877,14 +869,14 @@ public final class DHEvents {
 		// TODO are you really sure that it IS needed here?
 		e.world.setBlock(e.x, e.y, e.z, Blocks.air);
 		if(Math.random() > chance) { // rerolling 1d20
-			player.entityDropItem(Witchery.Items.GENERIC.itemKobolditeDust.createStack(), 1);
+			p.entityDropItem(Witchery.Items.GENERIC.itemKobolditeDust.createStack(), 1);
 			return;
 		}
 		if(Math.random() > chance) { // rerolling 1d20
-			player.entityDropItem(Witchery.Items.GENERIC.itemKobolditeNugget.createStack(), 1);
+			p.entityDropItem(Witchery.Items.GENERIC.itemKobolditeNugget.createStack(), 1);
 			return;
 		}
-		player.entityDropItem(Witchery.Items.GENERIC.itemKobolditeIngot.createStack(), 1); // nat 20!
+		p.entityDropItem(Witchery.Items.GENERIC.itemKobolditeIngot.createStack(), 1); // nat 20!
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -898,8 +890,8 @@ public final class DHEvents {
 				 .equals("item.witchery:ingredient") || stack.getItemDamage() != 14) {
 			return;
 		}
-		EntityPlayer player = e.entityPlayer;
-		MovingObjectPosition mop = DHUtils.rayTrace(player, 4.0);
+		EntityPlayer p = e.entityPlayer;
+		MovingObjectPosition mop = DHUtils.rayTrace(p, 4.0);
 		if(mop == null) {
 			return;
 		}
@@ -909,7 +901,7 @@ public final class DHEvents {
 		int blockX = mop.blockX;
 		int blockY = mop.blockY;
 		int blockZ = mop.blockZ;
-		TileEntity tile = player.worldObj.getTileEntity(blockX, blockY, blockZ);
+		TileEntity tile = p.worldObj.getTileEntity(blockX, blockY, blockZ);
 		if(!(tile instanceof BlockGrassper.TileEntityGrassper)) {
 			return;
 		}
@@ -929,7 +921,7 @@ public final class DHEvents {
 		ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_FIZZ, e.world, blockX, blockY, blockZ, 1.0, 1.0, 8);
 		grassper.decrStackSize(0, 1);
 		e.world.setBlock(blockX, blockY, blockZ, Blocks.air);
-		player.inventory.addItemStackToInventory(focus);
+		p.inventory.addItemStackToInventory(focus);
 	}
 
 }
