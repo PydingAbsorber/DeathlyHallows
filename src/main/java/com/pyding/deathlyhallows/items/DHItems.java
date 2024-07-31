@@ -46,7 +46,7 @@ public final class DHItems {
 	}
 
 	public static void init() {
-		register(itemLogo = new ItemBase("itemLogo", 1));
+		register(itemLogo = new ItemBase("itemLogo", 1, null));
 		register(invisibilityMantle = new ItemBaubleInvisibilityMantle());
 		register(elderWand = new ItemElderWand());
 		register(resurrectionStone = new ItemBaubleResurrectionStone());
