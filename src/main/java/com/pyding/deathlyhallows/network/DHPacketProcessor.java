@@ -40,6 +40,9 @@ public class DHPacketProcessor {
 	}
 
 	public static void sendToPlayer(IMessage message, EntityPlayer player) {
+		if(!(player instanceof EntityPlayerMP) || ((EntityPlayerMP)player).playerNetServerHandler == null) {
+			return;
+		}
 		channel.sendTo(message, (EntityPlayerMP)player);
 	}
 

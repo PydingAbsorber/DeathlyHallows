@@ -702,9 +702,7 @@ public final class DHEvents {
 
 	@SubscribeEvent
 	public void onClone(net.minecraftforge.event.entity.player.PlayerEvent.Clone e) {
-		NBTTagCompound tag = new NBTTagCompound();
-		DeathlyProperties.get(e.original).saveNBTData(tag);
-		DeathlyProperties.get(e.entityPlayer).loadNBTData(tag);
+		DeathlyProperties.copy(e.original, e.entityPlayer);
 	}
 
 

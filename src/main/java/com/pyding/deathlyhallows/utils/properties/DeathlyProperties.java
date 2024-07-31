@@ -65,6 +65,12 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 	public static DeathlyProperties get(EntityPlayer player) {
 		return (DeathlyProperties)player.getExtendedProperties(NAME);
 	}
+	
+	public static void copy(EntityPlayer from, EntityPlayer to) {
+		NBTTagCompound tag = new NBTTagCompound();
+		get(from).saveNBTData(tag);
+		get(to).loadNBTData(tag);
+	}
 
 	@Override
 	public void saveNBTData(NBTTagCompound entityTag) {
