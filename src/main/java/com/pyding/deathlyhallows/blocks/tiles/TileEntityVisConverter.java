@@ -42,7 +42,6 @@ public class TileEntityVisConverter extends TileEntity {
 		if(worldObj.getTotalWorldTime() % 20 == 0) {
 			ParticleEffect.PORTAL.send(null, worldObj, xCoord, yCoord, zCoord + 1, 2, 1, 16);
 		}
-
 		NBTTagCompound altarNBT = new NBTTagCompound();
 		altar.writeToNBT(altarNBT);
 		int x = altarNBT.getInteger("CoreX");
@@ -52,13 +51,13 @@ public class TileEntityVisConverter extends TileEntity {
 		if(core != null) {
 			NBTTagCompound coreNBT = new NBTTagCompound();
 			core.writeToNBT(coreNBT);
-			coreNBT.setFloat("MaxPower", 3850 + total * 10);
+			// vanilla softcap is 4490
+			coreNBT.setFloat("MaxPower", 4400 + total * 10);
 			coreNBT.setInteger("RechargeScale", 12 + total / 10);
 			core.readFromNBT(coreNBT);
 			core.markDirty();
 			worldObj.markBlockForUpdate(x, y, z);
 		}
-
 	}
 
 	private TileNodeEnergized findNearestEnergizedNode(int radius) {
