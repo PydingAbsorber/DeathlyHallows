@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class EntityEmpoweredArrow extends Entity {
 
-	private static final int WATCHER_SHOOTER = 22;
+	private static final int WATCHER_SHOOTER = 4;
 	private EntityPlayer shooter;
 	private float damage = 0;
 	private float radius = 0;
@@ -30,7 +30,7 @@ public class EntityEmpoweredArrow extends Entity {
 		this(world);
 		setSize(0.5F, 0.5F);
 		setShooter(shooter);
-		setPositionAndRotation(shooter.posX, shooter.posY, shooter.posZ, shooter.rotationYaw, shooter.rotationPitch);
+		setPositionAndRotation(shooter.posX, shooter.posY + shooter.eyeHeight, shooter.posZ, shooter.rotationYaw, shooter.rotationPitch);
 		setRotation(rotationYaw, rotationPitch);
 		this.damage = damage;
 		this.radius = radius;
@@ -61,7 +61,7 @@ public class EntityEmpoweredArrow extends Entity {
 		if(ticksExisted > 200) {
 			kill();
 		}
-		if(worldObj.isRemote || getShooter() == null) {
+		if(getShooter() == null) {
 			return;
 		}
 		switch(type) {
@@ -79,7 +79,7 @@ public class EntityEmpoweredArrow extends Entity {
 	private void penetratingArrowUpdate() {
 		noClip = true;
 		Vec3 lookVec = getShooter().getLookVec();
-		moveArrowToLook(lookVec, 1F);
+		moveArrowToLook(lookVec, 1F, getShooter().rotationYaw, getShooter().rotationPitch);
 		spawnParticles();
 		if(ticksExisted % 5 == 0) {
 			attackInRadius();
@@ -91,18 +91,17 @@ public class EntityEmpoweredArrow extends Entity {
 			kill();
 		}
 		Vec3 lookVec = getShooter().getLookVec();
-		moveArrowToLook(lookVec, 10F);
+		moveArrowToLook(lookVec, 10F, getShooter().rotationYaw, getShooter().rotationPitch);
 		spawnParticlesAt(lookVec);
 		attackInRadius();
 	}
 
-	private void moveArrowToLook(Vec3 lookVec, float speed) {
+	private void moveArrowToLook(Vec3 lookVec, float speed, float yaw, float pitch) {
 		motionX = lookVec.xCoord * speed;
 		motionY = lookVec.yCoord * speed;
 		motionZ = lookVec.zCoord * speed;
-		posX += motionX;
-		posY += motionY;
-		posZ += motionZ;
+		setPosition(posX + motionX, posY + motionY, posZ + motionZ);
+		setRotation(yaw, pitch);
 	}
 
 	private void attackInRadius() {
