@@ -1,7 +1,6 @@
 package com.pyding.deathlyhallows.blocks;
 
 import com.emoniph.witchery.Witchery;
-import com.emoniph.witchery.blocks.BlockBaseContainer;
 import com.emoniph.witchery.blocks.BlockCircle;
 import com.emoniph.witchery.blocks.BlockGrassper;
 import com.emoniph.witchery.blocks.TileEntityBase;
@@ -9,6 +8,7 @@ import com.emoniph.witchery.common.PowerSources;
 import com.emoniph.witchery.entity.EntityCovenWitch;
 import com.emoniph.witchery.ritual.RiteRegistry;
 import com.emoniph.witchery.ritual.RitualStep;
+import com.emoniph.witchery.ritual.RitualStep.Result;
 import com.emoniph.witchery.util.BlockUtil;
 import com.emoniph.witchery.util.ChatUtil;
 import com.emoniph.witchery.util.Config;
@@ -22,6 +22,7 @@ import com.pyding.deathlyhallows.rituals.rites.ElderRitualStep;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -45,15 +46,16 @@ import net.minecraftforge.common.util.ForgeDirection;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class BlockElderRitual extends BlockBaseContainer {
+import static com.emoniph.witchery.ritual.RitualStep.Result.ABORTED_REFUND;
+import static com.emoniph.witchery.ritual.RitualStep.Result.STARTING;
+import static com.emoniph.witchery.ritual.RitualStep.Result.UPKEEP;
+
+public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 
 	public BlockElderRitual() {
-		super(Material.vine, BlockElderRitual.TileEntityCircle.class);
-		registerWithCreateTab = false;
+		super("elderRitualRune", Material.vine, null);
 		setHardness(3.0f);
 		setResistance(1000.0f);
-		setBlockName("elderRitualRune");
-		setBlockTextureName("dh:ritual");
 		setBlockBounds(0.0f, 0.0f, 0.0f, 1.0f, 0.015625f, 1.0f);
 	}
 
@@ -130,10 +132,13 @@ public class BlockElderRitual extends BlockBaseContainer {
 	public void randomDisplayTick(World world, int x, int y, int z, Random rand) {
 		int metadata = world.getBlockMetadata(x, y, z);
 		if(metadata == 1) {
-			double d0 = x + 0.4f + rand.nextFloat() * 0.2f;
-			double d2 = y + 0.1f + rand.nextFloat() * 0.3f;
-			double d3 = z + 0.4f + rand.nextFloat() * 0.2f;
-			world.spawnParticle(ParticleEffect.REDDUST.toString(), d0, d2, d3, 0.0, 0.0, 0.0);
+			world.spawnParticle(
+					ParticleEffect.REDDUST.toString(),
+					x + 0.4f + rand.nextFloat() * 0.2f,
+					y + 0.1f + rand.nextFloat() * 0.3f,
+					z + 0.4f + rand.nextFloat() * 0.2f,
+					0.0, 0.0, 0.0
+			);
 		}
 	}
 
@@ -145,281 +150,248 @@ public class BlockElderRitual extends BlockBaseContainer {
 
 	private void activateBlock(World world, int posX, int posY, int posZ, EntityPlayer player, boolean summonCoven) {
 		BlockElderRitual.TileEntityCircle tileEntity = BlockUtil.getTileEntity(world, posX, posY, posZ, BlockElderRitual.TileEntityCircle.class);
-		if(tileEntity != null) {
-			if(tileEntity.isRitualActive()) {
-				tileEntity.deactivate();
-			}
-			else if(!world.isRemote) {
-				if(!PowerSources.instance()
-								.isAreaNulled(world, posX, posY, posZ) && world.provider.dimensionId != Config.instance().dimensionDreamID) {
-//                     Circle a = new Circle(16);
-//                     Circle b = new Circle(28);
-//                     Circle c = new Circle(40);
-//                     Circle d = new Circle(0);
-//                     Circle[][] PATTERN = { { d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d }, { d, d, d, d, d, c, c, c, c, c, c, c, d, d, d, d, d }, { d, d, d, d, c, d, d, d, d, d, d, d, c, d, d, d, d }, { d, d, d, c, d, d, b, b, b, b, b, d, d, c, d, d, d }, { d, d, c, d, d, b, d, d, d, d, d, b, d, d, c, d, d }, { d, c, d, d, b, d, d, a, a, a, d, d, b, d, d, c, d }, { d, c, d, b, d, d, a, d, d, d, a, d, d, b, d, c, d }, { d, c, d, b, d, a, d, d, d, d, d, a, d, b, d, c, d }, { d, c, d, b, d, a, d, d, d, d, d, a, d, b, d, c, d }, { d, c, d, b, d, a, d, d, d, d, d, a, d, b, d, c, d }, { d, c, d, b, d, d, a, d, d, d, a, d, d, b, d, c, d }, { d, c, d, d, b, d, d, a, a, a, d, d, b, d, d, c, d }, { d, d, c, d, d, b, d, d, d, d, d, b, d, d, c, d, d }, { d, d, d, c, d, d, b, b, b, b, b, d, d, c, d, d, d }, { d, d, d, d, c, d, d, d, d, d, d, d, c, d, d, d, d }, { d, d, d, d, d, c, c, c, c, c, c, c, d, d, d, d, d }, { d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d, d } };
-//                     int offsetZ = (PATTERN.length - 1) / 2;
-//                    for (int isDaytime = 0; isDaytime < PATTERN.length - 1; ++isDaytime) {
-//                         int isRainPossible = posZ - offsetZ + isDaytime;
-//                         int isRaining = (PATTERN[isDaytime].length - 1) / 2;
-//                        for (int isThundering = 0; isThundering < PATTERN[isDaytime].length; ++isThundering) {
-//                             int maxRadius = posX - isRaining + isThundering;
-//                            PATTERN[PATTERN.length - 1 - isDaytime][isThundering].addGlyph(world, maxRadius, posY, isRainPossible);
-//                        }
-//                    }
-					boolean isDaytime2 = world.isDaytime();
-					boolean var30 = world.getBiomeGenForCoords(posX, posZ).canSpawnLightningBolt();
-					boolean isRaining2 = world.isRaining() && var30;
-					boolean isThundering2 = world.isThundering();
-					int maxRadius = 7;//PATTERN.length / 2;
-					AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(posX - maxRadius, posY - maxRadius, posZ - maxRadius, posX + maxRadius, posY + maxRadius, posZ + maxRadius);
-					@SuppressWarnings("unchecked")
-					ArrayList<Entity> entities = (ArrayList<Entity>)Lists.newArrayList(world.getEntitiesWithinAABB(Entity.class, bounds));
-					ArrayList<ItemStack> grassperStacks = new ArrayList<ItemStack>();
-					boolean var31 = true;
-					for(int x = posX - 5; x <= posX + 5; ++x) {
-						for(int z = posZ - 5; z <= posZ + 5; ++z) {
-							Block block = world.getBlock(x, posY, z);
-							if(block == Witchery.Blocks.GRASSPER) {
-								TileEntity tile = world.getTileEntity(x, posY, z);
-								if(tile instanceof BlockGrassper.TileEntityGrassper) {
-									BlockGrassper.TileEntityGrassper ritual = (BlockGrassper.TileEntityGrassper)tile;
-									ItemStack stack = ritual.getStackInSlot(0);
-									if(stack != null) {
-										grassperStacks.add(stack);
-									}
-								}
-							}
-						}
-					}
-					// Circle[] nearbyCircles = { a, b, c };
-					boolean success = false;
-					int covenSize = summonCoven ? EntityCovenWitch.getCovenSize(player) : 0;
-					for(ElderRiteRegistry.Ritual o: ElderRiteRegistry.instance().getRituals()) {
-						if(o.isMatch(world, posX, posY, posZ, entities, grassperStacks, isDaytime2, isRaining2, isThundering2)) {
-							/*if (ritual2.rite instanceof RiteWeatherCallStorm || ritual2.rite instanceof RiteEclipse) {
-								 ExtendedPlayer exPlayer = ExtendedPlayer.get(player);
-							}*/
-							tileEntity.queueRitual(o, bounds, player, covenSize, summonCoven);
-							summonCoven = false;
-							success = true;
-						}
-					}
-					if(!success && !world.isRemote) {
-						RiteRegistry.RiteError("witchery.rite.unknownritual", player, world);
-						SoundEffect.NOTE_SNARE.playAt(world, posX, posY, posZ);
-					}
+		if(tileEntity == null) {
+			return;
+		}
+		if(tileEntity.isRitualActive()) {
+			tileEntity.deactivate();
+			return;
+		}
+
+		if(world.isRemote) {
+			return;
+		}
+		if(PowerSources.instance().isAreaNulled(world, posX, posY, posZ) || world.provider.dimensionId == Config.instance().dimensionDreamID) {
+			ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.rite.nullfield");
+			SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
+			return;
+		}
+
+		boolean isDaytime2 = world.isDaytime();
+		boolean canThunder = world.getBiomeGenForCoords(posX, posZ).canSpawnLightningBolt();
+		boolean isRaining2 = world.isRaining() && canThunder;
+		boolean isThundering2 = world.isThundering();
+		int maxRadius = 7; // PATTERN.length / 2;
+		AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(posX - maxRadius, posY - maxRadius, posZ - maxRadius, posX + maxRadius, posY + maxRadius, posZ + maxRadius);
+		@SuppressWarnings("unchecked")
+		ArrayList<Entity> entities = (ArrayList<Entity>)Lists.newArrayList(world.getEntitiesWithinAABB(Entity.class, bounds));
+		ArrayList<ItemStack> grassperStacks = new ArrayList<>();
+		for(int x = posX - 5; x <= posX + 5; ++x) {
+			for(int z = posZ - 5; z <= posZ + 5; ++z) {
+				Block block = world.getBlock(x, posY, z);
+				if(block != Witchery.Blocks.GRASSPER) {
+					continue;
 				}
-				else {
-					ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.rite.nullfield");
-					SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
+				TileEntity tile = world.getTileEntity(x, posY, z);
+				if(!(tile instanceof BlockGrassper.TileEntityGrassper)) {
+					continue;
+				}
+				BlockGrassper.TileEntityGrassper ritual = (BlockGrassper.TileEntityGrassper)tile;
+				ItemStack stack = ritual.getStackInSlot(0);
+				if(stack != null) {
+					grassperStacks.add(stack);
 				}
 			}
+		}
+		boolean success = false;
+		int covenSize = summonCoven ? EntityCovenWitch.getCovenSize(player) : 0;
+		for(ElderRiteRegistry.Ritual o: ElderRiteRegistry.instance().getRituals()) {
+			if(!o.isMatch(world, posX, posY, posZ, entities, grassperStacks, isDaytime2, isRaining2, isThundering2)) {
+				continue;
+			}
+			tileEntity.queueRitual(o, bounds, player, covenSize, summonCoven);
+			summonCoven = false;
+			success = true;
+				
+		}
+		if(!success && !world.isRemote) {
+			RiteRegistry.RiteError("witchery.rite.unknownritual", player, world);
+			SoundEffect.NOTE_SNARE.playAt(world, posX, posY, posZ);
 		}
 	}
 
-	static class SyntheticClass_1 {
-		// TODO map enum back
-		static final int[] $SwitchMap$com$emoniph$witchery$ritual$RitualStep$Result;
-
-		static {
-			$SwitchMap$com$emoniph$witchery$ritual$RitualStep$Result = new int[RitualStep.Result.values().length];
-			try {
-				SyntheticClass_1.$SwitchMap$com$emoniph$witchery$ritual$RitualStep$Result[RitualStep.Result.COMPLETED.ordinal()] = 1;
-			}
-			catch(NoSuchFieldError noSuchFieldError) {
-			}
-			try {
-				SyntheticClass_1.$SwitchMap$com$emoniph$witchery$ritual$RitualStep$Result[RitualStep.Result.ABORTED.ordinal()] = 2;
-			}
-			catch(NoSuchFieldError noSuchFieldError2) {
-			}
-			try {
-				SyntheticClass_1.$SwitchMap$com$emoniph$witchery$ritual$RitualStep$Result[RitualStep.Result.ABORTED_REFUND.ordinal()] = 3;
-			}
-			catch(NoSuchFieldError noSuchFieldError3) {
-			}
-			try {
-				SyntheticClass_1.$SwitchMap$com$emoniph$witchery$ritual$RitualStep$Result[RitualStep.Result.UPKEEP.ordinal()] = 4;
-			}
-			catch(NoSuchFieldError noSuchFieldError4) {
-			}
-			try {
-				SyntheticClass_1.$SwitchMap$com$emoniph$witchery$ritual$RitualStep$Result[RitualStep.Result.STARTING.ordinal()] = 5;
-			}
-			catch(NoSuchFieldError noSuchFieldError5) {
-			}
-		}
+	@Override
+	public TileEntity createNewTileEntity(World world, int i) {
+		return new BlockElderRitual.TileEntityCircle();
 	}
 
 	public static class TileEntityCircle extends TileEntityBase {
-		public boolean previousRedstoneState;
 		private final ArrayList<BlockElderRitual.TileEntityCircle.ActivatedElderRitual> activeRituals;
 		private final ArrayList<BlockElderRitual.TileEntityCircle.ActivatedElderRitual> upkeepRituals;
 		private boolean abortNext;
 
 		public TileEntityCircle() {
-			activeRituals = new ArrayList<BlockElderRitual.TileEntityCircle.ActivatedElderRitual>();
-			upkeepRituals = new ArrayList<BlockElderRitual.TileEntityCircle.ActivatedElderRitual>();
+			activeRituals = new ArrayList<>();
+			upkeepRituals = new ArrayList<>();
 			abortNext = false;
 		}
 
-		public void writeToNBT(NBTTagCompound nbtTag) {
-			super.writeToNBT(nbtTag);
+		public void writeToNBT(NBTTagCompound tag) {
+			super.writeToNBT(tag);
 			int[] ritualIDs = new int[upkeepRituals.size()];
 			byte[] stages = new byte[upkeepRituals.size()];
 			byte[] covenSizes = new byte[upkeepRituals.size()];
-			NBTTagList nbtList = new NBTTagList();
-			NBTTagList nbtLocationList = new NBTTagList();
+			NBTTagList tagList = new NBTTagList();
+			NBTTagList locationList = new NBTTagList();
 			for(int i = 0; i < upkeepRituals.size(); ++i) {
-				ritualIDs[i] = upkeepRituals.get(i).ritual.getRitualID();
-				stages[i] = (byte)upkeepRituals.get(i).getCurrentStage();
-				covenSizes[i] = (byte)upkeepRituals.get(i).covenSize;
-				nbtList.appendTag(new NBTTagString(upkeepRituals.get(i).getInitiatingPlayerName()));
-				nbtLocationList.appendTag(upkeepRituals.get(i).getLocationTag());
+				ActivatedElderRitual ritual = upkeepRituals.get(i);
+				ritualIDs[i] = ritual.ritual.getRitualID();
+				stages[i] = (byte)ritual.getCurrentStage();
+				covenSizes[i] = (byte)ritual.covenSize;
+				tagList.appendTag(new NBTTagString(ritual.getInitiatingPlayerName()));
+				locationList.appendTag(ritual.getLocationTag());
 			}
-			nbtTag.setIntArray("Rituals", ritualIDs);
-			nbtTag.setByteArray("RitualStages", stages);
-			nbtTag.setTag("Initiators", nbtList);
-			nbtTag.setTag("Locations", nbtLocationList);
-			nbtTag.setByteArray("RitualCovens", covenSizes);
+			tag.setIntArray("Rituals", ritualIDs);
+			tag.setByteArray("RitualStages", stages);
+			tag.setTag("Initiators", tagList);
+			tag.setTag("Locations", locationList);
+			tag.setByteArray("RitualCovens", covenSizes);
 		}
 
-		public void readFromNBT(NBTTagCompound nbtTag) {
-			super.readFromNBT(nbtTag);
-			if(nbtTag.hasKey("Rituals") && nbtTag.hasKey("RitualStages")) {
-				byte[] stages = nbtTag.getByteArray("RitualStages");
-				int[] ritualIDs = nbtTag.getIntArray("Rituals");
-				Coord[] locations = new Coord[stages.length];
-				if(nbtTag.hasKey("Locations")) {
-					NBTTagList initators = nbtTag.getTagList("Locations", 10);
-					for(int covenSizes = 0; covenSizes < Math.min(initators.tagCount(), locations.length); ++covenSizes) {
-						NBTTagCompound i = initators.getCompoundTagAt(covenSizes);
-						locations[covenSizes] = Coord.fromTagNBT(i);
-					}
+		public void readFromNBT(NBTTagCompound tag) {
+			super.readFromNBT(tag);
+			if(!tag.hasKey("Rituals") || !tag.hasKey("RitualStages")) {
+				return;
+			}
+			byte[] stages = tag.getByteArray("RitualStages");
+			int[] ritualIDs = tag.getIntArray("Rituals");
+			Coord[] locations = new Coord[stages.length];
+			if(tag.hasKey("Locations")) {
+				NBTTagList initators = tag.getTagList("Locations", 10);
+				for(int covenSizes = 0; covenSizes < Math.min(initators.tagCount(), locations.length); ++covenSizes) {
+					NBTTagCompound i = initators.getCompoundTagAt(covenSizes);
+					locations[covenSizes] = Coord.fromTagNBT(i);
 				}
-				String[] var11 = new String[stages.length];
-				if(nbtTag.hasKey("Initiators")) {
-					NBTTagList var12 = nbtTag.getTagList("Initiators", 8);
-					for(int var13 = 0; var13 < Math.min(var12.tagCount(), var11.length); ++var13) {
-						String ritual = var12.getStringTagAt(var13);
-						var11[var13] = ((ritual != null && !ritual.isEmpty()) ? ritual : null);
-					}
+			}
+			String[] s = new String[stages.length];
+			if(tag.hasKey("Initiators")) {
+				NBTTagList initiators = tag.getTagList("Initiators", 8);
+				for(int i = 0; i < Math.min(initiators.tagCount(), s.length); ++i) {
+					String ritual = initiators.getStringTagAt(i);
+					s[i] = ((ritual != null && !ritual.isEmpty()) ? ritual : null);
 				}
-				byte[] var14 = nbtTag.hasKey("RitualCovens") ? nbtTag.getByteArray("RitualCovens") : null;
-				for(int var13 = 0; var13 < ritualIDs.length; ++var13) {
-					ElderRiteRegistry.Ritual var15 = ElderRiteRegistry.instance().getRitual(ritualIDs[var13]);
-					if(var15 != null) {
-						ArrayList<RitualStep> ritualSteps = new ArrayList<RitualStep>();
-						var15.addRiteSteps(ritualSteps, stages[var13]);
-						if(!ritualSteps.isEmpty()) {
-							BlockElderRitual.TileEntityCircle.ActivatedElderRitual ActivatedElderRitual = new BlockElderRitual.TileEntityCircle.ActivatedElderRitual(var15, ritualSteps, var11[var13], (var14 != null) ? var14[var13] : 0, null);
-							ActivatedElderRitual.setLocation(locations[var13]);
-							upkeepRituals.add(ActivatedElderRitual);
-						}
-					}
+			}
+			byte[] covens = tag.hasKey("RitualCovens") ? tag.getByteArray("RitualCovens") : null;
+			for(int i = 0; i < ritualIDs.length; ++i) {
+				ElderRiteRegistry.Ritual ritual = ElderRiteRegistry.instance().getRitual(ritualIDs[i]);
+				if(ritual == null) {
+					continue;
 				}
+				ArrayList<RitualStep> ritualSteps = new ArrayList<>();
+				ritual.addRiteSteps(ritualSteps, stages[i]);
+				if(ritualSteps.isEmpty()) {
+					continue;
+				}
+				BlockElderRitual.TileEntityCircle.ActivatedElderRitual ActivatedElderRitual = new BlockElderRitual.TileEntityCircle.ActivatedElderRitual(ritual, ritualSteps, s[i], (covens != null) ? covens[i] : 0, null);
+				ActivatedElderRitual.setLocation(locations[i]);
+				upkeepRituals.add(ActivatedElderRitual);
 			}
 		}
 
 		@Override
 		public void updateEntity() {
 			super.updateEntity();
-			if(!worldObj.isRemote) {
-				if(!upkeepRituals.isEmpty()) {
-					for(BlockElderRitual.TileEntityCircle.ActivatedElderRitual result: upkeepRituals) {
-						RitualStep.Result stepResult = result.steps.get(0)
-																   .elderRun(worldObj, xCoord, yCoord, zCoord, ticks, result);
-						if(stepResult != RitualStep.Result.UPKEEP && Config.instance().traceRites()) {
-							Log.instance()
-							   .traceRite(String.format(" - Upkeep ritual=%s, step=%s, result=%s", result.ritual.getUnlocalizedName(), result.steps.get(0)
-																																				   .toString(), stepResult.toString()));
-						}
-						switch(SyntheticClass_1.$SwitchMap$com$emoniph$witchery$ritual$RitualStep$Result[stepResult.ordinal()]) {
-							case 1: {
-								result.steps.clear();
-								continue;
-							}
-							case 2:
-							case 3: {
-								result.steps.clear();
-								SoundEffect.NOTE_SNARE.playAt(this);
-								continue;
-							}
-						}
+			if(worldObj.isRemote) {
+				return;
+			}
+			if(!upkeepRituals.isEmpty()) {
+				upkeepRituals();
+			}
+			if(!activeRituals.isEmpty()) {
+				activeRituals();
+			}
+			if(!isRitualActive() && getBlockMetadata() != 0) {
+				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 3);
+			}
+		}
+
+		private void activeRituals() {
+			ActivatedElderRitual ritual = activeRituals.get(0);
+			Result stepResult = ((ElderRitualStep)ritual.steps.get(0)).elderRun(worldObj, xCoord, yCoord, zCoord, ticks, ritual);
+			ritual.postProcess(worldObj);
+			if(abortNext) {
+				abortNext = false;
+				stepResult = ABORTED_REFUND;
+				activeRituals.clear();
+			}
+			if(stepResult != STARTING && Config.instance().traceRites()) {
+				Log.instance()
+				   .traceRite(String.format("Active ritual=%s, step=%s, result=%s", ritual.ritual.getUnlocalizedName(), ritual.steps.get(0)
+																																	.toString(), stepResult.toString()));
+			}
+			switch(stepResult) {
+				case COMPLETED: {
+					if(ritual.steps.size() > 0) {
+						ritual.steps.remove(0);
 					}
-					for(int var5 = upkeepRituals.size() - 1; var5 >= 0; --var5) {
-						if(upkeepRituals.get(var5).steps.isEmpty()) {
-							upkeepRituals.remove(var5);
-						}
+					if(ritual.steps.isEmpty()) {
+						activeRituals.remove(0);
+						break;
+					}
+					break;
+				}
+				case ABORTED:
+				case ABORTED_REFUND: {
+					if(activeRituals.size() > 0) {
+						activeRituals.remove(0);
+					}
+					if(worldObj.isRemote || stepResult != ABORTED_REFUND) {
+						break;
+					}
+					SoundEffect.NOTE_SNARE.playAt(this);
+					for(RitualStep.SacrificedItem sacrificedItem: ritual.sacrificedItems) {
+						worldObj.spawnEntityInWorld(new EntityItem(worldObj, 0.5 + sacrificedItem.location.x, 0.5 + sacrificedItem.location.y, 0.5 + sacrificedItem.location.z, sacrificedItem.itemstack));
+					}
+					break;
+				}
+				case UPKEEP: {
+					if(activeRituals.size() > 0) {
+						activeRituals.remove(0);
+					}
+					upkeepRituals.add(ritual);
+					break;
+				}
+			}
+		}
+
+		private void upkeepRituals() {
+			for(ActivatedElderRitual result: upkeepRituals) {
+				Result stepResult = ((ElderRitualStep)result.steps.get(0)).elderRun(worldObj, xCoord, yCoord, zCoord, ticks, result);
+				if(stepResult != UPKEEP && Config.instance().traceRites()) {
+					Log.instance()
+					   .traceRite(String.format(" - Upkeep ritual=%s, step=%s, result=%s", result.ritual.getUnlocalizedName(), result.steps.get(0)
+																																		   .toString(), stepResult.toString()));
+				}
+				switch(stepResult) {
+					case COMPLETED: {
+						result.steps.clear();
+						continue;
+					}
+					case ABORTED:
+					case ABORTED_REFUND: {
+						result.steps.clear();
+						SoundEffect.NOTE_SNARE.playAt(this);
+						continue;
 					}
 				}
-				if(!activeRituals.isEmpty()) {
-					BlockElderRitual.TileEntityCircle.ActivatedElderRitual var6 = activeRituals.get(0);
-					ElderRitualStep.Result var7 = var6.steps.get(0)
-															.elderRun(worldObj, xCoord, yCoord, zCoord, ticks, var6);
-					var6.postProcess(worldObj);
-					if(abortNext) {
-						abortNext = false;
-						var7 = ElderRitualStep.Result.ABORTED_REFUND;
-						activeRituals.clear();
-					}
-					if(var7 != ElderRitualStep.Result.STARTING && Config.instance().traceRites()) {
-						Log.instance()
-						   .traceRite(String.format("Active ritual=%s, step=%s, result=%s", var6.ritual.getUnlocalizedName(), var6.steps.get(0)
-																																		.toString(), var7.toString()));
-					}
-					switch(SyntheticClass_1.$SwitchMap$com$emoniph$witchery$ritual$RitualStep$Result[var7.ordinal()]) {
-						case 1: {
-							if(var6.steps.size() > 0) {
-								var6.steps.remove(0);
-							}
-							if(var6.steps.isEmpty()) {
-								activeRituals.remove(0);
-								break;
-							}
-							break;
-						}
-						case 2:
-						case 3: {
-							if(activeRituals.size() > 0) {
-								activeRituals.remove(0);
-							}
-							if(worldObj.isRemote) {
-								break;
-							}
-							SoundEffect.NOTE_SNARE.playAt(this);
-							if(var7 == RitualStep.Result.ABORTED_REFUND) {
-								for(RitualStep.SacrificedItem sacrificedItem: var6.sacrificedItems) {
-									worldObj.spawnEntityInWorld(new EntityItem(worldObj, 0.5 + sacrificedItem.location.x, 0.5 + sacrificedItem.location.y, 0.5 + sacrificedItem.location.z, sacrificedItem.itemstack));
-								}
-								break;
-							}
-							break;
-						}
-						case 4: {
-							if(activeRituals.size() > 0) {
-								activeRituals.remove(0);
-							}
-							upkeepRituals.add(var6);
-							break;
-						}
-					}
-				}
-				if(!isRitualActive() && getBlockMetadata() != 0) {
-					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 3);
+			}
+			for(int i = upkeepRituals.size() - 1; i >= 0; --i) {
+				if(upkeepRituals.get(i).steps.isEmpty()) {
+					upkeepRituals.remove(i);
 				}
 			}
 		}
 
 		public void deactivate() {
-			if(!worldObj.isRemote) {
-				if(activeRituals.size() > 0) {
-					abortNext = true;
-				}
-				upkeepRituals.clear();
-				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 3);
-				SoundEffect.NOTE_SNARE.playAt(this);
+			if(worldObj.isRemote) {
+				return;
 			}
+			if(activeRituals.size() > 0) {
+				abortNext = true;
+			}
+			upkeepRituals.clear();
+			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 3);
+			SoundEffect.NOTE_SNARE.playAt(this);
 		}
 
 		public boolean isRitualActive() {
@@ -427,7 +399,7 @@ public class BlockElderRitual extends BlockBaseContainer {
 		}
 
 		public void queueRitual(ElderRiteRegistry.Ritual ritual, AxisAlignedBB bounds, EntityPlayer player, int covenSize, boolean summonCoven) {
-			ArrayList ritualSteps = new ArrayList();
+			ArrayList<RitualStep> ritualSteps = new ArrayList<>();
 			if(summonCoven) {
 				EntityCovenWitch.summonCoven(ritualSteps, player.worldObj, player, new int[][]{{xCoord - 2, yCoord, zCoord - 2}, {xCoord + 2, yCoord, zCoord - 2}, {xCoord - 2, yCoord, zCoord + 2}, {xCoord + 2, yCoord, zCoord + 2}, {xCoord, yCoord, zCoord + 3}, {xCoord, yCoord, zCoord - 3}});
 			}
@@ -452,13 +424,13 @@ public class BlockElderRitual extends BlockBaseContainer {
 
 		public static class ActivatedElderRitual {
 			public final ElderRiteRegistry.Ritual ritual;
-			private final ArrayList<ElderRitualStep> steps;
+			private final ArrayList<RitualStep> steps;
 			public final String playerName;
 			public final ArrayList<RitualStep.SacrificedItem> sacrificedItems;
 			public final int covenSize;
 			private Coord coord;
 
-			private ActivatedElderRitual(ElderRiteRegistry.Ritual ritual, ArrayList<ElderRitualStep> steps, String playerName, int covenSize) {
+			private ActivatedElderRitual(ElderRiteRegistry.Ritual ritual, ArrayList<RitualStep> steps, String playerName, int covenSize) {
 				sacrificedItems = new ArrayList<>();
 				this.ritual = ritual;
 				this.steps = steps;
@@ -518,9 +490,10 @@ public class BlockElderRitual extends BlockBaseContainer {
 				return steps.isEmpty() ? 0 : steps.get(0).getCurrentStage();
 			}
 
-			ActivatedElderRitual(ElderRiteRegistry.Ritual x0, ArrayList x1, String x2, int x3, SyntheticClass_1 x4) {
+			ActivatedElderRitual(ElderRiteRegistry.Ritual x0, ArrayList<RitualStep> x1, String x2, int x3, Result x4) {
 				this(x0, x1, x2, x3);
 			}
 		}
 	}
+
 }
