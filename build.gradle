@@ -55,6 +55,14 @@ processResources {
     }
 }
 
+jar {
+	manifest {
+		//attributes 'FMLCorePlugin': 'com.pyding.deathlyhallows.core.CoreMod'
+		//attributes 'FMLCorePluginContainsFMLMod': 'true'
+		attributes 'FMLAT': 'dh_at.cfg'
+	}
+}
+
 dependencies {
 	provided fileTree(dir: "providedLibs", include: "*.jar")
 }
