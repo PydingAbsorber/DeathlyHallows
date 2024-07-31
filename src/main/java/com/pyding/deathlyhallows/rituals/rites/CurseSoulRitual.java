@@ -9,7 +9,7 @@ import com.emoniph.witchery.util.ChatUtil;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.pyding.deathlyhallows.blocks.BlockElderRitual;
-import com.pyding.deathlyhallows.utils.properties.ExtendedPlayer;
+import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -75,7 +75,7 @@ public class CurseSoulRitual extends ElderRite {
 							if(Familiar.hasActiveCurseMasteryFamiliar(curseMasterPlayer)) {
 								curseLevel += 4;
 							}
-							if(ExtendedPlayer.get(curseMasterPlayer).getElfLvl() > 1) {
+							if(DeathlyProperties.get(curseMasterPlayer).getElfLevel() > 1) {
 								curseLevel += 4;
 							}
 
@@ -90,7 +90,7 @@ public class CurseSoulRitual extends ElderRite {
 							if(!isImmune && !Witchery.Items.POPPET.voodooProtectionActivated(curseMasterPlayer, null, entity, levelBuff > 0 ? 3 : 1)) {
 								if(entity instanceof EntityPlayer) {
 									EntityPlayer player = (EntityPlayer)entity;
-									ExtendedPlayer props = ExtendedPlayer.get(player);
+									DeathlyProperties props = DeathlyProperties.get(player);
 									props.setCursed(curseLevel);
 								}
 								cursed = true;

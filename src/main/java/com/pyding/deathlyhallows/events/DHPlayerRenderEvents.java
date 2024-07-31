@@ -18,6 +18,7 @@ import static codechicken.lib.gui.GuiDraw.drawTexturedModalRect;
 import static codechicken.lib.gui.GuiDraw.getStringWidth;
 import static com.emoniph.witchery.client.PlayerRender.drawString;
 
+@SuppressWarnings("unused")
 public final class DHPlayerRenderEvents {
 	private static final Minecraft mc = Minecraft.getMinecraft();
 	public static long ticksSinceActive = 0L;

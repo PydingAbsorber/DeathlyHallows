@@ -10,7 +10,7 @@ import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.utils.DHUtils;
 import com.pyding.deathlyhallows.utils.DamageSourceAdaptive;
-import com.pyding.deathlyhallows.utils.properties.ExtendedPlayer;
+import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -414,7 +414,7 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 	private void giftHallows() {
 		if(mvp != null) {
 			ChatUtil.sendTranslated(EnumChatFormatting.GREEN, mvp, "dh.chat.choice");
-			ExtendedPlayer props = ExtendedPlayer.get(mvp);
+			DeathlyProperties props = DeathlyProperties.get(mvp);
 			props.setChoice(true);
 			return;
 		}

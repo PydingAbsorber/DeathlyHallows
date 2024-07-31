@@ -7,7 +7,7 @@ import com.emoniph.witchery.util.ParticleEffect;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.utils.DHUtils;
 import com.pyding.deathlyhallows.utils.ElfUtils;
-import com.pyding.deathlyhallows.utils.properties.ExtendedPlayer;
+import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.entity.Entity;
@@ -28,6 +28,7 @@ import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
 
 import java.awt.*;
 
+@SuppressWarnings("unused")
 public final class DHElfEvents {
 
 	private static final DHElfEvents INSTANCE = new DHElfEvents();
@@ -55,19 +56,20 @@ public final class DHElfEvents {
 	}
 
 	private void arrowEffects(EntityPlayer p) {
-		NBTTagCompound entityTag =p.getEntityData(); 
-		if(entityTag.getLong("DHArrow") > 0) {
-			long time = p.ticksExisted - entityTag.getLong("DHArrow");
-			if(time >= firstShot && entityTag.getBoolean("DHArrowShow")) {
-				entityTag.setBoolean("DHArrowShow", false);
-				DHUtils.spawnSphere(p, p.getPosition(1), 20, 3, Color.BLUE, 1, 3, 60, 1);
-				p.worldObj.playSoundAtEntity(p, "dh:arrow.arrow_ready_1", 1F, 1F);
-			}
-			if(time >= secondShot && entityTag.getBoolean("DHArrowShow2")) {
-				entityTag.setBoolean("DHArrowShow2", false);
-				DHUtils.spawnSphere(p, p.getPosition(1), 20, 3, Color.magenta, 1, 3, 60, 1);
-				p.worldObj.playSoundAtEntity(p, "dh:arrow.arrow_ready_2", 1F, 1F);
-			}
+		NBTTagCompound entityTag = p.getEntityData();
+		if(entityTag.getLong("DHArrow") <= 0) {
+			return;
+		}
+		long time = p.ticksExisted - entityTag.getLong("DHArrow");
+		if(time >= firstShot && entityTag.getBoolean("DHArrowShow")) {
+			entityTag.setBoolean("DHArrowShow", false);
+			DHUtils.spawnSphere(p, p.getPosition(1), 20, 3, Color.BLUE, 1, 3, 60, 1);
+			p.worldObj.playSoundAtEntity(p, "dh:arrow.arrow_ready_1", 1F, 1F);
+		}
+		if(time >= secondShot && entityTag.getBoolean("DHArrowShow2")) {
+			entityTag.setBoolean("DHArrowShow2", false);
+			DHUtils.spawnSphere(p, p.getPosition(1), 20, 3, Color.magenta, 1, 3, 60, 1);
+			p.worldObj.playSoundAtEntity(p, "dh:arrow.arrow_ready_2", 1F, 1F);
 		}
 	}
 
@@ -82,30 +84,33 @@ public final class DHElfEvents {
 	@SubscribeEvent
 	public void elfTheArcherShooter2(ArrowLooseEvent e) {
 		EntityPlayer p = e.entityPlayer;
-		long time = e.entityPlayer.ticksExisted - p.getEntityData().getLong("DHArrow");
-		p.getEntityData().setLong("DHArrow", 0);
+		DeathlyProperties props = DeathlyProperties.get(p);
+		NBTTagCompound tag = p.getEntityData();
+		long time = p.ticksExisted - tag.getLong("DHArrow");
+		tag.setLong("DHArrow", 0);
 		long perfectTime = secondShot + 150;
-		if(time <= 9 || (time <= secondShot && p.getEntityData().getInteger("DHShot") <= 0)) {
-			if(time > firstShot) {
+		int elfLevel = ElfUtils.getElfLevel(props);
+		if(elfLevel < 10 || (time <= secondShot && tag.getInteger("DHShot") <= 0)) {
+			if(elfLevel > 6 && time > firstShot) {
 				DHUtils.spawnArrow(p, 1);
 				e.setCanceled(true);
 			}
 			return;
 		}
-		if(p.getEntityData().getInteger("DHShot") > 0) {
+		if(tag.getInteger("DHShot") > 0) {
 			DHUtils.spawnArrow(p, 3);
-			p.getEntityData().setInteger("DHShot", p.getEntityData().getInteger("DHShot") - 1);
+			tag.setInteger("DHShot", tag.getInteger("DHShot") - 1);
 			e.setCanceled(true);
 		}
 		else if(time < perfectTime) {
 			DHUtils.spawnArrow(p, 3);
-			p.getEntityData().setInteger("DHShot", 5);
+			tag.setInteger("DHShot", 5);
 			e.setCanceled(true);
 		}
 		else {
 			DHUtils.spawnArrow(p, 2);
 			e.setCanceled(true);
-		}
+		}		
 	}
 
 
@@ -169,7 +174,9 @@ public final class DHElfEvents {
 				}
 				el.setLastAttacker(source);
 				ParticleEffect.MAGIC_CRIT.send(null, el, 2, 2, 64);
-				el.attackEntityFrom(DamageSource.causePlayerDamage(source).setDamageIsAbsolute().setProjectile(), e.ammount * damageAoe);
+				el.attackEntityFrom(DamageSource.causePlayerDamage(source)
+												.setDamageIsAbsolute()
+												.setProjectile(), e.ammount * damageAoe);
 
 			}
 		}
@@ -182,7 +189,7 @@ public final class DHElfEvents {
 				e.entityLiving.attackEntityFrom(EntityDamageSourceIndirectSilver.magic, e.ammount * 10);
 			}
 			if(e.entityLiving.getHealth() <= e.entityLiving.getMaxHealth() * 0.1) {
-				ExtendedPlayer.get(source).deadInside(e.entityLiving);
+				DHUtils.deadInside(e.entityLiving, source);
 			}
 		}
 		if(elfLevel == 10
@@ -198,8 +205,8 @@ public final class DHElfEvents {
 			return;
 		}
 		EntityPlayer player = (EntityPlayer)e.entityLiving;
-		ExtendedPlayer props = ExtendedPlayer.get(player);
-		if(props.getElfLvl() >= 7
+		DeathlyProperties props = DeathlyProperties.get(player);
+		if(props.getElfLevel() >= 7
 				&& player.getHeldItem() != null
 				&& player.getHeldItem().getItem() instanceof ItemBow
 				&& Math.random() < 0.75
@@ -208,7 +215,7 @@ public final class DHElfEvents {
 			e.source.setFireDamage();
 			e.setCanceled(true);
 		}
-		if(props.getElfLvl() >= 1) {
+		if(props.getElfLevel() >= 1) {
 			if(e.source.isMagicDamage()) {
 				e.ammount = e.ammount * 0.1F;
 			}
@@ -224,7 +231,7 @@ public final class DHElfEvents {
 		if(p.worldObj.isRemote) {
 			return;
 		}
-		ExtendedPlayer props = ExtendedPlayer.get(p);
+		DeathlyProperties props = DeathlyProperties.get(p);
 		int elfLevel = ElfUtils.getElfLevel(props);
 		if(elfLevel == 5 && e.item.getItem() instanceof ItemAppleGold && e.item.getItemDamage() > 0) {
 			props.setFoodEaten(props.getFoodEaten() + 1);

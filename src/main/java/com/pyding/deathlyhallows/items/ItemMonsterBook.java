@@ -1,6 +1,6 @@
 package com.pyding.deathlyhallows.items;
 
-import com.pyding.deathlyhallows.utils.properties.ExtendedPlayer;
+import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.Entity;
@@ -20,10 +20,10 @@ public class ItemMonsterBook extends ItemBase {
 
 	@Override
 	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity) {
-		ExtendedPlayer props = ExtendedPlayer.get(player);
+		DeathlyProperties props = DeathlyProperties.get(player);
 		float damage = 2 + props.getMonstersCount();
-		if(props.getElfLvl() > 0) {
-			damage = 2 + props.getMonstersCount() * (props.getElfLvl() * 10);
+		if(props.getElfLevel() > 0) {
+			damage = 2 + props.getMonstersCount() * (props.getElfLevel() * 10);
 		}
 		entity.attackEntityFrom(DamageSource.causePlayerDamage(player).setDamageIsAbsolute(), damage);
 		return false;
@@ -32,7 +32,7 @@ public class ItemMonsterBook extends ItemBase {
 	@Override
 	@SideOnly(Side.CLIENT)
 	protected void addTooltip(ItemStack stack, EntityPlayer p, List<String> l, boolean devMode) {
-		ExtendedPlayer props = ExtendedPlayer.get(p);
+		DeathlyProperties props = DeathlyProperties.get(p);
 		float damage = props.getMonstersCount();
 		l.add(StatCollector.translateToLocal("dh.desc.book1"));
 		l.add(StatCollector.translateToLocalFormatted("dh.desc.book2", damage));
@@ -40,7 +40,7 @@ public class ItemMonsterBook extends ItemBase {
 			return;
 		}
 		l.add(StatCollector.translateToLocal("dh.desc.book3"));
-		if(props.getElfLvl() > 0) {
+		if(props.getElfLevel() > 0) {
 			l.add(StatCollector.translateToLocal("dh.desc.book4"));
 		}
 	}

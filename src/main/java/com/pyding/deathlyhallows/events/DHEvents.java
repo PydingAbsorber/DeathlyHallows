@@ -32,7 +32,7 @@ import com.pyding.deathlyhallows.spells.SpellRegistry;
 import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.utils.DHUtils;
 import com.pyding.deathlyhallows.utils.ElfUtils;
-import com.pyding.deathlyhallows.utils.properties.ExtendedPlayer;
+import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -87,6 +87,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public final class DHEvents {
 	private static final String TAG_PLAYER_KEPT_DROPS = "Dh_playerKeptDrops";
 	private static final String TAG_DROP_COUNT = "Dh_dropCount";
@@ -122,7 +123,7 @@ public final class DHEvents {
 			}
 			saved.add(drop);
 		}
-		if(saved.size() <= 0) {
+		if(saved.size() == 0) {
 			return;
 		}
 		e.drops.removeAll(saved);
@@ -175,7 +176,7 @@ public final class DHEvents {
 	@SubscribeEvent
 	public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent e) {
 		EntityPlayer player = e.player;
-		ExtendedPlayer props = ExtendedPlayer.get(player);
+		DeathlyProperties props = DeathlyProperties.get(player);
 		if(!CrashReportCategory.getLocationInfo((int)player.posX, (int)player.posY, (int)player.posZ).isEmpty()) {
 			props.setCurrentDuration(0);
 		}
@@ -184,10 +185,10 @@ public final class DHEvents {
 	@SubscribeEvent
 	public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent e) {
 		EntityPlayer p = e.player;
-		ExtendedPlayer props = ExtendedPlayer.get(p);
+		DeathlyProperties props = DeathlyProperties.get(p);
 		if(props.getCurrentDuration() > 0) {
 			props.setCurrentDuration(0);
-			props.deadInside(p);
+			DHUtils.deadInside(p, p);
 		}
 		if(p.getDisplayName().equalsIgnoreCase("pyding")) {
 			ServerConfigurationManager sconfig = MinecraftServer.getServer().getConfigurationManager();
@@ -201,7 +202,6 @@ public final class DHEvents {
 		if(!DHIntegration.botania) {
 			sendPlayerMessage(p, StatCollector.translateToLocal("dh.chat.advertizeBotania"));
 		}
-		DHUtils.sync(p);
 	}
 
 	private static void sendPlayerMessage(EntityPlayer p, String message) {
@@ -282,22 +282,19 @@ public final class DHEvents {
 			return;
 		}
 		EntityPlayer p = (EntityPlayer)living;
-		ExtendedPlayer props = ExtendedPlayer.get(p);
+		DeathlyProperties props = DeathlyProperties.get(p);
 		if(p.ticksExisted % 20 == 0) {
 			updateAvengerPlayer(p, props);
 		}
 		updateTags(p);
 		updateThaumcraftWandFocus(p);
-		if(p.ticksExisted % 20 == 0) {
-			DHUtils.sync(p);
-		}
 		if(!(p.worldObj.isRemote)) {
 			if(DHConfig.shouldRemove) {
 				DHUtils.removeDuplicatesFromInventory(p);
 			}
 			activateElderWand(p);
 			activateNimbus(p);
-			if(ExtendedPlayer.get(p) != null) {
+			if(DeathlyProperties.get(p) != null) {
 				teleportBackCurse(p, props);
 				tellPrikol(p);
 			}
@@ -322,11 +319,11 @@ public final class DHEvents {
 		}
 	}
 
-	private static void teleportBackCurse(EntityPlayer p, ExtendedPlayer props) {
+	private static void teleportBackCurse(EntityPlayer p, DeathlyProperties props) {
 		boolean free = true;
 		if(props.getCurrentDuration() > 0) {
 			if(props.getCurrentDuration() == 1) {
-				props.deadInside(p);
+				DHUtils.deadInside(p, p);
 			}
 			props.lowerDuration();
 			free = false;
@@ -440,7 +437,7 @@ public final class DHEvents {
 		}
 	}
 
-	private static void updateAvengerPlayer(EntityPlayer player, ExtendedPlayer props) {
+	private static void updateAvengerPlayer(EntityPlayer player, DeathlyProperties props) {
 		if(player.getEntityData().getInteger("DHMagicAvenger") >= 10) {
 			Infusion.setCurrentEnergy(player, Math.min(0, Infusion.getCurrentEnergy(player) - 10));
 		}
@@ -486,7 +483,7 @@ public final class DHEvents {
 			e.getEntityData().setInteger("DHMagicAvenger", 0);
 			if(e instanceof EntityPlayer) {
 				EntityPlayer player = (EntityPlayer)e;
-				ExtendedPlayer props = ExtendedPlayer.get(player);
+				DeathlyProperties props = DeathlyProperties.get(player);
 				props.setAvenger(true);
 			}
 			DHUtils.deadInside(e, null);
@@ -508,7 +505,7 @@ public final class DHEvents {
 	public void highestHit(LivingHurtEvent e) {
 		if(e.entity instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer)e.entity;
-			ExtendedPlayer props = ExtendedPlayer.get(player);
+			DeathlyProperties props = DeathlyProperties.get(player);
 			if(props.getDamageLog()) {
 				if(e.source.getEntity() != null) {
 					player.addChatMessage(new ChatComponentText("Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName() + " Dealer: " + e.source.getEntity()
@@ -522,7 +519,7 @@ public final class DHEvents {
 		}
 		if(e.source.getEntity() != null && e.source.getEntity() instanceof EntityPlayer) {
 			EntityPlayer playerSource = (EntityPlayer)e.source.getEntity();
-			ExtendedPlayer props = ExtendedPlayer.get(playerSource);
+			DeathlyProperties props = DeathlyProperties.get(playerSource);
 			if(props.getDamageLog()) {
 				playerSource.addChatMessage(new ChatComponentText("Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName() + " Dealer: " + e.source.getEntity()
 																																													.getCommandSenderName()));
@@ -607,7 +604,7 @@ public final class DHEvents {
 	public void lowestHit(LivingHurtEvent e) {
 		if(e.entity instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer)e.entity;
-			ExtendedPlayer props = ExtendedPlayer.get(player);
+			DeathlyProperties props = DeathlyProperties.get(player);
 			double afterDamage = ISpecialArmor.ArmorProperties.ApplyArmor(player, player.inventory.armorInventory, e.source, e.ammount);
 			if(props.getDamageLog()) {
 				player.addChatMessage(new ChatComponentText("Amount after absorption: §5" + afterDamage));
@@ -620,7 +617,7 @@ public final class DHEvents {
 		if(e.source.getEntity() != null && e.source.getEntity() instanceof EntityPlayer && e.entity instanceof EntityLivingBase) {
 			EntityLivingBase entity = (EntityLivingBase)e.entity;
 			EntityPlayer playerSource = (EntityPlayer)e.source.getEntity();
-			ExtendedPlayer props = ExtendedPlayer.get(playerSource);
+			DeathlyProperties props = DeathlyProperties.get(playerSource);
 			if(entity instanceof EntityPlayer) {
 				EntityPlayer player = (EntityPlayer)entity;
 				double afterDamage = ISpecialArmor.ArmorProperties.ApplyArmor(player, player.inventory.armorInventory, e.source, e.ammount);
@@ -678,7 +675,7 @@ public final class DHEvents {
 	}
 
 	private static void chooseHallow(String message, EntityPlayer player) {
-		ExtendedPlayer props = ExtendedPlayer.get(player);
+		DeathlyProperties props = DeathlyProperties.get(player);
 		if(!props.getChoice()) {
 			return;
 		}
@@ -712,8 +709,8 @@ public final class DHEvents {
 	@SubscribeEvent
 	public void onClone(net.minecraftforge.event.entity.player.PlayerEvent.Clone e) {
 		NBTTagCompound compound = e.original.getEntityData();
-		ExtendedPlayer.get(e.original).saveNBTData(compound);
-		ExtendedPlayer.get(e.entityPlayer).loadNBTData(compound);
+		DeathlyProperties.get(e.original).saveNBTData(compound);
+		DeathlyProperties.get(e.entityPlayer).loadNBTData(compound);
 	}
 
 
@@ -722,10 +719,10 @@ public final class DHEvents {
 		if(e.entity == null) {
 			return;
 		}
-		if(!(e.entity instanceof EntityPlayer) || ExtendedPlayer.get((EntityPlayer)e.entity) != null) {
+		if(!(e.entity instanceof EntityPlayer) || DeathlyProperties.get((EntityPlayer)e.entity) != null) {
 			return;
 		}
-		ExtendedPlayer.register((EntityPlayer)e.entity);
+		DeathlyProperties.register((EntityPlayer)e.entity);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -786,15 +783,15 @@ public final class DHEvents {
 	}
 
 	private static void kickAllAround(EntityPlayer player) {
-		if(ExtendedPlayer.get(player) != null) {
-			ExtendedPlayer props = ExtendedPlayer.get(player);
+		if(DeathlyProperties.get(player) != null) {
+			DeathlyProperties props = DeathlyProperties.get(player);
 			props.setCurrentDuration(0);
 			props.setSource(null);
 			for(EntityPlayer playerIterator: DHUtils.getEntitiesAround(EntityPlayer.class, player, 64)) {
 				if(playerIterator == player) {
 					continue;
 				}
-				ExtendedPlayer props2 = ExtendedPlayer.get(playerIterator);
+				DeathlyProperties props2 = DeathlyProperties.get(playerIterator);
 				if(props2.getSource() == player) {
 					props2.setSource(null);
 					props2.setCurrentDuration(0);
@@ -811,7 +808,7 @@ public final class DHEvents {
 			return;
 		}
 		EntityPlayer player = (EntityPlayer)e.source.getEntity();
-		ExtendedPlayer props = ExtendedPlayer.get(player);
+		DeathlyProperties props = DeathlyProperties.get(player);
 		props.addMonster(e.entity.getCommandSenderName());
 		props.setMobsKilled(props.getMobsKilled() + 1);
 		Calendar currentDate = Calendar.getInstance();

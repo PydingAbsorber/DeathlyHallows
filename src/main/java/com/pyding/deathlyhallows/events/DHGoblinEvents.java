@@ -2,7 +2,7 @@ package com.pyding.deathlyhallows.events;
 
 import com.emoniph.witchery.entity.EntityGoblin;
 import com.pyding.deathlyhallows.items.DHItems;
-import com.pyding.deathlyhallows.utils.properties.ExtendedPlayer;
+import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,6 +14,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
+@SuppressWarnings("unused")
 public final class DHGoblinEvents {
 
 	private static final DHGoblinEvents INSTANCE = new DHGoblinEvents();
@@ -58,10 +59,10 @@ public final class DHGoblinEvents {
 		if(event.entity == null) {
 			return;
 		}
-		if(!(event.entity instanceof EntityPlayer) || ExtendedPlayer.get((EntityPlayer)event.entity) != null) {
+		if(!(event.entity instanceof EntityPlayer) || DeathlyProperties.get((EntityPlayer)event.entity) != null) {
 			return;
 		}
-		ExtendedPlayer.register((EntityPlayer)event.entity);
+		DeathlyProperties.register((EntityPlayer)event.entity);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)

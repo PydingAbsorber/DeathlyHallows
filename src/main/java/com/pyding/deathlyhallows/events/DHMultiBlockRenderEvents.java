@@ -17,7 +17,12 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.ChatStyle;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -27,6 +32,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 
 import static org.lwjgl.opengl.GL11.*;
 
+@SuppressWarnings("unused")
 public final class DHMultiBlockRenderEvents {
 
 	private static final Minecraft mc = Minecraft.getMinecraft();

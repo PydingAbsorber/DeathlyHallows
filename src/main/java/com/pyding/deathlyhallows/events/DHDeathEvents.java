@@ -19,6 +19,7 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
+@SuppressWarnings("unused")
 public final class DHDeathEvents {
 	
 	private static final DHDeathEvents INSTANCE = new DHDeathEvents();

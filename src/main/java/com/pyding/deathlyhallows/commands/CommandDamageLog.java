@@ -1,9 +1,9 @@
 package com.pyding.deathlyhallows.commands;
 
 import com.pyding.deathlyhallows.utils.DHConfig;
-import com.pyding.deathlyhallows.utils.ElfUtils;
 import com.pyding.deathlyhallows.utils.DHUtils;
-import com.pyding.deathlyhallows.utils.properties.ExtendedPlayer;
+import com.pyding.deathlyhallows.utils.ElfUtils;
+import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
@@ -38,7 +38,7 @@ public class CommandDamageLog extends CommandBase {
 		if(args.length > 0 && args[0].equalsIgnoreCase("damagelog")) {
 			if(sender instanceof EntityPlayer) {
 				EntityPlayer player = (EntityPlayer)sender;
-				ExtendedPlayer props = ExtendedPlayer.get(player);
+				DeathlyProperties props = DeathlyProperties.get(player);
 				if(props.getDamageLog()) {
 					props.setDamageLog(false);
 					player.addChatMessage(new ChatComponentText("Damage Log disabled for " + player.getDisplayName()));
@@ -97,8 +97,8 @@ public class CommandDamageLog extends CommandBase {
 		else if(args.length > 0 && args[0].equalsIgnoreCase("elf")) {
 			if(sender instanceof EntityPlayer) {
 				EntityPlayer player = (EntityPlayer)sender;
-				ExtendedPlayer props = ExtendedPlayer.get(player);
-				int elf = props.getElfLvl();
+				DeathlyProperties props = DeathlyProperties.get(player);
+				int elf = props.getElfLevel();
 				if(elf > 0) {
 					String text = "";
 					switch(elf) {

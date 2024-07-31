@@ -2,11 +2,16 @@ package com.pyding.deathlyhallows.utils;
 
 import baubles.api.BaublesApi;
 import com.emoniph.witchery.infusion.Infusion;
-import com.emoniph.witchery.util.*;
+import com.emoniph.witchery.util.ChatUtil;
+import com.emoniph.witchery.util.CreatureUtil;
+import com.emoniph.witchery.util.EntityUtil;
+import com.emoniph.witchery.util.ParticleEffect;
+import com.emoniph.witchery.util.SoundEffect;
 import com.pyding.deathlyhallows.entities.EntityEmpoweredArrow;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketParticle;
+import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameData;
 import net.minecraft.block.Block;
@@ -42,44 +47,29 @@ public class DHUtils {
 	public static <T extends Entity> List<T> getEntitiesAround(Class<T> clazz, Entity entity, float radius) {
 		return entity.worldObj.getEntitiesWithinAABB(clazz, AxisAlignedBB.getBoundingBox(entity.posX - radius, entity.posY - radius, entity.posZ - radius, entity.posX + radius, entity.posY + radius, entity.posZ + radius));
 	}
-
-	public static void sync(Entity entity) {
-		// TODO wtf?
-		if(entity.getEntityData() == null || entity.worldObj.isRemote) {
+	
+	public static void spawnArrow(EntityPlayer player, int type) {
+		if(player.worldObj.isRemote) {
 			return;
 		}
-		if(entity instanceof EntityPlayer) {
-			//EntityPlayer player = (EntityPlayer)entity;
-			//NetworkHandler.sendToPlayer(new PlayerNBTSync(player.getEntityData()),player);
-		}
-		else {
-			//NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 64);
-			//NetworkHandler.sendToAllAround(new NBTSync(entity.getEntityData(),entity.getEntityId()),targetPoint);
-		}
-	}
-
-	public static void spawnArrow(EntityPlayer player, int type) {
-		float damage = (float)(player.getEntityAttribute(SharedMonsterAttributes.attackDamage)
-									 .getAttributeValue() * 20
-		);
+		
+		float damage = (float)(player.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue() * 20);
 		float radius = 4;
-		DamageSource source = DamageSource.causePlayerDamage(player).setMagicDamage().setProjectile();
+		DamageSource source = DamageSource.causePlayerDamage(player).setMagicDamage();
 		if(type == 2) {
 			damage = damage * 20 + 1000;
 			radius *= 2;
-			source = DamageSource.causePlayerDamage(player).setMagicDamage().setDamageIsAbsolute();
+			source.setDamageIsAbsolute();
 		}
 		else if(type == 3) {
 			damage = damage * 20 + 5000;
 			radius *= 3;
-			source = DamageSource.causePlayerDamage(player)
-								 .setMagicDamage()
-								 .setDamageBypassesArmor()
-								 .setDamageIsAbsolute();
+			source.setDamageBypassesArmor().setDamageIsAbsolute();
+		}
+		else {
+			source.setProjectile();
 		}
 		EntityEmpoweredArrow arrow = new EntityEmpoweredArrow(player.getEntityWorld(), player, damage, radius, source, type);
-		arrow.setPositionAndRotation(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
-		DHUtils.sync(arrow);
 		player.worldObj.spawnEntityInWorld(arrow);
 		if(type == 1) {
 			player.worldObj.playSoundAtEntity(player, "dh:spell.arrow", 1F, 1F);
@@ -223,11 +213,12 @@ public class DHUtils {
 		return contains;
 	}
 
-	public static void deadInside(EntityLivingBase victim, EntityPlayer player) {
+	public static void deadInside(EntityLivingBase victim, EntityPlayer player) { // FOX! DIE!
 		if(victim instanceof EntityPlayer && ((EntityPlayer)victim).capabilities.isCreativeMode) {
 			return;
 		}
-		EntityUtil.instantDeath(victim, player);
+		EntityPlayer bound = DeathlyProperties.get(player).getSource();
+		EntityUtil.instantDeath(victim, bound != null ? bound : player);
 	}
 
 	public static void spawnSphere(Entity entity, Vec3 pos, int count, float radius, Color color, float resizeSpeed, float scale, int age, int type) {

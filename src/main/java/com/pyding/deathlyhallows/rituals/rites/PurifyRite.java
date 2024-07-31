@@ -8,7 +8,7 @@ import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.pyding.deathlyhallows.blocks.BlockElderRitual;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
-import com.pyding.deathlyhallows.utils.properties.ExtendedPlayer;
+import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -84,7 +84,7 @@ public class PurifyRite extends ElderRite {
 						EntityPlayer player = (EntityPlayer)obj;
 						if(Coord.distance(player.posX, player.posY, player.posZ, posX, posY, posZ) <= (double)r) {
 							player.getEntityData().setInteger("DHMagicAvenger", 0);
-							ExtendedPlayer props = ExtendedPlayer.get(player);
+							DeathlyProperties props = DeathlyProperties.get(player);
 							props.setAvenger(false);
 							player.getEntityData().setInteger("witcheryCursed", 0);
 							player.getEntityData().setInteger("witcheryInsanity", 0);

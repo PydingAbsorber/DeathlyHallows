@@ -1,14 +1,15 @@
 package com.pyding.deathlyhallows.items;
 
+import com.emoniph.witchery.util.ChatUtil;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.pyding.deathlyhallows.utils.ElfUtils;
-import com.pyding.deathlyhallows.utils.properties.ExtendedPlayer;
+import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
@@ -21,32 +22,32 @@ public class ItemElfToken extends ItemBase {
 	}
 
 	@Override
-	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
-		if(player.worldObj.isRemote) {
-			return super.onItemRightClick(stack, world, player);
+	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer p) {
+		if(p.worldObj.isRemote) {
+			return super.onItemRightClick(stack, world, p);
 		}
-		ExtendedPlayer props = ExtendedPlayer.get(player);
-		props.setAllNull();
-		if(!player.isSneaking()) {
-			if(props.getElfLvl() < 10) {
-				props.increaseElfLvl();
+		ElfUtils.resetQuestData(p);
+		int level = ElfUtils.getElfLevel(p);
+		if(!p.isSneaking()) {
+			if(level < 10) {
+				ElfUtils.setElfLevel(p, level + 1);
 			}
 			else {
-				props.nullifyElfLvl();
+				ElfUtils.setElfLevel(p, 0);
 			}
-			ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_LEVELUP, player, 1.0, 2.0, 8);
+			ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_LEVELUP, p, 1.0, 2.0, 8);
 		}
 		else {
-			if(props.getElfLvl() > 0) {
-				props.decreaseElfLvl();
+			if(level > 0) {
+				ElfUtils.setElfLevel(p, level - 1);
 			}
 			else {
-				props.maxElfLvl();
+				ElfUtils.setElfLevel(p, DeathlyProperties.MAX_ELF_LEVEL);
 			}
-			ParticleEffect.INSTANT_SPELL.send(SoundEffect.NOTE_PLING, player, 1.0, 2.0, 8);
+			ParticleEffect.INSTANT_SPELL.send(SoundEffect.NOTE_PLING, p, 1.0, 2.0, 8);
 		}
-		player.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocalFormatted("dh.chat.elfToken", props.getElfLvl())));
-		return super.onItemRightClick(stack, world, player);
+		ChatUtil.sendTranslated(EnumChatFormatting.BLUE, p, "dh.chat.elfToken", ElfUtils.getElfLevel(p));
+		return super.onItemRightClick(stack, world, p);
 	}
 
 	@Override
@@ -54,5 +55,5 @@ public class ItemElfToken extends ItemBase {
 	protected void addTooltip(ItemStack stack, EntityPlayer p, List<String> l, boolean devMode) {
 		l.add(StatCollector.translateToLocalFormatted("dh.desc.elfToken", ElfUtils.getElfLevel(p)));
 	}
-	
+
 }

@@ -4,7 +4,7 @@ import com.emoniph.witchery.dimension.WorldProviderDreamWorld;
 import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.util.ChatUtil;
 import com.emoniph.witchery.util.CreatureUtil;
-import com.pyding.deathlyhallows.utils.properties.ExtendedPlayer;
+import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,7 +19,7 @@ import net.minecraft.util.EnumChatFormatting;
 import java.util.Collection;
 
 import static com.emoniph.witchery.infusion.Infusion.getNBT;
-import static com.pyding.deathlyhallows.utils.properties.ExtendedPlayer.get;
+import static com.pyding.deathlyhallows.utils.properties.DeathlyProperties.get;
 
 public final class ElfUtils {
 
@@ -34,9 +34,17 @@ public final class ElfUtils {
 	public static int getElfLevel(EntityPlayer p) {
 		return getElfLevel(get(p));
 	}
+	
+	public static void setElfLevel(EntityPlayer p, int level) {
+		get(p).setElfLevel(level);
+	}
 
-	public static int getElfLevel(ExtendedPlayer props) {
-		return props.getElfLvl();
+	public static void resetQuestData(EntityPlayer p) {
+		get(p).setAllNull();
+	}
+
+	public static int getElfLevel(DeathlyProperties props) {
+		return props.getElfLevel();
 	}
 
 	public static boolean isElf(EntityLivingBase living) {
@@ -80,7 +88,7 @@ public final class ElfUtils {
 	}
 
 	private static void regenInfusion(EntityPlayer p, int elfLevel) {
-		ExtendedPlayer props = get(p);
+		DeathlyProperties props = get(p);
 		if(Infusion.getInfusionID(p) > 0 && p.ticksExisted - props.elfInfusionTimer > 50 && Infusion.getCurrentEnergy(p) < Infusion.getMaxEnergy(p)) { // no sex damn you pervert.
 			props.elfInfusionTimer = p.ticksExisted;
 			Infusion.setCurrentEnergy(p, Math.min(Infusion.getMaxEnergy(p), Infusion.getCurrentEnergy(p) + elfLevel));
@@ -91,7 +99,7 @@ public final class ElfUtils {
 	}
 
 	private static void checkAndStartElfQuest(EntityPlayer p) {
-		ExtendedPlayer props = get(p);
+		DeathlyProperties props = get(p);
 		if(Infusion.getCurrentEnergy(p) == 0 && props.getTrigger() == 0 && Infusion.getInfusionID(p) != 0) {
 			props.setTrigger(1);
 		}
@@ -104,45 +112,45 @@ public final class ElfUtils {
 		}
 		if(props.getElfCount() >= 20 && !isVampOrWolf(p)) {
 			props.setElfCount(0);
-			props.increaseElfLvl();
+			props.setElfLevel(1);
 			ChatUtil.sendTranslated(EnumChatFormatting.BLUE, p, "dh.chat.elf2");
 		}
 	}
 
 	private static void checkAndLevelUpElf(EntityPlayer p, int elfLevel) {
-		ExtendedPlayer props = get(p);
+		DeathlyProperties props = get(p);
 		switch(elfLevel) {
 			case 1: {
 				if(p.experienceLevel >= DHConfig.getElfRequirements(2)) {
-					props.increaseElfLvl();
+					props.setElfLevel(2);
 					messageChatLevelUp(p);
 				}
 				break;
 			}
 			case 2: {
 				if(p.posY <= DHConfig.getElfRequirements(3)) {
-					props.increaseElfLvl();
+					props.setElfLevel(3);
 					messageChatLevelUp(p);
 				}
 				break;
 			}
 			case 3: {
 				if(getTotalEnchantmentLevels(p) >= DHConfig.getElfRequirements(4)) {
-					props.increaseElfLvl();
+					props.setElfLevel(4);
 					messageChatLevelUp(p);
 				}
 				break;
 			}
 			case 4: {
 				if(props.getMobsKilled() >= DHConfig.getElfRequirements(5)) {
-					props.increaseElfLvl();
+					props.setElfLevel(5);
 					messageChatLevelUp(p);
 				}
 				break;
 			}
 			case 5: {
 				if(props.getFoodEaten() >= DHConfig.getElfRequirements(6)) {
-					props.increaseElfLvl();
+					props.setElfLevel(6);
 					messageChatLevelUp(p);
 				}
 				break;
@@ -150,7 +158,7 @@ public final class ElfUtils {
 			case 6: {
 				if(hasAmountOfPotions(p, 10, true) && ++props.elfTimeSurvived > DHConfig.getElfRequirements(7)) {
 					props.elfTimeSurvived = 0;
-					props.increaseElfLvl();
+					props.setElfLevel(7);
 					messageChatLevelUp(p);
 				}
 				break;
@@ -158,14 +166,14 @@ public final class ElfUtils {
 			case 7: {
 				if(WorldProviderDreamWorld.getPlayerIsSpiritWalking(p) && ++props.elfTimeSurvived > DHConfig.getElfRequirements(8)) {
 					props.elfTimeSurvived = 0;
-					props.increaseElfLvl();
+					props.setElfLevel(8);
 					messageChatLevelUp(p);
 				}
 				break;
 			}
 			case 8: {
 				if(props.getFoodCollection() != null && props.getFoodCollection().size() > DHConfig.getElfRequirements(9)) {
-					props.increaseElfLvl();
+					props.setElfLevel(9);
 					messageChatLevelUp(p);
 				}
 				break;
@@ -173,7 +181,7 @@ public final class ElfUtils {
 			case 9: {
 				if(props.getSpellsUsed() >= DHConfig.getElfRequirements(10)) {
 					props.setAllNull();
-					props.increaseElfLvl();
+					props.setElfLevel(10);
 					messageChatLevelUp(p);
 				}
 				break;
@@ -213,5 +221,5 @@ public final class ElfUtils {
 		}
 		return count >= amount;
 	}
-
+	
 }
