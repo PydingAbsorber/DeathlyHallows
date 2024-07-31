@@ -7,10 +7,8 @@ import com.emoniph.witchery.util.ParticleEffect;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
-import net.minecraftforge.common.util.Constants;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.tiles.TileArcaneWorkbench;
@@ -39,41 +37,8 @@ public class TileEntityVisConverter extends TileEntity {
 		if(aura == null) {
 			return;
 		}
-		NBTTagCompound tagCompound = new NBTTagCompound();
-		aura.writeToNBT(tagCompound);
-		int aer = 0;
-		int terra = 0;
-		int ignis = 0;
-		int ordo = 0;
-		int perditio = 0;
-		int aqua = 0;
-		if(tagCompound.hasKey("AEB")) {
-			NBTTagList aebList = tagCompound.getTagList("AEB", Constants.NBT.TAG_COMPOUND);
-			for(int i = 0; i < aebList.tagCount(); i++) {
-				NBTTagCompound aebCompound = aebList.getCompoundTagAt(i);
-				int amount = aebCompound.getInteger("amount");
-				String key = aebCompound.getString("key");
-				if("aer".equals(key)) {
-					aer = amount;
-				}
-				else if("terra".equals(key)) {
-					terra = amount;
-				}
-				else if("ignis".equals(key)) {
-					ignis = amount;
-				}
-				else if("ordo".equals(key)) {
-					ordo = amount;
-				}
-				else if("perditio".equals(key)) {
-					perditio = amount;
-				}
-				else if("aqua".equals(key)) {
-					aqua = amount;
-				}
-			}
-		}
-		int total = aer + terra + ignis + ordo + perditio + aqua;
+		
+		int total = aura.getAspects().visSize();
 		if(worldObj.getTotalWorldTime() % 20 == 0) {
 			ParticleEffect.PORTAL.send(null, worldObj, xCoord, yCoord, zCoord + 1, 2, 1, 16);
 		}
@@ -83,15 +48,14 @@ public class TileEntityVisConverter extends TileEntity {
 		int x = altarNBT.getInteger("CoreX");
 		int y = altarNBT.getInteger("CoreY");
 		int z = altarNBT.getInteger("CoreZ");
-		BlockAltar.TileEntityAltar coreAltar = (BlockAltar.TileEntityAltar)worldObj.getTileEntity(x, y, z);
-		if(coreAltar != null) {
+		BlockAltar.TileEntityAltar core = (BlockAltar.TileEntityAltar)worldObj.getTileEntity(x, y, z);
+		if(core != null) {
 			NBTTagCompound coreNBT = new NBTTagCompound();
-			coreAltar.writeToNBT(coreNBT);
-			float maxPower = coreAltar.getCoreMaxPower();
+			core.writeToNBT(coreNBT);
 			coreNBT.setFloat("MaxPower", 3850 + total * 10);
 			coreNBT.setInteger("RechargeScale", 12 + total / 10);
-			coreAltar.readFromNBT(coreNBT);
-			coreAltar.markDirty();
+			core.readFromNBT(coreNBT);
+			core.markDirty();
 			worldObj.markBlockForUpdate(x, y, z);
 		}
 
