@@ -307,8 +307,7 @@ public final class DHEvents {
 			return;
 		}
 		if(p.getEntityData().getInteger("dhcurse") == 200) {
-			PacketPlayerRender packet = new PacketPlayerRender(p.getEntityData());
-			DHPacketProcessor.sendToPlayer(packet, p);
+			DHPacketProcessor.sendToPlayer(new PacketPlayerRender(p.getEntityData()), p);
 		}
 		p.getEntityData().setInteger("dhcurse", p.getEntityData().getInteger("dhcurse") - 1);
 	}
@@ -716,13 +715,13 @@ public final class DHEvents {
 
 	@SubscribeEvent
 	public void onEntityConstructing(EntityEvent.EntityConstructing e) {
-		if(e.entity == null) {
+		if(!(e.entity instanceof EntityPlayer)) {
 			return;
 		}
-		if(!(e.entity instanceof EntityPlayer) || DeathlyProperties.get((EntityPlayer)e.entity) != null) {
-			return;
+		EntityPlayer p = (EntityPlayer)e.entity;
+		if(DeathlyProperties.get(p) == null) {
+			DeathlyProperties.register(p);
 		}
-		DeathlyProperties.register((EntityPlayer)e.entity);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
