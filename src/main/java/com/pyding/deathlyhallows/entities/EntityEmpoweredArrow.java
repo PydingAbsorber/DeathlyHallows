@@ -16,8 +16,9 @@ public class EntityEmpoweredArrow extends Entity {
 
 	private static final int WATCHER_SHOOTER = 4;
 	private EntityPlayer shooter;
-	private float damage = 0;
-	private float radius = 0;
+	private float 
+			damage = 0,
+			radius = 0;
 	private DamageSource source = null;
 	private int type = 0;
 
@@ -118,13 +119,8 @@ public class EntityEmpoweredArrow extends Entity {
 
 	private void spawnParticlesAt(Vec3 lookVec) {
 		float scale = radius * 8;
-		Color color;
-		if(type == 2) {
-			color = Color.BLUE;
-		}
-		else {
-			color = Color.MAGENTA;
-		}
+		Color color = type == 2 ? Color.BLUE : Color.MAGENTA;
+
 		double posX = this.posX;
 		double posY = this.posY;
 		double posZ = this.posZ;
