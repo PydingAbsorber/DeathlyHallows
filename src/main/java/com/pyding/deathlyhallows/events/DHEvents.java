@@ -772,12 +772,12 @@ public final class DHEvents {
 	private static boolean probablyRessurectByStone(EntityPlayer p) {
 		ItemBaubleResurrectionStone rs = new ItemBaubleResurrectionStone();
 		IInventory baubles = BaublesApi.getBaubles(p);
-		for(int i = 1; i < baubles.getSizeInventory(); ++i) {
+		for(int i = 0; i < baubles.getSizeInventory(); ++i) {
 			ItemStack bauble = baubles.getStackInSlot(i);
-			if(bauble == null || bauble.getItem() != DHItems.resurrectionStone || rs.getCharges(bauble) <= 0) {
+			if(bauble == null || bauble.getItem() != DHItems.resurrectionStone || ItemBaubleResurrectionStone.getCharges(bauble) <= 0) {
 				continue;
 			}
-			rs.setCharges(bauble, rs.getCharges(bauble) - 1);
+			ItemBaubleResurrectionStone.setCharges(bauble, ItemBaubleResurrectionStone.getCharges(bauble) - 1);
 			p.setHealth(p.getMaxHealth());
 			p.getEntityData().setInteger("invincible", 100);
 			return true;

@@ -24,23 +24,6 @@ public class ItemBaubleResurrectionStone extends ItemBaubleBase {
 		super("resurrectionStone", BaubleType.RING);
 	}
 
-	public void setIndex(ItemStack stack, int value) {
-		NBTTagCompound tag = stack.getTagCompound();
-		if(tag == null) {
-			tag = new NBTTagCompound();
-			stack.setTagCompound(tag);
-		}
-		tag.setInteger("index", value);
-	}
-
-	public int getIndex(ItemStack stack) {
-		NBTTagCompound tag = stack.getTagCompound();
-		if(tag == null) {
-			return 0;
-		}
-		return tag.getInteger("index");
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer p) {
@@ -118,7 +101,25 @@ public class ItemBaubleResurrectionStone extends ItemBaubleBase {
 		e.worldObj.playSoundAtEntity(e, "dh:ring.1", 1F, 1F);
 	}
 
-	public void setCharges(ItemStack stack, int value) {
+
+	public static void setIndex(ItemStack stack, int value) {
+		NBTTagCompound tag = stack.getTagCompound();
+		if(tag == null) {
+			tag = new NBTTagCompound();
+			stack.setTagCompound(tag);
+		}
+		tag.setInteger("index", value);
+	}
+
+	public static int getIndex(ItemStack stack) {
+		NBTTagCompound tag = stack.getTagCompound();
+		if(tag == null) {
+			return 0;
+		}
+		return tag.getInteger("index");
+	}
+	
+	public static void setCharges(ItemStack stack, int value) {
 		NBTTagCompound nbt = stack.getTagCompound();
 		if(nbt == null) {
 			nbt = new NBTTagCompound();
@@ -127,7 +128,7 @@ public class ItemBaubleResurrectionStone extends ItemBaubleBase {
 		nbt.setInteger("charge", value);
 	}
 
-	public int getCharges(ItemStack stack) {
+	public static int getCharges(ItemStack stack) {
 		NBTTagCompound nbt = stack.getTagCompound();
 		if(nbt == null) {
 			return 0;
@@ -135,7 +136,7 @@ public class ItemBaubleResurrectionStone extends ItemBaubleBase {
 		return nbt.getInteger("charge");
 	}
 
-	public void setPlayer(ItemStack stack, String value) {
+	public static void setPlayer(ItemStack stack, String value) {
 		NBTTagCompound nbt = stack.getTagCompound();
 		if(nbt == null) {
 			nbt = new NBTTagCompound();
@@ -144,7 +145,7 @@ public class ItemBaubleResurrectionStone extends ItemBaubleBase {
 		nbt.setString("player", value);
 	}
 
-	public String getPlayer(ItemStack stack) {
+	public static String getPlayer(ItemStack stack) {
 		NBTTagCompound nbt = stack.getTagCompound();
 		if(nbt != null && nbt.hasKey("player")) {
 			return nbt.getString("player");

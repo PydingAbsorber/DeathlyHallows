@@ -23,7 +23,7 @@ import java.util.Random;
 
 public class ItemTrickOrTreat extends ItemBase {
 
-	private static final List<ItemStack> 
+	private static final List<ItemStack>
 			witcheryItems = new ArrayList<>(),
 			deathlyHallowItems = new ArrayList<>();
 
@@ -33,40 +33,43 @@ public class ItemTrickOrTreat extends ItemBase {
 
 
 	@Override
-	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
+	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer p) {
 		stack.splitStack(1);
-		double chance = 0.98;
-		if(DHUtils.hasDeathlyHallow(player)) {
-			chance = 0.96;
+		if(world.isRemote) {
+			return stack;
 		}
-		ItemStack loot = randomObjectFromList(Math.random() > chance ? getDeathlyHallowItems() : getWitcheryItems(player));
-		if(!world.isRemote && !player.inventory.addItemStackToInventory(loot)) {
-			player.entityDropItem(loot, 1);
+		double chance = DHUtils.hasDeathlyHallow(p) ? 0.96 : 0.98;
+		ItemStack loot = randomObjectFromList(Math.random() > chance ? getDeathlyHallowItems() : getWitcheryItems(p));
+		if(p.inventory.addItemStackToInventory(loot)) {
+			p.inventoryContainer.detectAndSendChanges();
 		}
-		// lolwhat?
-		(Math.random() < 0.5 ? SoundEffect.WITCHERY_MOB_BABA_DEATH : SoundEffect.WITCHERY_MOB_BABA_LIVING).playAtPlayer(world, player, 1, 1);
-		ParticleEffect.INSTANT_SPELL.send(SoundEffect.NONE, player, 1.0, 2.0, 8);
-		return super.onItemRightClick(stack, world, player);
+		else {
+			p.entityDropItem(loot, 1);
+		}
+		(Math.random() < 0.5 ? SoundEffect.WITCHERY_MOB_BABA_DEATH : SoundEffect.WITCHERY_MOB_BABA_LIVING).playAtPlayer(world, p, 1, 1); // lolwhat?
+		ParticleEffect.INSTANT_SPELL.send(SoundEffect.NONE, p, 1.0, 2.0, 8);
+		return stack;
 	}
 
 	public ItemStack randomObjectFromList(List<ItemStack> list) {
-		Random random = new Random();
-		int randomIndex = random.nextInt(list.size());
-		return list.get(randomIndex);
+		int randomIndex = new Random().nextInt(list.size());
+		return list.get(randomIndex).copy();
 	}
 
-	public List<ItemStack> getWitcheryItems(EntityPlayer player) {
-		if(hasRing(player) != null) {
-			ItemBaubleResurrectionStone stone = new ItemBaubleResurrectionStone();
-			ItemStack stack = new ItemStack(Witchery.Items.TAGLOCK_KIT, 1, 1);
-			Witchery.Items.TAGLOCK_KIT.setTaglockForEntity(stack, player, stone.getPlayer(hasRing(player)), false, 1);
-			if(!witcheryItems.contains(stack)) {
-				witcheryItems.add(stack);
-			}
-			else {
-				witcheryItems.set(witcheryItems.size(), stack);
-			}
+	public List<ItemStack> getWitcheryItems(EntityPlayer p) {
+		ItemStack ring = hasRing(p);
+		if(ring == null) {
+			return witcheryItems;
 		}
+		ItemStack stack = new ItemStack(Witchery.Items.TAGLOCK_KIT, 1, 1);
+		Witchery.Items.TAGLOCK_KIT.setTaglockForEntity(stack, p, ItemBaubleResurrectionStone.getPlayer(ring), false, 1);
+		// TODO check if there actually any cases when it isn't -1
+		int index = witcheryItems.indexOf(stack);
+		if(index == -1) {
+			witcheryItems.add(stack);
+			return witcheryItems;
+		}
+		witcheryItems.set(index, stack);
 		return witcheryItems;
 	}
 
@@ -75,29 +78,24 @@ public class ItemTrickOrTreat extends ItemBase {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p_77624_4_) {
-		if(!DHIntegration.thaumcraft) {
+	protected void addTooltip(ItemStack stack, EntityPlayer p, List<String> l, boolean devMode) {
+		if(!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+			l.add(StatCollector.translateToLocal("dh.desc.trick5"));
 			return;
 		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-			list.add(StatCollector.translateToLocal("dh.desc.trick1"));
-			list.add(StatCollector.translateToLocal("dh.desc.trick2"));
-			list.add(StatCollector.translateToLocal("dh.desc.trick3"));
-			list.add(StatCollector.translateToLocal("dh.desc.trick4"));
-		}
-		else {
-			list.add(StatCollector.translateToLocal("dh.desc.trick5"));
-		}
+		l.add(StatCollector.translateToLocal("dh.desc.trick1"));
+		l.add(StatCollector.translateToLocal("dh.desc.trick2"));
+		l.add(StatCollector.translateToLocal("dh.desc.trick3"));
+		l.add(StatCollector.translateToLocal("dh.desc.trick4"));
 	}
 
 	public ItemStack hasRing(EntityPlayer player) {
 		IInventory baubles = BaublesApi.getBaubles(player);
-		for(int i = 1; i < baubles.getSizeInventory(); i++) {
+		for(int i = 0; i < baubles.getSizeInventory(); i++) {
 			ItemStack stack = baubles.getStackInSlot(i);
-			if(stack == null || stack.getItem() != DHItems.resurrectionStone) {
-				continue;
+			if(stack != null && stack.getItem() == DHItems.resurrectionStone) {
+				return stack;
 			}
-			return stack;
 		}
 		return null;
 	}
