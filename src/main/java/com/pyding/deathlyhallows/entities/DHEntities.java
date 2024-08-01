@@ -34,7 +34,7 @@ public class DHEntities {
 	}
 
 	private static void register(Class<? extends Entity> clazz, String name) {
-		register(clazz, name, 80, 10, true);
+		register(clazz, name, 80, 3, true);
 	}
 
 	private static void register(Class<? extends Entity> clazz, String name, int updateDistance, int updateFrequency, boolean updateVelocity) {
