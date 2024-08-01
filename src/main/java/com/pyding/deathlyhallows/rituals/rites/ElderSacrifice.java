@@ -1,6 +1,5 @@
 package com.pyding.deathlyhallows.rituals.rites;
 
-import com.emoniph.witchery.ritual.RitualStep;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;

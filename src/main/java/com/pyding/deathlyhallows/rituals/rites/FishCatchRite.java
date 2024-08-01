@@ -1,20 +1,14 @@
 package com.pyding.deathlyhallows.rituals.rites;
 
 import com.emoniph.witchery.blocks.BlockAltar;
-import com.emoniph.witchery.blocks.BlockCircle;
 import com.emoniph.witchery.common.IPowerSource;
 import com.emoniph.witchery.common.PowerSources;
-import com.emoniph.witchery.ritual.Rite;
-import com.emoniph.witchery.ritual.RitualStep;
 import com.emoniph.witchery.util.Coord;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
-import com.pyding.deathlyhallows.DHUtil;
-import com.pyding.deathlyhallows.blocks.ElderRitualBlock;
+import com.pyding.deathlyhallows.blocks.BlockElderRitual;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.projectile.EntityFishHook;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -59,7 +53,7 @@ public class FishCatchRite extends ElderRite {
 		}
 
 		@Override
-		public Result elderProcess(World world, int posX, int posY, int posZ, long ticks, ElderRitualBlock.TileEntityCircle.ActivatedElderRitual ritual) {
+		public Result elderProcess(World world, int posX, int posY, int posZ, long ticks, BlockElderRitual.TileEntityCircle.ActivatedElderRitual ritual) {
 			if(ticks % 20L != 0L) {
 				return Result.STARTING;
 			}

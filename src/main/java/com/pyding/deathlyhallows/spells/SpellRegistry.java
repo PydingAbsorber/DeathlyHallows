@@ -10,11 +10,11 @@ import com.emoniph.witchery.util.SoundEffect;
 import com.emoniph.witchery.util.TimeUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.pyding.deathlyhallows.common.properties.ExtendedPlayer;
-import com.pyding.deathlyhallows.network.AnimaMobRenderPacket;
-import com.pyding.deathlyhallows.network.CPacketDisableFlight;
-import com.pyding.deathlyhallows.network.NetworkHandler;
-import com.pyding.deathlyhallows.network.PlayerRenderPacket;
+import com.pyding.deathlyhallows.network.DHPacketProcessor;
+import com.pyding.deathlyhallows.network.packets.PacketAnimaMobRender;
+import com.pyding.deathlyhallows.network.packets.PacketDisableFlight;
+import com.pyding.deathlyhallows.network.packets.PacketPlayerRender;
+import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -29,7 +29,6 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -205,7 +204,7 @@ public class SpellRegistry {
 
 	public static int spellCount = 55;
 
-	public static float cd = 2500;
+	public static float cd = 2500F;
 	public static int cost = 120; //anima
 	public static int sectumCost = 10;
 	public static int magicCost = 5;
@@ -225,12 +224,12 @@ public class SpellRegistry {
 		ItemStack stack = player.getHeldItem();
 		long lastUsedTime = stack.getTagCompound().getLong("lastUsedTime");
 		if(System.currentTimeMillis() - lastUsedTime > cd) {
-			cd = 2500;
-			ExtendedPlayer props1 = ExtendedPlayer.get(player);
-			if(props1.getElfLvl() > 0) {
-				discount = 1 - props1.getElfLvl() / 20;
-				cd = 2500 * discount;
-				spellPower = props1.getElfLvl();
+			cd = 2500F;
+			DeathlyProperties props1 = DeathlyProperties.get(player);
+			if(props1.getElfLevel() > 0) {
+				discount = 1F - props1.getElfLevel() / 20F;
+				cd = 2500F * discount;
+				spellPower = props1.getElfLevel();
 				cost = (int)(120 * discount);
 				sectumCost = (int)(10 * discount);
 				magicCost = (int)(5 * discount);
@@ -239,10 +238,6 @@ public class SpellRegistry {
 			double x = player.posX;
 			double y = player.posY + player.getEyeHeight();
 			double z = player.posZ;
-			Vec3 lookVec = player.getLookVec();
-			double endX = x + lookVec.xCoord * 60;
-			double endY = y + lookVec.yCoord * 60;
-			double endZ = z + lookVec.zCoord * 60;
 			if(spellId < 48) {
 				performWitcherySpell(player, world, spellId);
 			}
@@ -251,9 +246,9 @@ public class SpellRegistry {
 											.getAttributeValue();
 				switch(spellId) {
 					case 48: {
-						if(Infusion.getInfusionID(player) == 4 && props1.getElfLvl() > 0) {
+						if(Infusion.getInfusionID(player) == 4 && props1.getElfLevel() > 0) {
 							int cursedCount = 0;
-							int elfBonus = 1 + props1.getElfLvl() / 5;
+							int elfBonus = 1 + props1.getElfLevel() / 5;
 							props1.setSpellsUsed(props1.getSpellsUsed() + 1);
 							double radius = 64;
 							for(Object o: getEntities(radius, EntityLivingBase.class)) {
@@ -282,28 +277,28 @@ public class SpellRegistry {
 											NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(target.dimension, target.posX, target.posY, target.posZ, radius * 1.2);
 											if(target instanceof EntityPlayer) {
 												EntityPlayer targetPlayer = (EntityPlayer)target;
-												ExtendedPlayer props = ExtendedPlayer.get(targetPlayer);
+												DeathlyProperties props = DeathlyProperties.get(targetPlayer);
 												props.setCurrentDuration(1200);
 												props.setSource(player);
 												target.setLastAttacker(player);
 												props.setCoordinates(targetPlayer.posX, targetPlayer.posY, targetPlayer.posZ, targetPlayer.dimension);
 												props1.setCoordinates(targetPlayer.posX, targetPlayer.posY, targetPlayer.posZ, targetPlayer.dimension);
 												player.getEntityData().setInteger("casterCurse", 1200);
-												PlayerRenderPacket packet = new PlayerRenderPacket(targetPlayer.getEntityData());
-												NetworkHandler.sendToAllAround(packet, targetPoint);
+												PacketPlayerRender packet = new PacketPlayerRender(targetPlayer.getEntityData());
+												DHPacketProcessor.sendToAllAround(packet, targetPoint);
 											}
 											else {
 												target.setLastAttacker(player);
-												AnimaMobRenderPacket packet = new AnimaMobRenderPacket(target.getEntityData(), target.getEntityId());
-												NetworkHandler.sendToAllAround(packet, targetPoint);
+												PacketAnimaMobRender packet = new PacketAnimaMobRender(target.getEntityData(), target.getEntityId());
+												DHPacketProcessor.sendToAllAround(packet, targetPoint);
 												target.getEntityData().setDouble("chainX", target.posX);
 												target.getEntityData().setDouble("chainY", target.posY);
 												target.getEntityData().setDouble("chainZ", target.posZ);
 											}
-											if(ExtendedPlayer.get(player) != null) {
-												ExtendedPlayer props = ExtendedPlayer.get(player);
-												if(props.getElfLvl() > 0) {
-													cd = 20000 * (1 - props.getElfLvl() / 20);
+											if(DeathlyProperties.get(player) != null) {
+												DeathlyProperties props = DeathlyProperties.get(player);
+												if(props.getElfLevel() > 0) {
+													cd = 20000 * (1 - props.getElfLevel() / 20);
 												}
 											}
 											if(!player.capabilities.isCreativeMode) {
@@ -339,7 +334,7 @@ public class SpellRegistry {
 						break;
 					}
 					case 49: {
-						if(Infusion.getInfusionID(player) == 4 && props1.getElfLvl() > 0) {
+						if(Infusion.getInfusionID(player) == 4 && props1.getElfLevel() > 0) {
 							if(!player.capabilities.isCreativeMode && Infusion.getNBT(player)
 																			  .getInteger("witcheryInfusionCharges") < cost) {
 								ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "witchery.infuse.branch.nocharges");
@@ -357,7 +352,7 @@ public class SpellRegistry {
 									player.getAttributeMap().applyAttributeModifiers(attributes);
 									attributes.clear();
 									player.getEntityData().setInteger("Horcrux", lifes + 1);
-									cd = 20000 * (1 - props1.getElfLvl() / 20);
+									cd = 20000 * (1 - props1.getElfLevel() / 20);
 								}
 								else {
 									ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "temptation is high but you seem to look back");
@@ -399,7 +394,7 @@ public class SpellRegistry {
 								if(o != player && o instanceof EntityLivingBase) {
 									EntityLivingBase entity = (EntityLivingBase)o;
 									entity.getEntityData().setInteger("SectumTime", 666);
-									float hpLower = (float)(entity.getMaxHealth() * (0.15 * (1 + props1.getElfLvl() / 10)));
+									float hpLower = (float)(entity.getMaxHealth() * (0.15 * (1 + props1.getElfLevel() / 10)));
 									if(entity.getMaxHealth() - hpLower > 5) {
 										entity.getEntityData()
 											  .setFloat("SectumHp", entity.getEntityData()
@@ -558,14 +553,14 @@ public class SpellRegistry {
 									if(o instanceof EntityLivingBase && !(o instanceof EntityPlayer)) {
 										Entity entity = (Entity)o;
 										entity.motionY = -10F;
-										entity.attackEntityFrom(DamageSource.fall.setDamageBypassesArmor(), (baseDamage * 10 * (props1.getElfLvl() + 1)) * damage);
+										entity.attackEntityFrom(DamageSource.fall.setDamageBypassesArmor(), (baseDamage * 10 * (props1.getElfLevel() + 1)) * damage);
 									}
 									if(o instanceof EntityPlayer) {
 										EntityPlayer targetPlayer = (EntityPlayer)o;
-										NetworkHandler.sendToPlayer(new CPacketDisableFlight(), targetPlayer);
+										DHPacketProcessor.sendToPlayer(new PacketDisableFlight(), targetPlayer);
 										targetPlayer.capabilities.isFlying = false;
 										targetPlayer.motionY = -10F;
-										targetPlayer.attackEntityFrom(DamageSource.fall.setDamageBypassesArmor(), (baseDamage * 10 * (props1.getElfLvl() + 1)) * damage);
+										targetPlayer.attackEntityFrom(DamageSource.fall.setDamageBypassesArmor(), (baseDamage * 10 * (props1.getElfLevel() + 1)) * damage);
 									}
 								}
 							}

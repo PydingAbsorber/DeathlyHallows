@@ -5,10 +5,10 @@ buildscript {
             name = "forge"
             url = "https://maven.minecraftforge.net/"
         }
-        /*maven {
+        maven {
             name = "sonatype"
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }*/
+        }
     }
     dependencies {
         classpath('com.anatawa12.forge:ForgeGradle:1.2-1.1.+') {
@@ -19,7 +19,7 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "1.0.0"
+version = "1.0.1"
 group = "com.pyding.deathlyhallows"
 archivesBaseName = "deathlyhallows"
 
@@ -33,12 +33,12 @@ minecraft {
 }
 
 configurations {
-    provided
+	provided
 }
 
 sourceSets {
     main {
-        compileClasspath += configurations.provided
+		compileClasspath += configurations.provided
     }
 }
 
@@ -55,31 +55,14 @@ processResources {
     }
 }
 
-dependencies {
-	provided fileTree(dir: "libs", include: "*.jar")
-}
-
 jar {
 	manifest {
-		attributes 'FMLCorePlugin': 'com.pyding.deathlyhallows.coremod.CoreMod'
-		attributes 'FMLCorePluginContainsFMLMod': 'true'
+		//attributes 'FMLCorePlugin': 'com.pyding.deathlyhallows.core.CoreMod'
+		//attributes 'FMLCorePluginContainsFMLMod': 'true'
+		attributes 'FMLAT': 'dh_at.cfg'
 	}
 }
 
-
-/* uncomment if you really need those 2 files each build
-task devJar(type: Jar) {
-    classifier = 'dev'
-    from sourceSets.main.output
+dependencies {
+	provided fileTree(dir: "providedLibs", include: "*.jar")
 }
-
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives devJar
-    archives sourcesJar
-}
-*/

@@ -1,17 +1,13 @@
 package com.pyding.deathlyhallows.rituals.rites;
 
 import com.emoniph.witchery.blocks.BlockAltar;
-import com.emoniph.witchery.blocks.BlockCircle;
 import com.emoniph.witchery.common.IPowerSource;
 import com.emoniph.witchery.common.PowerSources;
-import com.emoniph.witchery.ritual.Rite;
-import com.emoniph.witchery.ritual.RitualStep;
 import com.emoniph.witchery.util.Coord;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
-import com.pyding.deathlyhallows.DHUtil;
-import com.pyding.deathlyhallows.blocks.ElderRitualBlock;
-import cpw.mods.fml.common.registry.GameData;
+import com.pyding.deathlyhallows.blocks.BlockElderRitual;
+import com.pyding.deathlyhallows.utils.DHUtils;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -58,7 +54,7 @@ public class IceFortressRite extends ElderRite {
 		}
 
 		@Override
-		public Result elderProcess(World world, int posX, int posY, int posZ, long ticks, ElderRitualBlock.TileEntityCircle.ActivatedElderRitual ritual) {
+		public Result elderProcess(World world, int posX, int posY, int posZ, long ticks, BlockElderRitual.TileEntityCircle.ActivatedElderRitual ritual) {
 			if(ticks % 20L != 0L) {
 				return Result.STARTING;
 			}
@@ -90,12 +86,14 @@ public class IceFortressRite extends ElderRite {
 						if(Coord.distance(player.posX, player.posY, player.posZ, posX, posY, posZ) <= (double)r) {
 							Random random = new Random();
 							List<Item> hearts = new ArrayList<>();
-							for(Item item: DHUtil.getItems()){
-								if(item.getUnlocalizedName().contains("heart")) 
+							for(Item item: DHUtils.getItems()) {
+								if(item.getUnlocalizedName().contains("heart")) {
 									hearts.add(item);
-							} 
-							if(hearts.size() <= 1)
+								}
+							}
+							if(hearts.size() <= 1) {
 								return Result.ABORTED;
+							}
 							ItemStack itemStack = new ItemStack(hearts.get(random.nextInt(hearts.size())));
 							EntityItem entity = new EntityItem(world, 0.5 + (double)posX, (double)posY + 1.5, 0.5 + (double)posZ, itemStack);
 							entity.motionX = 0.0;

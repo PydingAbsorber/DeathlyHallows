@@ -1,7 +1,5 @@
 package com.pyding.deathlyhallows.rituals.rites;
 
-import com.emoniph.witchery.ritual.RitualStep;
-import com.emoniph.witchery.ritual.Sacrifice;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
@@ -9,7 +7,7 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 
-public class ElderSacrificeMultiple extends ElderSacrifice{
+public class ElderSacrificeMultiple extends ElderSacrifice {
 	private final ElderSacrifice[] sacrifices;
 
 	public ElderSacrificeMultiple(ElderSacrifice... sacrifices) {
@@ -33,7 +31,7 @@ public class ElderSacrificeMultiple extends ElderSacrifice{
 
 		for(int i$ = 0; i$ < len$; ++i$) {
 			ElderSacrifice sacrifice = arr$[i$];
-			if (!sacrifice.isMatch(world, posX, posY, posZ, maxDistance, entities, grassperStacks)) {
+			if(!sacrifice.isMatch(world, posX, posY, posZ, maxDistance, entities, grassperStacks)) {
 				return false;
 			}
 		}
