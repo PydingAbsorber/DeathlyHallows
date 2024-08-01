@@ -4,7 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
 
 /**
- A set of Multiblock objects for various rotations.
+ A set of MultiBlock objects for various rotations.
  */
 public class MultiBlockSet {
 
@@ -45,4 +45,5 @@ public class MultiBlockSet {
 		}
 		return true;
 	}
+	
 }

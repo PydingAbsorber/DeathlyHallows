@@ -6,9 +6,6 @@ import com.pyding.deathlyhallows.multiblocks.MultiBlockComponent;
 import com.pyding.deathlyhallows.multiblocks.MultiBlockSet;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDoor;
-import net.minecraft.block.BlockPane;
-import net.minecraft.block.BlockStairs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
@@ -59,10 +56,9 @@ public final class DHMultiBlockRenderEvents {
 		currentMultiBlock = set;
 		anchor = null;
 		angle = 0;
-		if(mc.theWorld == null) {
-			return;
+		if(mc.theWorld != null) {
+			dimension = mc.theWorld.provider.dimensionId;
 		}
-		dimension = mc.theWorld.provider.dimensionId;
 	}
 
 	@SubscribeEvent
@@ -136,7 +132,7 @@ public final class DHMultiBlockRenderEvents {
 		return true;
 	}
 
-	public static void renderMultiblockOnPage(MultiBlock mb) {
+	public static void renderMultiBlockOnPage(MultiBlock mb) {
 		glTranslated(-0.5, -0.5, -0.5);
 		blockAccess.update(null, mb, mb.offX, mb.offY, mb.offZ);
 		for(MultiBlockComponent comp: mb.getComponents()) {
@@ -146,48 +142,59 @@ public final class DHMultiBlockRenderEvents {
 	}
 
 	private static void doRenderComponent(MultiBlock mb, MultiBlockComponent comp, int x, int y, int z, float alpha) {
-		glPushMatrix();
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		Block block = comp.getBlock();
 		int meta = comp.getMeta();
-		mc.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
-		blockRender.useInventoryTint = false;
 		if(block == null) {
 			return;
 		}
-
-		if(block instanceof BlockStairs || block instanceof BlockDoor || block instanceof BlockPane) {
-			int color;
-			try {
-				color = block.colorMultiplier(blockAccess, x, y, z);
-			}
-			catch(Exception e) {
-				color = 16777215;
-			}
-
-			float red = (color >> 16 & 255) / 255.0F;
-			float green = (color >> 8 & 255) / 255.0F;
-			float blue = (color & 255) / 255.0F;
-			glColor4f(red, green, blue, alpha);
-			IBlockAccess oldBlockAccess = blockRender.blockAccess;
-			blockRender.blockAccess = blockAccess;
-			Tessellator tessellator = Tessellator.instance;
-			blockRender.renderAllFaces = true;
-			tessellator.startDrawingQuads();
-			tessellator.disableColor();
-			try {
-				blockRender.renderBlockByRenderType(block, x, y, z);
-			}
-			catch(Exception e) {
-				comp.doFancyRender = false;
-			}
-			tessellator.draw();
-			blockRender.renderAllFaces = false;
-			blockRender.blockAccess = oldBlockAccess;
-			return;
+		mc.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
+		blockRender.useInventoryTint = false;
+		
+		glPushMatrix();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		if(block.isOpaqueCube()) {
+			renderBlock(x, y, z, alpha, comp, block, meta);
+			renderTileEntity(comp, block, meta);
 		}
+		else {
+			renderBlockNonOpaque(comp, x, y, z, alpha, block);
+		}
+		glColor4f(1F, 1F, 1F, 1F);
+		glEnable(GL_DEPTH_TEST);
+		glPopMatrix();
+	}
 
+	private static void renderBlockNonOpaque(MultiBlockComponent comp, int x, int y, int z, float alpha, Block block) {
+		int color;
+		try {
+			color = block.colorMultiplier(blockAccess, x, y, z);
+		}
+		catch(Exception e) {
+			color = 0xFFFFFF;
+		}
+		float red = (color >> 16 & 0xFF) / 255.0F;
+		float green = (color >> 8 & 0xFF) / 255.0F;
+		float blue = (color & 0xFF) / 255.0F;
+		glColor4f(red, green, blue, alpha);
+		IBlockAccess old = blockRender.blockAccess;
+		blockRender.blockAccess = blockAccess;
+		blockRender.renderAllFaces = true;
+		Tessellator t = Tessellator.instance;
+		t.startDrawingQuads();
+		t.disableColor();
+		try {
+			blockRender.renderBlockByRenderType(block, x, y, z);
+		}
+		catch(Exception ignored) {
+			comp.doFancyRender = false;
+		}
+		t.draw();
+		blockRender.renderAllFaces = false;
+		blockRender.blockAccess = old;
+	}
+
+	private static void renderBlock(int x, int y, int z, float alpha, MultiBlockComponent comp, Block block, int meta) {
 		int color = block.getRenderColor(meta);
 		float red = (color >> 16 & 255) / 255.0F;
 		float green = (color >> 8 & 255) / 255.0F;
@@ -195,18 +202,6 @@ public final class DHMultiBlockRenderEvents {
 		glColor4f(red, green, blue, alpha);
 		glTranslated(x + 0.5, y + 0.5, z + 0.5);
 		blockRender.renderBlockAsItem(block, meta, 1F);
-		glTranslated(-0.5, -0.5, -0.5);
-		glPushMatrix();
-		try {
-			renderTileEntity(comp, block, meta);
-		}
-		catch(Exception ignored) {
-
-		}
-		glPopMatrix();
-		glColor4f(1F, 1F, 1F, 1F);
-		glEnable(GL_DEPTH_TEST);
-		glPopMatrix();
 	}
 
 	private static void renderTileEntity(MultiBlockComponent comp, Block block, int meta) {
@@ -221,8 +216,15 @@ public final class DHMultiBlockRenderEvents {
 		if(comp.tag != null) {
 			tile.readFromNBT(comp.tag);
 		}
-		TileEntityRendererDispatcher.instance.getSpecialRenderer(tile).renderTileEntityAt(tile, 0, 0, 0, 0);
-		glDisable(GL_LIGHTING);
+		try {
+			glTranslated(-0.5, -0.5, -0.5);
+			glPushMatrix();
+			TileEntityRendererDispatcher.instance.getSpecialRenderer(tile).renderTileEntityAt(tile, 0, 0, 0, 0);
+			glDisable(GL_LIGHTING);
+		}
+		finally {
+			glPopMatrix();	
+		}
 	}
 
 }
