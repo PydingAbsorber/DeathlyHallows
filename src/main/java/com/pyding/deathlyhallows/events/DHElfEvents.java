@@ -1,5 +1,6 @@
 package com.pyding.deathlyhallows.events;
 
+import com.emoniph.witchery.common.ExtendedPlayer;
 import com.emoniph.witchery.util.CreatureUtil;
 import com.emoniph.witchery.util.EntityDamageSourceIndirectSilver;
 import com.emoniph.witchery.util.EntityUtil;
@@ -33,9 +34,17 @@ public final class DHElfEvents {
 
 	private static final DHElfEvents INSTANCE = new DHElfEvents();
 
-	private static final long
-			firstShot = 50,
-			secondShot = 1000;
+	private static long firstShot(EntityPlayer player){
+		if(ElfUtils.getElfLevel(player) >= 10)
+			return 1000;
+		return 2000;
+	}
+
+	private static long secondShot(EntityPlayer player){
+		if(ElfUtils.getElfLevel(player) >= 10)
+			return 2000;
+		return 4000;
+	}
 
 	private DHElfEvents() {
 
@@ -60,13 +69,13 @@ public final class DHElfEvents {
 		if(entityTag.getLong("DHArrow") <= 0) {
 			return;
 		}
-		long time = p.ticksExisted - entityTag.getLong("DHArrow");
-		if(time >= firstShot && entityTag.getBoolean("DHArrowShow")) {
+		long time = System.currentTimeMillis() - entityTag.getLong("DHArrow");
+		if(time >= firstShot(p) && entityTag.getBoolean("DHArrowShow")) {
 			entityTag.setBoolean("DHArrowShow", false);
 			DHUtils.spawnSphere(p, p.getPosition(1), 20, 3, Color.BLUE, 1, 3, 60, 1);
 			p.worldObj.playSoundAtEntity(p, "dh:arrow.arrow_ready_1", 1F, 1F);
 		}
-		if(time >= secondShot && entityTag.getBoolean("DHArrowShow2")) {
+		if(time >= secondShot(p) && entityTag.getBoolean("DHArrowShow2")) {
 			entityTag.setBoolean("DHArrowShow2", false);
 			DHUtils.spawnSphere(p, p.getPosition(1), 20, 3, Color.magenta, 1, 3, 60, 1);
 			p.worldObj.playSoundAtEntity(p, "dh:arrow.arrow_ready_2", 1F, 1F);
@@ -76,9 +85,12 @@ public final class DHElfEvents {
 	@SubscribeEvent
 	public void elfTheArcherShooter(ArrowNockEvent e) {
 		NBTTagCompound entityTag = e.entityPlayer.getEntityData();
-		entityTag.setLong("DHArrow", e.entityPlayer.ticksExisted);
-		entityTag.setBoolean("DHArrowShow", true);
-		entityTag.setBoolean("DHArrowShow2", true);
+		if(ElfUtils.getElfLevel(e.entityPlayer) >= 3) {
+			entityTag.setLong("DHArrow", System.currentTimeMillis());
+			entityTag.setBoolean("DHArrowShow", true);
+			if(ElfUtils.getElfLevel(e.entityPlayer) >= 7)
+				entityTag.setBoolean("DHArrowShow2", true);
+		}
 	}
 
 	@SubscribeEvent
@@ -86,31 +98,34 @@ public final class DHElfEvents {
 		EntityPlayer p = e.entityPlayer;
 		DeathlyProperties props = DeathlyProperties.get(p);
 		NBTTagCompound tag = p.getEntityData();
-		long time = p.ticksExisted - tag.getLong("DHArrow");
+		long time = System.currentTimeMillis() - tag.getLong("DHArrow");
 		tag.setLong("DHArrow", 0);
-		long perfectTime = secondShot + 150;
 		int elfLevel = ElfUtils.getElfLevel(props);
-		if(elfLevel < 10 || (time <= secondShot && tag.getInteger("DHShot") <= 0)) {
-			if(elfLevel > 6 && time > firstShot) {
-				DHUtils.spawnArrow(p, 1);
+		long perfectTime;
+		if(elfLevel >= 10)
+			perfectTime = secondShot(p) + 200;
+		else perfectTime = secondShot(p) + 150;
+		if(elfLevel >= 7 && (time > secondShot(p) || tag.getInteger("DHShot") > 0)) {
+			if(tag.getInteger("DHShot") > 0) {
+				DHUtils.spawnArrow(p, 3);
+				tag.setInteger("DHShot", tag.getInteger("DHShot") - 1);
+				e.setCanceled(true);
+			}
+			else if(time < perfectTime) {
+				DHUtils.spawnArrow(p, 3);
+				tag.setInteger("DHShot", 5);
+				e.setCanceled(true);
+			}
+			else {
+				DHUtils.spawnArrow(p, 2);
 				e.setCanceled(true);
 			}
 			return;
 		}
-		if(tag.getInteger("DHShot") > 0) {
-			DHUtils.spawnArrow(p, 3);
-			tag.setInteger("DHShot", tag.getInteger("DHShot") - 1);
+		if(elfLevel >= 3 && time > firstShot(p)) {
+			DHUtils.spawnArrow(p, 1);
 			e.setCanceled(true);
 		}
-		else if(time < perfectTime) {
-			DHUtils.spawnArrow(p, 3);
-			tag.setInteger("DHShot", 5);
-			e.setCanceled(true);
-		}
-		else {
-			DHUtils.spawnArrow(p, 2);
-			e.setCanceled(true);
-		}		
 	}
 
 

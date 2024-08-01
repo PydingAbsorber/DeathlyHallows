@@ -81,7 +81,8 @@ public class EntityEmpoweredArrow extends Entity {
 		noClip = true;
 		Vec3 lookVec = getShooter().getLookVec();
 		moveArrowToLook(lookVec, 1F, getShooter().rotationYaw, getShooter().rotationPitch);
-		spawnParticles();
+		if(type ==1)
+			spawnParticles();
 		if(ticksExisted % 5 == 0) {
 			attackInRadius();
 		}
