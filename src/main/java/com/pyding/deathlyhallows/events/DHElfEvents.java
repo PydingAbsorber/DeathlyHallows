@@ -85,9 +85,12 @@ public final class DHElfEvents {
 	@SubscribeEvent
 	public void elfTheArcherShooter(ArrowNockEvent e) {
 		NBTTagCompound entityTag = e.entityPlayer.getEntityData();
-		entityTag.setLong("DHArrow", System.currentTimeMillis());
-		entityTag.setBoolean("DHArrowShow", true);
-		entityTag.setBoolean("DHArrowShow2", true);
+		if(ElfUtils.getElfLevel(e.entityPlayer) >= 3) {
+			entityTag.setLong("DHArrow", System.currentTimeMillis());
+			entityTag.setBoolean("DHArrowShow", true);
+			if(ElfUtils.getElfLevel(e.entityPlayer) >= 7)
+				entityTag.setBoolean("DHArrowShow2", true);
+		}
 	}
 
 	@SubscribeEvent
@@ -100,18 +103,9 @@ public final class DHElfEvents {
 		int elfLevel = ElfUtils.getElfLevel(props);
 		long perfectTime;
 		if(elfLevel >= 10)
-			perfectTime = secondShot(p) + 150;
-		else perfectTime = secondShot(p) + 100;
-		if(elfLevel >= 3) {
-			if((time <= secondShot(p) && tag.getInteger("DHShot") <= 0)) {
-				if(elfLevel > 6 && time > firstShot(p)) {
-					DHUtils.spawnArrow(p, 1);
-					e.setCanceled(true);
-				}
-				return;
-			}
-		}
-		if(elfLevel >= 7) {
+			perfectTime = secondShot(p) + 200;
+		else perfectTime = secondShot(p) + 150;
+		if(elfLevel >= 7 && (time > secondShot(p) || tag.getInteger("DHShot") > 0)) {
 			if(tag.getInteger("DHShot") > 0) {
 				DHUtils.spawnArrow(p, 3);
 				tag.setInteger("DHShot", tag.getInteger("DHShot") - 1);
@@ -126,6 +120,11 @@ public final class DHElfEvents {
 				DHUtils.spawnArrow(p, 2);
 				e.setCanceled(true);
 			}
+			return;
+		}
+		if(elfLevel >= 3 && time > firstShot(p)) {
+			DHUtils.spawnArrow(p, 1);
+			e.setCanceled(true);
 		}
 	}
 

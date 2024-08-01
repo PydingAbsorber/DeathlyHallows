@@ -49,6 +49,7 @@ public final class ElfUtils {
 
 	public static boolean isElf(EntityLivingBase living) {
 		// TODO Either disable Alfheim or make it compatible
+		// fuck Alfheim and Alex Suckold. -Best regards, Pyding.
 		if(living instanceof EntityPlayer) {
 			return getElfLevel((EntityPlayer)living) > 0;
 		}
