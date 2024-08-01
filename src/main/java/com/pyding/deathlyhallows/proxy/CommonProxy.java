@@ -27,8 +27,8 @@ public class CommonProxy {
 	}
 
 	public void init(FMLInitializationEvent event) {
-		DHBlocks.init();
 		DHItems.init();
+		DHBlocks.init();
 		DHEntities.init();
 		DHEvents.init();
 		DHElfEvents.init();

@@ -100,7 +100,6 @@ public class ElderWitchbookGui extends GuiScreen {
 		buttonList.add(buttonPreviousPage = new GuiButtonNext(2, i + 110, b0 + 154, false));
 		buttonList.add(buttonNextIngredientPage = new GuiButtonNext(10, i + 58, b0 + 154, true));
 		buttonList.add(buttonPreviousIngredientPage = new GuiButtonNext(11, i - 12, b0 + 154, false));
-		/*
 		buttonList.add(new GuiButtonJump(9, i + 214, b0 + 138, 69, 48, 248));
 		buttonList.add(new GuiButtonJump(8, i + 214, b0 + 118, 58, 40, 248));
 		buttonList.add(new GuiButtonJump(7, i + 214, b0 + 98, 47, 32, 248));
@@ -108,7 +107,6 @@ public class ElderWitchbookGui extends GuiScreen {
 		buttonList.add(new GuiButtonJump(5, i + 214, b0 + 58, 23, 16, 248));
 		buttonList.add(new GuiButtonJump(4, i + 214, b0 + 38, 17, 8, 248));
 		buttonList.add(new GuiButtonJump(3, i + 214, b0 + 18, 2, 0, 248));
-		 */
 		buttonList.add(new GuiButton(12, i + 125, b0 + 135, 70, 20, "botaniamisc.visualize"));
 		((GuiButton)buttonList.get(12)).visible = false;
 	}
