@@ -275,8 +275,9 @@ public final class DHMultiBlockRenderEvents {
 		if(!TileEntityRendererDispatcher.instance.hasSpecialRenderer(tile)) {
 			return;
 		}
+		// setting the tile and world properties
 		tile.setWorldObj(w);
-		tile.blockMetadata = meta; // peacefully solution
+		tile.blockMetadata = meta;
 		tile.xCoord = x;
 		tile.yCoord = y;
 		tile.zCoord = z;
@@ -288,6 +289,7 @@ public final class DHMultiBlockRenderEvents {
 		if(!w.setBlock(x, y, z, block, meta, 5)) {
 			w.setBlock(x, y, z, trueBlock, trueMeta, 5);
 		}
+		// actually render
 		try {
 			glPushMatrix();
 			TileEntityRendererDispatcher.instance.getSpecialRenderer(tile).renderTileEntityAt(tile, x, y, z, 0);
