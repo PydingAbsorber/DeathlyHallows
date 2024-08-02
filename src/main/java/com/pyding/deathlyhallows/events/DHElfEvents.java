@@ -1,6 +1,5 @@
 package com.pyding.deathlyhallows.events;
 
-import com.emoniph.witchery.common.ExtendedPlayer;
 import com.emoniph.witchery.util.CreatureUtil;
 import com.emoniph.witchery.util.EntityDamageSourceIndirectSilver;
 import com.emoniph.witchery.util.EntityUtil;
@@ -72,12 +71,12 @@ public final class DHElfEvents {
 		long time = System.currentTimeMillis() - entityTag.getLong("DHArrow");
 		if(time >= firstShot(p) && entityTag.getBoolean("DHArrowShow")) {
 			entityTag.setBoolean("DHArrowShow", false);
-			DHUtils.spawnSphere(p, p.getPosition(1), 20, 3, Color.BLUE, 1, 3, 60, 1);
+			DHUtils.spawnSphere(p, DHUtils.getPosition(p), 20, 3, Color.BLUE, 1, 3, 60, 1);
 			p.worldObj.playSoundAtEntity(p, "dh:arrow.arrow_ready_1", 1F, 1F);
 		}
 		if(time >= secondShot(p) && entityTag.getBoolean("DHArrowShow2")) {
 			entityTag.setBoolean("DHArrowShow2", false);
-			DHUtils.spawnSphere(p, p.getPosition(1), 20, 3, Color.magenta, 1, 3, 60, 1);
+			DHUtils.spawnSphere(p, DHUtils.getPosition(p), 20, 3, Color.magenta, 1, 3, 60, 1);
 			p.worldObj.playSoundAtEntity(p, "dh:arrow.arrow_ready_2", 1F, 1F);
 		}
 	}
@@ -182,7 +181,7 @@ public final class DHElfEvents {
 			e.source.setMagicDamage();
 		}
 		if(elfLevel > 5 && !e.source.isDamageAbsolute()) {
-			DHUtils.spawnSphere(entity, entity.getPosition(1), (int)(radius * 20), radius, Color.BLUE, 1, 6, 60, 1);
+			DHUtils.spawnSphere(entity, DHUtils.getPosition(entity), (int)(radius * 20), radius, Color.BLUE, 1, 6, 60, 1);
 			for(EntityLiving el: DHUtils.getEntitiesAround(EntityLiving.class, entity, radius)) {
 				if(el == entity) {
 					continue;
