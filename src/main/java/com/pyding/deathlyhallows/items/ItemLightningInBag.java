@@ -18,7 +18,7 @@ public class ItemLightningInBag extends ItemBase {
 	@Override
 	@SideOnly(Side.CLIENT)
 	protected void addTooltip(ItemStack stack, EntityPlayer p, List<String> l, boolean devMode) {
-		l.add(StatCollector.translateToLocal("dh.decs.light"));
+		l.add(StatCollector.translateToLocal("dh.desc.light"));
 		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 			l.add(StatCollector.translateToLocal("dh.desc.light2"));
 		}
