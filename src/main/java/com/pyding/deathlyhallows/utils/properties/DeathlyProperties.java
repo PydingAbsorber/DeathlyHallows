@@ -34,7 +34,8 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 			foodEaten,
 			page,
 			mobsFed,
-			cursed;
+			cursed,
+			niceCream;
 	private boolean
 			damageLog,
 			choice,
@@ -55,7 +56,9 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 
 	@Override
 	public void init(Entity entity, World world) {
-		syncToServer();
+		if(player.worldObj.isRemote) {
+			syncToServer();
+		}
 	}
 
 	public static void register(EntityPlayer player) {
@@ -94,6 +97,7 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 		tag.setBoolean("Avenger", avenger);
 		tag.setInteger("Cursed", cursed);
 		tag.setInteger("DHFoodSize", foodCollection.size());
+		tag.setInteger("DHNiceCream", niceCream);
 		int i = 0;
 		for(String food: foodCollection) {
 			tag.setString("DHFood" + i++, food);
@@ -125,6 +129,7 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 		page = tag.getInteger("Page");
 		avenger = tag.getBoolean("Avenger");
 		cursed = tag.getInteger("Cursed");
+		niceCream = tag.getInteger("DHNiceCream");
 		for(int i = 0; i < tag.getInteger("DHFoodSize"); ++i) {
 			foodCollection.add(i, tag.getString("DHFood" + i));
 		}
@@ -139,9 +144,6 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 
 	@SideOnly(Side.CLIENT)
 	public void syncToServer() {
-		if(!player.worldObj.isRemote) {
-			return;
-		}
 		DHPacketProcessor.sendToServer(new PacketPropertiesToServer(DeathlyProperties.NAME));
 	}
 
@@ -230,6 +232,14 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 
 	public void setFoodEaten(int count) {
 		foodEaten = count;
+	}
+	
+	public void setNiceCream(int count){
+		niceCream = count;
+	}
+	
+	public int getNiceCream(){
+		return niceCream;
 	}
 
 	public int getMobsKilled() {
