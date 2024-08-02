@@ -20,6 +20,7 @@ import thaumcraft.api.wands.FocusUpgradeType;
 import thaumcraft.api.wands.ItemFocusBasic;
 import thaumcraft.common.config.ConfigItems;
 import thaumcraft.common.items.wands.ItemWandCasting;
+import thaumcraft.common.items.wands.foci.ItemFocusPech;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ import static thaumcraft.api.wands.FocusUpgradeType.extend;
 import static thaumcraft.api.wands.FocusUpgradeType.frugal;
 import static thaumcraft.api.wands.FocusUpgradeType.potency;
 
-public class ItemFocusInferioisMutandis extends ItemFocusBasic {
+public class ItemFocusInferioisMutandis extends ItemFocusPech {
 	private IIcon depthIcon = null;
 	private static final AspectList cost = (new AspectList()).add(Aspect.ORDER, 500).add(Aspect.ENTROPY, 500);
 	private static final AspectList costAll = (new AspectList()).add(Aspect.AIR, 10)
@@ -100,13 +101,12 @@ public class ItemFocusInferioisMutandis extends ItemFocusBasic {
 		l.add(StatCollector.translateToLocal("dh.desc.mutandis3"));
 	}
 
-	@Override
-	public boolean canApplyUpgrade(ItemStack focusstack, EntityPlayer player, FocusUpgradeType type, int rank) {
-		return super.canApplyUpgrade(focusstack, player, type, rank);
+	public boolean canApplyUpgrade(ItemStack stack, EntityPlayer p, FocusUpgradeType type, int rank) {
+		return !type.equals(extend) || isUpgradedWith(stack, FocusUpgradeType.architect);
 	}
 
 	@Override
-	public FocusUpgradeType[] getPossibleUpgradesByRank(ItemStack itemstack, int rank) {
+	public FocusUpgradeType[] getPossibleUpgradesByRank(ItemStack stack, int rank) {
 		switch(rank) {
 			case 1:
 				return new FocusUpgradeType[]{frugal, architect};

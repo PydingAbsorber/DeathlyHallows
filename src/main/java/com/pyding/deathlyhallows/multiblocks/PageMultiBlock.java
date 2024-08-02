@@ -6,14 +6,12 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import org.lwjgl.opengl.GL12;
 
@@ -23,8 +21,7 @@ import java.util.List;
 import static org.lwjgl.opengl.GL11.*;
 
 public class PageMultiBlock {
-
-	private static final ResourceLocation multiblockOverlay = new ResourceLocation("witchery", "textures/gui/multiblockOverlay.png");
+	
 	public int left, top, width, height, zlevel = 100;
 	public MultiBlockSet set;
 	public MultiBlock mb;
@@ -41,9 +38,8 @@ public class PageMultiBlock {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void renderScreen(GuiScreen gui, int mx, int my) {
+	public void renderScreen(int mx, int my) {
 		TextureManager render = Minecraft.getMinecraft().renderEngine;
-		render.bindTexture(multiblockOverlay);
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -100,14 +96,6 @@ public class PageMultiBlock {
 		glPopMatrix();
 	}
 
-	public String getButtonStr() {
-		if(DHMultiBlockRenderEvents.currentMultiBlock == null) {
-			return StatCollector.translateToLocal("botaniamisc.visualize");
-		}
-		return StatCollector.translateToLocal(set.equals(DHMultiBlockRenderEvents.currentMultiBlock) ? "botaniamisc.unvisualize" : "botaniamisc.visualize");
-	}
-
-
 	@SideOnly(Side.CLIENT)
 	public void setVisualization() {
 		DHMultiBlockRenderEvents.setMultiBlock(set);
@@ -119,8 +107,8 @@ public class PageMultiBlock {
 	}
 
 	public static void renderTooltip(int x, int y, List<String> tooltipData) {
-		int color = 0x505000ff;
-		int color2 = 0xf0100010;
+		int color = 0x505000FF;
+		int color2 = 0xF0100010;
 
 		renderTooltip(x, y, tooltipData, color, color2);
 	}

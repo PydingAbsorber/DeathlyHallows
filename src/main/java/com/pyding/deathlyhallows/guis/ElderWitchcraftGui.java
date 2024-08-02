@@ -6,10 +6,13 @@
 package com.pyding.deathlyhallows.guis;
 
 import com.emoniph.witchery.Witchery;
-import com.emoniph.witchery.network.PacketItemUpdate;
 import com.pyding.deathlyhallows.DeathlyHallows;
+import com.pyding.deathlyhallows.integrations.DHIntegration;
+import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.multiblocks.MultiBlock;
 import com.pyding.deathlyhallows.multiblocks.PageMultiBlock;
+import com.pyding.deathlyhallows.network.DHPacketProcessor;
+import com.pyding.deathlyhallows.network.packets.PacketElderBookPage;
 import com.pyding.deathlyhallows.rituals.ElderRiteRegistry;
 import com.pyding.deathlyhallows.rituals.Figure;
 import cpw.mods.fml.relauncher.Side;
@@ -25,25 +28,27 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 import java.util.List;
 
+import static org.lwjgl.opengl.GL11.*;
+
 @SideOnly(Side.CLIENT)
-public class ElderWitchbookGui extends GuiScreen {
+public class ElderWitchcraftGui extends GuiScreen {
 	private static final ResourceLocation
-			DOUBLE_BOOK_TEXTURE = new ResourceLocation("witchery", "textures/gui/bookDouble.png"),
+			DOUBLE_BOOK_TEXTURE = new ResourceLocation(DHIntegration.WITCHERY, "textures/gui/bookDouble.png"),
 			BOOK_TEXTURE = new ResourceLocation("textures/gui/book.png"),
 			ICONS_TEXTURE = new ResourceLocation(DeathlyHallows.MODID, "textures/gui/book/icons.png");
 	private final EntityPlayer player;
 	private final ItemStack stack;
-	private int updateCount;
 	private int bookImageWidth = 192;
-	private final int bookImageHeight = 192;
-	private final int bookTotalPages;
-	private int currPage;
-	private int recipePageCount;
-	private int recipePageCurrent;
+	private final int bookImageHeight = 192, bookTotalPages;
+	private int
+			updateCount,
+			currPage, 
+			visualizedPage = -1, 
+			recipePageCount, 
+			recipePageCurrent;
 	private final NBTTagList bookPages;
 	private GuiButtonNext
 			buttonNextPage,
@@ -52,41 +57,52 @@ public class ElderWitchbookGui extends GuiScreen {
 			buttonPreviousIngredientPage;
 	private PageMultiBlock pageMultiBlock;
 
-	private static PageMultiBlock visualizedMultiBlock;
-	public static int visualizedPage;
-
-	public ElderWitchbookGui(final EntityPlayer player, final ItemStack stack) {
+	public ElderWitchcraftGui(EntityPlayer player, ItemStack stack) {
 		this.player = player;
 		this.stack = stack;
 		bookPages = new NBTTagList();
-		NBTTagCompound compound = new NBTTagCompound();
+		NBTTagCompound tag = new NBTTagCompound();
 		// TODO entry localization fix
 		String intro = Witchery.resource("witchery.book.rites1");
 		String intro2 = Witchery.resource("witchery.book.rites2");
-		compound.setString("Summary", intro);
-		compound.setString("Summary2", intro2);
-		bookPages.appendTag(compound);
+		tag.setString("Summary", intro);
+		tag.setString("Summary2", intro2);
+		bookPages.appendTag(tag);
 		for(ElderRiteRegistry.Ritual ritual: ElderRiteRegistry.instance().getRituals()) {
 			if(!ritual.showInBook()) {
 				continue;
 			}
-			compound = new NBTTagCompound();
-			compound.setString("Summary", ritual.getDescription());
-			compound.setInteger("RitualID", ritual.ritualID);
-			bookPages.appendTag(compound);
+			tag = new NBTTagCompound();
+			tag.setString("Summary", ritual.getDescription());
+			tag.setInteger("RitualID", ritual.ritualID);
+			bookPages.appendTag(tag);
 		}
 		bookTotalPages = bookPages.tagCount();
-		final NBTTagCompound stackCompound = stack.getTagCompound();
-		if(stackCompound != null && stackCompound.hasKey("CurrentPage")) {
-			currPage = Math.min(Math.max(stackCompound.getInteger("CurrentPage"), 0), Math.max(bookTotalPages - 1, 0));
+		final NBTTagCompound bookTag = stack.getTagCompound();
+		if(bookTag != null) {
+			if(bookTag.hasKey("CurrentPage")) {
+				currPage = Math.min(Math.max(bookTag.getInteger("CurrentPage"), 0), Math.max(bookTotalPages - 1, 0));
+			}
+			if(bookTag.hasKey("VisualizedPage")) {
+				visualizedPage = Math.min(Math.max(bookTag.getInteger("VisualizedPage"), 0), Math.max(bookTotalPages - 1, 0));
+			}
 		}
 	}
 
 	private void storeCurrentPage() {
-		if(stack.getTagCompound() == null) {
-			stack.setTagCompound(new NBTTagCompound());
+		NBTTagCompound tag = stack.getTagCompound();
+		if(tag == null) {
+			tag = new NBTTagCompound();
+			stack.setTagCompound(tag);
 		}
-		stack.getTagCompound().setInteger("CurrentPage", currPage);
+		
+		tag.setInteger("CurrentPage", currPage);
+		if(visualizedPage != -1) {
+			tag.setInteger("VisualizedPage", visualizedPage);
+		}
+		else {
+			tag.removeTag("VisualizedPage");
+		}
 	}
 
 	public void updateScreen() {
@@ -133,12 +149,15 @@ public class ElderWitchbookGui extends GuiScreen {
 
 	private void sendBookToServer() {
 		// TODO WHAT?
-		if(player != null && currPage >= 0 && currPage < 1000 && player.inventory.currentItem >= 0 && player.inventory.getCurrentItem() != null) {
-			Witchery.packetPipeline.sendToServer(new PacketItemUpdate(player.inventory.currentItem, currPage, player.inventory.getCurrentItem()));
+		if(player != null && currPage >= 0 && currPage < 1000 && player.inventory.currentItem >= 0) {
+			ItemStack book = player.inventory.getCurrentItem();
+			if(book != null && book.getItem() == DHItems.elderBook) {
+				DHPacketProcessor.sendToServer(new PacketElderBookPage(player.inventory.currentItem, currPage, visualizedPage));
+			}
 		}
 	}
 
-	protected void actionPerformed(final GuiButton button) {
+	protected void actionPerformed(GuiButton button) {
 		if(!button.enabled) {
 			return;
 		}
@@ -199,14 +218,10 @@ public class ElderWitchbookGui extends GuiScreen {
 		}
 		updateButtons();
 	}
-
-	protected void keyTyped(final char par1, final int par2) {
-		super.keyTyped(par1, par2);
-	}
-
-	public void drawScreen(final int x, final int y, final float par3) {
-		GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-		mc.getTextureManager().bindTexture(ElderWitchbookGui.DOUBLE_BOOK_TEXTURE);
+	
+	public void drawScreen(int x, int y, float partial) {
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		mc.getTextureManager().bindTexture(ElderWitchcraftGui.DOUBLE_BOOK_TEXTURE);
 		bookImageWidth = 256;
 		final int k = (width - bookImageWidth) / 2;
 		final byte b0 = 2;
@@ -242,16 +257,10 @@ public class ElderWitchbookGui extends GuiScreen {
 		}
 
 		pageMultiBlock = new PageMultiBlock(mb.makeSet(), k + 116, b0 + 3, bookImageWidth / 2 + 20, bookImageHeight, updateCount);
-		pageMultiBlock.renderScreen(this, x, y);
-		if(!pageMultiBlock.mb.equals(new MultiBlock())) {
-			((GuiButton)buttonList.get(12)).displayString = pageMultiBlock.getButtonStr();
-			((GuiButton)buttonList.get(12)).visible = true;
-		}
-		else {
-			((GuiButton)buttonList.get(12)).visible = false;
-		}
+		pageMultiBlock.renderScreen(x, y);
+		((GuiButton)buttonList.get(12)).visible = !pageMultiBlock.mb.equals(new MultiBlock());
 		updateButtons();
-		super.drawScreen(x, y, par3);
+		super.drawScreen(x, y, partial);
 	}
 
 	private static class GuiButtonNext extends GuiButton {
@@ -267,7 +276,7 @@ public class ElderWitchbookGui extends GuiScreen {
 			if(!visible) {
 				return;
 			}
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			mc.getTextureManager().bindTexture(BOOK_TEXTURE);
 			boolean selected = x >= xPosition && x < xPosition + width && y >= yPosition && y < yPosition + height;
 			drawTexturedModalRect(xPosition, yPosition, selected ? 23 : 0, right ? 192 : 205, 23, 13);
@@ -291,7 +300,7 @@ public class ElderWitchbookGui extends GuiScreen {
 			if(!visible) {
 				return;
 			}
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 			boolean flag = x >= xPosition && y >= yPosition && x < xPosition + width && y < yPosition + height;
 			mc.getTextureManager().bindTexture(DOUBLE_BOOK_TEXTURE);
@@ -313,7 +322,7 @@ public class ElderWitchbookGui extends GuiScreen {
 			if(!visible) {
 				return;
 			}
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			mc.getTextureManager().bindTexture(ICONS_TEXTURE);
 			boolean selected = x >= xPosition && x < xPosition + width && y >= yPosition && y < yPosition + height;
 			boolean visualized = visualizedPage == currPage;

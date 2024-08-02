@@ -3,6 +3,7 @@ package com.pyding.deathlyhallows.network;
 import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.network.packets.PacketAnimaMobRender;
 import com.pyding.deathlyhallows.network.packets.PacketDisableFlight;
+import com.pyding.deathlyhallows.network.packets.PacketElderBookPage;
 import com.pyding.deathlyhallows.network.packets.PacketEntityNBTSync;
 import com.pyding.deathlyhallows.network.packets.PacketKeyBindings;
 import com.pyding.deathlyhallows.network.packets.PacketParticle;
@@ -37,6 +38,7 @@ public class DHPacketProcessor {
 		channel.registerMessage(PacketPlayerNBTSync.class, PacketPlayerNBTSync.class, id++, Side.CLIENT);
 		channel.registerMessage(PacketRenderAbsoluteDeath.class, PacketRenderAbsoluteDeath.class, id++, Side.CLIENT);
 		channel.registerMessage(PacketParticle.class, PacketParticle.class, id++, Side.CLIENT);
+		channel.registerMessage(PacketElderBookPage.class, PacketElderBookPage.class, id++, Side.SERVER);
 	}
 
 	public static void sendToPlayer(IMessage message, EntityPlayer player) {
