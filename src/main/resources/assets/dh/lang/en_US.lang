@@ -20,6 +20,8 @@ item.elderBook.name=Elder Book: Rituals
 item.elderChalk.name=§5Elder §7Chalk
 item.lightningInBag.name=§bLightning in Bag
 item.focus_mutandis.name=Inferiois Mutandis
+item.niceCream.name=§3Nicecream
+item.bag.name=Common Bag?
 # Blocks
 tile.elderRitualBlock.name=Elder Chalk
 tile.visConverter.name=§9Multipolygonal Vis Reassembler ⋚ ⋛
@@ -54,6 +56,13 @@ dh.chat.freak=Absolute Death: Are you mad? YOU TRIED THAT ON ME?
 dh.chat.elfToken=§9Set Elf level to %d
 dh.chat.deadlyPrism1=Damage type is set to: §5%s
 dh.chat.deadlyPrism2=Type damage type (number) in chat:
+dh.chat.niceCream1=You're just great! 
+dh.chat.niceCream2=You look nice today! 
+dh.chat.niceCream3=Are those claws natural? 
+dh.chat.niceCream4=You're super spiffy! 
+dh.chat.niceCream5=Have a wonderful day! 
+dh.chat.niceCream6=Is this as sweet as you?
+dh.chat.niceCream7=Love yourself! I love you!
 # Item tooltips
 dh.desc.elfToken=You have §9%d§7 Elf Level
 
@@ -122,12 +131,15 @@ dh.desc.visConverter3=Place on magic workbench to get 10 vis per sec for your wa
 
 dh.desc.resurrectionStone1=§aChosen Player: §r%s
 dh.desc.resurrectionStone2=§4Player is offline/Not enough charges
+
+dh.desc.niceCream=Heals 20 hp and 5 Infusion. Don't eat too much!
 # Rites
 dh.rite.soup=The mighty soup!{r||Get some nutrients!
 dh.rite.death=§5Rite of Gloomy Rebirth{r||
 dh.rite.nimbus=§5Cloud Chaser{r||This mod is sponsored by Avia sales
 dh.rite.elf=§5Rite of Elven Vanishing{r||Disbecome en elf, but why... Execute only at night
-dh.rite.castle=§3Ritual of the Ice Castle{r||Melts even the coldest hearts!
+dh.rite.castle=§3Ritual of the Ice Castle: Heart Melting{r||Melts even the coldest hearts!
+dh.rite.niceCream=§3Ritual of the Ice Castle: Nicecream{r||Make some delicious Nicecream!
 dh.rite.banka=§5Ritual of the Stinking Bathhouse{r||Covers the player with a Warp Shell, which absorbs damage more effectively the higher the received damage and the higher the player's Thaumcraft Warp level.
 dh.rite.catch=§9Lake of the Catch{r||Grants 20 random fishing items.
 dh.rite.soul_curse=§4Curse of the Soul{r||The target of the ritual will be unable to respawn after the next 10 deaths for 12 real hours.
@@ -144,13 +156,11 @@ witchery.book.materialsRequired=Materials Required:
 dh.flower.screamily.name=§4Screamily
 botania.entry.screamily=Screamily
 botania.tagline.screamily=Scream for mana! Who's screaming the most?...
-botania.page.screamily.page1=Place some banshee within 4 blocks and get for each screaming ones 10k mana! Banshee stack up to 16, mana generates every 10 seconds.
-botania.page.spawnlesia.altarCraft=
+botania.page.screamilyabobka=Place some banshee within 4 blocks and get for each screaming ones 10k mana! Banshee stack up to 16, mana generates every 10 seconds.
 
 dh.flower.spawnlesia.name=§dSpawnlesia
 botania.entry.spawnlesia=Spawnlesia
 botania.tagline.spawnlesia=What mobs will lure this smell?
-botania.page.spawnlesia.page1=A very voracious and patient flower, which, when receiving an abundant amount of mana, begins to exude an extremely specific smell. This strong and pungent smell will attract even anosmics! Finding nearby for a long time is not recommended...
-botania.page.spawnlesia.altarCraft=
+botania.page.spawnlesiaabobka=A very voracious and patient flower, which, when receiving an abundant amount of mana, begins to exude an extremely specific smell. This strong and pungent smell will attract even anosmics! Finding nearby for a long time is not recommended...
 
 

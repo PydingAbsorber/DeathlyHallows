@@ -74,6 +74,7 @@ public class DeathlyHallows {
 	};
 
 	// Little gift
+	// thanks!
 	public static void initAlfheimCompat() {
 		if(Loader.isModLoaded("alfheim")) {
 			LOG.error("Alfheim is not supported");

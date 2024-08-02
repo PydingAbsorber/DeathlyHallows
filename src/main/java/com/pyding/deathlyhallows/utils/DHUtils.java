@@ -47,6 +47,10 @@ public class DHUtils {
 	public static <T extends Entity> List<T> getEntitiesAround(Class<T> clazz, Entity entity, float radius) {
 		return entity.worldObj.getEntitiesWithinAABB(clazz, AxisAlignedBB.getBoundingBox(entity.posX - radius, entity.posY - radius, entity.posZ - radius, entity.posX + radius, entity.posY + radius, entity.posZ + radius));
 	}
+
+	public static <T extends Entity> List<T> getEntitiesAt(Class<T> clazz, Entity entity,double x, double y, double z, float radius) {
+		return entity.worldObj.getEntitiesWithinAABB(clazz, AxisAlignedBB.getBoundingBox(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius));
+	}
 	
 	public static void spawnArrow(EntityPlayer player, int type) {
 		if(player.worldObj.isRemote) {

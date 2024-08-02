@@ -47,6 +47,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -82,10 +83,12 @@ import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.ConfigItems;
 import thaumcraft.common.items.wands.ItemWandCasting;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 
 @SuppressWarnings("unused")
 public final class DHEvents {
@@ -209,16 +212,31 @@ public final class DHEvents {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void onLivingUpdate(LivingEvent.LivingUpdateEvent e) {
-		if(e.entityLiving == null) {
+	public void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
+		if(event.entityLiving == null) {
 			return;
 		}
-		if(e.entity.ticksExisted % 20 == 0) {
-			updateAvengerLiving(e.entityLiving);
+		if(event.entity.ticksExisted % 20 == 0) {
+			updateAvengerLiving(event.entityLiving);
 		}
-		updatePlayer(e.entityLiving);
-		updateAnimal(e.entityLiving);
-		updateLiving(e.entityLiving);
+		if(event.entity.ticksExisted % 4 == 0){
+			EntityLivingBase e = event.entityLiving;
+			if(e.getEntityData().getLong("DHStrike") > System.currentTimeMillis() && e instanceof EntityPlayer){
+				Random random = new Random();
+				int numba = random.nextInt(15);
+				if(random.nextDouble() < 0.5)
+					numba *= -1;
+				List<EntityLivingBase> list = DHUtils.getEntitiesAt(EntityLivingBase.class,e,e.posX+numba, e.posY+numba, e.posZ+numba,3);
+				for(EntityLivingBase entity: list){
+					entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer)e),1000);
+				}
+				EntityLightningBolt bolt = new EntityLightningBolt(e.worldObj, e.posX+numba, e.posY+numba, e.posZ+numba);
+				e.worldObj.addWeatherEffect(bolt);
+			}
+		}
+		updatePlayer(event.entityLiving);
+		updateAnimal(event.entityLiving);
+		updateLiving(event.entityLiving);
 	}
 
 	private void updateLiving(EntityLivingBase entity) {
@@ -496,6 +514,30 @@ public final class DHEvents {
 			e.setCanceled(true);
 		}
 	}
+	
+	@SubscribeEvent
+	public void oreDrop(BlockEvent.HarvestDropsEvent event){
+		if (!event.world.isRemote && !event.isSilkTouching && event.block != null && !event.block.hasTileEntity(event.blockMetadata) && event.drops.size() > 0) {
+			EntityPlayer player = event.harvester;
+			DeathlyProperties props = DeathlyProperties.get(player);
+			int nice = 0;
+			double chance = props.getNiceCream();
+			Random random = new Random();
+			if(random.nextDouble() <= chance/100)
+				nice += 2;
+			while(chance > 100){
+				chance -= 100;
+				nice += 2;
+			}
+			if(nice == 0)
+				return;
+			props.setNiceCream(props.getNiceCream()-1);
+			ArrayList<ItemStack> drops = event.block.getDrops(event.world, event.x, event.y, event.z, event.blockMetadata, event.fortuneLevel + nice);
+			event.drops.clear();
+			event.drops.addAll(drops);
+		}
+	}
+	
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void highestHit(LivingHurtEvent e) {
@@ -718,12 +760,43 @@ public final class DHEvents {
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void death(LivingDeathEvent e) {
+	public void death(LivingDeathEvent e) throws NoSuchMethodException {
 		if(e.entityLiving == null) {
 			return;
 		}
 		playerDeath(e);
 		dropAnimalsSpecialLoot(e);
+		dropNice(e);
+	}
+	
+	private void dropNice(LivingDeathEvent e) throws NoSuchMethodException {
+		if(e.source == null || e.source.getEntity() == null || !(e.source.getEntity() instanceof EntityPlayer) || !(e.source.getEntity() instanceof EntityLivingBase))
+			return;
+		EntityPlayer player = (EntityPlayer)e.source.getEntity();
+		DeathlyProperties props = DeathlyProperties.get(player);
+		int nice = 0;
+		double chance = props.getNiceCream();
+		Random random = new Random();
+		if(random.nextDouble() <= chance/100)
+			nice += 4;
+		while(chance > 100){
+			chance -= 100;
+			nice += 10;
+		}
+		if(nice == 0)
+			return;
+		props.setNiceCream(props.getNiceCream()-1);
+		try {
+			Method dropRareDropMethod = e.entityLiving.getClass().getDeclaredMethod("dropRareDrop", int.class);
+			dropRareDropMethod.setAccessible(true);
+			Method dropFewItemsMethod = e.entityLiving.getClass().getDeclaredMethod("dropFewItems", boolean.class, int.class);
+			dropFewItemsMethod.setAccessible(true);
+			if(random.nextDouble() < (double)nice/100+0.1)
+				dropRareDropMethod.invoke(e.entityLiving,nice);
+			dropFewItemsMethod.invoke(e.entityLiving,true,nice);
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
 	}
 
 	private void playerDeath(LivingDeathEvent e) {

@@ -40,6 +40,7 @@ public final class DHItems {
 			trickOrTreat,
 			elderBook,
 			lightningInBag,
+			bag,
 			elderChalk,
 			niceCream;
 
@@ -68,6 +69,7 @@ public final class DHItems {
 		register(elderBook = new ItemElderBook());
 		register(elderChalk = new ItemElderChalk());
 		register(lightningInBag = new ItemLightningInBag());
+		register(bag = new ItemBag());
 		register(niceCream = new ItemNiceCream());
 	}
 
