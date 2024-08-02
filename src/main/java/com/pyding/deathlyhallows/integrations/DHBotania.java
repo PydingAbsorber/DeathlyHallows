@@ -81,13 +81,13 @@ public final class DHBotania {
 	private static void lexicon() {
 		screamilyLexus = new DHLexiconEntry("screamily", BotaniaAPI.categoryGenerationFlowers)
 				.setLexiconPages(
-						new PageText("abobka"),
+						new PageText(".page1"),
 						petalRecipe(screamilyRecipe)
 				);
 
 		spawnlesiawLexus = new DHLexiconEntry("spawnlesia", BotaniaAPI.categoryFunctionalFlowers)
 				.setLexiconPages(
-						new PageText("abobka"),
+						new PageText(".page1"),
 						petalRecipe(spawnlesiaRecipe)
 				);
 	}
