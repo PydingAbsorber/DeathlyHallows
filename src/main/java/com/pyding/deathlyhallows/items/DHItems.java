@@ -6,6 +6,7 @@ import com.pyding.deathlyhallows.items.baubles.ItemBaubleResurrectionStone;
 import com.pyding.deathlyhallows.items.food.ItemFoodBertieBotts;
 import com.pyding.deathlyhallows.items.food.ItemFoodSoupWithSawdust;
 import com.pyding.deathlyhallows.items.food.ItemFoodViscousSecretions;
+import com.pyding.deathlyhallows.items.food.ItemNiceCream;
 import com.pyding.deathlyhallows.render.item.RenderEldenWand;
 import com.pyding.deathlyhallows.render.item.RenderItemVisConverter;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -39,7 +40,8 @@ public final class DHItems {
 			trickOrTreat,
 			elderBook,
 			lightningInBag,
-			elderChalk;
+			elderChalk,
+			niceCream;
 
 	private DHItems() {
 		
@@ -66,6 +68,7 @@ public final class DHItems {
 		register(elderBook = new ItemElderBook());
 		register(elderChalk = new ItemElderChalk());
 		register(lightningInBag = new ItemLightningInBag());
+		register(niceCream = new ItemNiceCream());
 	}
 
 	@SideOnly(Side.CLIENT)
