@@ -27,6 +27,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 
+import static net.minecraftforge.common.util.ForgeDirection.*;
 import static org.lwjgl.opengl.GL11.*;
 
 @SuppressWarnings("unused")
@@ -153,19 +154,21 @@ public final class DHMultiBlockRenderEvents {
 		glPushMatrix();
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		if(block.isOpaqueCube()) {
-			renderBlock(x, y, z, alpha, comp, block, meta);
-			renderTileEntity(comp, block, meta);
+		if(block.getRenderType() != -1) {
+			if(block.isOpaqueCube() || block.renderAsNormalBlock()) {
+				renderBlock(x, y, z, alpha, comp, block, meta);
+			}
+			else {
+				renderBlockSpecial(comp, x, y, z, alpha, block);
+			}
 		}
-		else {
-			renderBlockNonOpaque(comp, x, y, z, alpha, block);
-		}
+		renderTileEntity(x, y, z, comp, block, meta);
 		glColor4f(1F, 1F, 1F, 1F);
 		glEnable(GL_DEPTH_TEST);
 		glPopMatrix();
 	}
 
-	private static void renderBlockNonOpaque(MultiBlockComponent comp, int x, int y, int z, float alpha, Block block) {
+	private static void renderBlockSpecial(MultiBlockComponent comp, int x, int y, int z, float alpha, Block block) {
 		int color;
 		try {
 			color = block.colorMultiplier(blockAccess, x, y, z);
@@ -180,18 +183,77 @@ public final class DHMultiBlockRenderEvents {
 		IBlockAccess old = blockRender.blockAccess;
 		blockRender.blockAccess = blockAccess;
 		blockRender.renderAllFaces = true;
-		Tessellator t = Tessellator.instance;
-		t.startDrawingQuads();
-		t.disableColor();
-		try {
-			blockRender.renderBlockByRenderType(block, x, y, z);
+		if(block.getRenderType() == 0) { // handle witchery reshaped blocks
+			try {
+				glPushMatrix();
+				glTranslated(x + 0.5, y + 0.5, z + 0.5);
+				renderInventory(block);
+				glPopMatrix();
+			}
+			catch(Exception ignored) {
+				comp.doFancyRender = false;
+			}
 		}
-		catch(Exception ignored) {
-			comp.doFancyRender = false;
+		else { // vanilla blocks or forge will handle
+			Tessellator t = Tessellator.instance;
+			t.startDrawingQuads();
+			try {
+				t.disableColor();
+				blockRender.renderBlockByRenderType(block, x, y, z);
+			}
+			catch(Exception ignored) {
+				comp.doFancyRender = false;
+			}
+			t.draw();
 		}
-		t.draw();
 		blockRender.renderAllFaces = false;
 		blockRender.blockAccess = old;
+	}
+
+	private static void renderInventory(Block block) {
+		IBlockAccess access = blockRender.blockAccess;
+		Tessellator t = Tessellator.instance;
+		t.disableColor();
+		block.setBlockBoundsForItemRender();
+		glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
+		glTranslatef(-0.5F, -0.5F, -0.5F);
+		blockRender.setRenderBoundsFromBlock(block);
+		if(block.shouldSideBeRendered(access, DOWN.offsetX, DOWN.offsetY, DOWN.offsetZ, DOWN.ordinal())) {
+			t.startDrawingQuads();
+			t.setNormal(0.0F, -1.0F, 0.0F);
+			blockRender.renderFaceYNeg(block, 0.0D, 0.0D, 0.0D, blockRender.getBlockIcon(block, access, 0, 0, 0, 0));
+			t.draw();
+		}
+		if(block.shouldSideBeRendered(access, UP.offsetX, UP.offsetY, UP.offsetZ, UP.ordinal())) {
+			t.startDrawingQuads();
+			t.setNormal(0.0F, 1.0F, 0.0F);
+			blockRender.renderFaceYPos(block, 0.0D, 0.0D, 0.0D, blockRender.getBlockIcon(block, access, 0, 0, 0, 1));
+			t.draw();
+		}
+		if(block.shouldSideBeRendered(access, NORTH.offsetX, NORTH.offsetY, NORTH.offsetZ, NORTH.ordinal())) {
+			t.startDrawingQuads();
+			t.setNormal(0.0F, 0.0F, -1.0F);
+			blockRender.renderFaceZNeg(block, 0.0D, 0.0D, 0.0D, blockRender.getBlockIcon(block, access, 0, 0, 0, 2));
+			t.draw();
+		}
+		if(block.shouldSideBeRendered(access, SOUTH.offsetX, SOUTH.offsetY, SOUTH.offsetZ, SOUTH.ordinal())) {
+			t.startDrawingQuads();
+			t.setNormal(0.0F, 0.0F, 1.0F);
+			blockRender.renderFaceZPos(block, 0.0D, 0.0D, 0.0D, blockRender.getBlockIcon(block, access, 0, 0, 0, 3));
+			t.draw();
+		}
+		if(block.shouldSideBeRendered(access, WEST.offsetX, WEST.offsetY, WEST.offsetZ, WEST.ordinal())) {
+			t.startDrawingQuads();
+			t.setNormal(-1.0F, 0.0F, 0.0F);
+			blockRender.renderFaceXNeg(block, 0.0D, 0.0D, 0.0D, blockRender.getBlockIcon(block, access, 0, 0, 0, 4));
+			t.draw();
+		}
+		if(block.shouldSideBeRendered(access, EAST.offsetX, EAST.offsetY, EAST.offsetZ, EAST.ordinal())) {
+			t.startDrawingQuads();
+			t.setNormal(1.0F, 0.0F, 0.0F);
+			blockRender.renderFaceXPos(block, 0.0D, 0.0D, 0.0D, blockRender.getBlockIcon(block, access, 0, 0, 0, 5));
+			t.draw();
+		}
 	}
 
 	private static void renderBlock(int x, int y, int z, float alpha, MultiBlockComponent comp, Block block, int meta) {
@@ -204,25 +266,37 @@ public final class DHMultiBlockRenderEvents {
 		blockRender.renderBlockAsItem(block, meta, 1F);
 	}
 
-	private static void renderTileEntity(MultiBlockComponent comp, Block block, int meta) {
-		if(block.getRenderType() != -1 || !block.hasTileEntity(meta)) {
+	private static void renderTileEntity(int x, int y, int z, MultiBlockComponent comp, Block block, int meta) {
+		if(!block.hasTileEntity(meta)) {
 			return;
 		}
-		TileEntity tile = block.createTileEntity(mc.theWorld, meta);
+		World w = mc.theWorld;
+		TileEntity tile = block.createTileEntity(w, meta);
 		if(!TileEntityRendererDispatcher.instance.hasSpecialRenderer(tile)) {
 			return;
 		}
+		// setting the tile and world properties
+		tile.setWorldObj(w);
 		tile.blockMetadata = meta;
+		tile.xCoord = x;
+		tile.yCoord = y;
+		tile.zCoord = z;
 		if(comp.tag != null) {
 			tile.readFromNBT(comp.tag);
 		}
+		Block trueBlock = w.getBlock(x,y,z);
+		int trueMeta = w.getBlockMetadata(x,y,z);
+		if(!w.setBlock(x, y, z, block, meta, 5)) {
+			w.setBlock(x, y, z, trueBlock, trueMeta, 5);
+		}
+		// actually render
 		try {
-			glTranslated(-0.5, -0.5, -0.5);
 			glPushMatrix();
-			TileEntityRendererDispatcher.instance.getSpecialRenderer(tile).renderTileEntityAt(tile, 0, 0, 0, 0);
+			TileEntityRendererDispatcher.instance.getSpecialRenderer(tile).renderTileEntityAt(tile, x, y, z, 0);
 			glDisable(GL_LIGHTING);
 		}
 		finally {
+			w.setBlock(x, y, z, trueBlock, trueMeta, 5);
 			glPopMatrix();	
 		}
 	}
