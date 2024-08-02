@@ -184,12 +184,12 @@ public final class DHMultiBlockRenderEvents {
 		IBlockAccess old = blockRender.blockAccess;
 		blockRender.blockAccess = blockAccess;
 		blockRender.renderAllFaces = true;
-		if(block.getRenderType() == -1) {
+		if(block.getRenderType() == 0) { // handle witchery reshaped blocks
 			try {
 				glPushMatrix();
 				glTranslated(x + 0.5, y + 0.5, z + 0.5);
 				FMLRenderAccessLibrary.renderInventoryBlock(blockRender, block, 0, block.getRenderType());
-				renderInventory(block, blockRender);
+				renderInventory(block);
 				glPopMatrix();
 			}
 			catch(Exception ignored) {
@@ -212,48 +212,48 @@ public final class DHMultiBlockRenderEvents {
 		blockRender.blockAccess = old;
 	}
 
-	private static void renderInventory(Block block, RenderBlocks renderer) {
-		IBlockAccess access = renderer.blockAccess;
+	private static void renderInventory(Block block) {
+		IBlockAccess access = blockRender.blockAccess;
 		Tessellator t = Tessellator.instance;
 		t.disableColor();
 		block.setBlockBoundsForItemRender();
 		glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
 		glTranslatef(-0.5F, -0.5F, -0.5F);
-		renderer.setRenderBoundsFromBlock(block);
+		blockRender.setRenderBoundsFromBlock(block);
 		if(block.shouldSideBeRendered(access, DOWN.offsetX, DOWN.offsetY, DOWN.offsetZ, DOWN.ordinal())) {
 			t.startDrawingQuads();
 			t.setNormal(0.0F, -1.0F, 0.0F);
-			renderer.renderFaceYNeg(block, 0.0D, 0.0D, 0.0D, renderer.getBlockIcon(block, access, 0, 0, 0, 0));
+			blockRender.renderFaceYNeg(block, 0.0D, 0.0D, 0.0D, blockRender.getBlockIcon(block, access, 0, 0, 0, 0));
 			t.draw();
 		}
 		if(block.shouldSideBeRendered(access, UP.offsetX, UP.offsetY, UP.offsetZ, UP.ordinal())) {
 			t.startDrawingQuads();
 			t.setNormal(0.0F, 1.0F, 0.0F);
-			renderer.renderFaceYPos(block, 0.0D, 0.0D, 0.0D, renderer.getBlockIcon(block, access, 0, 0, 0, 1));
+			blockRender.renderFaceYPos(block, 0.0D, 0.0D, 0.0D, blockRender.getBlockIcon(block, access, 0, 0, 0, 1));
 			t.draw();
 		}
 		if(block.shouldSideBeRendered(access, NORTH.offsetX, NORTH.offsetY, NORTH.offsetZ, NORTH.ordinal())) {
 			t.startDrawingQuads();
 			t.setNormal(0.0F, 0.0F, -1.0F);
-			renderer.renderFaceZNeg(block, 0.0D, 0.0D, 0.0D, renderer.getBlockIcon(block, access, 0, 0, 0, 2));
+			blockRender.renderFaceZNeg(block, 0.0D, 0.0D, 0.0D, blockRender.getBlockIcon(block, access, 0, 0, 0, 2));
 			t.draw();
 		}
 		if(block.shouldSideBeRendered(access, SOUTH.offsetX, SOUTH.offsetY, SOUTH.offsetZ, SOUTH.ordinal())) {
 			t.startDrawingQuads();
 			t.setNormal(0.0F, 0.0F, 1.0F);
-			renderer.renderFaceZPos(block, 0.0D, 0.0D, 0.0D, renderer.getBlockIcon(block, access, 0, 0, 0, 3));
+			blockRender.renderFaceZPos(block, 0.0D, 0.0D, 0.0D, blockRender.getBlockIcon(block, access, 0, 0, 0, 3));
 			t.draw();
 		}
 		if(block.shouldSideBeRendered(access, WEST.offsetX, WEST.offsetY, WEST.offsetZ, WEST.ordinal())) {
 			t.startDrawingQuads();
 			t.setNormal(-1.0F, 0.0F, 0.0F);
-			renderer.renderFaceXNeg(block, 0.0D, 0.0D, 0.0D, renderer.getBlockIcon(block, access, 0, 0, 0, 4));
+			blockRender.renderFaceXNeg(block, 0.0D, 0.0D, 0.0D, blockRender.getBlockIcon(block, access, 0, 0, 0, 4));
 			t.draw();
 		}
 		if(block.shouldSideBeRendered(access, EAST.offsetX, EAST.offsetY, EAST.offsetZ, EAST.ordinal())) {
 			t.startDrawingQuads();
 			t.setNormal(1.0F, 0.0F, 0.0F);
-			renderer.renderFaceXPos(block, 0.0D, 0.0D, 0.0D, renderer.getBlockIcon(block, access, 0, 0, 0, 5));
+			blockRender.renderFaceXPos(block, 0.0D, 0.0D, 0.0D, blockRender.getBlockIcon(block, access, 0, 0, 0, 5));
 			t.draw();
 		}
 	}
@@ -276,10 +276,11 @@ public final class DHMultiBlockRenderEvents {
 		if(!TileEntityRendererDispatcher.instance.hasSpecialRenderer(tile)) {
 			return;
 		}
-		tile.blockMetadata = meta;
+		tile.blockMetadata = meta; // peacefully solution
 		if(comp.tag != null) {
 			tile.readFromNBT(comp.tag);
 		}
+
 		try {
 			glPushMatrix();
 			TileEntityRendererDispatcher.instance.getSpecialRenderer(tile).renderTileEntityAt(tile, x, y, z, 0);
