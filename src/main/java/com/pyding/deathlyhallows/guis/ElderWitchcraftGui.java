@@ -7,6 +7,7 @@ package com.pyding.deathlyhallows.guis;
 
 import com.emoniph.witchery.Witchery;
 import com.pyding.deathlyhallows.DeathlyHallows;
+import com.pyding.deathlyhallows.events.DHMultiBlockRenderEvents;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.multiblocks.MultiBlock;
@@ -83,7 +84,7 @@ public class ElderWitchcraftGui extends GuiScreen {
 			if(bookTag.hasKey("CurrentPage")) {
 				currPage = Math.min(Math.max(bookTag.getInteger("CurrentPage"), 0), Math.max(bookTotalPages - 1, 0));
 			}
-			if(bookTag.hasKey("VisualizedPage")) {
+			if(bookTag.hasKey("VisualizedPage") && DHMultiBlockRenderEvents.currentMultiBlock != null) {
 				visualizedPage = Math.min(Math.max(bookTag.getInteger("VisualizedPage"), 0), Math.max(bookTotalPages - 1, 0));
 			}
 		}
