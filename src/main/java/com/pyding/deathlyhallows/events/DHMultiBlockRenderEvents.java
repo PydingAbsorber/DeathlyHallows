@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.src.FMLRenderAccessLibrary;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ChatStyle;
@@ -188,7 +187,6 @@ public final class DHMultiBlockRenderEvents {
 			try {
 				glPushMatrix();
 				glTranslated(x + 0.5, y + 0.5, z + 0.5);
-				FMLRenderAccessLibrary.renderInventoryBlock(blockRender, block, 0, block.getRenderType());
 				renderInventory(block);
 				glPopMatrix();
 			}
@@ -272,21 +270,31 @@ public final class DHMultiBlockRenderEvents {
 		if(!block.hasTileEntity(meta)) {
 			return;
 		}
-		TileEntity tile = block.createTileEntity(mc.theWorld, meta);
+		World w = mc.theWorld;
+		TileEntity tile = block.createTileEntity(w, meta);
 		if(!TileEntityRendererDispatcher.instance.hasSpecialRenderer(tile)) {
 			return;
 		}
+		tile.setWorldObj(w);
 		tile.blockMetadata = meta; // peacefully solution
+		tile.xCoord = x;
+		tile.yCoord = y;
+		tile.zCoord = z;
 		if(comp.tag != null) {
 			tile.readFromNBT(comp.tag);
 		}
-
+		Block trueBlock = w.getBlock(x,y,z);
+		int trueMeta = w.getBlockMetadata(x,y,z);
+		if(!w.setBlock(x, y, z, block, meta, 5)) {
+			w.setBlock(x, y, z, trueBlock, trueMeta, 5);
+		}
 		try {
 			glPushMatrix();
 			TileEntityRendererDispatcher.instance.getSpecialRenderer(tile).renderTileEntityAt(tile, x, y, z, 0);
 			glDisable(GL_LIGHTING);
 		}
 		finally {
+			w.setBlock(x, y, z, trueBlock, trueMeta, 5);
 			glPopMatrix();	
 		}
 	}
