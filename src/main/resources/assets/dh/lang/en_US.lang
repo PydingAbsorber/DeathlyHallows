@@ -144,11 +144,13 @@ witchery.book.materialsRequired=Materials Required:
 dh.flower.screamily.name=§4Screamily
 botania.entry.screamily=Screamily
 botania.tagline.screamily=Scream for mana! Who's screaming the most?...
-botania.page.screamilyabobka=Place some banshee within 4 blocks and get for each screaming ones 10k mana! Banshee stack up to 16, mana generates every 10 seconds.
+botania.page.screamily.page1=Place some banshee within 4 blocks and get for each screaming ones 10k mana! Banshee stack up to 16, mana generates every 10 seconds.
+botania.page.spawnlesia.altarCraft=
 
 dh.flower.spawnlesia.name=§dSpawnlesia
 botania.entry.spawnlesia=Spawnlesia
 botania.tagline.spawnlesia=What mobs will lure this smell?
-botania.page.spawnlesiaabobka=A very voracious and patient flower, which, when receiving an abundant amount of mana, begins to exude an extremely specific smell. This strong and pungent smell will attract even anosmics! Finding nearby for a long time is not recommended...
+botania.page.spawnlesia.page1=A very voracious and patient flower, which, when receiving an abundant amount of mana, begins to exude an extremely specific smell. This strong and pungent smell will attract even anosmics! Finding nearby for a long time is not recommended...
+botania.page.spawnlesia.altarCraft=
 
 
