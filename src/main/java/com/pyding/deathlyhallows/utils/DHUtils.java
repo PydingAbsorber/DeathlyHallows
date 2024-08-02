@@ -238,6 +238,14 @@ public class DHUtils {
 			spawnParticle(entity, pos.xCoord + xOffset, pos.yCoord + yOffset, pos.zCoord + zOffset, color, resizeSpeed, scale, age, type, motionX, motionY, motionZ);
 		}
 	}
+	
+	public static Vec3 getPosition(Entity e) {
+		if(e instanceof EntityPlayer) {
+			EntityPlayer p = (EntityPlayer)e;
+			return Vec3.createVectorHelper(p.posX, p.posY + p.getEyeHeight() - p.getDefaultEyeHeight(), p.posZ);
+		}
+		return Vec3.createVectorHelper(e.posX, e.posY, e.posZ);
+	}
 
 	public static void spawnParticle(Entity entity, double x, double y, double z, Color color, float resizeSpeed, float scale, int age, int type, float motionX, float motionY, float motionZ) {
 		NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(entity.dimension, x, y, z, 64);

@@ -35,13 +35,13 @@ public class ElderWitchbookGui extends GuiScreen {
 			TEXTURE = new ResourceLocation("textures/gui/book.png");
 	private final EntityPlayer player;
 	private final ItemStack stack;
-	private int updateCount,
-			bookImageWidth = 192,
-			bookImageHeight = 192,
-			bookTotalPages,
-			currPage,
-			recipePageCount,
-			recipePageCurrent;
+	private int updateCount;
+	private int bookImageWidth = 192;
+	private final int bookImageHeight = 192;
+	private final int bookTotalPages;
+	private int currPage;
+	private int recipePageCount;
+	private int recipePageCurrent;
 	private final NBTTagList bookPages;
 	private GuiButtonNext
 			buttonNextPage,
@@ -183,7 +183,7 @@ public class ElderWitchbookGui extends GuiScreen {
 		super.keyTyped(par1, par2);
 	}
 
-	public void drawScreen(final int par1, final int par2, final float par3) {
+	public void drawScreen(final int x, final int y, final float par3) {
 		GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		mc.getTextureManager().bindTexture(ElderWitchbookGui.DOUBLE_BOOK_TEXTURE);
 		bookImageWidth = 256;
@@ -221,7 +221,7 @@ public class ElderWitchbookGui extends GuiScreen {
 		}
 
 		pageMultiblock = new PageMultiBlock(mb.makeSet(), k + 116, b0 + 3, bookImageWidth / 2 + 20, bookImageHeight, updateCount);
-		pageMultiblock.renderScreen(this, par1, par2);
+		pageMultiblock.renderScreen(this, x, y);
 		if(!pageMultiblock.mb.equals(new MultiBlock())) {
 			((GuiButton)buttonList.get(12)).displayString = pageMultiblock.getButtonStr();
 			((GuiButton)buttonList.get(12)).visible = true;
@@ -230,7 +230,7 @@ public class ElderWitchbookGui extends GuiScreen {
 			((GuiButton)buttonList.get(12)).visible = false;
 		}
 		updateButtons();
-		super.drawScreen(par1, par2, par3);
+		super.drawScreen(x, y, par3);
 	}
 
 	private static class GuiButtonNext extends GuiButton {

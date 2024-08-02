@@ -19,8 +19,8 @@ import java.util.List;
  */
 public class MultiBlock {
 
-	public List<MultiBlockComponent> components = new ArrayList();
-	public List<ItemStack> materials = new ArrayList();
+	public List<MultiBlockComponent> components = new ArrayList<>();
+	public List<ItemStack> materials = new ArrayList<>();
 
 	public int minX, minY, minZ, maxX, maxY, maxZ, offX, offY, offZ;
 
@@ -197,11 +197,7 @@ public class MultiBlock {
 	 */
 	private void addComponentToLocationCache(MultiBlockComponent comp) {
 		ChunkCoordinates pos = comp.getRelativePosition();
-		locationCache.put(Arrays.asList(
-				pos.posX,
-				pos.posY,
-				pos.posZ
-		), comp);
+		locationCache.put(Arrays.asList(pos.posX, pos.posY, pos.posZ), comp);
 	}
 
 	/**

@@ -5,8 +5,6 @@ import com.google.common.collect.Multimap;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketPropertiesToClient;
 import com.pyding.deathlyhallows.network.packets.PacketPropertiesToServer;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -141,8 +139,7 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 		}
 		DHPacketProcessor.sendToPlayer(new PacketPropertiesToClient(player, DeathlyProperties.NAME), player);
 	}
-
-	@SideOnly(Side.CLIENT)
+	
 	public void syncToServer() {
 		DHPacketProcessor.sendToServer(new PacketPropertiesToServer(DeathlyProperties.NAME));
 	}
