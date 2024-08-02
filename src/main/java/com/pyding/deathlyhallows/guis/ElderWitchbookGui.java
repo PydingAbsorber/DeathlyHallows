@@ -7,6 +7,7 @@ package com.pyding.deathlyhallows.guis;
 
 import com.emoniph.witchery.Witchery;
 import com.emoniph.witchery.network.PacketItemUpdate;
+import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.multiblocks.MultiBlock;
 import com.pyding.deathlyhallows.multiblocks.PageMultiBlock;
 import com.pyding.deathlyhallows.rituals.ElderRiteRegistry;
@@ -32,7 +33,8 @@ import java.util.List;
 public class ElderWitchbookGui extends GuiScreen {
 	private static final ResourceLocation
 			DOUBLE_BOOK_TEXTURE = new ResourceLocation("witchery", "textures/gui/bookDouble.png"),
-			TEXTURE = new ResourceLocation("textures/gui/book.png");
+			BOOK_TEXTURE = new ResourceLocation("textures/gui/book.png"),
+			ICONS_TEXTURE = new ResourceLocation(DeathlyHallows.MODID, "textures/gui/book/icons.png");
 	private final EntityPlayer player;
 	private final ItemStack stack;
 	private int updateCount;
@@ -48,7 +50,10 @@ public class ElderWitchbookGui extends GuiScreen {
 			buttonPreviousPage,
 			buttonNextIngredientPage,
 			buttonPreviousIngredientPage;
-	private PageMultiBlock pageMultiblock;
+	private PageMultiBlock pageMultiBlock;
+
+	private static PageMultiBlock visualizedMultiBlock;
+	public static int visualizedPage;
 
 	public ElderWitchbookGui(final EntityPlayer player, final ItemStack stack) {
 		this.player = player;
@@ -94,20 +99,21 @@ public class ElderWitchbookGui extends GuiScreen {
 		buttonList.clear();
 		Keyboard.enableRepeatEvents(true);
 		buttonList.add(new GuiButton(0, width / 2 - 100, 4 + bookImageHeight, 200, 20, I18n.format("gui.done")));
-		final int i = (width - bookImageWidth) / 2;
-		final byte b0 = 2;
-		buttonList.add(buttonNextPage = new GuiButtonNext(1, i + 180, b0 + 154, true));
-		buttonList.add(buttonPreviousPage = new GuiButtonNext(2, i + 110, b0 + 154, false));
-		buttonList.add(buttonNextIngredientPage = new GuiButtonNext(10, i + 58, b0 + 154, true));
-		buttonList.add(buttonPreviousIngredientPage = new GuiButtonNext(11, i - 12, b0 + 154, false));
-		buttonList.add(new GuiButtonJump(9, i + 214, b0 + 138, 69, 48, 248));
-		buttonList.add(new GuiButtonJump(8, i + 214, b0 + 118, 58, 40, 248));
-		buttonList.add(new GuiButtonJump(7, i + 214, b0 + 98, 47, 32, 248));
-		buttonList.add(new GuiButtonJump(6, i + 214, b0 + 78, 29, 24, 248));
-		buttonList.add(new GuiButtonJump(5, i + 214, b0 + 58, 23, 16, 248));
-		buttonList.add(new GuiButtonJump(4, i + 214, b0 + 38, 17, 8, 248));
-		buttonList.add(new GuiButtonJump(3, i + 214, b0 + 18, 2, 0, 248));
-		buttonList.add(new GuiButton(12, i + 125, b0 + 135, 70, 20, "botaniamisc.visualize"));
+		final int
+				x = (width - bookImageWidth) / 2,
+				y = 2;
+		buttonList.add(buttonNextPage = new GuiButtonNext(1, x + 180, y + 154, true));
+		buttonList.add(buttonPreviousPage = new GuiButtonNext(2, x + 110, y + 154, false));
+		buttonList.add(buttonNextIngredientPage = new GuiButtonNext(10, x + 58, y + 154, true));
+		buttonList.add(buttonPreviousIngredientPage = new GuiButtonNext(11, x - 12, y + 154, false));
+		buttonList.add(new GuiButtonJump(9, x + 214, y + 138, 69, 48, 248));
+		buttonList.add(new GuiButtonJump(8, x + 214, y + 118, 58, 40, 248));
+		buttonList.add(new GuiButtonJump(7, x + 214, y + 98, 47, 32, 248));
+		buttonList.add(new GuiButtonJump(6, x + 214, y + 78, 29, 24, 248));
+		buttonList.add(new GuiButtonJump(5, x + 214, y + 58, 23, 16, 248));
+		buttonList.add(new GuiButtonJump(4, x + 214, y + 38, 17, 8, 248));
+		buttonList.add(new GuiButtonJump(3, x + 214, y + 18, 2, 0, 248));
+		buttonList.add(new GuiButtonVisualize(12, x + 151, y + 156));
 		((GuiButton)buttonList.get(12)).visible = false;
 	}
 
@@ -133,50 +139,65 @@ public class ElderWitchbookGui extends GuiScreen {
 	}
 
 	protected void actionPerformed(final GuiButton button) {
-		if(button.enabled) {
-			if(button.id == 0) {
+		if(!button.enabled) {
+			return;
+		}
+		if(button instanceof GuiButtonJump) {
+			currPage = ((GuiButtonJump)button).jumpToPage - 1;
+			recipePageCurrent = 0;
+			recipePageCount = 1;
+			storeCurrentPage();
+		}
+		else switch(button.id) {
+			case 0: {
 				mc.displayGuiScreen(null);
+				break;
 			}
-			else if(button.id == 1) {
+		
+			case 1: {
 				if(currPage < bookTotalPages - 1) {
 					++currPage;
 					recipePageCurrent = 0;
 					recipePageCount = 1;
 					storeCurrentPage();
 				}
+				break;
 			}
-			else if(button.id == 2) {
+			case 2: {
 				if(currPage > 0) {
 					--currPage;
 					recipePageCurrent = 0;
 					recipePageCount = 1;
 					storeCurrentPage();
 				}
+				break;
 			}
-			else if(button.id == 10) {
+			case 10: {
 				if(recipePageCurrent < recipePageCount - 1) {
 					recipePageCurrent++;
 				}
+				break;
 			}
-			else if(button.id == 11) {
+			case 11: {
 				if(recipePageCurrent > 0) {
 					recipePageCurrent--;
 				}
+				break;
 			}
-			else if(button.id == 12) {
-				if(pageMultiblock != null && pageMultiblock.set != null) {
-					pageMultiblock.changeVisualization(button);
+			case 12: {
+				if(visualizedPage == currPage) {
+					visualizedPage = -1;
+					PageMultiBlock.resetVisualization();
+					break;
 				}
+				if(pageMultiBlock != null && pageMultiBlock.set != null) {
+					visualizedPage = currPage;
+					pageMultiBlock.setVisualization();
+				}
+				break;
 			}
-			else if(button instanceof GuiButtonJump) {
-				final GuiButtonJump but = (GuiButtonJump)button;
-				currPage = but.nextPage - 1;
-				recipePageCurrent = 0;
-				recipePageCount = 1;
-				storeCurrentPage();
-			}
-			updateButtons();
 		}
+		updateButtons();
 	}
 
 	protected void keyTyped(final char par1, final int par2) {
@@ -220,10 +241,10 @@ public class ElderWitchbookGui extends GuiScreen {
 			initialHeight += fontRendererObj.FONT_HEIGHT;
 		}
 
-		pageMultiblock = new PageMultiBlock(mb.makeSet(), k + 116, b0 + 3, bookImageWidth / 2 + 20, bookImageHeight, updateCount);
-		pageMultiblock.renderScreen(this, x, y);
-		if(!pageMultiblock.mb.equals(new MultiBlock())) {
-			((GuiButton)buttonList.get(12)).displayString = pageMultiblock.getButtonStr();
+		pageMultiBlock = new PageMultiBlock(mb.makeSet(), k + 116, b0 + 3, bookImageWidth / 2 + 20, bookImageHeight, updateCount);
+		pageMultiBlock.renderScreen(this, x, y);
+		if(!pageMultiBlock.mb.equals(new MultiBlock())) {
+			((GuiButton)buttonList.get(12)).displayString = pageMultiBlock.getButtonStr();
 			((GuiButton)buttonList.get(12)).visible = true;
 		}
 		else {
@@ -247,7 +268,7 @@ public class ElderWitchbookGui extends GuiScreen {
 				return;
 			}
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			mc.getTextureManager().bindTexture(TEXTURE);
+			mc.getTextureManager().bindTexture(BOOK_TEXTURE);
 			boolean selected = x >= xPosition && x < xPosition + width && y >= yPosition && y < yPosition + height;
 			drawTexturedModalRect(xPosition, yPosition, selected ? 23 : 0, right ? 192 : 205, 23, 13);
 		}
@@ -255,13 +276,13 @@ public class ElderWitchbookGui extends GuiScreen {
 	}
 
 	private static class GuiButtonJump extends GuiButton {
-		private final int nextPage;
+		private final int jumpToPage;
 		private final int iconX;
 		private final int iconY;
 
-		private GuiButtonJump(int commandID, int x, int y, int pageIndex, int iconX, int iconY) {
-			super(commandID, x, y, 20, 20, "");
-			nextPage = pageIndex;
+		private GuiButtonJump(int id, int x, int y, int page, int iconX, int iconY) {
+			super(id, x, y, 20, 20, "");
+			jumpToPage = page;
 			this.iconX = iconX;
 			this.iconY = iconY;
 		}
@@ -280,6 +301,25 @@ public class ElderWitchbookGui extends GuiScreen {
 			}
 
 		}
+	}
+
+	public class GuiButtonVisualize extends GuiButton {
+
+		public GuiButtonVisualize(int id, int x, int y) {
+			super(id, x, y, 14, 14, "");
+		}
+
+		public void drawButton(Minecraft mc, int x, int y) {
+			if(!visible) {
+				return;
+			}
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			mc.getTextureManager().bindTexture(ICONS_TEXTURE);
+			boolean selected = x >= xPosition && x < xPosition + width && y >= yPosition && y < yPosition + height;
+			boolean visualized = visualizedPage == currPage;
+			drawTexturedModalRect(xPosition, yPosition, selected ? 12 : 0, visualized ? 10 : 0, 12, 10);
+		}
+
 	}
 
 }

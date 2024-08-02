@@ -6,7 +6,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -110,14 +109,13 @@ public class PageMultiBlock {
 
 
 	@SideOnly(Side.CLIENT)
-	public void changeVisualization(GuiButton button) {
-		if(DHMultiBlockRenderEvents.currentMultiBlock != null && DHMultiBlockRenderEvents.currentMultiBlock.equals(set)) {
-			DHMultiBlockRenderEvents.setMultiBlock(null);
-		}
-		else {
-			DHMultiBlockRenderEvents.setMultiBlock(set);
-		}
-		button.displayString = getButtonStr();
+	public void setVisualization() {
+		DHMultiBlockRenderEvents.setMultiBlock(set);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void resetVisualization() {
+		DHMultiBlockRenderEvents.setMultiBlock(null);
 	}
 
 	public static void renderTooltip(int x, int y, List<String> tooltipData) {
