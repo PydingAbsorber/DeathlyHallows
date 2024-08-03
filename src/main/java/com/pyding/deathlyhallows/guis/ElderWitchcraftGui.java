@@ -38,6 +38,7 @@ import static org.lwjgl.opengl.GL11.*;
 @SideOnly(Side.CLIENT)
 public class ElderWitchcraftGui extends GuiScreen {
 	private static final ResourceLocation
+			// TODO redraw in-color
 			DOUBLE_BOOK_TEXTURE = new ResourceLocation(DHIntegration.WITCHERY, "textures/gui/bookDouble.png"),
 			BOOK_TEXTURE = new ResourceLocation("textures/gui/book.png"),
 			ICONS_TEXTURE = new ResourceLocation(DeathlyHallows.MODID, "textures/gui/book/icons.png");

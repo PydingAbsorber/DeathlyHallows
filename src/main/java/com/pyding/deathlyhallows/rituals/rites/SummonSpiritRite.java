@@ -95,7 +95,7 @@ public class SummonSpiritRite extends ElderRite {
 					String randomEntityName = DHUtils.getEntitiesNames()
 													 .get(world.rand.nextInt(DHUtils.getEntitiesNames().size() - 1));
 					int tries = 0;
-					while(DHUtils.contains(DHConfig.sonatRitual, randomEntityName) && tries <= 1000) {
+					while(DHUtils.contains(DHConfig.despairSonataBlackList, randomEntityName) && tries <= 1000) {
 						randomEntityName = DHUtils.getEntitiesNames()
 												  .get(world.rand.nextInt(DHUtils.getEntitiesNames().size() - 1));
 						tries++;

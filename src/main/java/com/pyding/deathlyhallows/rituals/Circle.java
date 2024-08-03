@@ -8,90 +8,95 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 
 public class Circle extends BlockList {
-	private static final int[][] PATTERN = {{0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},
-			{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-			{0, 0, 1, 0, 0, 2, 2, 2, 2, 2, 0, 0, 1, 0, 0},
-			{0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0},
-			{1, 0, 0, 2, 0, 0, 3, 3, 3, 0, 0, 2, 0, 0, 1},
-			{1, 0, 2, 0, 0, 3, 0, 0, 0, 3, 0, 0, 2, 0, 1},
-			{1, 0, 2, 0, 3, 0, 0, 0, 0, 0, 3, 0, 2, 0, 1},
-			{1, 0, 2, 0, 3, 0, 0, 0, 0, 0, 3, 0, 2, 0, 1},
-			{1, 0, 2, 0, 3, 0, 0, 0, 0, 0, 3, 0, 2, 0, 1},
-			{1, 0, 2, 0, 0, 3, 0, 0, 0, 3, 0, 0, 2, 0, 1},
-			{1, 0, 0, 2, 0, 0, 3, 3, 3, 0, 0, 2, 0, 0, 1},
-			{0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0},
-			{0, 0, 1, 0, 0, 2, 2, 2, 2, 2, 0, 0, 1, 0, 0},
-			{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
-			{0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},};
+	// TODO remake on Struct
+	private static final int[][] PATTERN =
+			{
+					{0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},
+					{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+					{0, 0, 1, 0, 0, 2, 2, 2, 2, 2, 0, 0, 1, 0, 0},
+					{0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0},
+					{1, 0, 0, 2, 0, 0, 3, 3, 3, 0, 0, 2, 0, 0, 1},
+					{1, 0, 2, 0, 0, 3, 0, 0, 0, 3, 0, 0, 2, 0, 1},
+					{1, 0, 2, 0, 3, 0, 0, 0, 0, 0, 3, 0, 2, 0, 1},
+					{1, 0, 2, 0, 3, 0, 0, 0, 0, 0, 3, 0, 2, 0, 1},
+					{1, 0, 2, 0, 3, 0, 0, 0, 0, 0, 3, 0, 2, 0, 1},
+					{1, 0, 2, 0, 0, 3, 0, 0, 0, 3, 0, 0, 2, 0, 1},
+					{1, 0, 0, 2, 0, 0, 3, 3, 3, 0, 0, 2, 0, 0, 1},
+					{0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0},
+					{0, 0, 1, 0, 0, 2, 2, 2, 2, 2, 0, 0, 1, 0, 0},
+					{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
+					{0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},
+			};
 
 	int numRitualGlyphs;
 	int numOtherwhereGlyphs;
 	int numInfernalGlyphs;
 	final int requiredGlyphs;
 
-
 	public Circle(final int requiredGlyphs) {
 		this.requiredGlyphs = requiredGlyphs;
 	}
 
 	public Circle(final int numRitualGlyphs, final int numOtherwhereGlyphs, final int numInfernalGlyphs) {
-		this.requiredGlyphs = numRitualGlyphs + numOtherwhereGlyphs + numInfernalGlyphs;
+		requiredGlyphs = numRitualGlyphs + numOtherwhereGlyphs + numInfernalGlyphs;
 		this.numRitualGlyphs = numRitualGlyphs;
 		this.numOtherwhereGlyphs = numOtherwhereGlyphs;
 		this.numInfernalGlyphs = numInfernalGlyphs;
 	}
 
 	public void addGlyph(final World world, final int posX, final int posY, final int posZ) {
-		this.addGlyph(world, posX, posY, posZ, false);
+		addGlyph(world, posX, posY, posZ, false);
 	}
 
 	public void addGlyph(final World world, final int posX, final int posY, final int posZ, final boolean remove) {
-		if(this.requiredGlyphs > 0) {
-			final Block blockID = world.getBlock(posX, posY, posZ);
-			boolean found = false;
-			if(Witchery.Blocks.GLYPH_RITUAL == blockID) {
-				++this.numRitualGlyphs;
-				found = true;
-			}
-			else if(Witchery.Blocks.GLYPH_OTHERWHERE == blockID) {
-				++this.numOtherwhereGlyphs;
-				found = true;
-			}
-			else if(Witchery.Blocks.GLYPH_INFERNAL == blockID) {
-				++this.numInfernalGlyphs;
-				found = true;
-			}
-			if(remove && found) {
-				world.setBlockToAir(posX, posY, posZ);
-			}
+		if(requiredGlyphs <= 0) {
+			return;
+		}
+		final Block blockID = world.getBlock(posX, posY, posZ);
+		boolean found = false;
+		if(Witchery.Blocks.GLYPH_RITUAL == blockID) {
+			++numRitualGlyphs;
+			found = true;
+		}
+		else if(Witchery.Blocks.GLYPH_OTHERWHERE == blockID) {
+			++numOtherwhereGlyphs;
+			found = true;
+		}
+		else if(Witchery.Blocks.GLYPH_INFERNAL == blockID) {
+			++numInfernalGlyphs;
+			found = true;
+		}
+		if(remove && found) {
+			world.setBlockToAir(posX, posY, posZ);
 		}
 	}
 
 	public void removeIfRequired(final ArrayList<Circle> circlesToFind) {
-		if(this.isComplete()) {
-			for(int i = 0; i < circlesToFind.size(); ++i) {
-				if(this.isMatch(circlesToFind.get(i))) {
-					circlesToFind.remove(i);
-					return;
-				}
+		if(!isComplete()) {
+			return;
+		}
+		for(int i = 0; i < circlesToFind.size(); ++i) {
+			if(isMatch(circlesToFind.get(i))) {
+				circlesToFind.remove(i);
+				return;
 			}
 		}
 	}
 
 	private boolean isMatch(final Circle other) {
-		return this.numRitualGlyphs == other.numRitualGlyphs && this.numOtherwhereGlyphs == other.numOtherwhereGlyphs && this.numInfernalGlyphs == other.numInfernalGlyphs;
+		return numRitualGlyphs == other.numRitualGlyphs && numOtherwhereGlyphs == other.numOtherwhereGlyphs && numInfernalGlyphs == other.numInfernalGlyphs;
 	}
 
 	public boolean isComplete() {
-		return this.requiredGlyphs == this.getGlyphCount();
+		return requiredGlyphs == getGlyphCount();
 	}
 
 	private int getGlyphCount() {
-		return this.numRitualGlyphs + this.numOtherwhereGlyphs + this.numInfernalGlyphs;
+		return numRitualGlyphs + numOtherwhereGlyphs + numInfernalGlyphs;
 	}
 
 	public int getRadius() {
-		return (this.requiredGlyphs + 2) / 6 + 1;
+		return (requiredGlyphs + 2) / 6 + 1;
 	}
 
 	public MultiBlock getMultiBlock() {
@@ -110,20 +115,20 @@ public class Circle extends BlockList {
 	}
 
 	public Block getGlyphType() {
-		if(this.numRitualGlyphs == this.requiredGlyphs) {
+		if(numRitualGlyphs == requiredGlyphs) {
 			return Witchery.Blocks.GLYPH_RITUAL;
 		}
-		if(this.numOtherwhereGlyphs == this.requiredGlyphs) {
+		if(numOtherwhereGlyphs == requiredGlyphs) {
 			return Witchery.Blocks.GLYPH_OTHERWHERE;
 		}
-		if(this.numInfernalGlyphs == this.requiredGlyphs) {
+		if(numInfernalGlyphs == requiredGlyphs) {
 			return Witchery.Blocks.GLYPH_INFERNAL;
 		}
 		return Witchery.Blocks.GLYPH_RITUAL;
 	}
 
 	public int getCircleSize() {
-		final int size = this.getGlyphCount();
+		final int size = getGlyphCount();
 		if(size == 40) {
 			return 1;
 		}
@@ -132,4 +137,5 @@ public class Circle extends BlockList {
 		}
 		return 3;
 	}
+	
 }

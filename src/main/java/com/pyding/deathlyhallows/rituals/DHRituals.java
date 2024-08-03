@@ -112,26 +112,6 @@ public final class DHRituals {
 				new Circle(0, 28, 0),
 				new Circle(0, 40, 0)
 		);
-
-		if(DHIntegration.thaumcraft && DHConfig.bathHouse) {
-			ElderRiteRegistry.addRecipe(id++, 5,
-					"dh.rite.banka",
-					new RiteWithEffect(8, 80.0f, 0, "DHBanka", System.currentTimeMillis() + 60 * 60 * 1000),
-					new ElderSacrificeMultiple(
-							new ElderSacrificeItem(
-									new ItemStack(DHItems.lightningInBag),
-									new ItemStack(ConfigItems.itemBucketDeath),
-									new ItemStack(ConfigItems.itemBottleTaint),
-									new ItemStack(ConfigItems.itemSanitySoap),
-									new ItemStack(Witchery.Blocks.VOID_BRAMBLE),
-									new ItemStack(gastronomicTemptation),
-									new ItemStack(viscousSecretions)
-							),
-							new ElderSacrificePower(DHConfig.cost1, 20)),
-					EnumSet.noneOf(RitualTraits.class),
-					DHStructures.basik
-			);
-		}
 		if(DHConfig.despairSonata) {
 			ElderRiteRegistry.addRecipe(id++, 5,
 					"dh.rite.sonata",
@@ -146,7 +126,7 @@ public final class DHRituals {
 									Items.GENERIC.itemAttunedStoneCharged.createStack(),
 									Items.GENERIC.itemBatWool.createStack()
 							),
-							new ElderSacrificePower(DHConfig.cost2, 20)
+							new ElderSacrificePower(DHConfig.despairSonataCost, 20)
 					),
 					EnumSet.noneOf(RitualTraits.class),
 					DHStructures.sonata
@@ -161,7 +141,7 @@ public final class DHRituals {
 									new ItemStack(Witchery.Blocks.LEAPING_LILY),
 									new ItemStack(bread)
 							),
-							new ElderSacrificePower(DHConfig.cost3, 20)
+							new ElderSacrificePower(DHConfig.fishCatchCost, 20)
 					),
 					EnumSet.noneOf(RitualTraits.class),
 					DHStructures.fishLake)
@@ -181,7 +161,7 @@ public final class DHRituals {
 									Items.GENERIC.itemBrewGrave.createStack(),
 									Items.GENERIC.itemOwletsWing.createStack()
 							),
-							new ElderSacrificePower(DHConfig.cost4, 20)
+							new ElderSacrificePower(DHConfig.soulCurseCost, 20)
 					),
 					EnumSet.noneOf(RitualTraits.class),
 					DHStructures.curse
@@ -200,7 +180,7 @@ public final class DHRituals {
 									Items.GENERIC.itemAnnointingPaste.createStack(),
 									Items.GENERIC.itemBrewOfIce.createStack()
 							),
-							new ElderSacrificePower(DHConfig.cost5, 20)
+							new ElderSacrificePower(DHConfig.iceCastleCost, 20)
 					),
 					EnumSet.noneOf(RitualTraits.class),
 					DHStructures.iceCastle
@@ -222,7 +202,7 @@ public final class DHRituals {
 									Items.GENERIC.itemFrozenHeart.createStack(),
 									Items.GENERIC.itemSubduedSpiritVillage.createStack()
 							),
-							new ElderSacrificePower(DHConfig.cost5 * 2, 20)
+							new ElderSacrificePower(DHConfig.iceCastleCost * 2, 20)
 					),
 					EnumSet.noneOf(RitualTraits.class),
 					DHStructures.iceCastle
@@ -243,7 +223,7 @@ public final class DHRituals {
 									Items.GENERIC.itemKobolditeIngot.createStack(),
 									new ItemStack(Items.POPPET, 1, 11)
 							),
-							new ElderSacrificePower(DHConfig.cost6, 20)
+							new ElderSacrificePower(DHConfig.healMendingCost, 20)
 					),
 					EnumSet.noneOf(RitualTraits.class),
 					DHStructures.mending
@@ -264,7 +244,7 @@ public final class DHRituals {
 									new ItemStack(Witchery.Blocks.STOCKADE),
 									new ItemStack(Items.SILVER_SWORD)
 							),
-							new ElderSacrificePower(DHConfig.cost7, 20)
+							new ElderSacrificePower(DHConfig.huntMagicCreaturesCost, 20)
 					),
 					EnumSet.noneOf(RitualTraits.class),
 					DHStructures.hunt
@@ -289,7 +269,7 @@ public final class DHRituals {
 					new ElderSacrificeMultiple(
 							sacrifice,
 							DHIntegration.thaumcraft ? new ElderSacrificeItem(new ItemStack(ConfigItems.itemSanitySoap)) : null,
-							new ElderSacrificePower(DHConfig.cost8, 20)
+							new ElderSacrificePower(DHConfig.purifyCost, 20)
 					),
 					EnumSet.noneOf(RitualTraits.class),
 					DHStructures.purify
@@ -309,10 +289,30 @@ public final class DHRituals {
 									new ItemStack(viscousSecretions)
 							),
 							new ElderSacrificeLiving(EntityWitch.class),
-							new ElderSacrificePower(DHConfig.cost9, 20)
+							new ElderSacrificePower(DHConfig.covenWitchCost, 20)
 					),
 					EnumSet.noneOf(RitualTraits.class),
 					DHStructures.coven
+			);
+		}
+		// TODO reindex all that I can dynamically calculate page index, and make a jumpButton jump to this ritual
+		if(DHIntegration.thaumcraft && DHConfig.bathHouse) {
+			ElderRiteRegistry.addRecipe(id++, 5,
+					"dh.rite.banka",
+					new RiteWithEffect(8, 80.0f, 0, "DHBanka", System.currentTimeMillis() + 60 * 60 * 1000),
+					new ElderSacrificeMultiple(
+							new ElderSacrificeItem(
+									new ItemStack(DHItems.lightningInBag),
+									new ItemStack(ConfigItems.itemBucketDeath),
+									new ItemStack(ConfigItems.itemBottleTaint),
+									new ItemStack(ConfigItems.itemSanitySoap),
+									new ItemStack(Witchery.Blocks.VOID_BRAMBLE),
+									new ItemStack(gastronomicTemptation),
+									new ItemStack(viscousSecretions)
+							),
+							new ElderSacrificePower(DHConfig.bathHouseCost, 20)),
+					EnumSet.noneOf(RitualTraits.class),
+					DHStructures.basik
 			);
 		}
 	}

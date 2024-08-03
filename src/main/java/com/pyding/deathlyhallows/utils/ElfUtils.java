@@ -22,7 +22,7 @@ import static com.emoniph.witchery.infusion.Infusion.getNBT;
 import static com.pyding.deathlyhallows.utils.properties.DeathlyProperties.get;
 
 public final class ElfUtils {
-
+	// TODO elf ears render
 	private ElfUtils() {
 
 	}
