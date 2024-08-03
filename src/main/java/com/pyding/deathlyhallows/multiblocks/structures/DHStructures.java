@@ -1,11 +1,7 @@
-package com.pyding.deathlyhallows.rituals;
+package com.pyding.deathlyhallows.multiblocks.structures;
 
 import com.pyding.deathlyhallows.integrations.DHIntegration;
-import com.pyding.deathlyhallows.multiblocks.structures.StructureBasik;
-import com.pyding.deathlyhallows.multiblocks.structures.StructureFishLake;
-import com.pyding.deathlyhallows.multiblocks.structures.StructureIceCastle;
-import com.pyding.deathlyhallows.multiblocks.structures.StructurePurify;
-import com.pyding.deathlyhallows.multiblocks.structures.StructureSonata;
+import com.pyding.deathlyhallows.rituals.BlockList;
 import com.pyding.deathlyhallows.utils.IMultiBlockHandler;
 
 public class DHStructures {

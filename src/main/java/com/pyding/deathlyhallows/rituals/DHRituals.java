@@ -11,6 +11,7 @@ import com.emoniph.witchery.ritual.RitualTraits;
 import com.pyding.deathlyhallows.entities.EntityAbsoluteDeath;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
+import com.pyding.deathlyhallows.multiblocks.structures.DHStructures;
 import com.pyding.deathlyhallows.rituals.rites.*;
 import com.pyding.deathlyhallows.utils.DHConfig;
 import net.minecraft.entity.monster.EntityEnderman;

@@ -25,6 +25,14 @@ public abstract class StructureBase implements IMultiBlockHandler {
 		mb.addComponent(x, y, z, block, meta, tag);
 	}
 
+	protected final void add(Block block, int meta, int x, int y, int z) {
+		mb.addComponent(x, y, z, block, meta);
+	}
+
+	protected final void add(Block block, int x, int y, int z) {
+		mb.addComponent(x, y, z, block, -1);
+	}
+
 	protected final void add(Block block, int meta, NBTTagCompound tag, ChunkCoordinates... chunks) {
 		for(ChunkCoordinates pos: chunks) {
 			mb.addComponent(pos.posX, pos.posY, pos.posZ, block, meta, tag);
