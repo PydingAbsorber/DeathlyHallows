@@ -34,7 +34,7 @@ public class ElderRiteRegistry {
 		return this.rituals;
 	}
 
-	public static Ritual addRecipe(int ritualID, int bookIndex, ElderRite rite, ElderSacrifice initialSacrifice, EnumSet traits, Figure... circles) {
+	public static Ritual addRecipe(int ritualID, int bookIndex, ElderRite rite, ElderSacrifice initialSacrifice, EnumSet traits, BlockList... circles) {
 		Ritual ritual = new Ritual(ritualID, bookIndex, rite, initialSacrifice, traits, circles);
 		instance().rituals.add(ritual);
 		return ritual;
@@ -91,7 +91,7 @@ public class ElderRiteRegistry {
 		public ElderRite rite;
 		public ElderSacrifice initialSacrifice;
 		public EnumSet traits;
-		public Figure[] circles;
+		public BlockList[] circles;
 		public int ritualID;
 		public int bookIndex;
 		public boolean visibleInBook;
@@ -115,7 +115,7 @@ public class ElderRiteRegistry {
 			return this.unlocalizedName != null ? Witchery.resource(this.getUnlocalizedName()) : this.toString();
 		}
 
-		public Ritual(int ritualID, int bookIndex, ElderRite rite, ElderSacrifice initialSacrifice, EnumSet traits, Figure[] circles) {
+		public Ritual(int ritualID, int bookIndex, ElderRite rite, ElderSacrifice initialSacrifice, EnumSet traits, BlockList[] circles) {
 			this.ritualID = ritualID;
 			this.bookIndex = bookIndex;
 			this.rite = rite;
@@ -152,9 +152,9 @@ public class ElderRiteRegistry {
 			if((!this.traits.contains(RitualTraits.ONLY_AT_NIGHT) || !isDaytime) && (!this.traits.contains(RitualTraits.ONLY_AT_DAY) || isDaytime) && (!this.traits.contains(RitualTraits.ONLY_IN_RAIN) || isRaining) && (!this.traits.contains(RitualTraits.ONLY_IN_STROM) || isThundering) && (!this.traits.contains(RitualTraits.ONLY_OVERWORLD) || world.provider.dimensionId == 0)) {
 				MultiBlock mb = new MultiBlock();
 				if(this.circles.length > 0) {
-					Figure[] circles = this.circles;
-					for(Figure c: circles) {
-						mb.mergeMultiblocks(c.getMultiblock());
+					BlockList[] circles = this.circles;
+					for(BlockList c: circles) {
+						mb.mergeMultiBlocks(c.getMultiblock());
 					}
 					if(!mb.matchAndRemove(world, posX, posY, posZ, false)) {
 						return false;

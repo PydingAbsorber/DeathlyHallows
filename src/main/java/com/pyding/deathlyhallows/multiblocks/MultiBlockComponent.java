@@ -117,4 +117,8 @@ public class MultiBlockComponent {
 		return true;
 	}
 
+	@Override
+	public String toString() { // json parsable
+		return "{\"pos\": [" + relPos.posX + "," + relPos.posY +","+ relPos.posZ + "], \"block\": \"" + block.getUnlocalizedName() + "\"" + (meta != 0 ? ", \"meta\": " + meta : "") + (tag != null ? ", \"tag\": " + tag : "") + "}";
+	}
 }

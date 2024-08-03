@@ -7,7 +7,7 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 
-public class Circle extends Figure {
+public class Circle extends BlockList {
 	private static final int[][] PATTERN = {{0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},
 			{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
 			{0, 0, 1, 0, 0, 2, 2, 2, 2, 2, 0, 0, 1, 0, 0},
