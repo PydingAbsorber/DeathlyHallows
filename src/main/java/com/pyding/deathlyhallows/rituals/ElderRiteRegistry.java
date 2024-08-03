@@ -1,6 +1,7 @@
 package com.pyding.deathlyhallows.rituals;
 
 import com.emoniph.witchery.Witchery;
+import com.emoniph.witchery.ritual.RitualStep;
 import com.emoniph.witchery.ritual.RitualTraits;
 import com.emoniph.witchery.util.ChatUtil;
 import com.emoniph.witchery.util.Const;
@@ -9,17 +10,19 @@ import com.pyding.deathlyhallows.rituals.rites.ElderRite;
 import com.pyding.deathlyhallows.rituals.rites.ElderSacrifice;
 import com.pyding.deathlyhallows.utils.IMultiBlockHandler;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
-import java.util.Iterator;
 import java.util.List;
+
+import static com.emoniph.witchery.ritual.RitualTraits.*;
 
 public class ElderRiteRegistry {
 
@@ -35,8 +38,9 @@ public class ElderRiteRegistry {
 		return this.rituals;
 	}
 
-	public static Ritual addRecipe(int ritualID, int bookIndex, ElderRite rite, ElderSacrifice initialSacrifice, EnumSet traits, IMultiBlockHandler... circles) {
+	public static Ritual addRecipe(int ritualID, int bookIndex, String name, ElderRite rite, ElderSacrifice initialSacrifice, EnumSet<RitualTraits> traits, IMultiBlockHandler... circles) {
 		Ritual ritual = new Ritual(ritualID, bookIndex, rite, initialSacrifice, traits, circles);
+		ritual.setUnlocalizedName(name);
 		instance().rituals.add(ritual);
 		return ritual;
 	}
@@ -54,54 +58,50 @@ public class ElderRiteRegistry {
 		this.rituals.removeIf(r -> r.ritualID == ritualID);
 	}
 
-	public List getSortedRituals() {
-		ArrayList sortedRituals = new ArrayList();
-		sortedRituals.addAll(this.rituals);
-		Collections.sort(sortedRituals, new IndexComparitor());
+	public List<Ritual> getSortedRituals() {
+		ArrayList<Ritual> sortedRituals = new ArrayList<>(this.rituals);
+		sortedRituals.sort(Comparator.comparingInt(r -> r.bookIndex));
 		return sortedRituals;
 	}
 
 	public static void RiteError(String translationID, String username, World world) {
-		if(world != null && !world.isRemote && username != null) {
-			Iterator i$ = world.playerEntities.iterator();
-
-			while(i$.hasNext()) {
-				Object obj = i$.next();
-				if(obj instanceof EntityPlayer) {
-					EntityPlayer worldPlayer = (EntityPlayer)obj;
-					if(worldPlayer.getCommandSenderName().equals(username)) {
-						RiteError(translationID, worldPlayer, world);
-						return;
-					}
-				}
+		if(world == null || world.isRemote || username == null) {
+			return;
+		}
+		for(Object obj: world.playerEntities) {
+			if(!(obj instanceof EntityPlayer)) {
+				continue;
+			}
+			EntityPlayer worldPlayer = (EntityPlayer)obj;
+			if(worldPlayer.getCommandSenderName().equals(username)) {
+				RiteError(translationID, worldPlayer, world);
+				return;
 			}
 		}
-
 	}
 
 	public static void RiteError(String translationID, EntityPlayer player, World world) {
 		if(world != null && !world.isRemote && player != null) {
 			ChatUtil.sendTranslated(EnumChatFormatting.RED, player, translationID);
 		}
-
 	}
-
 
 	public static class Ritual {
 		public String unlocalizedName;
 		public ElderRite rite;
 		public ElderSacrifice initialSacrifice;
-		public EnumSet traits;
+		public EnumSet<RitualTraits> traits;
 		public IMultiBlockHandler[] circles;
-		public int ritualID;
-		public int bookIndex;
-		public boolean visibleInBook;
-		public boolean consumeAttunedStoneCharged = false;
-		public boolean consumeNecroStone = false;
+		public int
+				ritualID,
+				bookIndex,
+				covenRequired = 0;
+		public boolean
+				visibleInBook,
+				consumeAttunedStoneCharged = false,
+				consumeNecroStone = false;
 
 		public String familiar = "";
-
-		public int covenRequired = 0;
 
 		public String getUnlocalizedName() {
 			return this.unlocalizedName;
@@ -113,10 +113,10 @@ public class ElderRiteRegistry {
 		}
 
 		public String getLocalizedName() {
-			return this.unlocalizedName != null ? Witchery.resource(this.getUnlocalizedName()) : this.toString();
+			return unlocalizedName != null ? Witchery.resource(getUnlocalizedName()) : toString();
 		}
 
-		public Ritual(int ritualID, int bookIndex, ElderRite rite, ElderSacrifice initialSacrifice, EnumSet traits, IMultiBlockHandler[] circles) {
+		public Ritual(int ritualID, int bookIndex, ElderRite rite, ElderSacrifice initialSacrifice, EnumSet<RitualTraits> traits, IMultiBlockHandler[] circles) {
 			this.ritualID = ritualID;
 			this.bookIndex = bookIndex;
 			this.rite = rite;
@@ -133,7 +133,7 @@ public class ElderRiteRegistry {
 			sb.append("§r");
 			sb.append(Const.BOOK_NEWLINE);
 			sb.append(Const.BOOK_NEWLINE);
-			this.initialSacrifice.addDescription(sb);
+			initialSacrifice.addDescription(sb);
 
 			if(!familiar.equals("")) {
 				sb.append(Const.BOOK_NEWLINE);
@@ -149,30 +149,34 @@ public class ElderRiteRegistry {
 			return sb.toString();
 		}
 
-		public boolean isMatch(World world, int posX, int posY, int posZ, ArrayList entities, ArrayList grassperStacks, boolean isDaytime, boolean isRaining, boolean isThundering) {
-			if((!this.traits.contains(RitualTraits.ONLY_AT_NIGHT) || !isDaytime) && (!this.traits.contains(RitualTraits.ONLY_AT_DAY) || isDaytime) && (!this.traits.contains(RitualTraits.ONLY_IN_RAIN) || isRaining) && (!this.traits.contains(RitualTraits.ONLY_IN_STROM) || isThundering) && (!this.traits.contains(RitualTraits.ONLY_OVERWORLD) || world.provider.dimensionId == 0)) {
-				MultiBlock mb = new MultiBlock();
-				if(this.circles.length > 0) {
-					IMultiBlockHandler[] circles = this.circles;
-					for(IMultiBlockHandler c: circles) {
-						mb.mergeMultiBlocks(c.getMultiBlock());
-					}
-					if(!mb.matchAndRemove(world, posX, posY, posZ, false)) {
-						return false;
-					}
-				}
-				if(this.initialSacrifice.isMatch(world, posX, posY, posZ, this.getMaxDistance(), entities, grassperStacks)) {
-					mb.matchAndRemove(world, posX, posY, posZ, this.traits.contains(RitualTraits.DESTROYS_CIRCLE));
-					return true;
-				}
+		public boolean isMatch(World world, int posX, int posY, int posZ, ArrayList<Entity> entities, ArrayList<ItemStack> grassperStacks, boolean isDaytime, boolean isRaining, boolean isThundering) {
+			if((traits.contains(ONLY_AT_NIGHT) && isDaytime) 
+					|| (traits.contains(ONLY_AT_DAY) && !isDaytime) 
+					|| (traits.contains(ONLY_IN_RAIN) && !isRaining) 
+					|| (traits.contains(ONLY_IN_STROM) && !isThundering) 
+					|| (traits.contains(ONLY_OVERWORLD) && world.provider.dimensionId != 0)
+			) {
 				return false;
 			}
-			else {
-				return false;
+
+			MultiBlock mb = new MultiBlock();
+			if(this.circles.length > 0) {
+				for(IMultiBlockHandler c: circles) {
+					mb.mergeMultiBlocks(c.getMultiBlock());
+				}
+				if(!mb.matchAndRemove(world, posX, posY, posZ, false)) {
+					return false;
+				}
 			}
+			if(this.initialSacrifice.isMatch(world, posX, posY, posZ, this.getMaxDistance(), entities, grassperStacks)) {
+				mb.matchAndRemove(world, posX, posY, posZ, this.traits.contains(DESTROYS_CIRCLE));
+				return true;
+			}
+			return false;
+			
 		}
 
-		public void addSteps(ArrayList steps, AxisAlignedBB bounds) {
+		public void addSteps(ArrayList<RitualStep> steps, AxisAlignedBB bounds) {
 			int maxDistance = this.getMaxDistance();
 			if(!familiar.equals("")) {
 				steps.add(new StepCheckFamiliar(familiar));
@@ -186,39 +190,15 @@ public class ElderRiteRegistry {
 
 		private int getMaxDistance() {
 			return 7;
-//            int maxDistance = this.circles.length > 0?0:4;
-//            Circle[] arr$ = this.circles;
-//            int len$ = arr$.length;
-//
-//            for(int i$ = 0; i$ < len$; ++i$) {
-//                Circle circle = arr$[i$];
-//                maxDistance = Math.max(circle.getRadius(), maxDistance);
-//            }
-//
-//            return maxDistance;
 		}
 
 		public int getRitualID() {
 			return this.ritualID;
 		}
 
-		public void addRiteSteps(ArrayList ritualSteps, int stage) {
+		public void addRiteSteps(ArrayList<RitualStep> ritualSteps, int stage) {
 			this.rite.addSteps(ritualSteps, stage);
 		}
-
-//        public byte[] getCircles() {
-//            byte[] result = new byte[this.circles.length];
-//            int index = 0;
-//            Circle[] arr$ = this.circles;
-//            int len$ = arr$.length;
-//
-//            for(int i$ = 0; i$ < len$; ++i$) {
-//                Circle circle = arr$[i$];
-//                result[index++] = (byte)circle.getTextureIndex();
-//            }
-//
-//            return result;
-//        }
 
 		public Ritual setShowInBook(boolean show) {
 			this.visibleInBook = show;
@@ -244,13 +224,7 @@ public class ElderRiteRegistry {
 		public void setConsumeNecroStone() {
 			this.consumeNecroStone = true;
 		}
+		
 	}
 
-	public static class IndexComparitor implements Comparator<Ritual> {
-
-		@Override
-		public int compare(Ritual o1, Ritual o2) {
-			return Integer.valueOf(o1.bookIndex).compareTo(Integer.valueOf(o2.bookIndex));
-		}
-	}
 }

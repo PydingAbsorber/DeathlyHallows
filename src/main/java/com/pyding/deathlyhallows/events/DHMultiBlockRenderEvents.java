@@ -135,10 +135,10 @@ public final class DHMultiBlockRenderEvents {
 
 	public static void renderMultiBlockOnPage(MultiBlock mb) {
 		glTranslated(-0.5, -0.5, -0.5);
-		blockAccess.update(null, mb, mb.offX, mb.offY, mb.offZ);
+		blockAccess.update(null, mb, mb.anchorX, mb.anchorY, mb.anchorZ);
 		for(MultiBlockComponent comp: mb.getComponents()) {
 			ChunkCoordinates pos = comp.getRelativePosition();
-			doRenderComponent(mb, comp, pos.posX + mb.offX, pos.posY + mb.offY, pos.posZ + mb.offZ, 1);
+			doRenderComponent(mb, comp, pos.posX + mb.anchorX, pos.posY + mb.anchorY, pos.posZ + mb.anchorZ, 1);
 		}
 	}
 

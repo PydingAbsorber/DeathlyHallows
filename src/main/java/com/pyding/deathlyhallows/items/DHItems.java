@@ -68,8 +68,8 @@ public final class DHItems {
 		register(trickOrTreat = new ItemTrickOrTreat());
 		register(elderBook = new ItemElderBook());
 		register(elderChalk = new ItemElderChalk());
-		register(lightningInBag = new ItemLightningInBag());
 		register(bag = new ItemBag());
+		register(lightningInBag = new ItemLightningInBag());
 		register(niceCream = new ItemNiceCream());
 	}
 

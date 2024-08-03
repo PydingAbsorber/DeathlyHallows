@@ -4,6 +4,7 @@ import com.emoniph.witchery.Witchery;
 import com.emoniph.witchery.common.IPowerSource;
 import com.emoniph.witchery.common.PowerSources;
 import com.emoniph.witchery.ritual.RiteRegistry;
+import com.emoniph.witchery.ritual.RitualStep;
 import com.emoniph.witchery.util.Coord;
 import com.pyding.deathlyhallows.blocks.BlockElderRitual;
 import net.minecraft.entity.Entity;
@@ -32,7 +33,7 @@ public class ElderSacrificePower extends ElderSacrifice {
 		return true;
 	}
 
-	public void addSteps(ArrayList<ElderRitualStep> steps, AxisAlignedBB bounds, int maxDistance) {
+	public void addSteps(ArrayList<RitualStep> steps, AxisAlignedBB bounds, int maxDistance) {
 		steps.add(new ElderSacrificePower.SacrificePowerStep(this));
 	}
 
@@ -45,31 +46,31 @@ public class ElderSacrificePower extends ElderSacrifice {
 			this.sacrifice = sacrifice;
 		}
 
-
 		@Override
 		public Result elderProcess(World world, int posX, int posY, int posZ, long ticks, BlockElderRitual.TileEntityCircle.ActivatedElderRitual ritual) {
 			if(ticks % (long)this.sacrifice.powerFrequencyInTicks != 0L) {
 				return Result.STARTING;
 			}
+			IPowerSource powerSource = this.findNewPowerSource(world, posX, posY, posZ);
+			if(powerSource == null) {
+				RiteRegistry.RiteError("witchery.rite.missingpowersource", ritual.getInitiatingPlayerName(), world);
+				return Result.ABORTED_REFUND;
+			}
+			else if(powerSource.consumePower(this.sacrifice.powerRequired)) {
+				return Result.COMPLETED;
+			}
 			else {
-				IPowerSource powerSource = this.findNewPowerSource(world, posX, posY, posZ);
-				if(powerSource == null) {
-					RiteRegistry.RiteError("witchery.rite.missingpowersource", ritual.getInitiatingPlayerName(), world);
-					return Result.ABORTED_REFUND;
-				}
-				else if(powerSource.consumePower(this.sacrifice.powerRequired)) {
-					return Result.COMPLETED;
-				}
-				else {
-					RiteRegistry.RiteError("witchery.rite.insufficientpower", ritual.getInitiatingPlayerName(), world);
-					return Result.ABORTED_REFUND;
-				}
+				RiteRegistry.RiteError("witchery.rite.insufficientpower", ritual.getInitiatingPlayerName(), world);
+				return Result.ABORTED_REFUND;
 			}
 		}
 
 		private IPowerSource findNewPowerSource(World world, int posX, int posY, int posZ) {
-			List<PowerSources.RelativePowerSource> sources = PowerSources.instance() != null ? PowerSources.instance()
-																										   .get(world, new Coord(posX, posY, posZ), 16) : null;
+			if(PowerSources.instance() == null) {
+				return null;
+			}
+			List<PowerSources.RelativePowerSource> sources = PowerSources.instance()
+																		 .get(world, new Coord(posX, posY, posZ), POWER_SOURCE_RADIUS);
 			return sources != null && sources.size() > 0 ? sources.get(0).source() : null;
 		}
 	}

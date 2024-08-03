@@ -1,6 +1,8 @@
 package com.pyding.deathlyhallows.multiblocks;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockSlab;
+import net.minecraft.block.BlockStairs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,21 +22,13 @@ public class MultiBlockComponent {
 	public boolean doFancyRender;
 
 	public MultiBlockComponent(ChunkCoordinates relPos, Block block, int meta) {
-		this(relPos, block, meta, (NBTTagCompound)null);
+		this(relPos, block, meta, null);
 	}
 
 	public MultiBlockComponent(ChunkCoordinates relPos, Block block, int meta, NBTTagCompound tag) {
 		this(relPos, block, meta, false, null, tag);
 	}
-
-	public MultiBlockComponent(ChunkCoordinates relPos, Block block, int meta, boolean doFancyRender) {
-		this(relPos, block, meta, doFancyRender, null, null);
-	}
-
-	public MultiBlockComponent(ChunkCoordinates relPos, Block block, int meta, TileEntity tileEntity) {
-		this(relPos, block, meta, block.hasTileEntity(meta) == (tileEntity != null), tileEntity, null);
-	}
-
+	
 	public MultiBlockComponent(ChunkCoordinates relPos, Block block, int meta, boolean doFancyRender, TileEntity tileEntity, NBTTagCompound tag) {
 		this.relPos = relPos;
 		this.block = block;
@@ -73,6 +67,9 @@ public class MultiBlockComponent {
 	}
 
 	public ItemStack[] getMaterials() {
+		if(block instanceof BlockStairs || block instanceof BlockSlab) {
+			return new ItemStack[]{new ItemStack(block, 1, -1)};
+		}
 		return new ItemStack[]{new ItemStack(block, 1, meta)};
 	}
 

@@ -8,7 +8,7 @@ import net.minecraft.util.ChunkCoordinates;
 
 public abstract class StructureBase implements IMultiBlockHandler {
 
-	MultiBlock mb = new MultiBlock();
+	private final MultiBlock multiBlock = new MultiBlock();
 
 	public StructureBase() {
 		fillStructure();
@@ -18,36 +18,36 @@ public abstract class StructureBase implements IMultiBlockHandler {
 
 	@Override
 	public MultiBlock getMultiBlock() {
-		return mb;
+		return multiBlock;
 	}
 
 	protected final void add(Block block, int meta, NBTTagCompound tag, int x, int y, int z) {
-		mb.addComponent(x, y, z, block, meta, tag);
+		multiBlock.addComponent(x, y, z, block, meta, tag);
 	}
 
 	protected final void add(Block block, int meta, int x, int y, int z) {
-		mb.addComponent(x, y, z, block, meta);
+		multiBlock.addComponent(x, y, z, block, meta);
 	}
 
 	protected final void add(Block block, int x, int y, int z) {
-		mb.addComponent(x, y, z, block, -1);
+		multiBlock.addComponent(x, y, z, block, -1);
 	}
 
 	protected final void add(Block block, int meta, NBTTagCompound tag, ChunkCoordinates... chunks) {
 		for(ChunkCoordinates pos: chunks) {
-			mb.addComponent(pos.posX, pos.posY, pos.posZ, block, meta, tag);
+			multiBlock.addComponent(pos, block, meta, tag);
 		}
 	}
 
 	protected final void add(Block block, int meta, ChunkCoordinates... chunks) {
 		for(ChunkCoordinates pos: chunks) {
-			mb.addComponent(pos.posX, pos.posY, pos.posZ, block, meta);
+			multiBlock.addComponent(pos, block, meta);
 		}
 	}
 
 	protected final void add(Block block, ChunkCoordinates... chunks) {
 		for(ChunkCoordinates pos: chunks) {
-			mb.addComponent(pos.posX, pos.posY, pos.posZ, block, -1);
+			multiBlock.addComponent(pos, block, -1);
 		}
 	}
 

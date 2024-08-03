@@ -8,7 +8,6 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,18 +15,15 @@ public class MultiBlock {
 
 	public List<MultiBlockComponent> components = new ArrayList<>();
 	public List<ItemStack> materials = new ArrayList<>();
+	public HashMap<Integer, MultiBlockComponent> locationCache = new HashMap<>();
+	public int minX, minY, minZ, maxX, maxY, maxZ, anchorX = 0, anchorY = 0, anchorZ = 0;
 
-	public int minX, minY, minZ, maxX, maxY, maxZ, offX, offY, offZ;
-
-	public HashMap<List<Integer>, MultiBlockComponent> locationCache = new HashMap<List<Integer>, MultiBlockComponent>();
-
-	/**
-	 Adds a MultiBlock component to this MultiBlock. The component's x y z
-	 coords should be pivoted to the center of the structure.
-	 */
 	public void addComponent(MultiBlockComponent component) {
+		if(Math.abs(component.relPos.posX) > 0x1FF || Math.abs(component.relPos.posY) > 0x1FF || Math.abs(component.relPos.posZ) > 0x1FF) {
+			throw new IllegalArgumentException("Position in MultiBlock must be in range of [-1023;1023]");
+		}
 		if(getComponentForLocation(component.relPos.posX, component.relPos.posY, component.relPos.posZ) != null) {
-			throw new IllegalArgumentException("Location in MultiBlock already occupied");
+			throw new IllegalArgumentException("Position in MultiBlock already occupied");
 		}
 		components.add(component);
 		changeAxisForNewComponent(component.relPos.posX, component.relPos.posY, component.relPos.posZ);
@@ -38,9 +34,17 @@ public class MultiBlock {
 	public void addComponent(int x, int y, int z, Block block, int meta) {
 		addComponent(new MultiBlockComponent(new ChunkCoordinates(x, y, z), block, meta));
 	}
-	
+
 	public void addComponent(int x, int y, int z, Block block, int meta, NBTTagCompound tag) {
 		addComponent(new MultiBlockComponent(new ChunkCoordinates(x, y, z), block, meta, tag));
+	}
+
+	public void addComponent(ChunkCoordinates coords, Block block, int meta) {
+		addComponent(new MultiBlockComponent(coords, block, meta));
+	}
+
+	public void addComponent(ChunkCoordinates coords, Block block, int meta, NBTTagCompound tag) {
+		addComponent(new MultiBlockComponent(coords, block, meta, tag));
 	}
 
 	public void mergeMultiBlocks(MultiBlock mb) {
@@ -52,6 +56,12 @@ public class MultiBlock {
 
 			}
 		}
+	}
+	
+	public void setAnchor(int x, int y, int z) {
+		anchorX = x;
+		anchorY = y;
+		anchorZ = z;
 	}
 
 	private void changeAxisForNewComponent(int x, int y, int z) {
@@ -101,12 +111,6 @@ public class MultiBlock {
 		materials.add(stack);
 	}
 
-	public void setRenderOffset(int x, int y, int z) {
-		offX = x;
-		offY = y;
-		offZ = z;
-	}
-
 	public List<MultiBlockComponent> getComponents() {
 		return components;
 	}
@@ -130,16 +134,13 @@ public class MultiBlock {
 	public MultiBlock[] createRotations() {
 		MultiBlock[] blocks = new MultiBlock[4];
 		blocks[0] = this;
-		blocks[1] = blocks[0].copy();
-		blocks[1].rotate(Math.PI / 2);
-		blocks[2] = blocks[1].copy();
-		blocks[2].rotate(Math.PI / 2);
-		blocks[3] = blocks[2].copy();
-		blocks[3].rotate(Math.PI / 2);
-
+		for(int i = 1; i < 4; ++i) {
+			blocks[i] = blocks[i - 1].copy();
+			blocks[i].rotate(Math.PI / 2);
+		}
 		return blocks;
 	}
-	
+
 	public MultiBlockSet makeSet() {
 		return new MultiBlockSet(this);
 	}
@@ -155,21 +156,28 @@ public class MultiBlock {
 	public int getZSize() {
 		return Math.abs(minZ) + Math.abs(maxZ) + 1;
 	}
-	
+
 	public void updateLocationCache() {
 		locationCache.clear();
 		for(MultiBlockComponent comp: components) {
 			addComponentToLocationCache(comp);
 		}
 	}
-	
+
 	private void addComponentToLocationCache(MultiBlockComponent comp) {
 		ChunkCoordinates pos = comp.getRelativePosition();
-		locationCache.put(Arrays.asList(pos.posX, pos.posY, pos.posZ), comp);
+		locationCache.put(posHash(pos.posX, pos.posY, pos.posZ), comp);
 	}
-	
+
 	public MultiBlockComponent getComponentForLocation(int x, int y, int z) {
-		return locationCache.get(Arrays.asList(x, y, z));
+		return locationCache.get(posHash(x, y, z));
+	}
+
+	public static int posHash(int x, int y, int z) {
+		x += 0x200;
+		y += 0x200;
+		z += 0x200;
+		return (((x << 10) + y) << 10) + z;
 	}
 
 	public boolean matchAndRemove(World world, int x, int y, int z, boolean toRemove) {

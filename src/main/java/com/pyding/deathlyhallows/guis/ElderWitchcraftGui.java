@@ -12,6 +12,7 @@ import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.multiblocks.MultiBlock;
 import com.pyding.deathlyhallows.multiblocks.PageMultiBlock;
+import com.pyding.deathlyhallows.multiblocks.structures.DHStructures;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketElderBookPage;
 import com.pyding.deathlyhallows.rituals.ElderRiteRegistry;
@@ -42,13 +43,15 @@ public class ElderWitchcraftGui extends GuiScreen {
 			ICONS_TEXTURE = new ResourceLocation(DeathlyHallows.MODID, "textures/gui/book/icons.png");
 	private final EntityPlayer player;
 	private final ItemStack stack;
-	private int bookImageWidth = 192;
-	private final int bookImageHeight = 192, bookTotalPages;
+	private final int
+			guiWidth = 256,
+			guiHeight = 192,
+			bookTotalPages;
 	private int
 			updateCount,
-			currPage, 
-			visualizedPage = -1, 
-			recipePageCount, 
+			currPage,
+			visualizedPage = -1,
+			recipePageCount,
 			recipePageCurrent;
 	private final NBTTagList bookPages;
 	private GuiButtonNext
@@ -96,7 +99,7 @@ public class ElderWitchcraftGui extends GuiScreen {
 			tag = new NBTTagCompound();
 			stack.setTagCompound(tag);
 		}
-		
+
 		tag.setInteger("CurrentPage", currPage);
 		if(visualizedPage != -1) {
 			tag.setInteger("VisualizedPage", visualizedPage);
@@ -115,22 +118,23 @@ public class ElderWitchcraftGui extends GuiScreen {
 	public void initGui() {
 		buttonList.clear();
 		Keyboard.enableRepeatEvents(true);
-		buttonList.add(new GuiButton(0, width / 2 - 100, 4 + bookImageHeight, 200, 20, I18n.format("gui.done")));
+		buttonList.add(new GuiButton(0, width / 2 - 100, 4 + guiHeight, 200, 20, I18n.format("gui.done")));
+		
 		final int
-				x = (width - bookImageWidth) / 2,
-				y = 2;
-		buttonList.add(buttonNextPage = new GuiButtonNext(1, x + 180, y + 154, true));
-		buttonList.add(buttonPreviousPage = new GuiButtonNext(2, x + 110, y + 154, false));
-		buttonList.add(buttonNextIngredientPage = new GuiButtonNext(10, x + 58, y + 154, true));
-		buttonList.add(buttonPreviousIngredientPage = new GuiButtonNext(11, x - 12, y + 154, false));
-		buttonList.add(new GuiButtonJump(9, x + 214, y + 138, 69, 48, 248));
-		buttonList.add(new GuiButtonJump(8, x + 214, y + 118, 58, 40, 248));
-		buttonList.add(new GuiButtonJump(7, x + 214, y + 98, 47, 32, 248));
-		buttonList.add(new GuiButtonJump(6, x + 214, y + 78, 29, 24, 248));
-		buttonList.add(new GuiButtonJump(5, x + 214, y + 58, 23, 16, 248));
-		buttonList.add(new GuiButtonJump(4, x + 214, y + 38, 17, 8, 248));
-		buttonList.add(new GuiButtonJump(3, x + 214, y + 18, 2, 0, 248));
-		buttonList.add(new GuiButtonVisualize(12, x + 151, y + 156));
+				left = (width - guiWidth) / 2,
+				top = 2;
+		buttonList.add(buttonNextPage = new GuiButtonNext(1, left + 212, top + 154, true));
+		buttonList.add(buttonPreviousPage = new GuiButtonNext(2, left + 142, top + 154, false));
+		buttonList.add(buttonNextIngredientPage = new GuiButtonNext(10, left + 90, top + 154, true));
+		buttonList.add(buttonPreviousIngredientPage = new GuiButtonNext(11, left + 20, top + 154, false));
+		buttonList.add(new GuiButtonJump(9, left + 246, top + 138, 69, 48, 248));
+		buttonList.add(new GuiButtonJump(8, left + 246, top + 118, 58, 40, 248));
+		buttonList.add(new GuiButtonJump(7, left + 246, top + 98, 47, 32, 248));
+		buttonList.add(new GuiButtonJump(6, left + 246, top + 78, 29, 24, 248));
+		buttonList.add(new GuiButtonJump(5, left + 246, top + 58, 23, 16, 248));
+		buttonList.add(new GuiButtonJump(4, left + 246, top + 38, 17, 8, 248));
+		buttonList.add(new GuiButtonJump(3, left + 246, top + 18, 2, 0, 248));
+		buttonList.add(new GuiButtonVisualize(12, left + 183, top + 156));
 		((GuiButton)buttonList.get(12)).visible = false;
 	}
 
@@ -168,65 +172,67 @@ public class ElderWitchcraftGui extends GuiScreen {
 			recipePageCount = 1;
 			storeCurrentPage();
 		}
-		else switch(button.id) {
-			case 0: {
-				mc.displayGuiScreen(null);
-				break;
-			}
-		
-			case 1: {
-				if(currPage < bookTotalPages - 1) {
-					++currPage;
-					recipePageCurrent = 0;
-					recipePageCount = 1;
-					storeCurrentPage();
-				}
-				break;
-			}
-			case 2: {
-				if(currPage > 0) {
-					--currPage;
-					recipePageCurrent = 0;
-					recipePageCount = 1;
-					storeCurrentPage();
-				}
-				break;
-			}
-			case 10: {
-				if(recipePageCurrent < recipePageCount - 1) {
-					recipePageCurrent++;
-				}
-				break;
-			}
-			case 11: {
-				if(recipePageCurrent > 0) {
-					recipePageCurrent--;
-				}
-				break;
-			}
-			case 12: {
-				if(visualizedPage == currPage) {
-					visualizedPage = -1;
-					PageMultiBlock.resetVisualization();
+		else {
+			switch(button.id) {
+				case 0: {
+					mc.displayGuiScreen(null);
 					break;
 				}
-				if(pageMultiBlock != null && pageMultiBlock.set != null) {
-					visualizedPage = currPage;
-					pageMultiBlock.setVisualization();
+
+				case 1: {
+					if(currPage < bookTotalPages - 1) {
+						++currPage;
+						recipePageCurrent = 0;
+						recipePageCount = 1;
+						storeCurrentPage();
+					}
+					break;
 				}
-				break;
+				case 2: {
+					if(currPage > 0) {
+						--currPage;
+						recipePageCurrent = 0;
+						recipePageCount = 1;
+						storeCurrentPage();
+					}
+					break;
+				}
+				case 10: {
+					if(recipePageCurrent < recipePageCount - 1) {
+						recipePageCurrent++;
+					}
+					break;
+				}
+				case 11: {
+					if(recipePageCurrent > 0) {
+						recipePageCurrent--;
+					}
+					break;
+				}
+				case 12: {
+					if(visualizedPage == currPage) {
+						visualizedPage = -1;
+						PageMultiBlock.resetVisualization();
+						break;
+					}
+					if(pageMultiBlock != null && pageMultiBlock.set != null) {
+						visualizedPage = currPage;
+						pageMultiBlock.setVisualization();
+					}
+					break;
+				}
 			}
 		}
 		updateButtons();
 	}
-	
+
 	public void drawScreen(int x, int y, float partial) {
-		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.getTextureManager().bindTexture(ElderWitchcraftGui.DOUBLE_BOOK_TEXTURE);
-		bookImageWidth = 256;
-		final int k = (width - bookImageWidth) / 2;
-		final byte b0 = 2;
-		drawTexturedModalRect(k, b0, 0, 0, bookImageWidth, bookImageHeight);
+		final int 
+				left = (width - guiWidth) / 2,
+				top = 2;
+		drawTexturedModalRect(left, top, 0, 0, guiWidth, guiHeight);
 		final String s4 = StatCollector.translateToLocalFormatted("book.pageIndicator", currPage + 1, bookTotalPages);
 		String s5 = "";
 		MultiBlock mb = new MultiBlock();
@@ -246,20 +252,20 @@ public class ElderWitchcraftGui extends GuiScreen {
 			}
 		}
 		final int l = fontRendererObj.getStringWidth(s4);
-		fontRendererObj.drawString(s4, k - l + bookImageWidth - 16, b0 + 16, 0);
+		fontRendererObj.drawString(s4, left - l + guiWidth - 16, top + 16, 0);
 		@SuppressWarnings("unchecked")
 		List<String> list = fontRendererObj.listFormattedStringToWidth(s5, 98);
 		recipePageCount = list.size() / 15 + ((list.size() % 15) == 0 ? 0 : 1);
-		int initialHeight = b0 + 16;
+		int initialHeight = top + 16;
 		int ingredientPos = (recipePageCurrent) * 15;
 		for(int i = ingredientPos; i < Math.min((recipePageCurrent + 1) * 15, list.size()); i++) {
-			fontRendererObj.drawString(list.get(i), k + 20, initialHeight, 0, false);
+			fontRendererObj.drawString(list.get(i), left + 20, initialHeight, 0, false);
 			initialHeight += fontRendererObj.FONT_HEIGHT;
 		}
 
-		pageMultiBlock = new PageMultiBlock(mb.makeSet(), k + 116, b0 + 3, bookImageWidth / 2 + 20, bookImageHeight, updateCount);
+		pageMultiBlock = new PageMultiBlock(mb.makeSet(), left + guiWidth / 2, top, guiWidth / 2, guiHeight, updateCount);
 		pageMultiBlock.renderScreen(x, y);
-		((GuiButton)buttonList.get(12)).visible = !pageMultiBlock.mb.equals(new MultiBlock());
+		((GuiButton)buttonList.get(12)).visible = !pageMultiBlock.mb.equals(DHStructures.EMPTY.getMultiBlock());
 		updateButtons();
 		super.drawScreen(x, y, partial);
 	}

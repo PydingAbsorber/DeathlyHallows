@@ -6,9 +6,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
-import org.lwjgl.input.Keyboard;
 
 import java.util.List;
 
@@ -33,4 +31,5 @@ public class ItemBag extends ItemBase {
 		}
 		return super.onItemRightClick(stack, world, p);
 	}
+	
 }

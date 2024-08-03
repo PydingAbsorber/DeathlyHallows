@@ -6,6 +6,12 @@ import com.pyding.deathlyhallows.utils.IMultiBlockHandler;
 
 public class DHStructures {
 	
+	public static final IMultiBlockHandler EMPTY = new StructureBase(){
+		@Override
+		protected void fillStructure() {
+		}
+	};
+	
 	public static IMultiBlockHandler
 			basik,
 			iceCastle,
@@ -15,9 +21,11 @@ public class DHStructures {
 			mending,
 			hunt,
 			purify,
-			coven;
+			coven,
+			test;
 	
 	public static void init() {
+		test = new StructureExtremeCube();
 		sonata = new StructureSonata();
 		iceCastle = new StructureIceCastle();
 		fishLake = new StructureFishLake();

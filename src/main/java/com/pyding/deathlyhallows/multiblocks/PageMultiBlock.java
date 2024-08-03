@@ -21,7 +21,7 @@ import java.util.List;
 import static org.lwjgl.opengl.GL11.*;
 
 public class PageMultiBlock {
-	
+
 	public int left, top, width, height, zlevel = 100;
 	public MultiBlockSet set;
 	public MultiBlock mb;
@@ -47,23 +47,19 @@ public class PageMultiBlock {
 		glColor4f(1F, 1F, 1F, 1F);
 		glDisable(GL_BLEND);
 		glEnable(GL_ALPHA_TEST);
-
-		final float maxX = 90, maxY = 60;
 		glPushMatrix();
-		glTranslatef(left + width / 2, top + 90, zlevel + 100F);
-
-		float diag = (float)Math.sqrt(mb.getXSize() * mb.getXSize() + mb.getZSize() * mb.getZSize());
-		float height = mb.getYSize();
-		float scaleX = maxX / diag;
-		float scaleY = maxY / height;
-		float scale = -Math.min(scaleY, scaleX) * 1.5f;
+		glTranslatef(left - 2 + width / 2, top + height / 2, zlevel + 100F);
+		float
+				h = mb.getYSize(),
+				w = h < 2 ? (Math.max(Math.abs(mb.getXSize()), Math.abs(mb.getZSize()))) : (float)Math.sqrt(mb.getXSize() * mb.getXSize() + mb.getZSize() * mb.getZSize());
+		float scale = -0.8F * Math.min(width / w, this.height / h);
 		glScalef(scale, scale, scale);
-		if(set.getForIndex(0).maxY <= 1) {
-			glRotatef(-60F, 1, 0, 0);
+		if(h < 2) {
+			glRotatef(-75F, 1, 0, 0);
 			glRotatef(0, 0, 1, 0);
 		}
 		else {
-			glRotatef(-20F, 1, 0, 0);
+			glRotatef(-25F, 1, 0, 0);
 			glRotatef(ticksElapsed, 0, 1, 0);
 		}
 		DHMultiBlockRenderEvents.renderMultiBlockOnPage(mb);
@@ -193,5 +189,5 @@ public class PageMultiBlock {
 		glEnable(GL_ALPHA_TEST);
 		glEnable(GL_TEXTURE_2D);
 	}
-	
+
 }

@@ -1,6 +1,7 @@
 package com.pyding.deathlyhallows.rituals.rites;
 
 import com.emoniph.witchery.ritual.RiteRegistry;
+import com.emoniph.witchery.ritual.RitualStep;
 import com.emoniph.witchery.util.Const;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
@@ -14,7 +15,7 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 public class ElderSacrificeLiving extends ElderSacrifice {
 	final Class<? extends EntityLiving> entityLivingClass;
@@ -28,7 +29,6 @@ public class ElderSacrificeLiving extends ElderSacrifice {
 		if(s == null) {
 			s = "generic";
 		}
-
 		sb.append("§8>§0 ");
 		sb.append(StatCollector.translateToLocal("entity." + s + ".name"));
 		sb.append(Const.BOOK_NEWLINE);
@@ -38,11 +38,12 @@ public class ElderSacrificeLiving extends ElderSacrifice {
 		return true;
 	}
 
-	public void addSteps(ArrayList<ElderRitualStep> steps, AxisAlignedBB bounds, int maxDistance) {
+	public void addSteps(ArrayList<RitualStep> steps, AxisAlignedBB bounds, int maxDistance) {
 		steps.add(new ElderSacrificeLiving.StepSacrificeLiving(this, bounds, maxDistance));
 	}
 
 	private static class StepSacrificeLiving extends ElderRitualStep {
+		private static final int RADIUS = 16;
 		private final ElderSacrificeLiving sacrifice;
 		private final AxisAlignedBB bounds;
 		private final int maxDistance;
@@ -54,34 +55,30 @@ public class ElderSacrificeLiving extends ElderSacrifice {
 			this.maxDistance = maxDistance + 1;
 		}
 
-
 		@Override
 		public Result elderProcess(World worldObj, int xCoord, int yCoord, int zCoord, long ticks, BlockElderRitual.TileEntityCircle.ActivatedElderRitual ritual) {
 			if(ticks % 20L != 0L) {
 				return Result.STARTING;
 			}
-			else {
-				Iterator i$ = worldObj.getEntitiesWithinAABB(EntityLiving.class, this.bounds).iterator();
 
-				EntityLiving entity;
-				do {
-					if(!i$.hasNext()) {
-						RiteRegistry.RiteError("witchery.rite.missinglivingsacrifice", ritual.getInitiatingPlayerName(), worldObj);
-						return Result.ABORTED_REFUND;
-					}
-
-					Object obj = i$.next();
-					entity = (EntityLiving)obj;
+			@SuppressWarnings("unchecked")
+			List<EntityLiving> entities = (List<EntityLiving>)worldObj.getEntitiesWithinAABB(sacrifice.entityLivingClass, bounds);
+			if(entities == null || entities.isEmpty()) {
+				RiteRegistry.RiteError("witchery.rite.missinglivingsacrifice", ritual.getInitiatingPlayerName(), worldObj);
+				return Result.ABORTED_REFUND;
+			}
+			for(EntityLiving e: entities) {
+				if(ElderSacrifice.distance(xCoord, yCoord, zCoord, e.posX, e.posY, e.posZ) > maxDistance) {
+					continue;
 				}
-				while(!this.sacrifice.entityLivingClass.isInstance(entity) || !(ElderSacrifice.distance(xCoord, yCoord, zCoord, entity.posX, entity.posY, entity.posZ) <= (double)this.maxDistance));
-
 				if(!worldObj.isRemote) {
-					entity.setDead();
-					ParticleEffect.PORTAL.send(SoundEffect.RANDOM_POP, entity, 1.0, 2.0, 16);
+					e.setDead();
+					ParticleEffect.PORTAL.send(SoundEffect.RANDOM_POP, e, 1.0, 2.0, RADIUS);
 				}
-
 				return Result.COMPLETED;
 			}
+			RiteRegistry.RiteError("witchery.rite.missinglivingsacrifice", ritual.getInitiatingPlayerName(), worldObj);
+			return Result.ABORTED_REFUND;
 		}
 	}
 }

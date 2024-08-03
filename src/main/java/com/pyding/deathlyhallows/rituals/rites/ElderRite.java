@@ -1,5 +1,6 @@
 package com.pyding.deathlyhallows.rituals.rites;
 
+import com.emoniph.witchery.ritual.RitualStep;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -8,12 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ElderRite {
-	protected boolean canRelocate = false;
-
+	
 	public ElderRite() {
 	}
 
-	public abstract void addSteps(ArrayList<ElderRitualStep> var1, int var2);
+	public abstract void addSteps(ArrayList<RitualStep> steps, int idk);
 
 	public ArrayList<EntityItem> getItemsInRadius(World world, int x, int y, int z, float radius) {
 		float RADIUS_SQ = radius * radius;
@@ -32,8 +32,5 @@ public abstract class ElderRite {
 
 		return resultList;
 	}
-
-	public boolean relocatable() {
-		return this.canRelocate;
-	}
+	
 }
