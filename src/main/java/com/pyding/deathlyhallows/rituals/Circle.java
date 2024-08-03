@@ -94,7 +94,7 @@ public class Circle extends BlockList {
 		return (this.requiredGlyphs + 2) / 6 + 1;
 	}
 
-	public MultiBlock getMultiblock() {
+	public MultiBlock getMultiBlock() {
 		MultiBlock mb = new MultiBlock();
 		mb.addComponent(0, 0, 0, Witchery.Blocks.CIRCLE, 0);
 		int circleSize = getCircleSize();

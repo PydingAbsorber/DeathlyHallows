@@ -1,19 +1,20 @@
 package com.pyding.deathlyhallows.rituals;
 
 import com.pyding.deathlyhallows.multiblocks.MultiBlock;
+import com.pyding.deathlyhallows.utils.IMultiBlockHandler;
 import cpw.mods.fml.common.registry.GameData;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class BlockList {
+public class BlockList implements IMultiBlockHandler {
 	private final MultiBlock mb;
 
 	public BlockList() {
 		mb = new MultiBlock();
 	}
 	
-	public BlockList(int[] offsets, String[][][] blocks) {
+	public BlockList(int[] center, String[][][] blocks) {
 		this();
 		for(int y = 0; y < blocks.length; y++) {
 			for(int x = 0; x < blocks[y].length; x++) {
@@ -33,7 +34,7 @@ public class BlockList {
 						try {
 							meta = Integer.parseInt(spl[1]);
 						}
-						catch(Exception e) {
+						catch(Exception ignored) {
 
 						}
 					}
@@ -41,19 +42,21 @@ public class BlockList {
 						try {
 							nbt = (NBTTagCompound)JsonToNBT.func_150315_a(spl[2].replace("\\\"", "\""));
 						}
-						catch(Exception e) {
+						catch(Exception ignored) {
 
 						}
 					}
 					if(block != null) {
-						mb.addComponent(x + offsets[0], y + offsets[1], z + offsets[2], block, meta, nbt);
+						mb.addComponent(x - center[0], y - center[1], z - center[2], block, meta, nbt);
 					}
 				}
 			}
 		}
 	}
 
-	public MultiBlock getMultiblock() {
+	@Override
+	public MultiBlock getMultiBlock() {
 		return mb;
 	}
+	
 }

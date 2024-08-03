@@ -14,8 +14,8 @@ import com.pyding.deathlyhallows.multiblocks.MultiBlock;
 import com.pyding.deathlyhallows.multiblocks.PageMultiBlock;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketElderBookPage;
-import com.pyding.deathlyhallows.rituals.BlockList;
 import com.pyding.deathlyhallows.rituals.ElderRiteRegistry;
+import com.pyding.deathlyhallows.utils.IMultiBlockHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
@@ -236,9 +236,9 @@ public class ElderWitchcraftGui extends GuiScreen {
 			if(ritualID > 0) {
 				ElderRiteRegistry.Ritual ritual = ElderRiteRegistry.instance().getRitual(ritualID);
 				s5 = ritual.getDescription();
-				BlockList[] circles = ritual.circles;
-				for(BlockList c: circles) {
-					mb.mergeMultiBlocks(c.getMultiblock());
+				IMultiBlockHandler[] circles = ritual.circles;
+				for(IMultiBlockHandler c: circles) {
+					mb.mergeMultiBlocks(c.getMultiBlock());
 				}
 			}
 			else {
