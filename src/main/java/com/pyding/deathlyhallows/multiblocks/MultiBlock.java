@@ -12,11 +12,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- This class describes a Mutiblock object. It's used to display a
- multiblock in the lexicon and to show the player in a ghost-like
- look in the world.
- */
 public class MultiBlock {
 
 	public List<MultiBlockComponent> components = new ArrayList<>();
@@ -27,12 +22,12 @@ public class MultiBlock {
 	public HashMap<List<Integer>, MultiBlockComponent> locationCache = new HashMap<List<Integer>, MultiBlockComponent>();
 
 	/**
-	 Adds a multiblock component to this multiblock. The component's x y z
+	 Adds a MultiBlock component to this MultiBlock. The component's x y z
 	 coords should be pivoted to the center of the structure.
 	 */
 	public void addComponent(MultiBlockComponent component) {
 		if(getComponentForLocation(component.relPos.posX, component.relPos.posY, component.relPos.posZ) != null) {
-			throw new IllegalArgumentException("Location in multiblock already occupied");
+			throw new IllegalArgumentException("Location in MultiBlock already occupied");
 		}
 		components.add(component);
 		changeAxisForNewComponent(component.relPos.posX, component.relPos.posY, component.relPos.posZ);
@@ -40,23 +35,15 @@ public class MultiBlock {
 		addComponentToLocationCache(component);
 	}
 
-	/**
-	 Constructs and adds a multiblock component to this multiblock. The x y z
-	 coords should be pivoted to the center of the structure.
-	 */
 	public void addComponent(int x, int y, int z, Block block, int meta) {
 		addComponent(new MultiBlockComponent(new ChunkCoordinates(x, y, z), block, meta));
 	}
-
-	/**
-	 Constructs and adds a multiblock component to this multiblock. The x y z
-	 coords should be pivoted to the center of the structure.
-	 */
+	
 	public void addComponent(int x, int y, int z, Block block, int meta, NBTTagCompound tag) {
 		addComponent(new MultiBlockComponent(new ChunkCoordinates(x, y, z), block, meta, tag));
 	}
 
-	public void mergeMultiblocks(MultiBlock mb) {
+	public void mergeMultiBlocks(MultiBlock mb) {
 		for(MultiBlockComponent component: mb.components) {
 			try {
 				addComponent(component);
@@ -124,10 +111,6 @@ public class MultiBlock {
 		return components;
 	}
 
-	/**
-	 Rotates this multiblock by the angle passed in. For the best results, use
-	 only multiples of pi/2.
-	 */
 	public void rotate(double angle) {
 		for(MultiBlockComponent comp: getComponents()) {
 			comp.rotate(angle);
@@ -144,11 +127,6 @@ public class MultiBlock {
 		return mb;
 	}
 
-	/**
-	 Creates a length 4 array of all the rotations multiple of pi/2 required
-	 to render this multiblock in the world relevant to the 4 cardinal
-	 orientations.
-	 */
 	public MultiBlock[] createRotations() {
 		MultiBlock[] blocks = new MultiBlock[4];
 		blocks[0] = this;
@@ -161,11 +139,7 @@ public class MultiBlock {
 
 		return blocks;
 	}
-
-	/**
-	 Makes a MultiblockSet from this Multiblock and its rotations using
-	 createRotations().
-	 */
+	
 	public MultiBlockSet makeSet() {
 		return new MultiBlockSet(this);
 	}
@@ -181,28 +155,19 @@ public class MultiBlock {
 	public int getZSize() {
 		return Math.abs(minZ) + Math.abs(maxZ) + 1;
 	}
-
-	/**
-	 Rebuilds the location cache
-	 */
+	
 	public void updateLocationCache() {
 		locationCache.clear();
 		for(MultiBlockComponent comp: components) {
 			addComponentToLocationCache(comp);
 		}
 	}
-
-	/**
-	 Adds a single component to the location cache
-	 */
+	
 	private void addComponentToLocationCache(MultiBlockComponent comp) {
 		ChunkCoordinates pos = comp.getRelativePosition();
 		locationCache.put(Arrays.asList(pos.posX, pos.posY, pos.posZ), comp);
 	}
-
-	/**
-	 Gets the component for a given location
-	 */
+	
 	public MultiBlockComponent getComponentForLocation(int x, int y, int z) {
 		return locationCache.get(Arrays.asList(x, y, z));
 	}
