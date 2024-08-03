@@ -69,8 +69,7 @@ public class ElderSacrificePower extends ElderSacrifice {
 			if(PowerSources.instance() == null) {
 				return null;
 			}
-			List<PowerSources.RelativePowerSource> sources = PowerSources.instance()
-																		 .get(world, new Coord(posX, posY, posZ), POWER_SOURCE_RADIUS);
+			List<PowerSources.RelativePowerSource> sources = PowerSources.instance().get(world, new Coord(posX, posY, posZ), POWER_SOURCE_RADIUS);
 			return sources != null && sources.size() > 0 ? sources.get(0).source() : null;
 		}
 	}

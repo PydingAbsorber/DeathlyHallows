@@ -7,6 +7,7 @@ import com.emoniph.witchery.entity.EntityBanshee;
 import com.emoniph.witchery.entity.EntityNightmare;
 import com.emoniph.witchery.entity.EntityPoltergeist;
 import com.emoniph.witchery.entity.EntitySpirit;
+import com.emoniph.witchery.ritual.RitualStep;
 import com.emoniph.witchery.util.Coord;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
@@ -36,7 +37,7 @@ public class SummonSpiritRite extends ElderRite {
 		this.ticksToLive = ticksToLive;
 	}
 
-	public void addSteps(ArrayList<ElderRitualStep> steps, int intialStage) {
+	public void addSteps(ArrayList<RitualStep> steps, int intialStage) {
 		steps.add(new StepVanish(this, intialStage));
 	}
 
@@ -53,7 +54,7 @@ public class SummonSpiritRite extends ElderRite {
 		}
 
 		public int getCurrentStage() {
-			return this.ticksSoFar;
+			return ticksSoFar;
 		}
 
 		@Override
@@ -64,27 +65,27 @@ public class SummonSpiritRite extends ElderRite {
 			if(world.isRemote) {
 				return Result.UPKEEP;
 			}
-			if(this.rite.upkeepPowerCost > 0.0F) {
+			if(rite.upkeepPowerCost > 0.0F) {
 				IPowerSource powerSource = this.getPowerSource(world, posX, posY, posZ);
 				if(powerSource == null) {
 					return Result.ABORTED;
 				}
 
-				this.powerSourceCoord = powerSource.getLocation();
-				if(!powerSource.consumePower(this.rite.upkeepPowerCost)) {
+				powerSourceCoord = powerSource.getLocation();
+				if(!powerSource.consumePower(rite.upkeepPowerCost)) {
 					return Result.ABORTED;
 				}
 			}
 
-			if(this.rite.ticksToLive > 0 && ticks % 20 == 0 && ++this.ticksSoFar >= this.rite.ticksToLive) {
+			if(rite.ticksToLive > 0 && ++ticksSoFar >= rite.ticksToLive) {
 				return Result.COMPLETED;
 			}
 
-			int r = this.rite.radius;
+			int r = rite.radius;
 			AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(posX - r, posY, posZ - r, posX + r, posY + 1, posZ + r);
-
-			for(Object obj: world.getEntitiesWithinAABB(EntityPlayer.class, bounds)) {
-				EntityPlayer player = (EntityPlayer)obj;
+			@SuppressWarnings("unchecked")
+			List<EntityPlayer> players = (List<EntityPlayer>)world.getEntitiesWithinAABB(EntityPlayer.class, bounds);
+			for(EntityPlayer player: players) {
 				if(!(Coord.distance(player.posX, player.posY, player.posZ, posX, posY, posZ) <= (double)r)) {
 					continue;
 				}
@@ -95,7 +96,8 @@ public class SummonSpiritRite extends ElderRite {
 													 .get(world.rand.nextInt(DHUtils.getEntitiesNames().size() - 1));
 					int tries = 0;
 					while(DHUtils.contains(DHConfig.sonatRitual, randomEntityName) && tries <= 1000) {
-						randomEntityName = DHUtils.getEntitiesNames().get(world.rand.nextInt(DHUtils.getEntitiesNames().size() - 1));
+						randomEntityName = DHUtils.getEntitiesNames()
+												  .get(world.rand.nextInt(DHUtils.getEntitiesNames().size() - 1));
 						tries++;
 					}
 					if(tries <= 1000) {
@@ -140,19 +142,23 @@ public class SummonSpiritRite extends ElderRite {
 				return this.findNewPowerSource(world, posX, posY, posZ);
 			}
 			TileEntity tileEntity = this.powerSourceCoord.getBlockTileEntity(world);
-			if(!(tileEntity instanceof BlockAltar.TileEntityAltar)) {
-				return this.findNewPowerSource(world, posX, posY, posZ);
-			}
-			else {
+			if(tileEntity instanceof BlockAltar.TileEntityAltar) {
 				BlockAltar.TileEntityAltar altarTileEntity = (BlockAltar.TileEntityAltar)tileEntity;
 				return !altarTileEntity.isValid() ? this.findNewPowerSource(world, posX, posY, posZ) : altarTileEntity;
 			}
+
+			return this.findNewPowerSource(world, posX, posY, posZ);
+			
 		}
 
 		private IPowerSource findNewPowerSource(World world, int posX, int posY, int posZ) {
-			List<PowerSources.RelativePowerSource> sources = PowerSources.instance() != null ? PowerSources.instance().get(world, new Coord(posX, posY, posZ), POWER_SOURCE_RADIUS) : null;
+			if(PowerSources.instance() == null) {
+				return null;
+			}
+			List<PowerSources.RelativePowerSource> sources = PowerSources.instance().get(world, new Coord(posX, posY, posZ), POWER_SOURCE_RADIUS);
 			return sources != null && sources.size() > 0 ? sources.get(0).source() : null;
 		}
+
 	}
-	
+
 }
