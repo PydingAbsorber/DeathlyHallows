@@ -223,12 +223,13 @@ public final class DHEvents {
 			EntityLivingBase e = event.entityLiving;
 			if(e.getEntityData().getLong("DHStrike") > System.currentTimeMillis() && e instanceof EntityPlayer){
 				Random random = new Random();
+				DeathlyProperties props = DeathlyProperties.get((EntityPlayer)e);
 				int numba = random.nextInt(15);
 				if(random.nextDouble() < 0.5)
 					numba *= -1;
 				List<EntityLivingBase> list = DHUtils.getEntitiesAt(EntityLivingBase.class,e,e.posX+numba, e.posY+numba, e.posZ+numba,3);
 				for(EntityLivingBase entity: list){
-					entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer)e),1000);
+					entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer)e),50*(1+props.getElfLevel()));
 				}
 				EntityLightningBolt bolt = new EntityLightningBolt(e.worldObj, e.posX+numba, e.posY+numba, e.posZ+numba);
 				e.worldObj.addWeatherEffect(bolt);
@@ -517,7 +518,7 @@ public final class DHEvents {
 	
 	@SubscribeEvent
 	public void oreDrop(BlockEvent.HarvestDropsEvent event){
-		if (!event.world.isRemote && !event.isSilkTouching && event.block != null && !event.block.hasTileEntity(event.blockMetadata) && event.drops.size() > 0) {
+		if (!event.world.isRemote && !event.isSilkTouching && event.block != null && !event.block.hasTileEntity(event.blockMetadata) && event.drops.size() > 0 && event.harvester != null) {
 			EntityPlayer player = event.harvester;
 			DeathlyProperties props = DeathlyProperties.get(player);
 			int nice = 0;
