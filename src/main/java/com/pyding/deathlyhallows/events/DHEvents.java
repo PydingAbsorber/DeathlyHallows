@@ -770,7 +770,7 @@ public final class DHEvents {
 		dropNice(e);
 	}
 	
-	private void dropNice(LivingDeathEvent e) throws NoSuchMethodException {
+	private void dropNice(LivingDeathEvent e) {
 		if(e.source == null || e.source.getEntity() == null || !(e.source.getEntity() instanceof EntityPlayer) || !(e.source.getEntity() instanceof EntityLivingBase))
 			return;
 		EntityPlayer player = (EntityPlayer)e.source.getEntity();
