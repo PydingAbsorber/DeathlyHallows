@@ -42,12 +42,35 @@ import java.util.Random;
 import java.util.Set;
 
 public class DHUtils {
+	
+	private static class UtilsRandom {
+		private static final Random random = new Random();
+	}
+	/**
+	 Gets random int from min inclusive to max inclusive
+	 * @param min inclusive lower bound
+	 * @param max inclusive upper bound
+	 * @return random integer in range [min;max]
+	 */
+	public static int getRandomInt(int min, int max) {
+		return min + getRandomInt(max - min + 1);
+	}
+
+	/**
+	 Gets random int from 0 inclusive to argument exclusive
+	 * @param max exclusive upper bound
+	 * @return random integer in range [0;max)
+	 */
+	public static int getRandomInt(int max) {
+		return UtilsRandom.random.nextInt(max);
+	}
 
 	@SuppressWarnings("unchecked")
 	public static <T extends Entity> List<T> getEntitiesAround(Class<T> clazz, Entity entity, float radius) {
 		return entity.worldObj.getEntitiesWithinAABB(clazz, AxisAlignedBB.getBoundingBox(entity.posX - radius, entity.posY - radius, entity.posZ - radius, entity.posX + radius, entity.posY + radius, entity.posZ + radius));
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T extends Entity> List<T> getEntitiesAt(Class<T> clazz, Entity entity,double x, double y, double z, float radius) {
 		return entity.worldObj.getEntitiesWithinAABB(clazz, AxisAlignedBB.getBoundingBox(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius));
 	}

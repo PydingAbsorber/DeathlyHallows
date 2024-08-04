@@ -219,19 +219,20 @@ public final class DHEvents {
 		if(event.entity.ticksExisted % 20 == 0) {
 			updateAvengerLiving(event.entityLiving);
 		}
-		if(event.entity.ticksExisted % 4 == 0){
+		if(event.entity.ticksExisted % 4 == 0) {
 			EntityLivingBase e = event.entityLiving;
-			if(e.getEntityData().getLong("DHStrike") > System.currentTimeMillis() && e instanceof EntityPlayer){
+			if(e.getEntityData().getLong("DHStrike") > System.currentTimeMillis() && e instanceof EntityPlayer) {
 				Random random = new Random();
 				DeathlyProperties props = DeathlyProperties.get((EntityPlayer)e);
 				int numba = random.nextInt(15);
-				if(random.nextDouble() < 0.5)
+				if(random.nextDouble() < 0.5) {
 					numba *= -1;
-				List<EntityLivingBase> list = DHUtils.getEntitiesAt(EntityLivingBase.class,e,e.posX+numba, e.posY+numba, e.posZ+numba,3);
-				for(EntityLivingBase entity: list){
-					entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer)e),50*(1+props.getElfLevel()));
 				}
-				EntityLightningBolt bolt = new EntityLightningBolt(e.worldObj, e.posX+numba, e.posY+numba, e.posZ+numba);
+				List<EntityLivingBase> list = DHUtils.getEntitiesAt(EntityLivingBase.class, e, e.posX + numba, e.posY + numba, e.posZ + numba, 3);
+				for(EntityLivingBase entity: list) {
+					entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer)e), 50 * (1 + props.getElfLevel()));
+				}
+				EntityLightningBolt bolt = new EntityLightningBolt(e.worldObj, e.posX + numba, e.posY + numba, e.posZ + numba);
 				e.worldObj.addWeatherEffect(bolt);
 			}
 		}
@@ -355,7 +356,7 @@ public final class DHEvents {
 		}
 		if(Math.abs(p.posX - props.getX()) >= 25 || Math.abs(p.posY - props.getY()) >= 25 || Math.abs(p.posZ - props.getZ()) >= 25) {
 			p.setPositionAndUpdate(props.getX(), props.getY(), props.getZ());
-			p.worldObj.playSoundAtEntity(p, "dh:spell.anima" + (Math.random() > 0.5 ? 1 : 0), 1F, 1F);
+			p.worldObj.playSoundAtEntity(p, "dh:spell.anima" + DHUtils.getRandomInt(2), 1F, 1F);
 			ParticleEffect.PORTAL.send(SoundEffect.MOB_ENDERMEN_PORTAL, p, 6.0D, 6.0D, 16);
 		}
 		if(p.dimension != props.getDimension()) {
@@ -511,34 +512,37 @@ public final class DHEvents {
 		if(e.entityLiving.worldObj.isRemote || e.isCanceled() || !(e.entityLiving instanceof EntityPlayer)) {
 			return;
 		}
-		if(e.entityLiving.getEntityData().getBoolean("mantleActive") && (e.source.getEntity() != null || e.source == DamageSource.inWall)) {
+		if(e.entityLiving.getEntityData()
+						 .getBoolean("mantleActive") && (e.source.getEntity() != null || e.source == DamageSource.inWall)) {
 			e.setCanceled(true);
 		}
 	}
-	
+
 	@SubscribeEvent
-	public void oreDrop(BlockEvent.HarvestDropsEvent event){
-		if (!event.world.isRemote && !event.isSilkTouching && event.block != null && !event.block.hasTileEntity(event.blockMetadata) && event.drops.size() > 0 && event.harvester != null) {
+	public void oreDrop(BlockEvent.HarvestDropsEvent event) {
+		if(!event.world.isRemote && !event.isSilkTouching && event.block != null && !event.block.hasTileEntity(event.blockMetadata) && event.drops.size() > 0 && event.harvester != null) {
 			EntityPlayer player = event.harvester;
 			DeathlyProperties props = DeathlyProperties.get(player);
 			int nice = 0;
 			double chance = props.getNiceCream();
 			Random random = new Random();
-			if(random.nextDouble() <= chance/100)
+			if(random.nextDouble() <= chance / 100) {
 				nice += 2;
-			while(chance > 100){
+			}
+			while(chance > 100) {
 				chance -= 100;
 				nice += 2;
 			}
-			if(nice == 0)
+			if(nice == 0) {
 				return;
-			props.setNiceCream(props.getNiceCream()-1);
+			}
+			props.setNiceCream(props.getNiceCream() - 1);
 			ArrayList<ItemStack> drops = event.block.getDrops(event.world, event.x, event.y, event.z, event.blockMetadata, event.fortuneLevel + nice);
 			event.drops.clear();
 			event.drops.addAll(drops);
 		}
 	}
-	
+
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void highestHit(LivingHurtEvent e) {
@@ -547,10 +551,11 @@ public final class DHEvents {
 			DeathlyProperties props = DeathlyProperties.get(p);
 			if(props.getDamageLog()) {
 				if(e.source.getEntity() != null) {
-					ChatUtil.sendPlain(p,"Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName() + " Dealer: " + e.source.getEntity().getCommandSenderName());
+					ChatUtil.sendPlain(p, "Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName() + " Dealer: " + e.source.getEntity()
+																																							.getCommandSenderName());
 				}
 				else {
-					ChatUtil.sendPlain(p,"Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName());
+					ChatUtil.sendPlain(p, "Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName());
 				}
 				ChatUtil.sendPlain(p, "Amount: §5" + e.ammount);
 			}
@@ -559,7 +564,8 @@ public final class DHEvents {
 			EntityPlayer ps = (EntityPlayer)e.source.getEntity();
 			DeathlyProperties props = DeathlyProperties.get(ps);
 			if(props.getDamageLog()) {
-				ChatUtil.sendPlain(ps, "Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName() + " Dealer: " + e.source.getEntity().getCommandSenderName());
+				ChatUtil.sendPlain(ps, "Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName() + " Dealer: " + e.source.getEntity()
+																																						 .getCommandSenderName());
 				ChatUtil.sendPlain(ps, "Amount: §5" + e.ammount);
 			}
 		}
@@ -729,17 +735,22 @@ public final class DHEvents {
 			p.inventory.addItemStackToInventory(new ItemStack(DHItems.invisibilityMantle));
 		}
 		if(message.contains("4")) {
-			double random = Math.random();
-			if(random < 0.33) {
-				p.inventory.addItemStackToInventory(new ItemStack(DHItems.elderWand));
-			}
-			else if(random < 0.66) {
-				p.inventory.addItemStackToInventory(new ItemStack(DHItems.resurrectionStone));
-			}
-			else {
-				p.inventory.addItemStackToInventory(new ItemStack(DHItems.invisibilityMantle));
-			}
+			p.inventory.addItemStackToInventory(getRandomDeathlyHallow());
 			props.setChoice(false);
+		}
+	}
+
+	private static ItemStack getRandomDeathlyHallow() {
+		switch(DHUtils.getRandomInt(3)) {
+			default:
+			case 0:
+				return new ItemStack(DHItems.elderWand);
+			
+			case 1:
+				return new ItemStack(DHItems.resurrectionStone);
+
+			case 2:
+				return new ItemStack(DHItems.invisibilityMantle);
 		}
 	}
 
@@ -769,33 +780,39 @@ public final class DHEvents {
 		dropAnimalsSpecialLoot(e);
 		dropNice(e);
 	}
-	
+
 	private void dropNice(LivingDeathEvent e) {
-		if(e.source == null || e.source.getEntity() == null || !(e.source.getEntity() instanceof EntityPlayer) || !(e.source.getEntity() instanceof EntityLivingBase))
+		if(e.source == null || e.source.getEntity() == null || !(e.source.getEntity() instanceof EntityPlayer) || !(e.source.getEntity() instanceof EntityLivingBase)) {
 			return;
+		}
 		EntityPlayer player = (EntityPlayer)e.source.getEntity();
 		DeathlyProperties props = DeathlyProperties.get(player);
 		int nice = 0;
 		double chance = props.getNiceCream();
 		Random random = new Random();
-		if(random.nextDouble() <= chance/100)
+		if(random.nextDouble() <= chance / 100) {
 			nice += 4;
-		while(chance > 100){
+		}
+		while(chance > 100) {
 			chance -= 100;
 			nice += 10;
 		}
-		if(nice == 0)
+		if(nice == 0) {
 			return;
-		props.setNiceCream(props.getNiceCream()-1);
+		}
+		props.setNiceCream(props.getNiceCream() - 1);
 		try {
 			Method dropRareDropMethod = e.entityLiving.getClass().getDeclaredMethod("dropRareDrop", int.class);
 			dropRareDropMethod.setAccessible(true);
-			Method dropFewItemsMethod = e.entityLiving.getClass().getDeclaredMethod("dropFewItems", boolean.class, int.class);
+			Method dropFewItemsMethod = e.entityLiving.getClass()
+													  .getDeclaredMethod("dropFewItems", boolean.class, int.class);
 			dropFewItemsMethod.setAccessible(true);
-			if(random.nextDouble() < (double)nice/100+0.1)
-				dropRareDropMethod.invoke(e.entityLiving,nice);
-			dropFewItemsMethod.invoke(e.entityLiving,true,nice);
-		} catch (Exception exception) {
+			if(random.nextDouble() < (double)nice / 100 + 0.1) {
+				dropRareDropMethod.invoke(e.entityLiving, nice);
+			}
+			dropFewItemsMethod.invoke(e.entityLiving, true, nice);
+		}
+		catch(Exception exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -827,7 +844,7 @@ public final class DHEvents {
 		p.setHealth(p.getMaxHealth());
 		attributes.clear();
 		if(!p.worldObj.isRemote) {
-			p.worldObj.playSoundAtEntity(p, "dh:spell.death" + (Math.random() > 0.5 ? 1 : 2), 1F, 1F);
+			p.worldObj.playSoundAtEntity(p, "dh:spell.death" + DHUtils.getRandomInt(1, 2), 1F, 1F);
 		}
 		return true;
 	}
@@ -916,8 +933,8 @@ public final class DHEvents {
 				|| e.world.isRemote || p.worldObj.isRemote
 				// Если моя руда не содержит в ключе локализации слово ore? Мне нахер пойти тогда?)
 				|| !DHUtils.hasDeathlyHallow(p) || (!e.block.getUnlocalizedName()
-																 .toLowerCase()
-																 .contains("ore")
+															.toLowerCase()
+															.contains("ore")
 		)
 		) {
 			return;

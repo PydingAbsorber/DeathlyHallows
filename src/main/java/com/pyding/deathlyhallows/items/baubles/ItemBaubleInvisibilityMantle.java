@@ -1,6 +1,7 @@
 package com.pyding.deathlyhallows.items.baubles;
 
 import baubles.api.BaubleType;
+import com.pyding.deathlyhallows.utils.DHUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.EntityLivingBase;
@@ -32,7 +33,7 @@ public class ItemBaubleInvisibilityMantle extends ItemBaubleBase {
 		if(tag.getInteger("mantlecd") == 0) {
 			tag.setInteger("mantlecd", 1200);
 			tag.setBoolean("mantleActive", true);
-			world.playSoundAtEntity(e, "dh:mantle." + (Math.random() > 0.5 ? (Math.random() > 0.5 ? 1 : 2) : 3), 1F, 1F);
+			world.playSoundAtEntity(e, "dh:mantle." + DHUtils.getRandomInt(1, 3), 1F, 1F);
 		}
 		if(tag.getBoolean("mantleActive")) {
 			float yaw = (float)Math.PI / 180F * p.rotationYaw;
