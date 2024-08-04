@@ -112,7 +112,7 @@ public final class DHRituals {
 				new Circle(0, 28, 0),
 				new Circle(0, 40, 0)
 		);
-		if(DHConfig.despairSonata) {
+		if(DHConfig.despairSonataCost > -1) {
 			ElderRiteRegistry.addRecipe(id++, 5,
 					"dh.rite.sonata",
 					new SummonSpiritRite(8, 40.0f, 0),
@@ -132,7 +132,7 @@ public final class DHRituals {
 					DHStructures.sonata
 			);
 		}
-		if(DHConfig.fishCatch) {
+		if(DHConfig.fishCatchCost > -1) {
 			ElderRiteRegistry.addRecipe(id++, 5, "dh.rite.catch", new FishCatchRite(8, 40.0f, 0),
 					new ElderSacrificeMultiple(
 							new ElderSacrificeItem(
@@ -147,7 +147,7 @@ public final class DHRituals {
 					DHStructures.fishLake)
 			;
 		}
-		if(DHConfig.soulCurse) {
+		if(DHConfig.soulCurseCost > -1) {
 			ElderRiteRegistry.addRecipe(id++, 5,
 					"dh.rite.soul_curse",
 					new CurseSoulRitual(),
@@ -167,7 +167,7 @@ public final class DHRituals {
 					DHStructures.curse
 			);
 		}
-		if(DHConfig.iceCastle) {
+		if(DHConfig.iceCastleCost > -1) {
 			ElderRiteRegistry.addRecipe(id++, 5,
 					"dh.rite.castle",
 					new IceFortressRite(8, 40.0f, 0),
@@ -208,7 +208,7 @@ public final class DHRituals {
 					DHStructures.iceCastle
 			);
 		}
-		if(DHConfig.healMending) {
+		if(DHConfig.healMendingCost > -1) {
 			ElderRiteRegistry.addRecipe(id++, 5,
 					"dh.rite.mending",
 					new RiteWithEffect(8, 80.0f, 0, "DHMending", System.currentTimeMillis() + 60 * 60 * 1000),
@@ -229,7 +229,7 @@ public final class DHRituals {
 					DHStructures.mending
 			);
 		}
-		if(DHConfig.huntMagicCreatures) {
+		if(DHConfig.huntMagicCreaturesCost > -1) {
 			ElderRiteRegistry.addRecipe(id++, 5,
 					"dh.rite.hunt",
 					new RiteWithEffect(8, 80.0f, 0, "DHHunt", System.currentTimeMillis() + 60 * 60 * 1000),
@@ -250,7 +250,7 @@ public final class DHRituals {
 					DHStructures.hunt
 			);
 		}
-		if(DHConfig.purify) {
+		if(DHConfig.purifyCost > -1) {
 			ElderSacrificeMultiple sacrifice = new ElderSacrificeMultiple(
 					new ElderSacrificeItem(
 							new ItemStack(golden_apple, 1, 1),
@@ -275,7 +275,7 @@ public final class DHRituals {
 					DHStructures.purify
 			);
 		}
-		if(DHConfig.covenWitch) {
+		if(DHConfig.covenWitchCost > -1) {
 			ElderRiteRegistry.addRecipe(id++, 5,
 					"dh.rite.coven",
 					new ElderSummonCreature(EntityCovenWitch.class, false),
@@ -296,7 +296,7 @@ public final class DHRituals {
 			);
 		}
 		// TODO reindex all that I can dynamically calculate page index, and make a jumpButton jump to this ritual
-		if(DHIntegration.thaumcraft && DHConfig.bathHouse) {
+		if(DHIntegration.thaumcraft && DHConfig.bathHouseCost > -1) {
 			ElderRiteRegistry.addRecipe(id++, 5,
 					"dh.rite.banka",
 					new RiteWithEffect(8, 80.0f, 0, "DHBanka", System.currentTimeMillis() + 60 * 60 * 1000),

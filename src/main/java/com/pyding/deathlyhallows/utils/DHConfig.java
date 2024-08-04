@@ -23,23 +23,14 @@ public class DHConfig {
 	public static String despairSonataBlackList;
 	public static int screamilyMana;
 	public static int spawnlesiaMana;
-	public static boolean bathHouse;
 	public static int bathHouseCost;
-	public static boolean despairSonata;
 	public static int despairSonataCost;
-	public static boolean fishCatch;
 	public static int fishCatchCost;
-	public static boolean soulCurse;
 	public static int soulCurseCost;
-	public static boolean iceCastle;
 	public static int iceCastleCost;
-	public static boolean healMending;
 	public static int healMendingCost;
-	public static boolean huntMagicCreatures;
 	public static int huntMagicCreaturesCost;
-	public static boolean purify;
 	public static int purifyCost;
-	public static boolean covenWitch;
 	public static int covenWitchCost;
 	public static int randomSpirits;
 	public static boolean shouldRemove;
@@ -73,26 +64,18 @@ public class DHConfig {
 		}
 		// rituals
 		// TODO why on the earth we need 2 configs, when we can just make cost like... -1 and that's it? 
-		bathHouse = config.getBoolean("bathHouse", CATEGORY_RITUALS, true, "Should this ritual be enabled");
-		bathHouseCost = config.getInt("bathHouseCost", CATEGORY_RITUALS, 25000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
-		despairSonata = config.getBoolean("despairSonata", CATEGORY_RITUALS, true, "Should this ritual be enabled");
-		despairSonataCost = config.getInt("despairSonataCost", CATEGORY_RITUALS, 3000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
+		
+		bathHouseCost = config.getInt("bathHouseCost", CATEGORY_RITUALS, 25000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual. Ritual will be disabled, if costs are negative.");
+		despairSonataCost = config.getInt("despairSonataCost", CATEGORY_RITUALS, 3000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual. Ritual will be disabled, if costs are negative.");
 		randomSpirits = config.getInt("despairSonataRandomSpirits", CATEGORY_RITUALS, 3, 1, Integer.MAX_VALUE, "Amount of random Spirits from Despair Sonata ritual");
 		despairSonataBlackList = config.getString("despairSonataBlackList", CATEGORY_RITUALS, "", "Black list for ritual Sonat of Dispair, type names are separated with ',' for example: Zombie, EnderDragon ");
-		fishCatch = config.getBoolean("fishCatch", CATEGORY_RITUALS, true, "Should this ritual be enabled");
-		fishCatchCost = config.getInt("fishCatchCost", CATEGORY_RITUALS, 1000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
-		soulCurse = config.getBoolean("soulCurse", CATEGORY_RITUALS, true, "Should this ritual be enabled");
-		soulCurseCost = config.getInt("soulCurseCost", CATEGORY_RITUALS, 50000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
-		iceCastle = config.getBoolean("iceCastle", CATEGORY_RITUALS, true, "Should this ritual be enabled");
-		iceCastleCost = config.getInt("iceCastleCost", CATEGORY_RITUALS, 7000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
-		healMending = config.getBoolean("healMending", CATEGORY_RITUALS, true, "Should this ritual be enabled");
-		healMendingCost = config.getInt("healMendingCost", CATEGORY_RITUALS, 18000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
-		huntMagicCreatures = config.getBoolean("huntMagicCreatures", CATEGORY_RITUALS, true, "Should this ritual be enabled");
-		huntMagicCreaturesCost = config.getInt("huntMagicCreaturesCost", CATEGORY_RITUALS, 30000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
-		purify = config.getBoolean("purify", CATEGORY_RITUALS, true, "Should this ritual be enabled");
-		purifyCost = config.getInt("purifyCost", CATEGORY_RITUALS, 24100, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
-		covenWitch = config.getBoolean("covenWitch", CATEGORY_RITUALS, true, "Should this ritual be enabled");
-		covenWitchCost = config.getInt("covenWitchCost", CATEGORY_RITUALS, 5000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
+		fishCatchCost = config.getInt("fishCatchCost", CATEGORY_RITUALS, 1000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual. Ritual will be disabled, if costs are negative.");
+		soulCurseCost = config.getInt("soulCurseCost", CATEGORY_RITUALS, 50000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual. Ritual will be disabled, if costs are negative.");
+		iceCastleCost = config.getInt("iceCastleCost", CATEGORY_RITUALS, 7000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual. Ritual will be disabled, if costs are negative.");
+		healMendingCost = config.getInt("healMendingCost", CATEGORY_RITUALS, 18000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual. Ritual will be disabled, if costs are negative.");
+		huntMagicCreaturesCost = config.getInt("huntMagicCreaturesCost", CATEGORY_RITUALS, 30000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual. Ritual will be disabled, if costs are negative.");
+		purifyCost = config.getInt("purifyCost", CATEGORY_RITUALS, 24100, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual. Ritual will be disabled, if costs are negative.");
+		covenWitchCost = config.getInt("covenWitchCost", CATEGORY_RITUALS, 5000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual. Ritual will be disabled, if costs are negative.");
 		// ids
 		DHID.FOCUSUPGRADE_EXTREMIS = config.getInt("FocusUpgradeType_Extremis_ID", CATEGOFY_IDS, DHID.FOCUSUPGRADE_EXTREMIS, 9, Integer.MAX_VALUE, "ID for Inferiois Mutandis Focus. Change if you have FocusUpgradeType ID related conflicts");
 		config.save();
