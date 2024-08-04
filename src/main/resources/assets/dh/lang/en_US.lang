@@ -110,7 +110,7 @@ dh.desc.mantle8=Owner §9%s
 dh.desc.mantle9=You can have only one Hallow at the time
 
 dh.desc.mutandis1=Mutandis and Mutating Sprig with a cost of vis? Useful maybe...
-dh.desc.mutandis2=Shift+RMB to change mode
+dh.desc.mutandis2=Shift+RMB to use as Mutating Sprig
 dh.desc.mutandis3=§aStrongly saturated with the smell of Grassper
 
 dh.desc.hobSoul=Rarely drops from hobgoblins
@@ -162,5 +162,7 @@ dh.flower.spawnlesia.name=§dSpawnlesia
 botania.entry.spawnlesia=Spawnlesia
 botania.tagline.spawnlesia=What mobs will lure this smell?
 botania.page.spawnlesiaabobka=A very voracious and patient flower, which, when receiving an abundant amount of mana, begins to exude an extremely specific smell. This strong and pungent smell will attract even anosmics! Finding nearby for a long time is not recommended...
-
+# Thaumcraft FocusUpgradeType
+focus.upgrade.dh.extremis.name=Mutandis Extremis
+focus.upgrade.dh.extremis.text=This upgrade increases the mutation abilities of the focus, makes its effect similar to Mutandis Extremis.
 

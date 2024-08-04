@@ -963,7 +963,7 @@ public final class DHEvents {
 			return;
 		}
 		EntityPlayer p = e.entityPlayer;
-		MovingObjectPosition mop = DHUtils.rayTrace(p, 4.0);
+		MovingObjectPosition mop = DHUtils.rayTrace(p);
 		if(mop == null) {
 			return;
 		}

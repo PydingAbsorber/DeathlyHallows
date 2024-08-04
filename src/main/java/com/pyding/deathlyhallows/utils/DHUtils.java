@@ -349,11 +349,15 @@ public class DHUtils {
         return count > 0;
     }
 
-	// TODO probably stolen code from Minecraft; Finding exact reference is CRUCIAL
-	public static MovingObjectPosition rayTrace(EntityPlayer player, double distance) {
+	// Stolen code from Minecraft; Was @SideOnly(Side.CLIENT)
+	public static MovingObjectPosition rayTrace(EntityPlayer player) {
+		double distance = player.capabilities.isCreativeMode ? 5.0F : 4.5F;
 		Vec3 startVec = Vec3.createVectorHelper(player.posX, player.posY + player.getEyeHeight(), player.posZ);
 		Vec3 lookVec = player.getLook(1.0F);
 		Vec3 endVec = startVec.addVector(lookVec.xCoord * distance, lookVec.yCoord * distance, lookVec.zCoord * distance);
 		return player.worldObj.rayTraceBlocks(startVec, endVec);
 	}
+	
+	
+	
 }

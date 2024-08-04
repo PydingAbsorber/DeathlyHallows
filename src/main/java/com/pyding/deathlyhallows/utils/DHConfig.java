@@ -11,7 +11,8 @@ public class DHConfig {
 	// TODO rework... This is no good.
 	private static final String
 			CATEGORY_STAFF = "staff",
-			CATEGORY_RITUALS = "rituals";
+			CATEGORY_RITUALS = "rituals",
+			CATEGOFY_IDS = "IDs";
 
 	public static Configuration config;
 	public static String spawnlesia;
@@ -92,6 +93,8 @@ public class DHConfig {
 		purifyCost = config.getInt("purifyCost", CATEGORY_RITUALS, 24100, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
 		covenWitch = config.getBoolean("covenWitch", CATEGORY_RITUALS, true, "Should this ritual be enabled");
 		covenWitchCost = config.getInt("covenWitchCost", CATEGORY_RITUALS, 5000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual");
+		// ids
+		DHID.FOCUSUPGRADE_EXTREMIS = config.getInt("FocusUpgradeType_Extremis_ID", CATEGOFY_IDS, DHID.FOCUSUPGRADE_EXTREMIS, 9, Integer.MAX_VALUE, "ID for Inferiois Mutandis Focus. Change if you have FocusUpgradeType ID related conflicts");
 		config.save();
 	}
 	
