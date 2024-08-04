@@ -29,7 +29,7 @@ public class ItemDeathShard extends ItemBase {
 	private String getRainbowString(String text) {
 		StringBuilder coloredText = new StringBuilder();
 		for(char letter: text.toCharArray()) {
-			coloredText.append((Math.random() > 0.5) ? BLACK : ((Math.random() > 0.5) ? DARK_GRAY : GRAY)).append(letter);
+			coloredText.append((Math.random() > 0.5) ? GRAY : ((Math.random() > 0.5) ? DARK_GRAY : BLACK)).append(letter);
 		}
 		return coloredText.toString();
 	}
