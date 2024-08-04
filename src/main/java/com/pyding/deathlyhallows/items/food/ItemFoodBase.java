@@ -8,10 +8,13 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 import java.util.List;
 
 public class ItemFoodBase extends ItemFood {
+	
+	private boolean edibleInCreative = false;
 
 	public ItemFoodBase(String unlocalizedName, int hunger, float saturation, int maxStackSize, CreativeTabs tab) {
 		super(hunger, saturation, false);
@@ -23,6 +26,20 @@ public class ItemFoodBase extends ItemFood {
 
 	public ItemFoodBase(String unlocalizedName, int hunger, float saturation) {
 		this(unlocalizedName, hunger, saturation, 64, DeathlyHallows.tabDeathlyHallows);
+	}
+
+	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer p) {
+		if(edibleInCreative) {
+			p.setItemInUse(stack, getMaxItemUseDuration(stack));
+			return stack;
+		}
+		return super.onItemRightClick(stack, world, p);
+	}
+
+	@Override
+	public ItemFood setAlwaysEdible() {
+		edibleInCreative = true;
+		return super.setAlwaysEdible();
 	}
 
 	@Override
