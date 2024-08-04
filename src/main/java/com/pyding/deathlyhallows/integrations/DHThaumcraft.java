@@ -22,7 +22,6 @@ import static thaumcraft.api.aspects.Aspect.*;
 public final class DHThaumcraft {
 	public static void init() {
 		DHItems.register(inferioisMutandis = new ItemFocusInferioisMutandis());
-		
 		DHBlocks.register(visConverter = new BlockVisConverter());
 		DHBlocks.registerTile(TileEntityVisConverter.class, "visConverterTile");
 	}
