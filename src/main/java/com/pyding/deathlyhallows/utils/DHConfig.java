@@ -8,32 +8,34 @@ import net.minecraftforge.common.config.Property;
 import java.io.File;
 
 public class DHConfig {
-	// TODO rework... This is no good.
+
 	private static final String
 			CATEGORY_STAFF = "staff",
 			CATEGORY_RITUALS = "rituals",
 			CATEGOFY_IDS = "IDs";
 
 	public static Configuration config;
-	public static String spawnlesia;
 	public static int deathDifficulty;
 	public static String spells;
+	public static boolean shouldRemove;
 	public static int[] elfQuestConditions = new int[] {20,1000,-128,1000,1000,64,20000,20000,100,1000};
 	public static boolean hob;
+	public static int 
+			screamilyMana,
+			spawnlesiaMana;
+	public static String spawnlesia;
+	public static int 
+			bathHouseCost,
+			despairSonataCost,
+			fishCatchCost,
+			soulCurseCost,
+			iceCastleCost,
+			healMendingCost,
+			huntMagicCreaturesCost,
+			purifyCost,
+			covenWitchCost;
 	public static String despairSonataBlackList;
-	public static int screamilyMana;
-	public static int spawnlesiaMana;
-	public static int bathHouseCost;
-	public static int despairSonataCost;
-	public static int fishCatchCost;
-	public static int soulCurseCost;
-	public static int iceCastleCost;
-	public static int healMendingCost;
-	public static int huntMagicCreaturesCost;
-	public static int purifyCost;
-	public static int covenWitchCost;
 	public static int randomSpirits;
-	public static boolean shouldRemove;
 
 	public DHConfig() {
 	}
