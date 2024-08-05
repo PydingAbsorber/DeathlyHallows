@@ -12,7 +12,7 @@ public class DHConfig {
 	private static final String
 			CATEGORY_STAFF = "staff",
 			CATEGORY_RITUALS = "rituals",
-			CATEGOFY_IDS = "IDs";
+			CATEGORY_IDS = "IDs";
 
 	public static Configuration config;
 	public static int deathDifficulty;
@@ -50,18 +50,18 @@ public class DHConfig {
 	}
 
 	public static void syncConfig() {
-		config.addCustomCategoryComment(CATEGORY_STAFF, "Deathly Hallows config");
-		shouldRemove = config.getBoolean("removeDuplicated", CATEGORY_STAFF, true, "Should have only one hallow");
+		config.addCustomCategoryComment(CATEGORY_STAFF, "Deathly Hallows config.");
+		shouldRemove = config.getBoolean("removeDuplicated", CATEGORY_STAFF, true, "Should have only one hallow or more?");
 
-		spells = config.getString("spells", CATEGORY_STAFF, "", "Black list for Spells Id in Elder Wand, for example: 36, 37, 42 ");
-		spawnlesia = config.getString("spawnlesia", CATEGORY_STAFF, "", "Black list for Spawnlesia, type names are separated with ',' for example: Zombie, EnderDragon ");
-		spawnlesiaMana = config.getInt("spawnlesiaMana", CATEGORY_STAFF, 1000000, 1, Integer.MAX_VALUE, "Mana requirements for Spawnlesia per spawn");
-		deathDifficulty = config.getInt("deathDifficulty", CATEGORY_STAFF, 3, 1, 3, "Absolute Death difficulty (3 - Gigachad Man, 2 - weak casual, 1 - newborn toddler)");
-		elfQuestConditions = getIntArray("elfLvl", CATEGORY_STAFF, elfQuestConditions, "Change elf quest requirements, position of requirement corresponds to elf level");
+		spells = config.getString("spells", CATEGORY_STAFF, "", "Black list for Spells Id in Elder Wand, for example: 36, 37, 42.");
+		spawnlesia = config.getString("spawnlesia", CATEGORY_STAFF, "", "Black list for Spawnlesia, type names are separated with ',' for example: Zombie, EnderDragon.");
+		spawnlesiaMana = config.getInt("spawnlesiaMana", CATEGORY_STAFF, 1000000, 1, Integer.MAX_VALUE, "Mana requirements for Spawnlesia per spawn.");
+		deathDifficulty = config.getInt("deathDifficulty", CATEGORY_STAFF, 3, 1, 3, "Absolute Death difficulty (3 - Gigachad Man, 2 - weak casual, 1 - newborn toddler).");
+		elfQuestConditions = getIntArray("elfLvl", CATEGORY_STAFF, elfQuestConditions, "Change elf quest requirements, position of requirement corresponds to elf level.");
 		hob = config.getBoolean("hob", CATEGORY_STAFF, true, "Hobgoblin chains immortality");
-		screamilyMana = config.getInt("screamilyMana", CATEGORY_STAFF, 10000, 1, Integer.MAX_VALUE, "Screamily mana per banshee scream");
+		screamilyMana = config.getInt("screamilyMana", CATEGORY_STAFF, 10000, 1, Integer.MAX_VALUE, "Screamily mana per banshee scream.");
 		// why not?
-		for(int i: getIntArray("bertieBottsEffectBlacklist", CATEGORY_STAFF, ItemFoodBertieBotts.getDefaultBlackList(), "Blacklisted Potion Effects")) {
+		for(int i: getIntArray("bertieBottsEffectBlacklist", CATEGORY_STAFF, ItemFoodBertieBotts.getDefaultBlackList(), "Blacklisted Potion Effects.")) {
 			ItemFoodBertieBotts.addToBlackList(i);
 		}
 		// rituals
@@ -69,8 +69,8 @@ public class DHConfig {
 		
 		bathHouseCost = config.getInt("bathHouseCost", CATEGORY_RITUALS, 25000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual. Ritual will be disabled, if costs are negative.");
 		despairSonataCost = config.getInt("despairSonataCost", CATEGORY_RITUALS, 3000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual. Ritual will be disabled, if costs are negative.");
-		randomSpirits = config.getInt("despairSonataRandomSpirits", CATEGORY_RITUALS, 3, 1, Integer.MAX_VALUE, "Amount of random Spirits from Despair Sonata ritual");
-		despairSonataBlackList = config.getString("despairSonataBlackList", CATEGORY_RITUALS, "", "Black list for ritual Sonat of Dispair, type names are separated with ',' for example: Zombie, EnderDragon ");
+		randomSpirits = config.getInt("despairSonataRandomSpirits", CATEGORY_RITUALS, 3, 1, Integer.MAX_VALUE, "Amount of random Spirits from Despair Sonata ritual.");
+		despairSonataBlackList = config.getString("despairSonataBlackList", CATEGORY_RITUALS, "", "Black list for ritual Sonat of Dispair, type names are separated with ',' for example: Zombie, EnderDragon.");
 		fishCatchCost = config.getInt("fishCatchCost", CATEGORY_RITUALS, 1000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual. Ritual will be disabled, if costs are negative.");
 		soulCurseCost = config.getInt("soulCurseCost", CATEGORY_RITUALS, 50000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual. Ritual will be disabled, if costs are negative.");
 		iceCastleCost = config.getInt("iceCastleCost", CATEGORY_RITUALS, 7000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual. Ritual will be disabled, if costs are negative.");
@@ -79,7 +79,15 @@ public class DHConfig {
 		purifyCost = config.getInt("purifyCost", CATEGORY_RITUALS, 24100, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual. Ritual will be disabled, if costs are negative.");
 		covenWitchCost = config.getInt("covenWitchCost", CATEGORY_RITUALS, 5000, 1, Integer.MAX_VALUE, "Altar energy requirements for this ritual. Ritual will be disabled, if costs are negative.");
 		// ids
-		DHID.FOCUSUPGRADE_EXTREMIS = config.getInt("FocusUpgradeType_Extremis_ID", CATEGOFY_IDS, DHID.FOCUSUPGRADE_EXTREMIS, 9, Integer.MAX_VALUE, "ID for Inferiois Mutandis Focus. Change if you have FocusUpgradeType ID related conflicts");
+		DHID.FOCUSUPGRADE_EXTREMIS = config.getInt("FocusUpgradeType_Extremis_ID", CATEGORY_IDS, DHID.FOCUSUPGRADE_EXTREMIS, 9, Integer.MAX_VALUE, "ID for Inferiois Mutandis Focus. Change if you have FocusUpgradeType ID related conflicts.");
+		
+		DHID.SYMBOL_ANIMAINTERITUS = config.getInt("Symbol_AnimaInteritus_ID", CATEGORY_IDS, DHID.SYMBOL_ANIMAINTERITUS, 48, Integer.MAX_VALUE, "ID for Anima Interitus Symbol. Change if you have Symbol ID related conflicts.");
+		DHID.SYMBOL_HORCRUX = config.getInt("Symbol_Horcrux_ID", CATEGORY_IDS, DHID.SYMBOL_HORCRUX, 48, Integer.MAX_VALUE, "ID for Horcrux Symbol. Change if you have Symbol ID related conflicts.");
+		DHID.SYMBOL_LUMOSTEMPESTAS = config.getInt("Symbol_LumosTempestas_ID", CATEGORY_IDS, DHID.SYMBOL_LUMOSTEMPESTAS, 48, Integer.MAX_VALUE, "ID for Lumos Tempestas Symbol. Change if you have Symbol ID related conflicts.");
+		DHID.SYMBOL_BOMBARDAMAXIMA = config.getInt("Symbol_BombardaMaxima_ID", CATEGORY_IDS, DHID.SYMBOL_BOMBARDAMAXIMA, 48, Integer.MAX_VALUE, "ID for Bombarda Maxima Symbol. Change if you have Symbol ID related conflicts.");
+		DHID.SYMBOL_GRAVIOLE = config.getInt("Symbol_Graviole_ID", CATEGORY_IDS, DHID.SYMBOL_GRAVIOLE, 48, Integer.MAX_VALUE, "ID for Graviole Symbol. Change if you have Symbol ID related conflicts.");
+		DHID.SYMBOL_POWERDESTRUCTION = config.getInt("Symbol_PowerDestruction_ID", CATEGORY_IDS, DHID.SYMBOL_POWERDESTRUCTION, 48, Integer.MAX_VALUE, "ID for Power Destruction Symbol. Change if you have Symbol ID related conflicts.");
+		DHID.SYMBOL_OPHIUCHUS = config.getInt("Symbol_Ophiuchus_ID", CATEGORY_IDS, DHID.SYMBOL_OPHIUCHUS, 48, Integer.MAX_VALUE, "ID for Ophiuchus Symbol. Change if you have Symbol ID related conflicts.");
 		config.save();
 	}
 	

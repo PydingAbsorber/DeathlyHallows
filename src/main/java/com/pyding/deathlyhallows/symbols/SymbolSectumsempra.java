@@ -26,7 +26,7 @@ public class SymbolSectumsempra extends SymbolEffectBase {
 			HP_PERCENT = 0.15F;
 
 	public SymbolSectumsempra() {
-		super(DHID.SYMBOL_SECTUMSEMPRA, "sectumsempra", 15, true, false, null, 15_000, true, -1, false);
+		super(DHID.SYMBOL_SECTUMSEMPRA, "sectumsempra", 15, true, false, null, 5_000, true, -1, false);
 	}
 
 	@Override

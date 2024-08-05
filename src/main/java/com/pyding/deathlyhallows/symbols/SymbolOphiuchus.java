@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 public class SymbolOphiuchus extends SymbolEffectBase {
 	
 	public SymbolOphiuchus() {
-		super(DHID.SYMBOL_OPHIUCHUS, "ophiuchus", 20, false, false, null, 1_000, true, -1, false);
+		super(DHID.SYMBOL_OPHIUCHUS, "ophiuchus", 20, false, false, null, 500, true, -1, false);
 	}
 
 	@Override

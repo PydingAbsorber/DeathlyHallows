@@ -18,7 +18,7 @@ public class SymbolBombardaMaxima extends SymbolEffectBase {
 			DAMAGE = 10F;
 
 	public SymbolBombardaMaxima() {
-		super(DHID.SYMBOL_BOMBARDAMAXIMA, "bombardamaxima", 25, false, false, null, 10_000, true, -1, false);
+		super(DHID.SYMBOL_BOMBARDAMAXIMA, "bombardamaxima", 25, false, false, null, 5_000, true, -1, false);
 	}
 
 	@Override

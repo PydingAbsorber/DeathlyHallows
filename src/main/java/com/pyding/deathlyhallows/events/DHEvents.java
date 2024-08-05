@@ -95,7 +95,7 @@ import java.util.Random;
 
 @SuppressWarnings("unused")
 public final class DHEvents {
-	public static final String 
+	public static final String
 			PLAYER_KEPT_DROPS_TAG = "Dh_playerKeptDrops",
 			DROP_COUNT_TAG = "Dh_dropCount",
 			DROP_PREFIX_TAG = "Dh_dropPrefix",
@@ -705,7 +705,7 @@ public final class DHEvents {
 			default:
 			case 0:
 				return new ItemStack(DHItems.elderWand);
-			
+
 			case 1:
 				return new ItemStack(DHItems.resurrectionStone);
 
@@ -1016,7 +1016,7 @@ public final class DHEvents {
 		if(!tag.hasKey(ItemElderWand.LAST_SPELL_TAG)) { // The Last Spell is a good game, I recommend it
 			return;
 		}
-		
+
 		byte[] strokes = tag.getByteArray(ItemElderWand.LAST_SPELL_TAG);
 		SymbolEffect symbol = EffectRegistry.instance().getEffect(strokes);
 		// TODO stop spamming in chat, just render it on screen silly.
@@ -1024,8 +1024,21 @@ public final class DHEvents {
 			ChatUtil.sendTranslated(EnumChatFormatting.GREEN, p, "dh.chat.wait");
 			return;
 		}
-		try{
-			symbol.perform(p.worldObj, p, EffectRegistry.instance().getLevel(strokes));
+		int level = EffectRegistry.instance().getLevel(strokes);
+		if(!p.capabilities.isCreativeMode) {
+			int
+					cost = symbol.getChargeCost(p.worldObj, p, level),
+					current = Infusion.getCurrentEnergy(p);
+			if(cost > current) {
+				ChatUtil.sendTranslated(EnumChatFormatting.RED, p, "witchery.infuse.branch.nocharges");
+				SoundEffect.NOTE_SNARE.playAtPlayer(p.worldObj, p);
+			}
+			else {
+				Infusion.setCurrentEnergy(p, current - cost);
+			}
+		}
+		try {
+			symbol.perform(p.worldObj, p, level);
 		}
 		catch(Exception e) {
 			e.printStackTrace();

@@ -17,7 +17,7 @@ public class SymbolHorcrux extends SymbolEffectBase {
 	public static final float HP_COST = 10F;
 	
 	public SymbolHorcrux() {
-		super(DHID.SYMBOL_HORCRUX, "horcrux", 120, true, false, null, 30_000, true, 4, true);
+		super(DHID.SYMBOL_HORCRUX, "horcrux", 120, true, false, null, 10_000, true, 4, true);
 	}
 
 	@Override

@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 public class SymbolAnimaInteritus extends SymbolEffectBase {
 	
 	public SymbolAnimaInteritus() {
-		super(DHID.SYMBOL_ANIMAINTERITUS, "animainteritus", 120, true, false, null, 30_000, true, 4, true);
+		super(DHID.SYMBOL_ANIMAINTERITUS, "animainteritus", 120, true, false, null, 10_000, true, 4, true);
 	}
 	
 	@Override
