@@ -43,7 +43,7 @@ public abstract class SymbolEffectBase extends SymbolEffect {
 		}
 		// TODO coremod
 		DeathlyProperties props1 = DeathlyProperties.get(p);
-		props1.setSpellsUsed(props1.getSpellsUsed() + 1);
+		props1.addSpell(this.getEffectID());
 		doPerform(world, p, level + MathHelper.ceiling_float_int(ElfUtils.getElfLevel(p) / 3F));
 	}
 
