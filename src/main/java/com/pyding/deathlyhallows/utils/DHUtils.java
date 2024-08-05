@@ -75,6 +75,15 @@ public class DHUtils {
 		return world.getEntitiesWithinAABB(clazz, AxisAlignedBB.getBoundingBox(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius));
 	}
 	
+	public static boolean contains(String list, String element){
+		for(String name: list.split(",")) {
+			if(element.equals(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public static void spawnArrow(EntityPlayer player, int type) {
 		if(player.worldObj.isRemote) {
 			return;
@@ -221,23 +230,12 @@ public class DHUtils {
 			@SuppressWarnings("unchecked")
 			Set<Map.Entry<String, Class<?>>> mapping = (Set<Map.Entry<String, Class<?>>>)EntityList.stringToClassMapping.entrySet();
 			for(Map.Entry<String, Class<?>> entry: mapping) {
-				if(EntityLiving.class.isAssignableFrom(entry.getValue())) {
+				if(EntityLivingBase.class.isAssignableFrom(entry.getValue())) {
 					entities.add(entry.getKey());
 				}
 			}
 		}
 		return entities;
-	}
-
-	public static boolean contains(String list, String element) {
-		boolean contains = false;
-		for(String name: list.split(",")) {
-			if(name.equals(element) || name.contains(element)) {
-				contains = true;
-				break;
-			}
-		}
-		return contains;
 	}
 
 	public static void deadInside(EntityLivingBase victim, EntityPlayer player) { // FOX! DIE!

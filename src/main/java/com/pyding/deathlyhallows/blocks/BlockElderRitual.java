@@ -19,6 +19,7 @@ import com.emoniph.witchery.util.SoundEffect;
 import com.google.common.collect.Lists;
 import com.pyding.deathlyhallows.rituals.ElderRiteRegistry;
 import com.pyding.deathlyhallows.rituals.rites.ElderRitualStep;
+import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
@@ -202,7 +203,8 @@ public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 			tileEntity.queueRitual(o, bounds, player, covenSize, summonCoven);
 			summonCoven = false;
 			success = true;
-				
+			DeathlyProperties props = DeathlyProperties.get(player);
+			props.addRite(o.ritualID);
 		}
 		if(!success && !world.isRemote) {
 			RiteRegistry.RiteError("witchery.rite.unknownritual", player, world);

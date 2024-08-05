@@ -24,11 +24,7 @@ public class ItemBag extends ItemBase {
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer p) {
-		List<EntityLightningBolt> list = DHUtils.getEntitiesAround(EntityLightningBolt.class,p,3);
-		if(!list.isEmpty()){
-			stack.splitStack(1);
-			p.inventory.addItemStackToInventory(new ItemStack(DHItems.lightningInBag));
-		}
+		p.getEntityData().setLong("DHBag",System.currentTimeMillis()+1000);
 		return super.onItemRightClick(stack, world, p);
 	}
 	

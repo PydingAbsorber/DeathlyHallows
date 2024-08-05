@@ -5,6 +5,7 @@ import com.google.common.collect.Multimap;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketPropertiesToClient;
 import com.pyding.deathlyhallows.network.packets.PacketPropertiesToServer;
+import com.pyding.deathlyhallows.utils.DHUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -28,18 +29,20 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 			trigger,
 			currentDuration,
 			mobsKilled,
-			spellsUsed,
 			foodEaten,
 			page,
 			mobsFed,
 			cursed,
-			niceCream;
+			niceCream,
+			shots;
 	private boolean
 			damageLog,
 			choice,
 			avenger;
 	private String monsters = "";
-
+	private String rites = "";
+	private String spells = "";
+	
 	// unsaved
 	public int
 			elfTimeSurvived,
@@ -85,7 +88,7 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 		tag.setInteger("Trigger", trigger);
 		tag.setInteger("ElfCount", elfCount);
 		tag.setInteger("MobsKilled", mobsKilled);
-		tag.setInteger("SpellsUsed", spellsUsed);
+		tag.setString("DHSpells", spells);
 		tag.setInteger("FoodEaten", foodEaten);
 		tag.setBoolean("Choice", choice);
 		tag.setInteger("MobsFed", mobsFed);
@@ -96,6 +99,8 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 		tag.setInteger("Cursed", cursed);
 		tag.setInteger("DHFoodSize", foodCollection.size());
 		tag.setInteger("DHNiceCream", niceCream);
+		tag.setInteger("DHShots", shots);
+		tag.setString("DHRites", rites);
 		int i = 0;
 		for(String food: foodCollection) {
 			tag.setString("DHFood" + i++, food);
@@ -118,7 +123,7 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 		trigger = tag.getInteger("Trigger");
 		elfCount = tag.getInteger("ElfCount");
 		mobsKilled = tag.getInteger("MobsKilled");
-		spellsUsed = tag.getInteger("SpellsUsed");
+		spells = tag.getString("DHSpells");
 		foodEaten = tag.getInteger("FoodEaten");
 		choice = tag.getBoolean("Choice");
 		mobsFed = tag.getInteger("MobsFed");
@@ -128,6 +133,8 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 		avenger = tag.getBoolean("Avenger");
 		cursed = tag.getInteger("Cursed");
 		niceCream = tag.getInteger("DHNiceCream");
+		shots = tag.getInteger("DHShots");
+		rites = tag.getString("DHRites");
 		for(int i = 0; i < tag.getInteger("DHFoodSize"); ++i) {
 			foodCollection.add(i, tag.getString("DHFood" + i));
 		}
@@ -148,9 +155,9 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 		trigger = 0;
 		elfCount = 0;
 		mobsKilled = 0;
-		spellsUsed = 0;
-		foodEaten = 0;
-		foodCollection.clear();
+		spells = "";
+		shots = 0;
+		rites = "";
 	}
 
 	public List<String> getFoodCollection() {
@@ -194,9 +201,8 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 	}
 
 	public void addMonster(String name) {
-		if(!monsters.contains(name)) {
+		if(!DHUtils.contains(monsters,name))
 			monsters += name + ",";
-		}
 	}
 
 	public void setAvenger(boolean value) {
@@ -247,12 +253,36 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 		mobsKilled = count;
 	}
 
-	public int getSpellsUsed() {
-		return spellsUsed;
+	public int getShots() {
+		return shots;
 	}
 
-	public void setSpellsUsed(int count) {
-		spellsUsed = count;
+	public void setShots(int count) {
+		shots = count;
+	}
+
+	public int getRites() {
+		int count = 0;
+		for(String element: rites.split(","))
+			count++;
+		return count;
+	}
+
+	public void addRite(int riteId) {
+		if(!DHUtils.contains(rites,riteId+""))
+			rites += riteId + ",";
+	}
+
+	public int getSpellsUsed() {
+		int count = 0;
+		for(String element: spells.split(","))
+			count++;
+		return count;
+	}
+
+	public void addSpell(int spellId) {
+		if(!DHUtils.contains(spells,spellId+""))
+			spells += spellId + ",";
 	}
 
 	public void setCurrentDuration(int duration) {
