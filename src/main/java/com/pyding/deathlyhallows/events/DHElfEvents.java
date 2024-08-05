@@ -106,11 +106,13 @@ public final class DHElfEvents {
 		else perfectTime = secondShot(p) + 150;
 		if(elfLevel >= 7 && (time > secondShot(p) || tag.getInteger("DHShot") > 0)) {
 			if(tag.getInteger("DHShot") > 0) {
+				props.setShots(props.getShots()+1);
 				DHUtils.spawnArrow(p, 3);
 				tag.setInteger("DHShot", tag.getInteger("DHShot") - 1);
 				e.setCanceled(true);
 			}
 			else if(time < perfectTime) {
+				props.setShots(props.getShots()+1);
 				DHUtils.spawnArrow(p, 3);
 				tag.setInteger("DHShot", 5);
 				e.setCanceled(true);

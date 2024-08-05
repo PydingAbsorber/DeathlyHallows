@@ -13,13 +13,14 @@ import net.minecraft.world.World;
 import vazkii.botania.api.subtile.SubTileFunctional;
 
 import java.util.List;
+import java.util.Random;
 
 public class Spawnlesia extends SubTileFunctional {
 
 	public static final String NAME = "spawnlesia";
 	
 	private final String blackList = DHConfig.spawnlesia;
-	public long summonMaxCd = 10000;
+	public long summonMaxCd = DHConfig.spawnlesiaCd;
 	public long summonCd = 0;
 	public static int cost = DHConfig.spawnlesiaMana;
 
@@ -55,29 +56,26 @@ public class Spawnlesia extends SubTileFunctional {
 
 	public void spawnRandomEntity() {
 		World world = this.supertile.getWorldObj();
+		Random random = new Random();
 		double x = supertile.xCoord;
 		double y = supertile.yCoord;
 		double z = supertile.zCoord;
 		List<String> entities = DHUtils.getEntitiesNames();
 		if(!entities.isEmpty()) {
 			String randomEntityName = entities.get(world.rand.nextInt(entities.size() - 1));
-			if(!isBlackListed(randomEntityName)) {
-				Entity entity = EntityList.createEntityByName(randomEntityName, world);
-				if(entity != null && entity instanceof EntityLiving && !(entity instanceof EntityAbsoluteDeath)) {
-					entity.setPosition(x + Math.random() * 10, y + 1, z + Math.random() * 10);
-					world.spawnEntityInWorld(entity);
-				}
-				else {
-					spawnRandomEntity();
-				}
+			Entity entity = EntityList.createEntityByName(randomEntityName, world);
+			int tries = 0;
+			while(DHUtils.contains(blackList,randomEntityName) && tries < 1000) {
+				randomEntityName = entities.get(world.rand.nextInt(entities.size() - 1));
+				entity = EntityList.createEntityByName(randomEntityName, world);
+				tries++;
 			}
-			else {
-				spawnRandomEntity();
+			if(tries == 1000)
+				return;
+			if(entity instanceof EntityLiving && !(entity instanceof EntityAbsoluteDeath)) {
+				entity.setPosition(x + random.nextDouble() * 10, y + 1, z + random.nextDouble() * 10);
+				world.spawnEntityInWorld(entity);
 			}
 		}
-	}
-
-	public boolean isBlackListed(String name) {
-		return blackList.contains(name);
 	}
 }

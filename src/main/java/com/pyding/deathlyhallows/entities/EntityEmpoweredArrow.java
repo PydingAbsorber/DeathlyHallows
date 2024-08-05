@@ -1,6 +1,7 @@
 package com.pyding.deathlyhallows.entities;
 
 import com.pyding.deathlyhallows.utils.DHUtils;
+import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,6 +11,8 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class EntityEmpoweredArrow extends Entity {
@@ -105,6 +108,8 @@ public class EntityEmpoweredArrow extends Entity {
 		setPosition(posX + motionX, posY + motionY, posZ + motionZ);
 		setRotation(yaw, pitch);
 	}
+	
+	List<Integer> list = new ArrayList<>();
 
 	private void attackInRadius() {
 		for(EntityLivingBase entity: DHUtils.getEntitiesAround(EntityLivingBase.class, this, radius)) {
@@ -115,6 +120,13 @@ public class EntityEmpoweredArrow extends Entity {
 			entity.hurtResistantTime = 0;
 			entity.attackEntityFrom(source, damage);
 			entity.hurtResistantTime = hrt;
+			if(list.size() == 30) {
+				DeathlyProperties props = DeathlyProperties.get(shooter);
+				props.setMobsKilled(props.getMobsKilled() + 1);
+				list.add(entity.getEntityId());			
+			}
+			if(!list.contains(entity.getEntityId()))
+				list.add(entity.getEntityId());
 		}
 	}
 

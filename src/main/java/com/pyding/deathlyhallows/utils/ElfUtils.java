@@ -4,6 +4,7 @@ import com.emoniph.witchery.dimension.WorldProviderDreamWorld;
 import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.util.ChatUtil;
 import com.emoniph.witchery.util.CreatureUtil;
+import com.pyding.deathlyhallows.rituals.ElderRiteRegistry;
 import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLivingBase;
@@ -122,7 +123,7 @@ public final class ElfUtils {
 		DeathlyProperties props = get(p);
 		switch(elfLevel) {
 			case 1: {
-				if(p.experienceLevel >= DHConfig.getElfRequirements(2)) {
+				if(props.getSpellsUsed() >= DHConfig.getElfRequirements(2)) {
 					props.setElfLevel(2);
 					messageChatLevelUp(p);
 				}
@@ -150,7 +151,7 @@ public final class ElfUtils {
 				break;
 			}
 			case 5: {
-				if(props.getFoodEaten() >= DHConfig.getElfRequirements(6)) {
+				if((DHUtils.getEntitiesNames().size()/props.getMonstersCount()) >= (DHConfig.getElfRequirements(6)/100)) {
 					props.setElfLevel(6);
 					messageChatLevelUp(p);
 				}
@@ -173,14 +174,14 @@ public final class ElfUtils {
 				break;
 			}
 			case 8: {
-				if(props.getFoodCollection() != null && props.getFoodCollection().size() > DHConfig.getElfRequirements(9)) {
+				if(props.getShots() > DHConfig.getElfRequirements(9)) {
 					props.setElfLevel(9);
 					messageChatLevelUp(p);
 				}
 				break;
 			}
 			case 9: {
-				if(props.getSpellsUsed() >= DHConfig.getElfRequirements(10)) {
+				if(props.getRites() >= DHConfig.getElfRequirements(10) || props.getRites() >= ElderRiteRegistry.instance().getRituals().size()) {
 					props.setAllNull();
 					props.setElfLevel(10);
 					messageChatLevelUp(p);

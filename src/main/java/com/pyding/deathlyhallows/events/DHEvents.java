@@ -24,6 +24,7 @@ import com.pyding.deathlyhallows.entities.EntityAbsoluteDeath;
 import com.pyding.deathlyhallows.entities.EntityNimbus;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
+import com.pyding.deathlyhallows.items.ItemBag;
 import com.pyding.deathlyhallows.items.ItemDeadlyPrism;
 import com.pyding.deathlyhallows.items.ItemElderWand;
 import com.pyding.deathlyhallows.items.ItemNimbus;
@@ -72,6 +73,7 @@ import net.minecraftforge.common.ISpecialArmor;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -113,6 +115,17 @@ public final class DHEvents {
 	public static void init() {
 		MinecraftForge.EVENT_BUS.register(INSTANCE);
 		FMLCommonHandler.instance().bus().register(INSTANCE);
+	}
+	
+	@SubscribeEvent
+	public void onStruck(EntityStruckByLightningEvent event){
+		if(event.entity instanceof EntityPlayer){
+			EntityPlayer player = (EntityPlayer)event.entity;
+			if(player.getEntityData().getLong("DHBag") > System.currentTimeMillis() && player.getHeldItem().getItem() instanceof ItemBag){
+				player.getHeldItem().splitStack(1);
+				player.inventory.addItemStackToInventory(new ItemStack(DHItems.lightningInBag));
+			}
+		}
 	}
 
 	@SubscribeEvent
@@ -849,7 +862,6 @@ public final class DHEvents {
 		}
 		DeathlyProperties props = DeathlyProperties.get((EntityPlayer)e.source.getEntity());
 		props.addMonster(e.entity.getCommandSenderName());
-		props.setMobsKilled(props.getMobsKilled() + 1);
 		Calendar currentDate = Calendar.getInstance();
 		int currentMonth = currentDate.get(Calendar.MONTH);
 		if(currentMonth != Calendar.OCTOBER && currentMonth != Calendar.NOVEMBER) {

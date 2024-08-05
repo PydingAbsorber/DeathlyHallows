@@ -18,7 +18,7 @@ public class DHConfig {
 	public static int deathDifficulty;
 	public static String spells;
 	public static boolean shouldRemove;
-	public static int[] elfQuestConditions = new int[] {20,1000,-128,1000,1000,64,20000,20000,100,1000};
+	public static int[] elfQuestConditions = new int[] {20,20,-100,100,50,30,20000,35000,100,1000};
 	public static boolean hob;
 	public static int 
 			screamilyMana,
@@ -33,7 +33,8 @@ public class DHConfig {
 			healMendingCost,
 			huntMagicCreaturesCost,
 			purifyCost,
-			covenWitchCost;
+			covenWitchCost,
+			spawnlesiaCd;
 	public static String despairSonataBlackList;
 	public static int randomSpirits;
 
@@ -56,8 +57,10 @@ public class DHConfig {
 		spells = config.getString("spells", CATEGORY_STAFF, "", "Black list for Spells Id in Elder Wand, for example: 36, 37, 42.");
 		spawnlesia = config.getString("spawnlesia", CATEGORY_STAFF, "", "Black list for Spawnlesia, type names are separated with ',' for example: Zombie, EnderDragon.");
 		spawnlesiaMana = config.getInt("spawnlesiaMana", CATEGORY_STAFF, 1000000, 1, Integer.MAX_VALUE, "Mana requirements for Spawnlesia per spawn.");
+		spawnlesiaCd = config.getInt("spawnlesiaCd", CATEGORY_STAFF, 10000, 1, Integer.MAX_VALUE, "Cooldown for Spawnlesia in long. 1000 is 1 sec.");
+
 		deathDifficulty = config.getInt("deathDifficulty", CATEGORY_STAFF, 3, 1, 3, "Absolute Death difficulty (3 - Gigachad Man, 2 - weak casual, 1 - newborn toddler).");
-		elfQuestConditions = getIntArray("elfLvl", CATEGORY_STAFF, elfQuestConditions, "Change elf quest requirements, position of requirement corresponds to elf level.");
+		elfQuestConditions = getIntArray("elfLvl", CATEGORY_STAFF, elfQuestConditions, "Change elf quest requirements, position of requirement corresponds to elf level. Last one is not a requirement but a maximum.");
 		hob = config.getBoolean("hob", CATEGORY_STAFF, true, "Hobgoblin chains immortality");
 		screamilyMana = config.getInt("screamilyMana", CATEGORY_STAFF, 10000, 1, Integer.MAX_VALUE, "Screamily mana per banshee scream.");
 		// why not?
