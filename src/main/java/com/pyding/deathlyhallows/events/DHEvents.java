@@ -10,6 +10,8 @@ import com.emoniph.witchery.entity.EntityNightmare;
 import com.emoniph.witchery.entity.EntityPoltergeist;
 import com.emoniph.witchery.entity.EntitySpirit;
 import com.emoniph.witchery.infusion.Infusion;
+import com.emoniph.witchery.infusion.infusions.symbols.EffectRegistry;
+import com.emoniph.witchery.infusion.infusions.symbols.SymbolEffect;
 import com.emoniph.witchery.item.ItemDeathsClothes;
 import com.emoniph.witchery.util.ChatUtil;
 import com.emoniph.witchery.util.EntityUtil;
@@ -23,12 +25,13 @@ import com.pyding.deathlyhallows.entities.EntityNimbus;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.items.ItemDeadlyPrism;
+import com.pyding.deathlyhallows.items.ItemElderWand;
 import com.pyding.deathlyhallows.items.ItemNimbus;
 import com.pyding.deathlyhallows.items.baubles.ItemBaubleResurrectionStone;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketAnimaMobRender;
 import com.pyding.deathlyhallows.network.packets.PacketPlayerRender;
-import com.pyding.deathlyhallows.spells.SpellRegistry;
+import com.pyding.deathlyhallows.symbols.SymbolHorcrux;
 import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.utils.DHUtils;
 import com.pyding.deathlyhallows.utils.ElfUtils;
@@ -92,10 +95,15 @@ import java.util.Random;
 
 @SuppressWarnings("unused")
 public final class DHEvents {
-	private static final String TAG_PLAYER_KEPT_DROPS = "Dh_playerKeptDrops";
-	private static final String TAG_DROP_COUNT = "Dh_dropCount";
-	private static final String TAG_DROP_PREFIX = "Dh_dropPrefix";
-	Multimap<String, AttributeModifier> attributes = HashMultimap.create();
+	public static final String 
+			PLAYER_KEPT_DROPS_TAG = "Dh_playerKeptDrops",
+			DROP_COUNT_TAG = "Dh_dropCount",
+			DROP_PREFIX_TAG = "Dh_dropPrefix",
+			DHOWNER_TAG = "dhowner",
+			DHCURSE_TAG = "dhcurse",
+			HORCRUX_TAG = "Horcrux",
+			DHSPRINT_TAG = "DHSprint",
+			TIMESTAMP_TAG = "lastUsedTime";
 	private static final DHEvents INSTANCE = new DHEvents();
 
 	private DHEvents() {
@@ -119,8 +127,8 @@ public final class DHEvents {
 			}
 			ItemStack stack = drop.getEntityItem();
 			if(!stack.hasTagCompound()
-					|| !stack.getTagCompound().hasKey("dhowner")
-					|| !stack.getTagCompound().getString("dhowner").equals(e.entityPlayer.getDisplayName())
+					|| !stack.getTagCompound().hasKey(DHOWNER_TAG)
+					|| !stack.getTagCompound().getString(DHOWNER_TAG).equals(e.entityPlayer.getDisplayName())
 			) {
 				continue;
 			}
@@ -131,14 +139,14 @@ public final class DHEvents {
 		}
 		e.drops.removeAll(saved);
 		NBTTagCompound cmp = new NBTTagCompound();
-		cmp.setInteger(TAG_DROP_COUNT, saved.size());
+		cmp.setInteger(DROP_COUNT_TAG, saved.size());
 
 		int i = 0;
 		for(EntityItem keep: saved) {
 			ItemStack stack = keep.getEntityItem();
 			NBTTagCompound cmp1 = new NBTTagCompound();
 			stack.writeToNBT(cmp1);
-			cmp.setTag(TAG_DROP_PREFIX + i, cmp1);
+			cmp.setTag(DROP_PREFIX_TAG + i, cmp1);
 			i++;
 		}
 
@@ -148,7 +156,7 @@ public final class DHEvents {
 		}
 
 		NBTTagCompound persist = data.getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
-		persist.setTag(TAG_PLAYER_KEPT_DROPS, cmp);
+		persist.setTag(PLAYER_KEPT_DROPS_TAG, cmp);
 	}
 
 	@SubscribeEvent
@@ -156,10 +164,10 @@ public final class DHEvents {
 		NBTTagCompound data = e.player.getEntityData();
 		if(data.hasKey(EntityPlayer.PERSISTED_NBT_TAG)) {
 			NBTTagCompound cmp = data.getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
-			NBTTagCompound cmp1 = cmp.getCompoundTag(TAG_PLAYER_KEPT_DROPS);
-			int count = cmp1.getInteger(TAG_DROP_COUNT);
+			NBTTagCompound cmp1 = cmp.getCompoundTag(PLAYER_KEPT_DROPS_TAG);
+			int count = cmp1.getInteger(DROP_COUNT_TAG);
 			for(int i = 0; i < count; i++) {
-				NBTTagCompound cmp2 = cmp1.getCompoundTag(TAG_DROP_PREFIX + i);
+				NBTTagCompound cmp2 = cmp1.getCompoundTag(DROP_PREFIX_TAG + i);
 				ItemStack stack = ItemStack.loadItemStackFromNBT(cmp2);
 				if(stack == null) {
 					continue;
@@ -167,9 +175,9 @@ public final class DHEvents {
 				ItemStack copy = stack.copy();
 				e.player.inventory.addItemStackToInventory(copy);
 			}
-			cmp.setTag(TAG_PLAYER_KEPT_DROPS, new NBTTagCompound());
+			cmp.setTag(PLAYER_KEPT_DROPS_TAG, new NBTTagCompound());
 		}
-		if(e.player.getEntityData().getInteger("Horcrux") == 0) {
+		if(e.player.getEntityData().getInteger(HORCRUX_TAG) == 0) {
 			Multimap<String, AttributeModifier> attributes = HashMultimap.create();
 			attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier("DH HP", 4 * ElfUtils.getElfLevel(e.player), 0));
 			e.player.getAttributeMap().applyAttributeModifiers(attributes);
@@ -212,33 +220,33 @@ public final class DHEvents {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
-		if(event.entityLiving == null) {
+	public void onLivingUpdate(LivingEvent.LivingUpdateEvent e) {
+		if(e.entityLiving == null) {
 			return;
 		}
-		if(event.entity.ticksExisted % 20 == 0) {
-			updateAvengerLiving(event.entityLiving);
+		if(e.entity.ticksExisted % 20 == 0) {
+			updateAvengerLiving(e.entityLiving);
 		}
-		if(event.entity.ticksExisted % 4 == 0) {
-			EntityLivingBase e = event.entityLiving;
-			if(e.getEntityData().getLong("DHStrike") > System.currentTimeMillis() && e instanceof EntityPlayer) {
+		if(e.entity.ticksExisted % 4 == 0) {
+			EntityLivingBase l = e.entityLiving;
+			if(l.getEntityData().getLong("DHStrike") > System.currentTimeMillis() && l instanceof EntityPlayer) {
 				Random random = new Random();
-				DeathlyProperties props = DeathlyProperties.get((EntityPlayer)e);
+				DeathlyProperties props = DeathlyProperties.get((EntityPlayer)l);
 				int numba = random.nextInt(15);
 				if(random.nextDouble() < 0.5) {
 					numba *= -1;
 				}
-				List<EntityLivingBase> list = DHUtils.getEntitiesAt(EntityLivingBase.class, e, e.posX + numba, e.posY + numba, e.posZ + numba, 3);
+				List<EntityLivingBase> list = DHUtils.getEntitiesAt(EntityLivingBase.class, l.worldObj, l.posX + numba, l.posY + numba, l.posZ + numba, 3);
 				for(EntityLivingBase entity: list) {
-					entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer)e), 50 * (1 + props.getElfLevel()));
+					entity.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer)l), 50 * (1 + props.getElfLevel()));
 				}
-				EntityLightningBolt bolt = new EntityLightningBolt(e.worldObj, e.posX + numba, e.posY + numba, e.posZ + numba);
-				e.worldObj.addWeatherEffect(bolt);
+				EntityLightningBolt bolt = new EntityLightningBolt(l.worldObj, l.posX + numba, l.posY + numba, l.posZ + numba);
+				l.worldObj.addWeatherEffect(bolt);
 			}
 		}
-		updatePlayer(event.entityLiving);
-		updateAnimal(event.entityLiving);
-		updateLiving(event.entityLiving);
+		updatePlayer(e.entityLiving);
+		updateAnimal(e.entityLiving);
+		updateLiving(e.entityLiving);
 	}
 
 	private void updateLiving(EntityLivingBase entity) {
@@ -247,9 +255,9 @@ public final class DHEvents {
 			return;
 		}
 		if(tag.getInteger("SectumTime") == 1) {
+			Multimap<String, AttributeModifier> attributes = HashMultimap.create();
 			attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier("SectumHPAttribute", tag.getFloat("SectumHp"), 0));
 			entity.getAttributeMap().applyAttributeModifiers(attributes);
-			attributes.clear();
 			tag.setFloat("SectumHp", 0);
 		}
 		tag.setInteger("SectumTime", tag.getInteger("SectumTime") - 1);
@@ -277,24 +285,24 @@ public final class DHEvents {
 	}
 
 	private static void checkCurse(EntityLiving entity, NBTTagCompound tag) {
-		if(tag.getInteger("dhcurse") <= 0) {
+		if(tag.getInteger(DHCURSE_TAG) <= 0) {
 			return;
 		}
-		if(tag.getInteger("dhcurse") % 10 == 0) {
+		if(tag.getInteger(DHCURSE_TAG) % 10 == 0) {
 			ParticleEffect.FLAME.send(SoundEffect.NONE, entity, 1, 1, 64);
 		}
 		PacketAnimaMobRender packet = new PacketAnimaMobRender(tag, entity.getEntityId());
 		NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 64);
-		if(tag.getInteger("dhcurse") == 1200) {
+		if(tag.getInteger(DHCURSE_TAG) == 1200) {
 			DHPacketProcessor.sendToAllAround(packet, targetPoint);
 		}
-		if(tag.getInteger("dhcurse") == 200) {
+		if(tag.getInteger(DHCURSE_TAG) == 200) {
 			DHPacketProcessor.sendToAllAround(packet, targetPoint);
 		}
-		if(tag.getInteger("dhcurse") == 1) {
+		if(tag.getInteger(DHCURSE_TAG) == 1) {
 			EntityUtil.instantDeath(entity, entity.getLastAttacker());
 		}
-		tag.setInteger("dhcurse", tag.getInteger("dhcurse") - 1);
+		tag.setInteger(DHCURSE_TAG, tag.getInteger(DHCURSE_TAG) - 1);
 	}
 
 	private static void updatePlayer(EntityLivingBase living) {
@@ -312,8 +320,6 @@ public final class DHEvents {
 			if(DHConfig.shouldRemove) {
 				DHUtils.removeDuplicatesFromInventory(p);
 			}
-			activateElderWand(p);
-			activateNimbus(p);
 			if(DeathlyProperties.get(p) != null) {
 				teleportBackCurse(p, props);
 				tellPrikol(p);
@@ -323,13 +329,13 @@ public final class DHEvents {
 	}
 
 	private static void sendPacketRenderCurse(EntityPlayer p) {
-		if(p.getEntityData().getInteger("dhcurse") <= 0) {
+		if(p.getEntityData().getInteger(DHCURSE_TAG) <= 0) {
 			return;
 		}
-		if(p.getEntityData().getInteger("dhcurse") == 200) {
+		if(p.getEntityData().getInteger(DHCURSE_TAG) == 200) {
 			DHPacketProcessor.sendToPlayer(new PacketPlayerRender(p.getEntityData()), p);
 		}
-		p.getEntityData().setInteger("dhcurse", p.getEntityData().getInteger("dhcurse") - 1);
+		p.getEntityData().setInteger(DHCURSE_TAG, p.getEntityData().getInteger(DHCURSE_TAG) - 1);
 	}
 
 	private static void tellPrikol(EntityPlayer p) {
@@ -362,52 +368,6 @@ public final class DHEvents {
 		if(p.dimension != props.getDimension()) {
 			p.travelToDimension(props.getDimension());
 		}
-	}
-
-	private static void activateNimbus(EntityPlayer p) {
-		if(p.ticksExisted % 20 != 0 && !p.getEntityData().getBoolean("dhkey2")) {
-			return;
-		}
-		boolean found = false;
-		for(ItemStack itemStack: p.inventory.mainInventory) {
-			if(itemStack == null || itemStack.getItem() != DHItems.nimbus) {
-				continue;
-			}
-			found = true;
-			if(!p.getEntityData().getBoolean("dhkey2")) {
-				continue;
-			}
-			ItemNimbus nimbus = (ItemNimbus)itemStack.getItem();
-			nimbus.onItemRightClick(itemStack, p.worldObj, p);
-		}
-		if(!found && p.ridingEntity instanceof EntityNimbus) {
-			Entity nimbus = p.ridingEntity;
-			p.dismountEntity(nimbus);
-			nimbus.setDead();
-		}
-		p.getEntityData().setBoolean("dhkey2", false);
-	}
-
-	private static void activateElderWand(EntityPlayer p) {
-		// TODO WTF???
-		ItemStack stack = p.getHeldItem();
-		if(stack == null || stack.getItem() != DHItems.elderWand || !p.getEntityData().getBoolean("dhkey1")) {
-			return;
-		}
-		p.getEntityData().setBoolean("dhkey1", false);
-		SpellRegistry sr = new SpellRegistry();
-		if(!stack.hasTagCompound()) {
-			return;
-		}
-		if(!stack.getTagCompound().hasKey("spell1")) {
-			NBTTagCompound nbt = new NBTTagCompound();
-			nbt.setInteger("spell1", 1);
-			stack.setTagCompound(nbt);
-			sr.performEffect(p, p.worldObj, 1);
-			return;
-		}
-		int spell1 = stack.getTagCompound().getInteger("spell1");
-		sr.performEffect(p, p.worldObj, spell1);
 	}
 
 	private static void updateThaumcraftWandFocus(EntityPlayer p) {
@@ -824,25 +784,24 @@ public final class DHEvents {
 		EntityPlayer p = (EntityPlayer)e.entityLiving;
 		kickAllAround(p);
 		if(probablyRessurectByStone(p)) {
-			e.isCanceled();
+			e.setCanceled(true);
 			return;
 		}
 		if(orHorcruxLives(p)) {
-			e.isCanceled();
+			e.setCanceled(true);
 		}
 	}
 
 	private boolean orHorcruxLives(EntityPlayer p) {
-		int lives = p.getEntityData().getInteger("Horcrux");
+		int lives = p.getEntityData().getInteger(HORCRUX_TAG);
 		if(lives < 1) {
 			return false;
 		}
-		p.getEntityData().setInteger("Horcrux", lives - 1);
-		attributes.clear();
-		attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier("HorcruxBonusHp", SpellRegistry.hpCost, 0));
+		p.getEntityData().setInteger(HORCRUX_TAG, lives - 1);
+		Multimap<String, AttributeModifier> attributes = HashMultimap.create();
+		attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier("HorcruxBonusHp", SymbolHorcrux.HP_COST, 0));
 		p.getAttributeMap().applyAttributeModifiers(attributes);
 		p.setHealth(p.getMaxHealth());
-		attributes.clear();
 		if(!p.worldObj.isRemote) {
 			p.worldObj.playSoundAtEntity(p, "dh:spell.death" + DHUtils.getRandomInt(1, 2), 1F, 1F);
 		}
@@ -955,8 +914,8 @@ public final class DHEvents {
 		if(Math.random() > chance) { // dice cancer
 			return;
 		}
-		// TODO are you really sure that it IS needed here?
-		e.world.setBlock(e.x, e.y, e.z, Blocks.air);
+
+		e.world.setBlock(e.x, e.y, e.z, Blocks.air); // TODO are you really sure that it IS needed here?
 		if(Math.random() > chance) { // rerolling 1d20
 			p.entityDropItem(Witchery.Items.GENERIC.itemKobolditeDust.createStack(), 1);
 			return;
@@ -969,14 +928,13 @@ public final class DHEvents {
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void playerInteract(PlayerInteractEvent e) {
+	public void createMutandisInferiois(PlayerInteractEvent e) {
+		// TODO maybe ritual will be better
 		if(!DHIntegration.thaumcraft || e.entityPlayer.getHeldItem() == null) {
 			return;
 		}
 		ItemStack stack = e.entityPlayer.getHeldItem();
-		if(!stack.getItem()
-				 .getUnlocalizedName()
-				 .equals("item.witchery:ingredient") || stack.getItemDamage() != 14) {
+		if(!stack.isItemEqual(Witchery.Items.GENERIC.itemMutandis.createStack())) {
 			return;
 		}
 		EntityPlayer p = e.entityPlayer;
@@ -1011,6 +969,68 @@ public final class DHEvents {
 		grassper.decrStackSize(0, 1);
 		e.world.setBlock(blockX, blockY, blockZ, Blocks.air);
 		p.inventory.addItemStackToInventory(focus);
+	}
+
+	public static void processDHKeys(EntityPlayer p, int key, boolean pressed) {
+		switch(key) {
+			case 1: {
+				activateElderWand(p);
+				return;
+			}
+			case 2: {
+				activateNimbus(p);
+				return;
+			}
+			case 3: {
+				p.getEntityData().setBoolean(DHSPRINT_TAG, pressed);
+			}
+		}
+	}
+
+
+	private static void activateNimbus(EntityPlayer p) {
+		for(ItemStack sus: p.inventory.mainInventory) {
+			if(sus == null || sus.getItem() != DHItems.nimbus) {
+				continue;
+			}
+			ItemNimbus nimbus = (ItemNimbus)sus.getItem();
+			nimbus.onItemRightClick(sus, p.worldObj, p);
+			return;
+		}
+		if(p.ridingEntity instanceof EntityNimbus) {
+			EntityNimbus nimbus = (EntityNimbus)p.ridingEntity;
+			p.dismountEntity(nimbus);
+			nimbus.setDead();
+		}
+	}
+
+	private static void activateElderWand(EntityPlayer p) {
+		ItemStack stack = p.getHeldItem();
+		if(stack == null || stack.getItem() != DHItems.elderWand) {
+			return;
+		}
+		if(!stack.hasTagCompound()) {
+			return;
+		}
+		NBTTagCompound tag = stack.getTagCompound();
+		if(!tag.hasKey(ItemElderWand.LAST_SPELL_TAG)) { // The Last Spell is a good game, I recommend it
+			return;
+		}
+		
+		byte[] strokes = tag.getByteArray(ItemElderWand.LAST_SPELL_TAG);
+		SymbolEffect symbol = EffectRegistry.instance().getEffect(strokes);
+		// TODO stop spamming in chat, just render it on screen silly.
+		if(!p.capabilities.isCreativeMode && symbol.cooldownRemaining(p, Infusion.getNBT(p)) > 0L) {
+			ChatUtil.sendTranslated(EnumChatFormatting.GREEN, p, "dh.chat.wait");
+			return;
+		}
+		try{
+			symbol.perform(p.worldObj, p, EffectRegistry.instance().getLevel(strokes));
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		symbol.setOnCooldown(p);
 	}
 
 }

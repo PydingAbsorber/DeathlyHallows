@@ -1,11 +1,11 @@
 package com.pyding.deathlyhallows.network.packets;
 
+import com.pyding.deathlyhallows.events.DHEvents;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
 
 public class PacketKeyBindings implements IMessage, IMessageHandler<PacketKeyBindings, IMessage> {
 	public boolean state;
@@ -33,20 +33,11 @@ public class PacketKeyBindings implements IMessage, IMessageHandler<PacketKeyBin
 	}
 
 	@Override
-	public IMessage onMessage(PacketKeyBindings message, MessageContext ctx) {
+	public IMessage onMessage(PacketKeyBindings msg, MessageContext ctx) {
 		if(ctx.side != Side.SERVER) {
 			return null;
 		}
-		EntityPlayer player = ctx.getServerHandler().playerEntity;
-		if(message.id == 1) {
-			player.getEntityData().setBoolean("dhkey1", message.state);
-		}
-		else if(message.id == 2) {
-			player.getEntityData().setBoolean("dhkey2", message.state);
-		}
-		else if(message.id == 3) {
-			player.getEntityData().setBoolean("DHSprint", message.state);
-		}
+		DHEvents.processDHKeys(ctx.getServerHandler().playerEntity, msg.id, msg.state);
 		return null;
 	}
 	

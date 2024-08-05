@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
 public class EntityNimbus extends Entity {
@@ -109,17 +110,17 @@ public class EntityNimbus extends Entity {
 	}
 
 	@Override
-	public boolean attackEntityFrom(DamageSource p_70097_1_, float p_70097_2_) {
+	public boolean attackEntityFrom(DamageSource source, float damage) {
 		return false;
 	}
 
 	@Override
-	protected void readEntityFromNBT(NBTTagCompound p_70037_1_) {
-
+	protected void readEntityFromNBT(NBTTagCompound tag) {
+		
 	}
 
 	@Override
-	protected void writeEntityToNBT(NBTTagCompound p_70014_1_) {
+	protected void writeEntityToNBT(NBTTagCompound tag) {
 
 	}
 
@@ -133,4 +134,10 @@ public class EntityNimbus extends Entity {
 		noClip = false;
 		return true;
 	}
+
+	@Override
+	public ItemStack getPickedResult(MovingObjectPosition target) {
+		return new ItemStack(DHItems.nimbus);
+	}
+	
 }

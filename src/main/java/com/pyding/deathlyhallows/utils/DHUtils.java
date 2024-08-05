@@ -71,8 +71,8 @@ public class DHUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends Entity> List<T> getEntitiesAt(Class<T> clazz, Entity entity,double x, double y, double z, float radius) {
-		return entity.worldObj.getEntitiesWithinAABB(clazz, AxisAlignedBB.getBoundingBox(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius));
+	public static <T extends Entity> List<T> getEntitiesAt(Class<T> clazz, World world, double x, double y, double z, float radius) {
+		return world.getEntitiesWithinAABB(clazz, AxisAlignedBB.getBoundingBox(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius));
 	}
 	
 	public static void spawnArrow(EntityPlayer player, int type) {
@@ -373,14 +373,26 @@ public class DHUtils {
     }
 
 	// Stolen code from Minecraft; Was @SideOnly(Side.CLIENT)
-	public static MovingObjectPosition rayTrace(EntityPlayer player) {
-		double distance = player.capabilities.isCreativeMode ? 5.0F : 4.5F;
-		Vec3 startVec = Vec3.createVectorHelper(player.posX, player.posY + player.getEyeHeight(), player.posZ);
-		Vec3 lookVec = player.getLook(1.0F);
-		Vec3 endVec = startVec.addVector(lookVec.xCoord * distance, lookVec.yCoord * distance, lookVec.zCoord * distance);
-		return player.worldObj.rayTraceBlocks(startVec, endVec);
+	public static MovingObjectPosition rayTrace(EntityPlayer p) {
+		return rayTrace(p, p.capabilities.isCreativeMode ? 5.0F : 4.5F);
+	}
+
+	public static MovingObjectPosition rayTrace(EntityPlayer p, double distance) {
+		return p.worldObj.rayTraceBlocks(Vec3.createVectorHelper(p.posX, p.posY + p.getEyeHeight(), p.posZ), playerLook(p, distance));
 	}
 	
-	
+	private static Vec3 playerLook(EntityPlayer p, double distance) {
+		Vec3 startVec = Vec3.createVectorHelper(p.posX, p.posY + p.getEyeHeight(), p.posZ);
+		Vec3 lookVec = p.getLookVec();
+		return startVec.addVector(lookVec.xCoord * distance, lookVec.yCoord * distance, lookVec.zCoord * distance);
+	}
+
+	public static Vec3 getLook(EntityPlayer p, double range) {
+		MovingObjectPosition mop = rayTrace(p, range);
+		if(mop == null) {
+			return playerLook(p, range);
+		}
+		return mop.hitVec;
+	}
 	
 }

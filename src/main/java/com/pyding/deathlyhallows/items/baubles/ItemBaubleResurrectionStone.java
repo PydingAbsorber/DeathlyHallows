@@ -49,7 +49,7 @@ public class ItemBaubleResurrectionStone extends ItemBaubleBase {
 		if(players.isEmpty()) {
 			return super.onItemRightClick(stack, world, p);
 		}
-		String pName = "";
+		String pName;
 		int maxIndex = players.size();
 		if(getIndex(stack) == 0) {
 			pName = players.get(getIndex(stack)).getDisplayName();
@@ -170,8 +170,8 @@ public class ItemBaubleResurrectionStone extends ItemBaubleBase {
 		if(owner.equals("")) {
 			owner = StatCollector.translateToLocal("dh.desc.defaultOwner");
 		}
-		l.add(StatCollector.translateToLocalFormatted("dh.desc.stone7", owner));
-		l.add(StatCollector.translateToLocal("dh.desc.stone8"));
+		l.add(StatCollector.translateToLocalFormatted("dh.desc.owner", owner));
+		l.add(StatCollector.translateToLocal("dh.desc.hallow"));
 	}
 	
 }

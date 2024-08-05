@@ -68,8 +68,8 @@ public class ItemBaubleInvisibilityMantle extends ItemBaubleBase {
 		if(owner.equals("")) {
 			owner = StatCollector.translateToLocal("dh.desc.defaultOwner");
 		}
-		l.add(StatCollector.translateToLocalFormatted("dh.desc.mantle8", owner));
-		l.add(StatCollector.translateToLocal("dh.desc.mantle9"));
+		l.add(StatCollector.translateToLocalFormatted("dh.desc.owner", owner));
+		l.add(StatCollector.translateToLocal("dh.desc.hallow"));
 	}
 	
 }
