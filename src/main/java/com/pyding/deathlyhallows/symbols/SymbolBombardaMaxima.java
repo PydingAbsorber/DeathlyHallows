@@ -18,11 +18,11 @@ public class SymbolBombardaMaxima extends SymbolEffectBase {
 			DAMAGE = 10F;
 
 	public SymbolBombardaMaxima() {
-		super(DHID.SYMBOL_BOMBARDAMAXIMA, "bombardamaxima", 25, false, false, null, 5_000, true, -1, false);
+		super(DHID.SYMBOL_BOMBARDAMAXIMA, "bombardamaxima", 25, false, false, null, 5_000, true);
 	}
 
 	@Override
-	public void doPerform(World world, EntityPlayer p, int level) {
+	public void perform(World world, EntityPlayer p, int level) {
 		Vec3 look = DHUtils.getLook(p, TRACE_RANGE);
 		double x = look.xCoord, y = look.yCoord, z = look.zCoord;
 		for(EntityLivingBase e: DHUtils.getEntitiesAt(EntityLivingBase.class, world, x, y, z, 4F * level)) {

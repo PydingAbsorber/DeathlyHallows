@@ -26,11 +26,11 @@ public class SymbolSectumsempra extends SymbolEffectBase {
 			HP_PERCENT = 0.15F;
 
 	public SymbolSectumsempra() {
-		super(DHID.SYMBOL_SECTUMSEMPRA, "sectumsempra", 15, true, false, null, 5_000, true, -1, false);
+		super(DHID.SYMBOL_SECTUMSEMPRA, "sectumsempra", 15, true, false, null, 5_000, true);
 	}
 
 	@Override
-	public void doPerform(World world, EntityPlayer p, int level) {
+	public void perform(World world, EntityPlayer p, int level) {
 		Vec3 look = DHUtils.getLook(p, TRACE_RANGE);
 		double x = look.xCoord, y = look.yCoord, z = look.zCoord;
 		float range = RANGE + level / 2F;

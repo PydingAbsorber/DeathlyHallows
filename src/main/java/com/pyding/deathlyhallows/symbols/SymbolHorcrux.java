@@ -17,11 +17,11 @@ public class SymbolHorcrux extends SymbolEffectBase {
 	public static final float HP_COST = 10F;
 	
 	public SymbolHorcrux() {
-		super(DHID.SYMBOL_HORCRUX, "horcrux", 120, true, false, null, 10_000, true, 4, true);
+		super(DHID.SYMBOL_HORCRUX, "horcrux", 120, true, false, null, 10_000, true, ElderSymbolTraits.INFUSION(4), ElderSymbolTraits.ELF(1));
 	}
 
 	@Override
-	public void doPerform(World world, EntityPlayer p, int level) {
+	public void perform(World world, EntityPlayer p, int level) {
 		int lives = p.getEntityData().getInteger("Horcrux");
 		if(p.getMaxHealth() - HP_COST > HP_COST) {
 			Multimap<String, AttributeModifier> attributes = HashMultimap.create();

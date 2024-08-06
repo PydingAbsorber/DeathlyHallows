@@ -20,11 +20,11 @@ public class SymbolGraviole extends SymbolEffectBase {
 			SPEED = 10F;
 
 	public SymbolGraviole() {
-		super(DHID.SYMBOL_GRAVIOLE, "graviole", 5, false, false, null, 2_500, true, -1, false);
+		super(DHID.SYMBOL_GRAVIOLE, "graviole", 5, false, false, null, 2_500, true);
 	}
 
 	@Override
-	public void doPerform(World world, EntityPlayer p, int level) {
+	public void perform(World world, EntityPlayer p, int level) {
 		Vec3 look = DHUtils.getLook(p, TRACE_RANGE);
 		double x = look.xCoord, y = look.yCoord, z = look.zCoord;
 		for(Entity entity: DHUtils.getEntitiesAt(EntityLivingBase.class, world, x, y, z, RADIUS)) {

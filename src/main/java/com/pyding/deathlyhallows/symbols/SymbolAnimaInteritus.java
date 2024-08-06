@@ -17,11 +17,11 @@ import net.minecraft.world.World;
 public class SymbolAnimaInteritus extends SymbolEffectBase {
 	
 	public SymbolAnimaInteritus() {
-		super(DHID.SYMBOL_ANIMAINTERITUS, "animainteritus", 120, true, false, null, 10_000, true, 4, true);
+		super(DHID.SYMBOL_ANIMAINTERITUS, "animainteritus", 120, true, false, null, 10_000, true, ElderSymbolTraits.INFUSION(4), ElderSymbolTraits.ELF(1));
 	}
 	
 	@Override
-	protected void doPerform(World world, EntityPlayer p, int level) {
+	public void perform(World world, EntityPlayer p, int level) {
 		// TODO rework
 		int elfLevel = ElfUtils.getElfLevel(p);
 		int cursedCount = 0;

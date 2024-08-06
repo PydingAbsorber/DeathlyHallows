@@ -21,11 +21,11 @@ public class SymbolLumosTempestas extends SymbolEffectBase {
 
 	public SymbolLumosTempestas() {
 		// §
-		super(DHID.SYMBOL_LUMOSTEMPESTAS, "lumostempestas", 5, false, false, null, 10_000, true, -1, false);
+		super(DHID.SYMBOL_LUMOSTEMPESTAS, "lumostempestas", 5, false, false, null, 10_000, true);
 	}
 
 	@Override
-	public void doPerform(World world, EntityPlayer p, int level) {
+	public void perform(World world, EntityPlayer p, int level) {
 		int count = 0;
 		Vec3 look = DHUtils.getLook(p, TRACE_RANGE);
 		int amount = AMOUNT * level;
