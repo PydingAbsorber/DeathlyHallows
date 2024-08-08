@@ -18,7 +18,6 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,7 +25,9 @@ import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagByteArray;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
@@ -42,8 +43,7 @@ import java.util.Random;
 import java.util.Set;
 
 public class DHUtils {
-	
-	private static class UtilsRandom {
+    private static class UtilsRandom {
 		private static final Random random = new Random();
 	}
 	/**
@@ -74,7 +74,10 @@ public class DHUtils {
 	public static <T extends Entity> List<T> getEntitiesAt(Class<T> clazz, World world, double x, double y, double z, float radius) {
 		return world.getEntitiesWithinAABB(clazz, AxisAlignedBB.getBoundingBox(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius));
 	}
-	
+
+	public static byte[] getBytesFromTagList(NBTTagList list, int index) {
+		return ((NBTTagByteArray)((NBTTagList)list.copy()).removeTag(index)).func_150292_c();
+	}
 	public static boolean contains(String list, String element){
 		for(String name: list.split(",")) {
 			if(element.equals(name)) {

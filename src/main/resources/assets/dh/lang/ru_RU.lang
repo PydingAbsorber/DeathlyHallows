@@ -35,7 +35,6 @@ entity.dh.EmpoweredArrow.name=Усиленная стрела
 itemGroup.tabDeathlyHallows=§cДары Смерти
 # Key Binds
 dh.keyGroup=§cДары Смерти
-dh.key.wand=Быстрый слот Бузинной палочки
 dh.key.broom=Призвать Нимбус3000
 # Chat messages
 dh.chat.login=§5Да здравствует Пудинг! Добро пожаловать на сервер!

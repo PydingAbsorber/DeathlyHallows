@@ -10,8 +10,6 @@ import com.emoniph.witchery.entity.EntityNightmare;
 import com.emoniph.witchery.entity.EntityPoltergeist;
 import com.emoniph.witchery.entity.EntitySpirit;
 import com.emoniph.witchery.infusion.Infusion;
-import com.emoniph.witchery.infusion.infusions.symbols.EffectRegistry;
-import com.emoniph.witchery.infusion.infusions.symbols.SymbolEffect;
 import com.emoniph.witchery.item.ItemDeathsClothes;
 import com.emoniph.witchery.util.ChatUtil;
 import com.emoniph.witchery.util.EntityUtil;
@@ -26,7 +24,6 @@ import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.items.ItemBag;
 import com.pyding.deathlyhallows.items.ItemDeadlyPrism;
-import com.pyding.deathlyhallows.items.ItemElderWand;
 import com.pyding.deathlyhallows.items.ItemNimbus;
 import com.pyding.deathlyhallows.items.baubles.ItemBaubleResurrectionStone;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
@@ -986,14 +983,10 @@ public final class DHEvents {
 	public static void processDHKeys(EntityPlayer p, int key, boolean pressed) {
 		switch(key) {
 			case 1: {
-				activateElderWand(p);
-				return;
-			}
-			case 2: {
 				activateNimbus(p);
 				return;
 			}
-			case 3: {
+			case 2: {
 				p.getEntityData().setBoolean(DHSPRINT_TAG, pressed);
 			}
 		}
@@ -1015,47 +1008,5 @@ public final class DHEvents {
 			nimbus.setDead();
 		}
 	}
-
-	private static void activateElderWand(EntityPlayer p) {
-		ItemStack stack = p.getHeldItem();
-		if(stack == null || stack.getItem() != DHItems.elderWand) {
-			return;
-		}
-		if(!stack.hasTagCompound()) {
-			return;
-		}
-		NBTTagCompound tag = stack.getTagCompound();
-		if(!tag.hasKey(ItemElderWand.LAST_SPELL_TAG)) { // The Last Spell is a good game, I recommend it
-			return;
-		}
-
-		byte[] strokes = tag.getByteArray(ItemElderWand.LAST_SPELL_TAG);
-		SymbolEffect symbol = EffectRegistry.instance().getEffect(strokes);
-		// TODO stop spamming in chat, just render it on screen silly.
-		if(!p.capabilities.isCreativeMode && symbol.cooldownRemaining(p, Infusion.getNBT(p)) > 0L) {
-			ChatUtil.sendTranslated(EnumChatFormatting.GREEN, p, "dh.chat.wait");
-			return;
-		}
-		int level = EffectRegistry.instance().getLevel(strokes);
-		if(!p.capabilities.isCreativeMode) {
-			int
-					cost = symbol.getChargeCost(p.worldObj, p, level),
-					current = Infusion.getCurrentEnergy(p);
-			if(cost > current) {
-				ChatUtil.sendTranslated(EnumChatFormatting.RED, p, "witchery.infuse.branch.nocharges");
-				SoundEffect.NOTE_SNARE.playAtPlayer(p.worldObj, p);
-			}
-			else {
-				Infusion.setCurrentEnergy(p, current - cost);
-			}
-		}
-		try {
-			symbol.perform(p.worldObj, p, level);
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-		symbol.setOnCooldown(p);
-	}
-
+	
 }

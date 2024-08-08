@@ -30,6 +30,7 @@ public class DHPacketProcessor {
 		channel.registerMessage(PacketParticle.class, PacketParticle.class, id++, Side.CLIENT);
 		channel.registerMessage(PacketElderBookPage.class, PacketElderBookPage.class, id++, Side.SERVER);
 		channel.registerMessage(PacketElderWandStrokes.class, PacketElderWandStrokes.class, id++, Side.SERVER);
+		channel.registerMessage(PacketElderWandLastSpell.class, PacketElderWandLastSpell.class, id++, Side.SERVER);
 	}
 
 	public static void sendToPlayer(IMessage message, EntityPlayer player) {

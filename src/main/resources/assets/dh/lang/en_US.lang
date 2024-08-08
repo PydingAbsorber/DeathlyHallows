@@ -35,7 +35,6 @@ entity.dh.EmpoweredArrow.name=Empowered Arrow
 itemGroup.tabDeathlyHallows=§cDeathly Hallows
 # Key Binds
 dh.keyGroup=§cDeathly Hallows
-dh.key.wand=Elder Wand's quick spell
 dh.key.broom=Summon Nibmus3000
 # Chat messages
 dh.chat.login=§5all hail Pyding! Welcome to the club!

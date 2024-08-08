@@ -43,7 +43,8 @@ public class PacketElderWandStrokes implements IMessage, IMessageHandler<PacketE
 		if(wand == null || wand.getItem() != DHItems.elderWand) {
 			return null;
 		}
-		ItemElderWand.setLastStrokes(wand, msg.strokes);
+		ItemElderWand.addLastSpell(wand, msg.strokes);
+		ItemElderWand.setBinding(p, false);
 		return null;
 	}
 

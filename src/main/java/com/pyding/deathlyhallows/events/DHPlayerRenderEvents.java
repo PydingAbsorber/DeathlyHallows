@@ -1,22 +1,33 @@
 package com.pyding.deathlyhallows.events;
 
+import com.emoniph.witchery.Witchery;
 import com.emoniph.witchery.infusion.infusions.symbols.EffectRegistry;
 import com.emoniph.witchery.infusion.infusions.symbols.SymbolEffect;
 import com.emoniph.witchery.util.Config;
+import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
+import com.pyding.deathlyhallows.items.ItemElderWand;
+import com.pyding.deathlyhallows.symbols.SymbolEffectBase;
+import com.pyding.deathlyhallows.utils.DHUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
 
 import static codechicken.lib.gui.GuiDraw.drawTexturedModalRect;
 import static codechicken.lib.gui.GuiDraw.getStringWidth;
 import static com.emoniph.witchery.client.PlayerRender.drawString;
+import static org.lwjgl.opengl.GL11.*;
 
 @SuppressWarnings("unused")
 public final class DHPlayerRenderEvents {
@@ -26,8 +37,9 @@ public final class DHPlayerRenderEvents {
 	private int lastY = 0;
 	private static final int[] glyphOffsetX = new int[]{0, 0, 1, -1, 1, -1, -1, 1};
 	private static final int[] glyphOffsetY = new int[]{-1, 1, 0, 0, -1, 1, -1, 1};
-	private static final ResourceLocation TEXTURE_GRID = new ResourceLocation("witchery", "textures/gui/grid.png");
-
+	private static final ResourceLocation
+			TEXTURE_GRID = new ResourceLocation(DHIntegration.WITCHERY, "textures/gui/grid.png"),
+			RADIAL_LOCATION = new ResourceLocation(DHIntegration.WITCHERY, "textures/gui/radial.png");
 	private static final DHPlayerRenderEvents INSTANCE = new DHPlayerRenderEvents();
 
 	private DHPlayerRenderEvents() {
@@ -59,19 +71,140 @@ public final class DHPlayerRenderEvents {
 	}
 
 	private void renderPast() {
-		EntityClientPlayerMP player = mc.thePlayer;
-		if(player == null || mc.currentScreen != null) {
+		EntityClientPlayerMP p = mc.thePlayer;
+		if(p == null || mc.currentScreen != null) {
 			return;
 		}
-		mc.renderViewEntity = player;
-		ItemStack stack = player.getItemInUse();
+		mc.renderViewEntity = p;
+		ItemStack stack = p.getItemInUse();
 		ScaledResolution scale = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
-		if(stack == null || stack.getItem() != DHItems.elderWand) {
+		if(stack == null) {
 			return;
 		}
-		byte[] strokes = player.getEntityData().getByteArray("Strokes");
+		if(stack.getItem() == DHItems.elderWand) {
+			if(!p.isSneaking()) {
+				renderHotSpells(scale, p, ItemElderWand.getLastSpells(stack), ItemElderWand.getIndex(stack.getTagCompound()));
+				return;
+			}
+			renderStrokes(scale, p.getEntityData().getByteArray("Strokes"));
+		}
+	}
+
+	private static void renderHotSpells(ScaledResolution scale, EntityPlayer p, NBTTagList list, int index) {
+		glPushMatrix();
+		try {
+			int x = scale.getScaledWidth() / 2 - 8;
+			int y = scale.getScaledHeight() / 2 - 8;
+			mc.getTextureManager().bindTexture(RADIAL_LOCATION);
+			glPushMatrix();
+			float s = 0.33333334F;
+			glTranslatef(x - 42F + 5F, y - 42F + 5F, 0.0F);
+			glScalef(s, s, s);
+			glColor4f(1F, 1F, 1F, 1F);
+			drawTexturedModalRect(8, 8, 0, 0, 256, 256);
+			glPopMatrix();
+			drawSpells(ItemElderWand.getXY(p), list, index, x, y);
+		}
+		finally {
+			glPopMatrix();
+		}
+	}
+
+	private static void drawSpells(float[] pointer, NBTTagList list, int index, int x, int y) {
+		int length = list.tagCount();
+		final float spellRange = 32F;
+		if(index == -1) {
+			final float pointerRange = 1.5F;
+			drawPointer(x + pointer[0] * pointerRange, y + pointer[1] * pointerRange);
+			for(int i = 0; i < length; ++i) {
+				drawSpellSlot(getSpell(list, i), x, y, i * (float)Math.PI * 2F / (length + 1F), spellRange, 0x77_FF_FF_FF);
+			}
+			drawSpellSlot(null, x, y, length * (float)Math.PI * 2F / (length + 1F), spellRange, 0x77_FF_FF_FF);
+			return;
+		}
+		if(list.tagCount() >= ItemElderWand.MAX_SPELLS) {
+			drawSpellSlot(list.tagCount() < ItemElderWand.MAX_SPELLS && index == list.tagCount() ? null : getSpell(list, index), x, y, index * (float)Math.PI * 2F / (length), spellRange, 0xFF_FF_FF);
+			return;
+		}
+		if(index == list.tagCount()) {
+			drawSpellSlot(null, x, y, length * (float)Math.PI * 2F / (length + 1F), spellRange, 0xFF_FF_FF);
+			return;
+		}
+		drawSpellSlot(list.tagCount() < ItemElderWand.MAX_SPELLS && index == list.tagCount() ? null : getSpell(list, index), x, y, index * (float)Math.PI * 2F / (length + 1F), spellRange, 0xFF_FF_FF);
+	}
+
+	private static SymbolEffect getSpell(NBTTagList list, int index) {
+		return EffectRegistry.instance().getEffect(DHUtils.getBytesFromTagList(list, index));
+	}
+
+	private static void drawPointer(float x, float y) {
+		glPushMatrix();
+		glTranslatef(x + 4.5F, y + 4.5F, 0F);
+		glScalef(1F / 32F, 1F / 32F, 1F);
+		// TODO texture
+		drawTexturedModalRect(0, 0, 0, 0, 256, 256);
+		glPopMatrix();
+	}
+
+	private static void drawSpellSlot(SymbolEffect effect, float x, float y, float angle, float radius, int color) {
+		float sin = -MathHelper.cos(angle), cos = MathHelper.sin(angle); // I know what I'm doing. -cos is just shortcuts for sin(x + pi/2), but it's still Y axis.
+		x += cos * radius;
+		y += sin * radius;
+		String s = "New Spell";
+		ItemStack icon = new ItemStack(Items.written_book);
+		if(effect != null) {
+			s = effect.getLocalizedName();
+			if(effect instanceof SymbolEffectBase) {
+				icon = new ItemStack(DHItems.elderBook);
+			}
+			else {
+				icon = Witchery.Items.GENERIC.itemBookWands.createStack();
+			}
+		}
+		drawItem(x, y, icon);
+		float
+				superCos = Math.abs(cos) < 0.1F ? 0F : Math.signum(cos),
+				superSin = (1F - (float)Math.pow(Math.abs(cos), 0.75D)) * Math.signum(sin);
+		x += 9F - mc.fontRenderer.getStringWidth(s) / 2F + superCos * (12F + mc.fontRenderer.getStringWidth(s) / 2F);
+		y += mc.fontRenderer.FONT_HEIGHT / 2F + superSin * (6F + mc.fontRenderer.FONT_HEIGHT);
+		drawString(s, x, y, color);
+	}
+
+	private static final RenderItem drawItems = new RenderItem();
+
+	private static void drawItem(float x, float y, ItemStack stack) {
+		glEnable(GL_LIGHTING);
+		glEnable(GL_DEPTH_TEST);
+		drawItems.zLevel += 100F;
+		glPushMatrix();
+		FontRenderer fr = getFontRenderer(stack);
+		try {
+			glTranslatef(x, y, 0F);
+			drawItems.renderItemAndEffectIntoGUI(fr, mc.renderEngine, stack, 0, 0);
+			drawItems.renderItemOverlayIntoGUI(fr, mc.renderEngine, stack, 0, 0);
+		}
+		finally {
+			glPopMatrix();
+		}
+		drawItems.zLevel -= 100F;
+		glDisable(GL_LIGHTING);
+		glDisable(GL_DEPTH_TEST);
+	}
+
+	private static FontRenderer getFontRenderer(ItemStack stack) {
+		if(stack == null || stack.getItem() == null) {
+			return mc.fontRenderer;
+		}
+		FontRenderer f = stack.getItem().getFontRenderer(stack);
+		if(f == null) {
+			return mc.fontRenderer;
+		}
+		return f;
+	}
+
+	private void renderStrokes(ScaledResolution scale, byte[] strokes) {
 		mc.getTextureManager().bindTexture(TEXTURE_GRID);
-		GL11.glPushMatrix();
+		glPushMatrix();
 		try {
 			int x = scale.getScaledWidth() / 2 - 8;
 			int y = scale.getScaledHeight() / 2 - 8;
@@ -86,15 +219,15 @@ public final class DHPlayerRenderEvents {
 			}
 			SymbolEffect symbol = EffectRegistry.instance().getEffect(strokes);
 			if(symbol != null) {
-				String var49 = symbol.getLocalizedName();
-				int tx = scale.getScaledWidth() / 2 - (int)(getStringWidth(var49) / 2.0D);
+				String name = symbol.getLocalizedName();
+				int tx = scale.getScaledWidth() / 2 - (int)(getStringWidth(name) / 2.0D);
 				int ty = scale.getScaledHeight() / 2 + 20;
-				drawString(var49, tx, ty, 16777215);
+				drawString(name, tx, ty, 16777215);
 			}
 		}
 		finally {
-			GL11.glPopMatrix();
+			glPopMatrix();
 		}
 	}
-	
+
 }

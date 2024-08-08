@@ -17,7 +17,6 @@ public class DHKeys {
 	private static final DHKeys INSTANCE = new DHKeys();
 
 	public static final KeyBinding
-			WAND = new KeyBinding("dh.key.wand", Keyboard.KEY_V, KEY_GROUP),
 			BROOM = new KeyBinding("dh.key.broom", Keyboard.KEY_C, KEY_GROUP);
 
 	private DHKeys() {
@@ -25,23 +24,19 @@ public class DHKeys {
 	}
 
 	public static void register() {
-		ClientRegistry.registerKeyBinding(WAND);
 		ClientRegistry.registerKeyBinding(BROOM);
 		FMLCommonHandler.instance().bus().register(INSTANCE);
 	}
 
 	@SubscribeEvent
 	public void onKeyInput(InputEvent.KeyInputEvent e) {
-		if(WAND.isPressed()) {
-			DHPacketProcessor.sendToServer(new PacketKeyBindings(true, 1));
-		}
 		if(BROOM.isPressed()) {
-			DHPacketProcessor.sendToServer(new PacketKeyBindings(true, 2));
+			DHPacketProcessor.sendToServer(new PacketKeyBindings(true, 1));
 		}
 		if(Minecraft.getMinecraft().thePlayer.ridingEntity instanceof EntityNimbus) {
 			boolean sprint = Minecraft.getMinecraft().gameSettings.keyBindSprint.isPressed();
 			Minecraft.getMinecraft().thePlayer.getEntityData().setBoolean("DHSprint", sprint);
-			DHPacketProcessor.sendToServer(new PacketKeyBindings(sprint, 3));
+			DHPacketProcessor.sendToServer(new PacketKeyBindings(sprint, 2));
 		}
 	}
 	
