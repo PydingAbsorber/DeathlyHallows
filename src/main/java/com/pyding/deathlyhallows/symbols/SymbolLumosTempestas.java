@@ -21,7 +21,7 @@ public class SymbolLumosTempestas extends SymbolEffectBase {
 
 	public SymbolLumosTempestas() {
 		// §
-		super(DHID.SYMBOL_LUMOSTEMPESTAS, "lumostempestas", 5, false, false, null, 10_000, true);
+		super(DHID.SYMBOL_LUMOSTEMPESTAS, "lumostempestas", 5, false, false, null, 10_000, false);
 	}
 
 	@Override

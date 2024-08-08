@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 public class SymbolAnimaInteritus extends SymbolEffectBase {
 	
 	public SymbolAnimaInteritus() {
-		super(DHID.SYMBOL_ANIMAINTERITUS, "animainteritus", 120, true, false, null, 10_000, true, ElderSymbolTraits.INFUSION(4), ElderSymbolTraits.ELF(1));
+		super(DHID.SYMBOL_ANIMAINTERITUS, "animainteritus", 120, true, false, null, 10_000, false, ElderSymbolTraits.INFUSION(4), ElderSymbolTraits.ELF(1));
 	}
 	
 	@Override

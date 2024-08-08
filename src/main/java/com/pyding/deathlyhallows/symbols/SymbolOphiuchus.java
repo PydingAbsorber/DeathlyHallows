@@ -9,9 +9,9 @@ import net.minecraft.world.World;
 public class SymbolOphiuchus extends SymbolEffectBase {
 	
 	public SymbolOphiuchus() {
-		super(DHID.SYMBOL_OPHIUCHUS, "ophiuchus", 20, false, false, null, 500, true);
+		super(DHID.SYMBOL_OPHIUCHUS, "ophiuchus", 20, false, false, null, 500, false);
 	}
-
+	
 	@Override
 	public void perform(World world, EntityPlayer p, int level) {
 		SymbolEffect[] leonardos = new SymbolEffect[] {

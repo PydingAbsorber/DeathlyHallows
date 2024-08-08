@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 public class SymbolPowerDestruction extends SymbolEffectBase {
 
 	public SymbolPowerDestruction() {
-		super(DHID.SYMBOL_POWERDESTRUCTION, "powerDestruction", 20, false, false, null, 500, true);
+		super(DHID.SYMBOL_POWERDESTRUCTION, "powerDestruction", 20, false, false, null, 500, false);
 	}
 
 	public static float

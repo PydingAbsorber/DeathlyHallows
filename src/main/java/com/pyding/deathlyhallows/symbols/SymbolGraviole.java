@@ -20,7 +20,7 @@ public class SymbolGraviole extends SymbolEffectBase {
 			SPEED = 10F;
 
 	public SymbolGraviole() {
-		super(DHID.SYMBOL_GRAVIOLE, "graviole", 5, false, false, null, 2_500, true);
+		super(DHID.SYMBOL_GRAVIOLE, "graviole", 5, false, false, null, 2_500, false);
 	}
 
 	@Override

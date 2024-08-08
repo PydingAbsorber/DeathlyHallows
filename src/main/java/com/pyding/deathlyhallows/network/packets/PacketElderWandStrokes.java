@@ -1,5 +1,6 @@
 package com.pyding.deathlyhallows.network.packets;
 
+import com.emoniph.witchery.util.SoundEffect;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.items.ItemElderWand;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -44,6 +45,7 @@ public class PacketElderWandStrokes implements IMessage, IMessageHandler<PacketE
 			return null;
 		}
 		ItemElderWand.addLastSpell(wand, msg.strokes);
+		SoundEffect.NOTE_HARP.playAtPlayer(p.worldObj, p, 1.0F);
 		return null;
 	}
 

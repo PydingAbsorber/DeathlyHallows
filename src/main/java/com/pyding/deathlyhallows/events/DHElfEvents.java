@@ -1,10 +1,14 @@
 package com.pyding.deathlyhallows.events;
 
+import com.emoniph.witchery.infusion.infusions.symbols.EffectRegistry;
+import com.emoniph.witchery.infusion.infusions.symbols.SymbolEffect;
 import com.emoniph.witchery.util.CreatureUtil;
 import com.emoniph.witchery.util.EntityDamageSourceIndirectSilver;
 import com.emoniph.witchery.util.EntityUtil;
 import com.emoniph.witchery.util.ParticleEffect;
+import com.emoniph.witchery.util.SoundEffect;
 import com.pyding.deathlyhallows.items.DHItems;
+import com.pyding.deathlyhallows.items.ItemElderWand;
 import com.pyding.deathlyhallows.utils.DHUtils;
 import com.pyding.deathlyhallows.utils.ElfUtils;
 import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
@@ -16,9 +20,11 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemAppleGold;
 import net.minecraft.item.ItemBow;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -27,6 +33,8 @@ import net.minecraftforge.event.entity.player.ArrowNockEvent;
 import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
 
 import java.awt.*;
+import java.nio.ByteBuffer;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public final class DHElfEvents {
@@ -53,6 +61,30 @@ public final class DHElfEvents {
 		MinecraftForge.EVENT_BUS.register(INSTANCE);
 	}
 
+	private static final String charReplace = "\\s+|§[0-9a-r]|[`~!@#$%^&*()_+\\\\;',./{}|:\"<>?\\[\\]]";
+	
+	@SubscribeEvent
+	public void elfTheCharmcaster(ServerChatEvent e){
+		if(ElfUtils.getElfLevel(e.player) < 2 || !ItemElderWand.isBinding(e.player)) {
+			return;
+		}
+		ItemStack wand = e.player.getHeldItem();
+		if(wand == null || wand.getItem() != DHItems.elderWand) {
+			return;
+		}
+		String msg = e.message.toLowerCase().replaceAll(charReplace, "").replace("witchery.pott.", "");
+		for(Map.Entry<ByteBuffer, SymbolEffect> effect : EffectRegistry.instance().effects.entrySet()) {
+			String spell = effect.getValue().getLocalizedName().toLowerCase().replaceAll(charReplace, "");
+			if(msg.contains(spell)) {
+				ItemElderWand.setBinding(e.player, false);
+				ItemElderWand.addLastSpell(wand, effect.getKey().array());
+				SoundEffect.NOTE_HARP.playAtPlayer(e.player.worldObj, e.player, 1.0F);
+				e.setCanceled(true);
+				return;
+			}
+		}
+	}
+	
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void elfTheLiveEnjoyer(LivingEvent.LivingUpdateEvent e) {
 		if(e.entity.worldObj.isRemote || !(e.entity instanceof EntityPlayer)) {
