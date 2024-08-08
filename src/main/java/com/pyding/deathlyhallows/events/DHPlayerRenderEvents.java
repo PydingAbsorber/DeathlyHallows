@@ -142,12 +142,14 @@ public final class DHPlayerRenderEvents {
 	}
 
 	private static void drawPointer(float x, float y) {
+		glColor3f(0F,0F,0F);
 		glPushMatrix();
 		glTranslatef(x + 4.5F, y + 4.5F, 0F);
 		glScalef(1F / 32F, 1F / 32F, 1F);
 		// TODO texture
 		drawTexturedModalRect(0, 0, 0, 0, 256, 256);
 		glPopMatrix();
+		glColor3f(1F,1F,1F);
 	}
 
 	private static void drawSpellSlot(SymbolEffect effect, float x, float y, float angle, float radius, int color) {
