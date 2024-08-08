@@ -6,9 +6,11 @@ import com.emoniph.witchery.infusion.infusions.symbols.EffectRegistry;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketElderWandLastSpell;
 import com.pyding.deathlyhallows.network.packets.PacketElderWandStrokes;
+import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.utils.DHUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumAction;
@@ -25,7 +27,6 @@ import net.minecraftforge.common.util.Constants;
 import java.util.List;
 
 public class ItemElderWand extends ItemBase {
-	public static final int MAX_SPELLS = 10;
 	public static final String
 			LAST_SPELL_TAG = "lastSpells",
 			LAST_SPELL_BIND_TAG = "lastSpell",
@@ -33,7 +34,7 @@ public class ItemElderWand extends ItemBase {
 			START_Y_TAG = "startY",
 			STROKES_TAG = "Strokes",
 			INDEX_TAG = "index",
-			START_PITCH_TAG = "startPitch", 
+			START_PITCH_TAG = "startPitch",
 			START_YAW_TAG = "startYaw";
 	private static final float
 			outerRadius = 22F,
@@ -122,6 +123,13 @@ public class ItemElderWand extends ItemBase {
 				stack.setTagCompound(new NBTTagCompound());
 			}
 			if(stack.getTagCompound().hasKey(INDEX_TAG)) {
+				if(Minecraft.getMinecraft().gameSettings.keyBindAttack.getIsKeyPressed()) {
+					int index = getIndex(stack.getTagCompound());
+					removeLastSpell(stack, index);
+					DHPacketProcessor.sendToServer(new PacketElderWandLastSpell(index, true));
+					setIndex(-1, stack.getTagCompound());
+					resetXY(p);
+				}
 				return;
 			}
 			NBTTagList list = getLastSpells(stack);
@@ -132,7 +140,7 @@ public class ItemElderWand extends ItemBase {
 			}
 			DHPacketProcessor.sendToServer(new PacketElderWandLastSpell(index));
 			setIndex(index, stack.getTagCompound());
-			if(size < MAX_SPELLS && index == size) {
+			if(size < DHConfig.elderWandMaxSpells && index == size) {
 				setBinding(p, true);
 			}
 			return;
@@ -169,7 +177,7 @@ public class ItemElderWand extends ItemBase {
 			return;
 		}
 		int size = getLastSpells(stack).tagCount();
-		if(world.isRemote && getIndex(stack.getTagCompound()) != size && size < MAX_SPELLS) {
+		if(world.isRemote && getIndex(stack.getTagCompound()) != size && size < DHConfig.elderWandMaxSpells) {
 			setBinding(p, false);
 			DHPacketProcessor.sendToServer(new PacketElderWandLastSpell(-1));
 		}
@@ -239,7 +247,7 @@ public class ItemElderWand extends ItemBase {
 		tag.removeTag(START_PITCH_TAG);
 	}
 
-	public static void resetXY(EntityPlayer p){
+	public static void resetXY(EntityPlayer p) {
 		NBTTagCompound tag = p.getEntityData();
 		tag.removeTag(START_X_TAG);
 		tag.removeTag(START_Y_TAG);
@@ -254,7 +262,7 @@ public class ItemElderWand extends ItemBase {
 			return -1;
 		}
 		double wire = (Math.atan2(-x, y) / (2D * Math.PI) + 1.5D + (0.5D / (length + 1D))) % 1D;
-		return MathHelper.floor_double(wire * (length + (length < MAX_SPELLS ? 1 : 0)));
+		return MathHelper.floor_double(wire * (length + (length < DHConfig.elderWandMaxSpells ? 1 : 0)));
 	}
 
 	public static void addLastSpell(ItemStack wand, byte[] strokes) {
@@ -267,6 +275,13 @@ public class ItemElderWand extends ItemBase {
 			tag.setTag(LAST_SPELL_TAG, new NBTTagList());
 		}
 		getLastSpells(wand).appendTag(new NBTTagByteArray(strokes));
+	}
+
+	public static void removeLastSpell(ItemStack wand, int index) {
+		NBTTagList list = getLastSpells(wand);
+		if(list.tagCount() > index) {
+			list.removeTag(index);
+		}
 	}
 
 }

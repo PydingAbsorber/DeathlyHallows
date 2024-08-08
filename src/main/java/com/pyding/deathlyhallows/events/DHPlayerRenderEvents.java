@@ -8,6 +8,7 @@ import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.items.ItemElderWand;
 import com.pyding.deathlyhallows.symbols.SymbolEffectBase;
+import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.utils.DHUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -112,7 +113,7 @@ public final class DHPlayerRenderEvents {
 
 	private static void drawSpells(float[] pointer, NBTTagList list, int index, int x, int y) {
 		final float spellRange = 32F;
-		boolean full = list.tagCount() >= ItemElderWand.MAX_SPELLS;
+		boolean full = list.tagCount() >= DHConfig.elderWandMaxSpells;
 		int length = list.tagCount() + (full ? 0 : 1);
 		if(index == -1) {
 			final float pointerRange = 1.5F;
@@ -133,7 +134,7 @@ public final class DHPlayerRenderEvents {
 			drawSpellSlot(null, x, y, (length - 1) * (float)Math.PI * 2F / length, spellRange, 0xFF_FF_FF);
 			return;
 		}
-		drawSpellSlot(list.tagCount() < ItemElderWand.MAX_SPELLS && index == list.tagCount() ? null : getSpell(list, index), x, y, index * (float)Math.PI * 2F / length, spellRange, 0xFF_FF_FF);
+		drawSpellSlot(list.tagCount() < DHConfig.elderWandMaxSpells && index == list.tagCount() ? null : getSpell(list, index), x, y, index * (float)Math.PI * 2F / length, spellRange, 0xFF_FF_FF);
 	}
 
 	private static SymbolEffect getSpell(NBTTagList list, int index) {
