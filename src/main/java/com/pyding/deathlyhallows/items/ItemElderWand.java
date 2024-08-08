@@ -33,7 +33,7 @@ public class ItemElderWand extends ItemBase {
 			START_Y_TAG = "startY",
 			STROKES_TAG = "Strokes",
 			INDEX_TAG = "index",
-			START_PTICH_TAG = "startPitch", 
+			START_PITCH_TAG = "startPitch", 
 			START_YAW_TAG = "startYaw";
 	private static final float
 			outerRadius = 22F,
@@ -139,10 +139,6 @@ public class ItemElderWand extends ItemBase {
 		}
 		Witchery.Items.MYSTIC_BRANCH.onUsingTick(stack, p, countdown);
 	}
-	
-	public static void processIndex(ItemStack stack, EntityPlayer p, int index) {
-		
-	}
 
 	private static void setIndex(int index, NBTTagCompound tag) {
 		if(tag == null) {
@@ -164,7 +160,6 @@ public class ItemElderWand extends ItemBase {
 		if(world.isRemote) {
 			tag.removeTag(START_X_TAG);
 			tag.removeTag(START_Y_TAG);
-
 		}
 		if(!isBinding(p)) {
 			setIndex(-1, stack.getTagCompound());
@@ -173,7 +168,8 @@ public class ItemElderWand extends ItemBase {
 			}
 			return;
 		}
-		if(world.isRemote && getIndex(stack.getTagCompound()) != 0) {
+		int size = getLastSpells(stack).tagCount();
+		if(world.isRemote && getIndex(stack.getTagCompound()) != size && size < MAX_SPELLS) {
 			setBinding(p, false);
 			DHPacketProcessor.sendToServer(new PacketElderWandLastSpell(-1));
 		}
@@ -182,14 +178,13 @@ public class ItemElderWand extends ItemBase {
 			return;
 		}
 		tag.removeTag(START_YAW_TAG);
-		tag.removeTag(START_PTICH_TAG);
+		tag.removeTag(START_PITCH_TAG);
 		byte[] strokes = tag.getByteArray(STROKES_TAG);
 		if(strokes.length < 1 || EffectRegistry.instance().getEffect(strokes) == null) {
 			return;
 		}
 		DHPacketProcessor.sendToServer(new PacketElderWandStrokes(strokes));
 		addLastSpell(stack, strokes);
-		setBinding(p, false);
 		tag.removeTag(STROKES_TAG);
 	}
 
@@ -241,7 +236,7 @@ public class ItemElderWand extends ItemBase {
 		tag.setFloat("startY", p.rotationPitch);
 		tag.removeTag(STROKES_TAG);
 		tag.removeTag(START_YAW_TAG);
-		tag.removeTag(START_PTICH_TAG);
+		tag.removeTag(START_PITCH_TAG);
 	}
 
 	public static void resetXY(EntityPlayer p){
@@ -249,7 +244,7 @@ public class ItemElderWand extends ItemBase {
 		tag.removeTag(START_X_TAG);
 		tag.removeTag(START_Y_TAG);
 		tag.setByteArray(STROKES_TAG, new byte[0]);
-		tag.setFloat(START_PTICH_TAG, p.rotationPitch);
+		tag.setFloat(START_PITCH_TAG, p.rotationPitch);
 		tag.setFloat(START_YAW_TAG, p.rotationYawHead);
 	}
 
@@ -259,7 +254,7 @@ public class ItemElderWand extends ItemBase {
 			return -1;
 		}
 		double wire = (Math.atan2(-x, y) / (2D * Math.PI) + 1.5D + (0.5D / (length + 1D))) % 1D;
-		return MathHelper.floor_double(wire * (length + 1));
+		return MathHelper.floor_double(wire * (length + (length < MAX_SPELLS ? 1 : 0)));
 	}
 
 	public static void addLastSpell(ItemStack wand, byte[] strokes) {

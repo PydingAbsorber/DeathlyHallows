@@ -111,26 +111,29 @@ public final class DHPlayerRenderEvents {
 	}
 
 	private static void drawSpells(float[] pointer, NBTTagList list, int index, int x, int y) {
-		int length = list.tagCount();
 		final float spellRange = 32F;
+		boolean full = list.tagCount() >= ItemElderWand.MAX_SPELLS;
+		int length = list.tagCount() + (full ? 0 : 1);
 		if(index == -1) {
 			final float pointerRange = 1.5F;
 			drawPointer(x + pointer[0] * pointerRange, y + pointer[1] * pointerRange);
-			for(int i = 0; i < length; ++i) {
-				drawSpellSlot(getSpell(list, i), x, y, i * (float)Math.PI * 2F / (length + 1F), spellRange, 0x77_FF_FF_FF);
+			for(int i = 0; i < list.tagCount(); ++i) {
+				drawSpellSlot(getSpell(list, i), x, y, i * (float)Math.PI * 2F / length, spellRange, 0x77_FF_FF_FF);
 			}
-			drawSpellSlot(null, x, y, length * (float)Math.PI * 2F / (length + 1F), spellRange, 0x77_FF_FF_FF);
+			if(!full) {
+				drawSpellSlot(null, x, y, (length - 1) * (float)Math.PI * 2F / length, spellRange, 0x77_FF_FF_FF);
+			}
 			return;
 		}
-		if(list.tagCount() >= ItemElderWand.MAX_SPELLS) {
-			drawSpellSlot(list.tagCount() < ItemElderWand.MAX_SPELLS && index == list.tagCount() ? null : getSpell(list, index), x, y, index * (float)Math.PI * 2F / (length), spellRange, 0xFF_FF_FF);
+		if(full) {
+			drawSpellSlot(getSpell(list, index), x, y, index * (float)Math.PI * 2F / length, spellRange, 0xFF_FF_FF);
 			return;
 		}
 		if(index == list.tagCount()) {
-			drawSpellSlot(null, x, y, length * (float)Math.PI * 2F / (length + 1F), spellRange, 0xFF_FF_FF);
+			drawSpellSlot(null, x, y, (length - 1) * (float)Math.PI * 2F / length, spellRange, 0xFF_FF_FF);
 			return;
 		}
-		drawSpellSlot(list.tagCount() < ItemElderWand.MAX_SPELLS && index == list.tagCount() ? null : getSpell(list, index), x, y, index * (float)Math.PI * 2F / (length + 1F), spellRange, 0xFF_FF_FF);
+		drawSpellSlot(list.tagCount() < ItemElderWand.MAX_SPELLS && index == list.tagCount() ? null : getSpell(list, index), x, y, index * (float)Math.PI * 2F / length, spellRange, 0xFF_FF_FF);
 	}
 
 	private static SymbolEffect getSpell(NBTTagList list, int index) {
@@ -151,7 +154,7 @@ public final class DHPlayerRenderEvents {
 		x += cos * radius;
 		y += sin * radius;
 		String s = "New Spell";
-		ItemStack icon = new ItemStack(Items.written_book);
+		ItemStack icon = new ItemStack(Items.book);
 		if(effect != null) {
 			s = effect.getLocalizedName();
 			if(effect instanceof SymbolEffectBase) {

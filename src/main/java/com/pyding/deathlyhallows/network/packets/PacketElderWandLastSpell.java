@@ -49,7 +49,7 @@ public class PacketElderWandLastSpell implements IMessage, IMessageHandler<Packe
 			ItemElderWand.setBinding(p, true);
 			return null;
 		}
-		ItemElderWand.castLastSpell(p, wand, msg.index - 1);
+		ItemElderWand.castLastSpell(p, wand, msg.index);
 		return null;
 	}
 

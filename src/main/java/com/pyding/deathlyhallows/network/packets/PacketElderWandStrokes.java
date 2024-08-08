@@ -44,7 +44,6 @@ public class PacketElderWandStrokes implements IMessage, IMessageHandler<PacketE
 			return null;
 		}
 		ItemElderWand.addLastSpell(wand, msg.strokes);
-		ItemElderWand.setBinding(p, false);
 		return null;
 	}
 
