@@ -77,6 +77,7 @@ public final class DHItems {
 	@SideOnly(Side.CLIENT)
 	public static void initClient() {
 		render(hobgoblinSoul, new RenderTransparentItem());
+		render(hobgoblinChains, new RenderTransparentItem());
 		render(invisibilityMantle, new RenderTransparentItem());
 		render(elderWand, new RenderEldenWand());
 		render(ItemBlock.getItemFromBlock(DHBlocks.visConverter), new RenderItemVisConverter());
