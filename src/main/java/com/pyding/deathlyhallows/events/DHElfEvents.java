@@ -1,5 +1,6 @@
 package com.pyding.deathlyhallows.events;
 
+import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.infusion.infusions.symbols.EffectRegistry;
 import com.emoniph.witchery.infusion.infusions.symbols.SymbolEffect;
 import com.emoniph.witchery.util.CreatureUtil;
@@ -8,6 +9,7 @@ import com.emoniph.witchery.util.EntityUtil;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.pyding.deathlyhallows.items.DHItems;
+import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.items.ItemElderWand;
 import com.pyding.deathlyhallows.utils.DHUtils;
 import com.pyding.deathlyhallows.utils.ElfUtils;
@@ -116,10 +118,10 @@ public final class DHElfEvents {
 	@SubscribeEvent
 	public void elfTheArcherShooter(ArrowNockEvent e) {
 		NBTTagCompound entityTag = e.entityPlayer.getEntityData();
-		if(ElfUtils.getElfLevel(e.entityPlayer) >= 3) {
+		if(ElfUtils.getElfLevel(e.entityPlayer) >= 3 && (Infusion.getCurrentEnergy(e.entityPlayer) > DHConfig.arrowCost || e.entityPlayer.capabilities.isCreativeMode)) {
 			entityTag.setLong("DHArrow", System.currentTimeMillis());
 			entityTag.setBoolean("DHArrowShow", true);
-			if(ElfUtils.getElfLevel(e.entityPlayer) >= 7)
+			if(ElfUtils.getElfLevel(e.entityPlayer) >= 7 && (Infusion.getCurrentEnergy(e.entityPlayer) > DHConfig.betterArrowCost || e.entityPlayer.capabilities.isCreativeMode))
 				entityTag.setBoolean("DHArrowShow2", true);
 		}
 	}
@@ -149,13 +151,17 @@ public final class DHElfEvents {
 				tag.setInteger("DHShot", 5);
 				e.setCanceled(true);
 			}
-			else {
+			else if(Infusion.getCurrentEnergy(e.entityPlayer) > DHConfig.betterArrowCost || e.entityPlayer.capabilities.isCreativeMode){
+				if(!e.entityPlayer.capabilities.isCreativeMode)
+					Infusion.setCurrentEnergy(e.entityPlayer, Infusion.getCurrentEnergy(p)-DHConfig.betterArrowCost);
 				DHUtils.spawnArrow(p, 2);
 				e.setCanceled(true);
 			}
 			return;
 		}
-		if(elfLevel >= 3 && time > firstShot(p)) {
+		if(elfLevel >= 3 && time > firstShot(p) && (Infusion.getCurrentEnergy(e.entityPlayer) > DHConfig.arrowCost || e.entityPlayer.capabilities.isCreativeMode)) {
+			if(!e.entityPlayer.capabilities.isCreativeMode)
+				Infusion.setCurrentEnergy(e.entityPlayer, Infusion.getCurrentEnergy(p)-DHConfig.arrowCost);
 			DHUtils.spawnArrow(p, 1);
 			e.setCanceled(true);
 		}
@@ -246,6 +252,10 @@ public final class DHElfEvents {
 				&& e.entityLiving.getHealth() > e.entityLiving.getMaxHealth() * 0.3) {
 			EntityUtil.instantDeath(e.entityLiving, source);
 		}
+		if(elfLevel == 10 && e.entityLiving instanceof EntityPlayer) {
+			e.entityLiving.hurtResistantTime = 0;
+			e.entityLiving.attackEntityFrom(DamageSource.outOfWorld,DHUtils.fuckMagic((EntityPlayer)e.entityLiving, 0.1f));
+		}
 	}
 
 	private static void handleElfResistance(LivingHurtEvent e) {
@@ -279,14 +289,14 @@ public final class DHElfEvents {
 		if(p.worldObj.isRemote) {
 			return;
 		}
-		DeathlyProperties props = DeathlyProperties.get(p);
-		int elfLevel = ElfUtils.getElfLevel(props);
+		//DeathlyProperties props = DeathlyProperties.get(p);
+		/*int elfLevel = ElfUtils.getElfLevel(props);
 		if(elfLevel == 5 && e.item.getItem() instanceof ItemAppleGold && e.item.getItemDamage() > 0) {
 			props.setFoodEaten(props.getFoodEaten() + 1);
 		}
 		if(elfLevel == 8) {
 			props.addFoodToCollection(e.item.getUnlocalizedName());
-		}
+		}*/
 	}
 
 }

@@ -229,6 +229,8 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 		}
 		DamageSource source = getDamageSource(damageType);
 		damage(player, baseDamage * multiplier, source);
+		if(DHConfig.deathDifficulty > 1)
+			DHUtils.fuckMagic(player,0.01f);
 	}
 
 	private DamageSource getDamageSource(int damageType) {
@@ -277,6 +279,7 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 			swingItem();
 			if(DHConfig.deathDifficulty > 1) {
 				heal(1);
+				DHUtils.fuckMagic(player,0.1f);
 			}
 		}
 		motionY = posY > target.posY ? -1 : 1;
