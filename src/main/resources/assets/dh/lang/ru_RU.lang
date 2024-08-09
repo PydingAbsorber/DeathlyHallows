@@ -23,7 +23,7 @@ item.focus_mutandis.name=Мутандис Худшимис
 item.niceCream.name=§3Доброженое
 item.bag.name=Обычная Сумка?
 # Blocks
-tile.elderRitualBlock.name=Мудрый Мел
+tile.elderGlyph.name=Мудрый глиф
 tile.visConverter.name=§9Многополигональный Пересборщик Вис ⋚ ⋛
 tile.botania:flower.screamily.name=§4Кричилия
 tile.botania:flower.spawnlesia.name=§dПризывлезия

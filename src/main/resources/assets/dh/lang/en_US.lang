@@ -23,7 +23,7 @@ item.focus_mutandis.name=Inferiois Mutandis
 item.niceCream.name=§3Nicecream
 item.bag.name=Common Bag?
 # Blocks
-tile.elderRitualBlock.name=Elder Chalk
+tile.elderGlyph.name=Elder Glyph
 tile.visConverter.name=§9Multipolygonal Vis Reassembler ⋚ ⋛
 tile.botania:flower.screamily.name=§4Screamily
 tile.botania:flower.spawnlesia.name=§dSpawnlesia
