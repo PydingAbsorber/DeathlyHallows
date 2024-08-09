@@ -9,8 +9,8 @@ import com.emoniph.witchery.util.EntityUtil;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.pyding.deathlyhallows.items.DHItems;
-import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.items.ItemElderWand;
+import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.utils.DHUtils;
 import com.pyding.deathlyhallows.utils.ElfUtils;
 import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
@@ -20,7 +20,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemAppleGold;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -32,7 +31,6 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.ArrowLooseEvent;
 import net.minecraftforge.event.entity.player.ArrowNockEvent;
-import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
 
 import java.awt.*;
 import java.nio.ByteBuffer;
@@ -282,21 +280,5 @@ public final class DHElfEvents {
 			}
 		}
 	}
-
-	@SubscribeEvent
-	public void onFoodEaten(PlayerUseItemEvent.Finish e) {
-		EntityPlayer p = e.entityPlayer;
-		if(p.worldObj.isRemote) {
-			return;
-		}
-		//DeathlyProperties props = DeathlyProperties.get(p);
-		/*int elfLevel = ElfUtils.getElfLevel(props);
-		if(elfLevel == 5 && e.item.getItem() instanceof ItemAppleGold && e.item.getItemDamage() > 0) {
-			props.setFoodEaten(props.getFoodEaten() + 1);
-		}
-		if(elfLevel == 8) {
-			props.addFoodToCollection(e.item.getUnlocalizedName());
-		}*/
-	}
-
+	
 }

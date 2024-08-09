@@ -70,9 +70,7 @@ public class DHConfig {
 		screamilyMana = config.getInt("screamilyMana", CATEGORY_STAFF, 10000, 1, Integer.MAX_VALUE, "Screamily mana per banshee scream.");
 		arrowCost = config.getInt("arrowCost", CATEGORY_STAFF, 10, 1, Integer.MAX_VALUE, "Infusion cost for Enhanced Arrow.");
 		betterArrowCost = config.getInt("betterArrowCost", CATEGORY_STAFF, 40, 1, Integer.MAX_VALUE, "Infusion cost for Mighty Arrow.");
-
-		hob = config.getBoolean("hob", CATEGORY_STAFF, hob, "Hobgoblin chains immortality");
-		screamilyMana = config.getInt("screamilyMana", CATEGORY_STAFF, screamilyMana, 1, Integer.MAX_VALUE, "Screamily mana per banshee scream.");
+		
 		// why not?
 		for(int i: getIntArray("bertieBottsEffectBlacklist", CATEGORY_STAFF, ItemFoodBertieBotts.getDefaultBlackList(), "Blacklisted Potion Effects.")) {
 			ItemFoodBertieBotts.addToBlackList(i);
