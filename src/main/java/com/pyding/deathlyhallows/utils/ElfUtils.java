@@ -12,14 +12,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.util.Collection;
 
-import static com.emoniph.witchery.infusion.Infusion.getNBT;
 import static com.pyding.deathlyhallows.utils.properties.DeathlyProperties.get;
 
 public final class ElfUtils {
@@ -83,10 +81,6 @@ public final class ElfUtils {
 		}
 		regenInfusion(p, elfLevel);
 		checkAndLevelUpElf(p, elfLevel);
-		NBTTagCompound witcheryTag = getNBT(p);
-		if(elfLevel == 10 && Infusion.getInfusionID(p) > 0) {
-			witcheryTag.setInteger("witcheryInfusionChargesMax", 2 * Infusion.getMaxEnergy(p));
-		}
 	}
 
 	private static void regenInfusion(EntityPlayer p, int elfLevel) {

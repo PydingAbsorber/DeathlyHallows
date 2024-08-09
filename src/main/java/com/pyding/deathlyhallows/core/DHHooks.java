@@ -1,5 +1,6 @@
 package com.pyding.deathlyhallows.core;
 
+import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.infusion.infusions.symbols.SymbolEffect;
 import com.pyding.deathlyhallows.symbols.ElderSymbolTraits;
 import com.pyding.deathlyhallows.symbols.SymbolEffectBase;
@@ -51,6 +52,16 @@ public class DHHooks {
 			cooldown = MathHelper.floor_float(cooldown * (1F - ElfUtils.getElfLevel(p) / 20F));
 		}
 		return Math.max(0L, cooldown + lastUse - now);
+	}
+
+	public static int witcheryInfuse(Infusion infusion, EntityPlayer p, int charges) {
+		if(p.worldObj.isRemote) {
+			return charges;	
+		}
+		if(ElfUtils.getElfLevel(p) == 10) {
+			return charges * 2;
+		}
+		return charges;
 	}
 
 }
