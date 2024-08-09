@@ -1,5 +1,6 @@
 package com.pyding.deathlyhallows.render.item;
 
+import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.render.ModelWrapperDisplayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
@@ -12,8 +13,9 @@ import net.minecraftforge.client.model.obj.WavefrontObject;
 import static org.lwjgl.opengl.GL11.*;
 
 public class RenderEldenWand implements IItemRenderer {
-	private final ResourceLocation modelPath = new ResourceLocation("dh", "models/wand.obj");
-	private final ResourceLocation wandTexturePath = new ResourceLocation("dh", "textures/models/wand.png");
+	private final ResourceLocation 
+			modelPath = new ResourceLocation(DeathlyHallows.MODID, "models/wand.obj"),
+			wandTexturePath = new ResourceLocation(DeathlyHallows.MODID, "textures/models/wand.png");
 	private final IModelCustom wandModel = new ModelWrapperDisplayList((WavefrontObject)AdvancedModelLoader.loadModel(modelPath));
 
 	@Override
@@ -49,4 +51,5 @@ public class RenderEldenWand implements IItemRenderer {
 		wandModel.renderAll();
 		glPopMatrix();
 	}
+	
 }
