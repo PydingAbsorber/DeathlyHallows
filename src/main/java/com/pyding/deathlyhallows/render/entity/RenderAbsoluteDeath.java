@@ -45,69 +45,38 @@ public class RenderAbsoluteDeath extends RenderLiving {
 		int shieldAmount = 100;
 		NBTTagCompound nbt = entity.getEntityData().getCompoundTag("dhData");
 		if(nbt.getInteger("absoluteblock") >= shieldAmount) {
-			GL11.glPushMatrix();
-			bindTexture(absolute);
-			GL11.glTranslatef((float)x + 1, (float)y + 0.5F, (float)z);
-			GL11.glRotatef(modelRotation, 0.0F, 1.0F, 0.0F);
-			shieldModel.renderAll();
-			GL11.glPopMatrix();
+			renderShield(absolute, x + 1, y, z);
 		}
 		if(nbt.getInteger("earthblock") >= shieldAmount) {
-			GL11.glPushMatrix();
-			bindTexture(earth);
-			GL11.glTranslatef((float)x - 1, (float)y + 0.5F, (float)z);
-			GL11.glRotatef(modelRotation, 0.0F, 1.0F, 0.0F);
-			shieldModel.renderAll();
-			GL11.glPopMatrix();
+			renderShield(earth, x - 1, y, z);
 		}
 		if(nbt.getInteger("fireblock") >= shieldAmount) {
-			GL11.glPushMatrix();
-			bindTexture(fire);
-			GL11.glTranslatef((float)x + 1, (float)y + 0.5F, (float)z + 1);
-			GL11.glRotatef(modelRotation, 0.0F, 1.0F, 0.0F);
-			shieldModel.renderAll();
-			GL11.glPopMatrix();
+			renderShield(fire, x + 1, y, z + 1);
 		}
 		if(nbt.getInteger("genericblock") >= shieldAmount) {
-			GL11.glPushMatrix();
-			bindTexture(generic);
-			GL11.glTranslatef((float)x - 1, (float)y + 0.5F, (float)z + 1);
-			GL11.glRotatef(modelRotation, 0.0F, 1.0F, 0.0F);
-			shieldModel.renderAll();
-			GL11.glPopMatrix();
+			renderShield(generic, x - 1, y, z + 1);
 		}
 		if(nbt.getInteger("magicblock") >= shieldAmount) {
-			GL11.glPushMatrix();
-			bindTexture(magic);
-			GL11.glTranslatef((float)x + 1, (float)y + 0.5F, (float)z - 1);
-			GL11.glRotatef(modelRotation, 0.0F, 1.0F, 0.0F);
-			shieldModel.renderAll();
-			GL11.glPopMatrix();
+			renderShield(magic, x + 1, y, z - 1);
 		}
 		if(nbt.getInteger("witherblock") >= shieldAmount) {
-			GL11.glPushMatrix();
-			bindTexture(poison);
-			GL11.glTranslatef((float)x - 1, (float)y + 0.5F, (float)z - 1);
-			GL11.glRotatef(modelRotation, 0.0F, 1.0F, 0.0F);
-			shieldModel.renderAll();
-			GL11.glPopMatrix();
+			renderShield(poison, x - 1, y, z - 1);
 		}
 		if(nbt.getInteger("voidblock") >= shieldAmount) {
-			GL11.glPushMatrix();
-			bindTexture(dark);
-			GL11.glTranslatef((float)x, (float)y + 0.5F, (float)z + 1);
-			GL11.glRotatef(modelRotation, 0.0F, 1.0F, 0.0F);
-			shieldModel.renderAll();
-			GL11.glPopMatrix();
+			renderShield(dark, x, y, z + 1);
 		}
 		if(nbt.getInteger("waterblock") >= shieldAmount) {
-			GL11.glPushMatrix();
-			bindTexture(water);
-			GL11.glTranslatef((float)x, (float)y + 0.5F, (float)z - 1);
-			GL11.glRotatef(modelRotation, 0.0F, 1.0F, 0.0F);
-			shieldModel.renderAll();
-			GL11.glPopMatrix();
+			renderShield(water, x, y, z - 1);
 		}
+	}
+
+	private void renderShield(ResourceLocation absolute, double x, double y, double z) {
+		GL11.glPushMatrix();
+		bindTexture(absolute);
+		GL11.glTranslated(x, y + 0.5F, z);
+		GL11.glRotatef(modelRotation, 0.0F, 1.0F, 0.0F);
+		shieldModel.renderAll();
+		GL11.glPopMatrix();
 	}
 
 	public void doRender(EntityLiving entity, double x, double y, double z, float yaw, float partial) {
@@ -117,6 +86,6 @@ public class RenderAbsoluteDeath extends RenderLiving {
 	protected ResourceLocation getEntityTexture(Entity e) {
 		return TEXTURE_URL;
 	}
-	
+
 }
 
