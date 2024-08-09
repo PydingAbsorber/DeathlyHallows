@@ -18,28 +18,10 @@ public class InfusionTransformer extends ClassTransformerBase {
 				basicClass,
 				0,
 				new MethodData(
-						InfusionTransformer::getMaxEnergy,
-						"getMaxEnergy"
-				),
-				new MethodData(
 						InfusionTransformer::infuse,
 						"infuse"
 				)
 		);
-	}
-
-	public static boolean getMaxEnergy(MethodNode mnode) {
-		InsnList list = list(
-				new VarInsnNode(ALOAD, 0),
-				new MethodInsnNode(INVOKESTATIC,
-						DHHooks.classPath,
-						"witcheryMaxInfusion",
-						"(ILnet/minecraft/entity/player/EntityPlayer;)I",
-						false
-				)
-		);
-		mnode.instructions.insertBefore(mnode.instructions.getLast().getPrevious(), list);
-		return true;
 	}
 
 	public static boolean infuse(MethodNode mnode) {
@@ -58,5 +40,5 @@ public class InfusionTransformer extends ClassTransformerBase {
 		mnode.instructions.insert(list);
 		return true;
 	}
-	
+
 }
