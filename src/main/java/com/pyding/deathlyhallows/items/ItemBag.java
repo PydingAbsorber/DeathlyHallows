@@ -24,7 +24,7 @@ public class ItemBag extends ItemBase {
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer p) {
-		p.getEntityData().setLong("DHBag",System.currentTimeMillis()+1000);
+		p.getEntityData().setLong("DHBag",System.currentTimeMillis()+500);
 		return super.onItemRightClick(stack, world, p);
 	}
 	

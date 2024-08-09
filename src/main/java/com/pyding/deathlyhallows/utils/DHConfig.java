@@ -35,7 +35,9 @@ public class DHConfig {
 			healMendingCost = 18000,
 			huntMagicCreaturesCost = 30000,
 			purifyCost = 24100,
-			covenWitchCost = 5000;
+			covenWitchCost = 5000,
+			arrowCost,
+			betterArrowCost;
 	public static String despairSonataBlackList = "";
 	public static int randomSpirits = 3;
 
@@ -64,6 +66,11 @@ public class DHConfig {
 
 		deathDifficulty = config.getInt("deathDifficulty", CATEGORY_STAFF, deathDifficulty, 1, 3, "Absolute Death difficulty (3 - Gigachad Man, 2 - weak casual, 1 - newborn toddler).");
 		elfQuestConditions = getIntArray("elfLvl", CATEGORY_STAFF, elfQuestConditions, "Change elf quest requirements, position of requirement corresponds to elf level. Last one is not a requirement but a maximum.");
+		hob = config.getBoolean("hob", CATEGORY_STAFF, true, "Hobgoblin chains immortality");
+		screamilyMana = config.getInt("screamilyMana", CATEGORY_STAFF, 10000, 1, Integer.MAX_VALUE, "Screamily mana per banshee scream.");
+		arrowCost = config.getInt("arrowCost", CATEGORY_STAFF, 10, 1, Integer.MAX_VALUE, "Infusion cost for Enhanced Arrow.");
+		betterArrowCost = config.getInt("betterArrowCost", CATEGORY_STAFF, 40, 1, Integer.MAX_VALUE, "Infusion cost for Mighty Arrow.");
+
 		hob = config.getBoolean("hob", CATEGORY_STAFF, hob, "Hobgoblin chains immortality");
 		screamilyMana = config.getInt("screamilyMana", CATEGORY_STAFF, screamilyMana, 1, Integer.MAX_VALUE, "Screamily mana per banshee scream.");
 		// why not?

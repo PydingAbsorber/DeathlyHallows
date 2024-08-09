@@ -1,5 +1,9 @@
 package com.pyding.deathlyhallows.utils;
 
+import WayofTime.alchemicalWizardry.api.soulNetwork.SoulNetworkHandler;
+import WayofTime.alchemicalWizardry.common.items.MasterBloodOrb;
+import am2.api.ArsMagicaApi;
+import am2.api.IExtendedProperties;
 import baubles.api.BaublesApi;
 import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.util.ChatUtil;
@@ -8,6 +12,7 @@ import com.emoniph.witchery.util.EntityUtil;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.pyding.deathlyhallows.entities.EntityEmpoweredArrow;
+import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketParticle;
@@ -34,6 +39,15 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
+import thaumcraft.common.items.wands.ItemWandCasting;
+import thaumcraft.common.items.wands.ItemWandRod;
+import vazkii.botania.api.mana.IManaItem;
+import vazkii.botania.common.core.helper.ItemNBTHelper;
+import vazkii.botania.common.item.ItemBaubleBox;
+import vazkii.botania.common.item.ItemManaTablet;
+import vazkii.botania.common.item.equipment.bauble.ItemManaRing;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -341,9 +355,8 @@ public class DHUtils {
 
     public static boolean hasDeathlyHallow(EntityPlayer p) {
         int count = 0;
-        for(int i = 0; i < p.inventory.getSizeInventory(); i++) {
-            ItemStack stack = p.inventory.getStackInSlot(i);
-            if(stack == null || !isHallow(stack)) {
+        for(ItemStack stack: getAllItems(p)) {
+            if(!isHallow(stack)) {
                 continue;
             }
             if(!stack.hasTagCompound()) {
@@ -357,16 +370,6 @@ public class DHUtils {
                 stack.setTagCompound(nbt);
             }
             else if(stack.hasTagCompound() && stack.getTagCompound().hasKey("dhowner")) {
-                count++;
-            }
-        }
-        IInventory baubles = BaublesApi.getBaubles(p);
-        for(int i = 1; i < baubles.getSizeInventory(); i++) {
-            ItemStack stack = baubles.getStackInSlot(i);
-            if(stack == null) {
-                continue;
-            }
-            if(isHallow(stack) && stack.hasTagCompound() && stack.getTagCompound().hasKey("dhowner")) {
                 count++;
             }
         }
@@ -396,4 +399,70 @@ public class DHUtils {
 		return mop.hitVec;
 	}
 	
+	public static List<ItemStack> getAllItems(EntityPlayer player){
+		List<ItemStack> list = new ArrayList<>();
+		for(int i = 0; i > player.inventory.getSizeInventory();i++){
+			if(player.inventory.getStackInSlot(i) != null)
+				list.add(player.inventory.getStackInSlot(i));
+		}
+		IInventory baubles = BaublesApi.getBaubles(player);
+		for(int i = 1; i < baubles.getSizeInventory(); i++) {
+			ItemStack stack = baubles.getStackInSlot(i);
+			if(stack == null) {
+				continue;
+			}
+			list.add(stack);
+		}
+		return list;
+	}
+	
+	public static float fuckMagic(EntityPlayer player, float percent){
+		float magic = 0;
+		List<ItemStack> list = getAllItems(player);
+		magic += Infusion.getCurrentEnergy(player)*percent;
+		Infusion.setCurrentEnergy(player,(int)(Infusion.getCurrentEnergy(player)-Infusion.getCurrentEnergy(player)*percent));
+		if(DHIntegration.thaumcraft){
+			for(ItemStack stack: list){
+				if(stack.getItem() instanceof ItemWandCasting){
+					ItemWandCasting wand = (ItemWandCasting)stack.getItem();
+					AspectList aspectList = new AspectList();
+					for(Aspect aspect: Aspect.getPrimalAspects()) {
+						aspectList.add(aspect, (int)(wand.getMaxVis(stack) * percent));
+						magic += wand.getMaxVis(stack) * percent;
+					}
+					wand.consumeAllVis(stack,player, aspectList,true,false);
+				}
+			}
+		}
+		if(DHIntegration.bloodMagic){
+			magic += SoulNetworkHandler.getCurrentEssence(player.getCommandSenderName())*percent;
+			SoulNetworkHandler.setCurrentEssence(player.getCommandSenderName(),
+					(int)Math.min(0,SoulNetworkHandler.getCurrentEssence(player.getCommandSenderName())-SoulNetworkHandler.getCurrentEssence(player.getCommandSenderName())*percent));
+		}
+		if(DHIntegration.botania){
+			for(ItemStack stack: list){
+				if(stack.getItem() instanceof IManaItem){
+					IManaItem item = (IManaItem)stack.getItem();
+					magic += item.getMaxMana(stack)*percent;
+					item.addMana(stack,(int)(-item.getMaxMana(stack)*percent));
+				}
+				if(stack.getItem() instanceof ItemBaubleBox){
+					ItemStack[] stacks = ItemBaubleBox.loadStacks(stack);
+					for(int i = 0; i < stacks.length;i++){
+						if(stacks[i].getItem() instanceof IManaItem){
+							IManaItem item = (IManaItem)stacks[i].getItem();
+							magic += item.getMaxMana(stack)*percent;
+							item.addMana(stacks[i],(int)(-item.getMaxMana(stacks[i])*percent));
+						}
+					}
+				}
+			}
+		}
+		if(DHIntegration.arsMagica){
+			IExtendedProperties props = ArsMagicaApi.instance.getExtendedProperties(player);
+			magic += props.getMaxMana()*percent;
+			props.setCurrentMana(Math.min(0,props.getCurrentMana()-props.getMaxMana()*percent));
+		}
+		return magic;
+	}
 }
