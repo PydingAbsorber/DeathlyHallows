@@ -4,10 +4,10 @@ import com.emoniph.witchery.Witchery;
 import com.emoniph.witchery.infusion.infusions.symbols.EffectRegistry;
 import com.emoniph.witchery.infusion.infusions.symbols.SymbolEffect;
 import com.emoniph.witchery.util.Config;
+import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.items.ItemElderWand;
-import com.pyding.deathlyhallows.render.ModelWrapperDisplayList;
 import com.pyding.deathlyhallows.symbols.SymbolEffectBase;
 import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.utils.DHUtils;
@@ -18,6 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,9 +29,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderLivingEvent;
-import net.minecraftforge.client.model.AdvancedModelLoader;
-import net.minecraftforge.client.model.IModelCustom;
-import net.minecraftforge.client.model.obj.WavefrontObject;
 import net.minecraftforge.common.MinecraftForge;
 
 import static codechicken.lib.gui.GuiDraw.drawTexturedModalRect;
@@ -49,15 +47,8 @@ public final class DHPlayerRenderEvents {
 	private static final ResourceLocation
 			TEXTURE_GRID = new ResourceLocation(DHIntegration.WITCHERY, "textures/gui/grid.png"),
 			RADIAL_LOCATION = new ResourceLocation(DHIntegration.WITCHERY, "textures/gui/radial.png"),
-			anima = new ResourceLocation("dh", "textures/particles/anima.png"),
-			anima2 = new ResourceLocation("dh", "textures/particles/anima2.png");
-	private final ResourceLocation
-			modelPath = new ResourceLocation("dh", "models/anima.obj"),
-			modelPath2 = new ResourceLocation("dh", "models/anima2.obj");
-	private final IModelCustom
-			curseModel = new ModelWrapperDisplayList((WavefrontObject)AdvancedModelLoader.loadModel(modelPath)),
-			curseModel2 = new ModelWrapperDisplayList((WavefrontObject)AdvancedModelLoader.loadModel(modelPath2));
-
+			anima = new ResourceLocation(DeathlyHallows.MODID, "textures/particles/anima.png"),
+			anima2 = new ResourceLocation(DeathlyHallows.MODID, "textures/particles/anima2.png");
 	private static final DHPlayerRenderEvents INSTANCE = new DHPlayerRenderEvents();
 
 	private DHPlayerRenderEvents() {
@@ -75,7 +66,7 @@ public final class DHPlayerRenderEvents {
 			e.setCanceled(true);
 		}
 	}
-	
+
 	@SubscribeEvent
 	public void renderAnimaInteritus(RenderLivingEvent.Post e) {
 		NBTTagCompound tag = e.entity.getEntityData();
@@ -84,19 +75,26 @@ public final class DHPlayerRenderEvents {
 		}
 		int curse = tag.getInteger("dhcurse");
 		glPushMatrix();
-		glTranslated(e.x, e.y + e.entity.height, e.z);
+		float bobbing = 0.1F * (MathHelper.sin(2F * (float)Math.PI * (e.entity.ticksExisted % 180)/180F) + 1F);
+		glTranslated(e.x, e.y + e.entity.height + 0.5D + bobbing, e.z);
 		EntityPlayer p = mc.thePlayer;
-		glRotatef(-p.rotationYaw,0F,1F,0F);
-		glRotatef(p.rotationPitch,1F,0F,0F);
-		if(curse > 200) {
-			RenderManager.instance.renderEngine.bindTexture(anima);
-			curseModel.renderAll();
-		}
-		else {
-			RenderManager.instance.renderEngine.bindTexture(anima2);
-			curseModel2.renderAll();
-		}
+		glRotatef(-p.rotationYaw, 0F, 1F, 0F);
+		glRotatef(p.rotationPitch, 1F, 0F, 0F);
+		RenderManager.instance.renderEngine.bindTexture(curse > 200 ? anima : anima2);
+		drawImage();
+		glRotatef(180F, 0F, 1F, 0F);
+		drawImage();
 		glPopMatrix();
+	}
+
+	private static void drawImage() {
+		Tessellator t = Tessellator.instance;
+		t.startDrawingQuads();
+		t.addVertexWithUV(-0.5D, -0.5D, 0D, 1D, 1D);
+		t.addVertexWithUV(0.5D, -0.5D, 0D, 0D, 1D);
+		t.addVertexWithUV(0.5D, 0.5D, 0D, 0D, 0D);
+		t.addVertexWithUV(-0.5D, 0.5D, 0D, 1D, 0D);
+		t.draw();
 	}
 
 	@SubscribeEvent

@@ -18,7 +18,7 @@ public class ItemElderChalk extends ItemBase {
 	private static final int DAMAGE_PER_USE = 1;
 
 	public ItemElderChalk() {
-		super("elderChalk", 64);
+		super("chalkelder", 64);
 		setMaxDamage(MAX_DAMAGE);
 		setNoRepair();
 	}

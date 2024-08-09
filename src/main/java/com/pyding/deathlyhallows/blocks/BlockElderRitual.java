@@ -17,6 +17,7 @@ import com.emoniph.witchery.util.Log;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.google.common.collect.Lists;
+import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.rituals.ElderRiteRegistry;
 import com.pyding.deathlyhallows.rituals.rites.ElderRitualStep;
 import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
@@ -54,7 +55,7 @@ import static com.emoniph.witchery.ritual.RitualStep.Result.UPKEEP;
 public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 
 	public BlockElderRitual() {
-		super("elderRitualRune", Material.vine, null);
+		super("elderGlyph", Material.vine, null);
 		setHardness(3.0f);
 		setResistance(1000.0f);
 		setBlockBounds(0.0f, 0.0f, 0.0f, 1.0f, 0.015625f, 1.0f);
@@ -93,7 +94,7 @@ public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 
 	@Override
 	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer p) {
-		return new ItemStack(Witchery.Items.CHALK_GOLDEN);
+		return new ItemStack(DHItems.elderChalk);
 	}
 
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {

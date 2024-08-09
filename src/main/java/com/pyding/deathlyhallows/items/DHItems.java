@@ -9,6 +9,7 @@ import com.pyding.deathlyhallows.items.food.ItemFoodViscousSecretions;
 import com.pyding.deathlyhallows.items.food.ItemNiceCream;
 import com.pyding.deathlyhallows.render.item.RenderEldenWand;
 import com.pyding.deathlyhallows.render.item.RenderItemVisConverter;
+import com.pyding.deathlyhallows.render.item.RenderTransparentItem;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -75,6 +76,8 @@ public final class DHItems {
 
 	@SideOnly(Side.CLIENT)
 	public static void initClient() {
+		render(hobgoblinSoul, new RenderTransparentItem());
+		render(invisibilityMantle, new RenderTransparentItem());
 		render(elderWand, new RenderEldenWand());
 		render(ItemBlock.getItemFromBlock(DHBlocks.visConverter), new RenderItemVisConverter());
 	}
