@@ -19,7 +19,7 @@ public class Spawnlesia extends SubTileFunctional {
 
 	public static final String NAME = "spawnlesia";
 	
-	private final String blackList = DHConfig.spawnlesia;
+	private final String blackList = DHConfig.spawnlesiaBlacklist;
 	public long summonMaxCd = DHConfig.spawnlesiaCd;
 	public long summonCd = 0;
 	public static int cost = DHConfig.spawnlesiaMana;

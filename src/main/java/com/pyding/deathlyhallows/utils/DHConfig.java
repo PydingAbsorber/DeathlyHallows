@@ -17,7 +17,7 @@ public class DHConfig {
 	public static Configuration config;
 	public static int deathDifficulty = 3;
 	public static int elderWandMaxSpells = 10;
-	public static String spells = "";
+	public static String elderWandBlackList = "";
 	public static boolean shouldRemove = true;
 	public static int[] elfQuestConditions = new int[]{20, 20, -100, 100, 50, 30, 20000, 35000, 100, 1000};
 	public static boolean hob = true;
@@ -25,7 +25,7 @@ public class DHConfig {
 			screamilyMana = 10000,
 			spawnlesiaMana = 1000000,
 			spawnlesiaCd = 10000;
-	public static String spawnlesia;
+	public static String spawnlesiaBlacklist;
 	public static int
 			bathHouseCost = 25000,
 			despairSonataCost = 3000,
@@ -58,9 +58,9 @@ public class DHConfig {
 		shouldRemove = config.getBoolean("removeDuplicated", CATEGORY_STAFF, shouldRemove, "Should have only one hallow or more?");
 		elderWandMaxSpells = config.getInt("elderWandMaxSpells", CATEGORY_STAFF, elderWandMaxSpells, 1, 12, "How many spells can Elder Wand hold at once?");
 		// TODO int array
-		spells = config.getString("spells", CATEGORY_STAFF, spells, "Black list for Spells Id in Elder Wand, for example: 36, 37, 42.");
+		elderWandBlackList = config.getString("spells", CATEGORY_STAFF, elderWandBlackList, "Black list for Spells Id in Elder Wand, for example: 36, 37, 42.");
 		// TODO int array
-		spawnlesia = config.getString("spawnlesia", CATEGORY_STAFF, "", "Black list for Spawnlesia, type names are separated with ',' for example: Zombie, EnderDragon.");
+		spawnlesiaBlacklist = config.getString("spawnlesia", CATEGORY_STAFF, "", "Black list for Spawnlesia, type names are separated with ',' for example: Zombie, EnderDragon.");
 		spawnlesiaMana = config.getInt("spawnlesiaMana", CATEGORY_STAFF, spawnlesiaMana, 1, Integer.MAX_VALUE, "Mana requirements for Spawnlesia per spawn.");
 		spawnlesiaCd = config.getInt("spawnlesiaCd", CATEGORY_STAFF, spawnlesiaCd, 1, Integer.MAX_VALUE, "Cooldown for Spawnlesia in long. 1000 is 1 sec.");
 
