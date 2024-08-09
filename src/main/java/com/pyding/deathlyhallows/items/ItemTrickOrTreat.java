@@ -32,15 +32,28 @@ public class ItemTrickOrTreat extends ItemBase {
 		super("trickOrTreat", 64);
 	}
 
-
+	@SideOnly(Side.CLIENT)
+	protected void addTooltip(ItemStack stack, EntityPlayer p, List<String> l, boolean devMode) {
+		if(!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+			l.add(StatCollector.translateToLocal("dh.desc.trick5"));
+			return;
+		}
+		l.add(StatCollector.translateToLocal("dh.desc.trick1"));
+		l.add(StatCollector.translateToLocal("dh.desc.trick2"));
+		l.add(StatCollector.translateToLocal("dh.desc.trick3"));
+		l.add(StatCollector.translateToLocal("dh.desc.trick4"));
+	}
+	
 	@Override
 	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer p) {
-		stack.splitStack(1);
+		if(!p.capabilities.isCreativeMode) {
+			--stack.stackSize;
+		}
 		if(world.isRemote) {
 			return stack;
 		}
 		double chance = DHUtils.hasDeathlyHallow(p) ? 0.96 : 0.98;
-		ItemStack loot = randomObjectFromList(Math.random() > chance ? getDeathlyHallowItems() : getWitcheryItems(p));
+		ItemStack loot = randomObjectFromList(world.rand.nextDouble() > chance ? getDeathlyHallowItems() : getWitcheryItems(p));
 		if(p.inventory.addItemStackToInventory(loot)) {
 			p.inventoryContainer.detectAndSendChanges();
 		}
@@ -78,18 +91,6 @@ public class ItemTrickOrTreat extends ItemBase {
 		return deathlyHallowItems;
 	}
 
-	@SideOnly(Side.CLIENT)
-	protected void addTooltip(ItemStack stack, EntityPlayer p, List<String> l, boolean devMode) {
-		if(!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
-			l.add(StatCollector.translateToLocal("dh.desc.trick5"));
-			return;
-		}
-		l.add(StatCollector.translateToLocal("dh.desc.trick1"));
-		l.add(StatCollector.translateToLocal("dh.desc.trick2"));
-		l.add(StatCollector.translateToLocal("dh.desc.trick3"));
-		l.add(StatCollector.translateToLocal("dh.desc.trick4"));
-	}
-
 	public ItemStack hasRing(EntityPlayer player) {
 		IInventory baubles = BaublesApi.getBaubles(player);
 		for(int i = 0; i < baubles.getSizeInventory(); i++) {
@@ -102,6 +103,7 @@ public class ItemTrickOrTreat extends ItemBase {
 	}
 
 	public static void initList() {
+		deathlyHallowItems.add(new ItemStack(DHItems.trickOrTreat, 5));
 		deathlyHallowItems.add(new ItemStack(DHItems.invisibilityMantle));
 		deathlyHallowItems.add(new ItemStack(DHItems.elderWand));
 		deathlyHallowItems.add(new ItemStack(DHItems.resurrectionStone));
@@ -118,7 +120,6 @@ public class ItemTrickOrTreat extends ItemBase {
 		deathlyHallowItems.add(new ItemStack(DHItems.deathShard));
 		deathlyHallowItems.add(new ItemStack(DHItems.tarotCards));
 		deathlyHallowItems.add(new ItemStack(DHItems.monsterBook));
-		deathlyHallowItems.add(new ItemStack(DHItems.trickOrTreat));
 		deathlyHallowItems.add(new ItemStack(DHItems.lightningInBag));
 		if(DHIntegration.thaumcraft) {
 			deathlyHallowItems.add(new ItemStack(DHItems.inferioisMutandis));
@@ -136,4 +137,5 @@ public class ItemTrickOrTreat extends ItemBase {
 			witcheryItems.add(submissive.createStack());
 		}
 	}
+	
 }
