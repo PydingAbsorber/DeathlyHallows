@@ -7,6 +7,7 @@ import com.emoniph.witchery.util.Config;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.items.ItemElderWand;
+import com.pyding.deathlyhallows.render.ModelWrapperDisplayList;
 import com.pyding.deathlyhallows.symbols.SymbolEffectBase;
 import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.utils.DHUtils;
@@ -18,12 +19,19 @@ import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.client.model.AdvancedModelLoader;
+import net.minecraftforge.client.model.IModelCustom;
+import net.minecraftforge.client.model.obj.WavefrontObject;
+import net.minecraftforge.common.MinecraftForge;
 
 import static codechicken.lib.gui.GuiDraw.drawTexturedModalRect;
 import static codechicken.lib.gui.GuiDraw.getStringWidth;
@@ -40,7 +48,16 @@ public final class DHPlayerRenderEvents {
 	private static final int[] glyphOffsetY = new int[]{-1, 1, 0, 0, -1, 1, -1, 1};
 	private static final ResourceLocation
 			TEXTURE_GRID = new ResourceLocation(DHIntegration.WITCHERY, "textures/gui/grid.png"),
-			RADIAL_LOCATION = new ResourceLocation(DHIntegration.WITCHERY, "textures/gui/radial.png");
+			RADIAL_LOCATION = new ResourceLocation(DHIntegration.WITCHERY, "textures/gui/radial.png"),
+			anima = new ResourceLocation("dh", "textures/particles/anima.png"),
+			anima2 = new ResourceLocation("dh", "textures/particles/anima2.png");
+	private final ResourceLocation
+			modelPath = new ResourceLocation("dh", "models/anima.obj"),
+			modelPath2 = new ResourceLocation("dh", "models/anima2.obj");
+	private final IModelCustom
+			curseModel = new ModelWrapperDisplayList((WavefrontObject)AdvancedModelLoader.loadModel(modelPath)),
+			curseModel2 = new ModelWrapperDisplayList((WavefrontObject)AdvancedModelLoader.loadModel(modelPath2));
+
 	private static final DHPlayerRenderEvents INSTANCE = new DHPlayerRenderEvents();
 
 	private DHPlayerRenderEvents() {
@@ -48,7 +65,38 @@ public final class DHPlayerRenderEvents {
 	}
 
 	public static void init() {
+		MinecraftForge.EVENT_BUS.register(INSTANCE);
 		FMLCommonHandler.instance().bus().register(INSTANCE);
+	}
+
+	@SubscribeEvent
+	public void cancelRenderWithMantle(RenderLivingEvent.Pre e) {
+		if(e.entity.getEntityData().getBoolean("mantleActive")) {
+			e.setCanceled(true);
+		}
+	}
+	
+	@SubscribeEvent
+	public void renderAnimaInteritus(RenderLivingEvent.Post e) {
+		NBTTagCompound tag = e.entity.getEntityData();
+		if(!tag.hasKey("dhcurse")) {
+			return;
+		}
+		int curse = tag.getInteger("dhcurse");
+		glPushMatrix();
+		glTranslated(e.x, e.y + e.entity.height, e.z);
+		EntityPlayer p = mc.thePlayer;
+		glRotatef(-p.rotationYaw,0F,1F,0F);
+		glRotatef(p.rotationPitch,1F,0F,0F);
+		if(curse > 200) {
+			RenderManager.instance.renderEngine.bindTexture(anima);
+			curseModel.renderAll();
+		}
+		else {
+			RenderManager.instance.renderEngine.bindTexture(anima2);
+			curseModel2.renderAll();
+		}
+		glPopMatrix();
 	}
 
 	@SubscribeEvent
@@ -142,14 +190,14 @@ public final class DHPlayerRenderEvents {
 	}
 
 	private static void drawPointer(float x, float y) {
-		glColor3f(0F,0F,0F);
+		glColor3f(0F, 0F, 0F);
 		glPushMatrix();
 		glTranslatef(x + 4.5F, y + 4.5F, 0F);
 		glScalef(1F / 32F, 1F / 32F, 1F);
 		// TODO texture
 		drawTexturedModalRect(0, 0, 0, 0, 256, 256);
 		glPopMatrix();
-		glColor3f(1F,1F,1F);
+		glColor3f(1F, 1F, 1F);
 	}
 
 	private static void drawSpellSlot(SymbolEffect effect, float x, float y, float angle, float radius, int color) {

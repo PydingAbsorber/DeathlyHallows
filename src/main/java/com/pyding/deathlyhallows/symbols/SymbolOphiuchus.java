@@ -6,10 +6,12 @@ import com.pyding.deathlyhallows.utils.DHID;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
+import static com.pyding.deathlyhallows.symbols.ElderSymbolTraits.ELDER;
+
 public class SymbolOphiuchus extends SymbolEffectBase {
 	
 	public SymbolOphiuchus() {
-		super(DHID.SYMBOL_OPHIUCHUS, "ophiuchus", 20, false, false, null, 500, false);
+		super(DHID.SYMBOL_OPHIUCHUS, "ophiuchus", 20, false, false, null, 500, false, ELDER);
 	}
 	
 	@Override

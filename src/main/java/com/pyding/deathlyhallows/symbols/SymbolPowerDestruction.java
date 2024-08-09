@@ -9,10 +9,12 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
+import static com.pyding.deathlyhallows.symbols.ElderSymbolTraits.ELDER;
+
 public class SymbolPowerDestruction extends SymbolEffectBase {
 
 	public SymbolPowerDestruction() {
-		super(DHID.SYMBOL_POWERDESTRUCTION, "powerDestruction", 20, false, false, null, 500, false);
+		super(DHID.SYMBOL_POWERDESTRUCTION, "powerDestruction", 20, false, false, null, 500, false, ELDER);
 	}
 
 	public static float

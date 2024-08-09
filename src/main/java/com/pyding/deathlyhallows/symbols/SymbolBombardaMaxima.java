@@ -11,6 +11,8 @@ import net.minecraft.world.World;
 
 import java.util.function.Supplier;
 
+import static com.pyding.deathlyhallows.symbols.ElderSymbolTraits.ELDER;
+
 public class SymbolBombardaMaxima extends SymbolEffectBase {
 
 	public static float 
@@ -18,7 +20,7 @@ public class SymbolBombardaMaxima extends SymbolEffectBase {
 			DAMAGE = 10F;
 
 	public SymbolBombardaMaxima() {
-		super(DHID.SYMBOL_BOMBARDAMAXIMA, "bombardamaxima", 25, false, false, null, 5_000, false);
+		super(DHID.SYMBOL_BOMBARDAMAXIMA, "bombardamaxima", 40, false, false, null, 5_000, false, ELDER);
 	}
 
 	@Override

@@ -17,6 +17,8 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
+import static com.pyding.deathlyhallows.symbols.ElderSymbolTraits.ELDER;
+
 public class SymbolSectumsempra extends SymbolEffectBase {
 
 	private static final float
@@ -26,7 +28,7 @@ public class SymbolSectumsempra extends SymbolEffectBase {
 			HP_PERCENT = 0.15F;
 
 	public SymbolSectumsempra() {
-		super(DHID.SYMBOL_SECTUMSEMPRA, "sectumsempra", 15, true, false, null, 5_000, false);
+		super(DHID.SYMBOL_SECTUMSEMPRA, "sectumsempra", 25, true, false, null, 5_000, false, ELDER);
 	}
 
 	@Override

@@ -12,6 +12,8 @@ import net.minecraft.world.World;
 
 import java.util.function.Supplier;
 
+import static com.pyding.deathlyhallows.symbols.ElderSymbolTraits.ELDER;
+
 public class SymbolLumosTempestas extends SymbolEffectBase {
 	public static final int AMOUNT = 5;
 	public static float
@@ -20,8 +22,7 @@ public class SymbolLumosTempestas extends SymbolEffectBase {
 			DAMAGE = 10F;
 
 	public SymbolLumosTempestas() {
-		// §
-		super(DHID.SYMBOL_LUMOSTEMPESTAS, "lumostempestas", 5, false, false, null, 10_000, false);
+		super(DHID.SYMBOL_LUMOSTEMPESTAS, "lumostempestas", 40, false, false, null, 10_000, false, ELDER);
 	}
 
 	@Override

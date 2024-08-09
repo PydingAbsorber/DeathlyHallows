@@ -10,10 +10,12 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.IExtendedEntityProperties;
 
 public class PacketPropertiesToClient implements IMessage, IMessageHandler<PacketPropertiesToClient, IMessage> {
 	
-	private String id;
+	private int entityID;
+	private String propsID;
 	private NBTTagCompound props;
 
 	public PacketPropertiesToClient() {
@@ -21,30 +23,41 @@ public class PacketPropertiesToClient implements IMessage, IMessageHandler<Packe
 	}
 
 	public PacketPropertiesToClient(Entity e, String identifier) {
-		id = identifier;
+		entityID = e.getEntityId();
+		propsID = identifier;
 		props = new NBTTagCompound();
 		e.getExtendedProperties(identifier).saveNBTData(props);
 	}
 
 	@Override
 	public void toBytes(ByteBuf buf) {
-		ByteBufUtils.writeUTF8String(buf, id);
+		buf.writeInt(entityID);
+		ByteBufUtils.writeUTF8String(buf, propsID);
 		ByteBufUtils.writeTag(buf, props);
 	}
 	
 	@Override
 	public void fromBytes(ByteBuf buf) {
-		id = ByteBufUtils.readUTF8String(buf);
+		entityID = buf.readInt();
+		propsID = ByteBufUtils.readUTF8String(buf);
 		props = ByteBufUtils.readTag(buf);
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IMessage onMessage(PacketPropertiesToClient msg, MessageContext ctx) {
-		if(msg.id == null || msg.props == null) {
+		if(msg.propsID == null || msg.props == null) {
 			return null;
 		}
-		Minecraft.getMinecraft().thePlayer.getExtendedProperties(msg.id).loadNBTData(msg.props);
+		Entity e = Minecraft.getMinecraft().theWorld.getEntityByID(msg.entityID);
+		if(e == null) {
+			return null;
+		}
+		IExtendedEntityProperties props = e.getExtendedProperties(msg.propsID);
+		if(props == null) {
+			return null;
+		}
+		props.loadNBTData(msg.props);
 		return null;
 	}
 	

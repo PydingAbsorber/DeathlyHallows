@@ -56,6 +56,7 @@ dh.chat.elfToken=§9Set Elf level to %d
 dh.chat.deadlyPrism1=Damage type is set to: §5%s
 dh.chat.deadlyPrism2=Type damage type (number) in chat:
 dh.chat.elfRequired=Elf wisdom is required to draw forbidden symbols.
+dh.chat.elderWandRequired=Elder artifact is required to draw forbidden symbols.
 dh.chat.horcruxFail=Temptation is high but you seem to look back
 dh.chat.niceCream1=You're just great! 
 dh.chat.niceCream2=You look nice today! 

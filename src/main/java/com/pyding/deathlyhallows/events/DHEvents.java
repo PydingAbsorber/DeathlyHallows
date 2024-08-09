@@ -27,8 +27,7 @@ import com.pyding.deathlyhallows.items.ItemDeadlyPrism;
 import com.pyding.deathlyhallows.items.ItemNimbus;
 import com.pyding.deathlyhallows.items.baubles.ItemBaubleResurrectionStone;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
-import com.pyding.deathlyhallows.network.packets.PacketAnimaMobRender;
-import com.pyding.deathlyhallows.network.packets.PacketPlayerRender;
+import com.pyding.deathlyhallows.network.packets.PacketNBTSync;
 import com.pyding.deathlyhallows.symbols.SymbolHorcrux;
 import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.utils.DHUtils;
@@ -113,12 +112,12 @@ public final class DHEvents {
 		MinecraftForge.EVENT_BUS.register(INSTANCE);
 		FMLCommonHandler.instance().bus().register(INSTANCE);
 	}
-	
+
 	@SubscribeEvent
-	public void onStruck(EntityStruckByLightningEvent event){
-		if(event.entity instanceof EntityPlayer){
+	public void onStruck(EntityStruckByLightningEvent event) {
+		if(event.entity instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer)event.entity;
-			if(player.getEntityData().getLong("DHBag") > System.currentTimeMillis() && player.getHeldItem().getItem() instanceof ItemBag){
+			if(player.getEntityData().getLong("DHBag") > System.currentTimeMillis() && player.getHeldItem().getItem() instanceof ItemBag) {
 				player.getHeldItem().splitStack(1);
 				player.inventory.addItemStackToInventory(new ItemStack(DHItems.lightningInBag));
 			}
@@ -261,17 +260,49 @@ public final class DHEvents {
 
 	private void updateLiving(EntityLivingBase entity) {
 		NBTTagCompound tag = entity.getEntityData();
-		if(tag.getInteger("SectumTime") <= 0) {
+		checkSectum(entity, tag);
+		checkCurse(entity, tag);
+	}
+
+	private static void checkSectum(EntityLivingBase e, NBTTagCompound tag) {
+		if(!tag.hasKey("SectumTime")) {
 			return;
 		}
-		if(tag.getInteger("SectumTime") == 1) {
+		int time = tag.getInteger("SectumTime");
+		float hp = tag.getFloat("SectumHp");
+		if(hp > 0F && time < 5) {
 			Multimap<String, AttributeModifier> attributes = HashMultimap.create();
-			attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier("SectumHPAttribute", tag.getFloat("SectumHp"), 0));
-			entity.getAttributeMap().applyAttributeModifiers(attributes);
-			tag.setFloat("SectumHp", 0);
+			attributes.put(SharedMonsterAttributes.maxHealth.getAttributeUnlocalizedName(), new AttributeModifier("SectumHPAttribute", hp, 0));
+			e.getAttributeMap().applyAttributeModifiers(attributes);
+			tag.removeTag("SectumHp");
 		}
-		tag.setInteger("SectumTime", tag.getInteger("SectumTime") - 1);
+		if(time > 0) {
+			tag.setInteger("SectumTime", time - 1);
+		}
+		else {
+			tag.removeTag("SectumTime");
+			tag.removeTag("SectumHp");
+		}
+	}
 
+	private static void checkCurse(EntityLivingBase e, NBTTagCompound tag) {
+		if(!tag.hasKey(DHCURSE_TAG)) {
+			return;
+		}
+		int curse = tag.getInteger(DHCURSE_TAG);
+		if(curse % 20 == 0) {
+			ParticleEffect.FLAME.send(SoundEffect.NONE, e.worldObj, e.posX, e.posY + e.height / 2D, e.posZ, 0.75D, 0.75D, 64);
+			DHPacketProcessor.sendToAllAround(new PacketNBTSync(tag, e.getEntityId()), new NetworkRegistry.TargetPoint(e.dimension, e.posX, e.posY, e.posZ, 64));
+		}
+		if(!e.isDead && curse < 1) {
+			EntityUtil.instantDeath(e, e.getLastAttacker());
+		}
+		if(curse > 0) {
+			tag.setInteger(DHCURSE_TAG, curse - 1);
+		}
+		else {
+			tag.removeTag(DHCURSE_TAG);
+		}
 	}
 
 	private static void updateAnimal(EntityLivingBase living) {
@@ -280,7 +311,6 @@ public final class DHEvents {
 		}
 		EntityLiving entity = (EntityLiving)living;
 		NBTTagCompound tag = entity.getEntityData();
-		checkCurse(entity, tag);
 		stopChainedFromLeave(entity, tag);
 	}
 
@@ -292,27 +322,6 @@ public final class DHEvents {
 		if(entity.getDistance(x, y, z) > 16) {
 			entity.setPositionAndUpdate(x, y, z);
 		}
-	}
-
-	private static void checkCurse(EntityLiving entity, NBTTagCompound tag) {
-		if(tag.getInteger(DHCURSE_TAG) <= 0) {
-			return;
-		}
-		if(tag.getInteger(DHCURSE_TAG) % 10 == 0) {
-			ParticleEffect.FLAME.send(SoundEffect.NONE, entity, 1, 1, 64);
-		}
-		PacketAnimaMobRender packet = new PacketAnimaMobRender(tag, entity.getEntityId());
-		NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 64);
-		if(tag.getInteger(DHCURSE_TAG) == 1200) {
-			DHPacketProcessor.sendToAllAround(packet, targetPoint);
-		}
-		if(tag.getInteger(DHCURSE_TAG) == 200) {
-			DHPacketProcessor.sendToAllAround(packet, targetPoint);
-		}
-		if(tag.getInteger(DHCURSE_TAG) == 1) {
-			EntityUtil.instantDeath(entity, entity.getLastAttacker());
-		}
-		tag.setInteger(DHCURSE_TAG, tag.getInteger(DHCURSE_TAG) - 1);
 	}
 
 	private static void updatePlayer(EntityLivingBase living) {
@@ -335,18 +344,8 @@ public final class DHEvents {
 				tellPrikol(p);
 			}
 		}
-		sendPacketRenderCurse(p);
 	}
 
-	private static void sendPacketRenderCurse(EntityPlayer p) {
-		if(p.getEntityData().getInteger(DHCURSE_TAG) <= 0) {
-			return;
-		}
-		if(p.getEntityData().getInteger(DHCURSE_TAG) == 200) {
-			DHPacketProcessor.sendToPlayer(new PacketPlayerRender(p.getEntityData()), p);
-		}
-		p.getEntityData().setInteger(DHCURSE_TAG, p.getEntityData().getInteger(DHCURSE_TAG) - 1);
-	}
 
 	private static void tellPrikol(EntityPlayer p) {
 		if(ElfUtils.isVampOrWolf(p) && Math.random() * 2592000D < 1.0D) {
@@ -414,12 +413,11 @@ public final class DHEvents {
 			tag.setInteger("DopVoid", tag.getInteger("DopVoid") - 1);
 		}
 		if(tag.getInteger("mantlecd") <= 200) {
-			tag.setBoolean("mantleActive", false);
-			p.setInvisible(false);
+			tag.removeTag("mantleActive");
+			p.noClip = false;
 		}
 		if(tag.getBoolean("mantleActive")) {
 			p.addPotionEffect(new PotionEffect(Potion.invisibility.id, tag.getInteger("mantlecd"), 250, true));
-			p.setInvisible(true);
 		}
 		if(tag.getInteger("invincible") > 0) {
 			tag.setInteger("invincible", tag.getInteger("invincible") - 1);
@@ -900,10 +898,8 @@ public final class DHEvents {
 		if(p.capabilities.isCreativeMode
 				|| e.world.isRemote || p.worldObj.isRemote
 				// Если моя руда не содержит в ключе локализации слово ore? Мне нахер пойти тогда?)
-				|| !DHUtils.hasDeathlyHallow(p) || (!e.block.getUnlocalizedName()
-															.toLowerCase()
-															.contains("ore")
-		)
+				|| !DHUtils.hasDeathlyHallow(p)
+				|| !e.block.getUnlocalizedName().toLowerCase().contains("ore")
 		) {
 			return;
 		}
@@ -1008,5 +1004,5 @@ public final class DHEvents {
 			nimbus.setDead();
 		}
 	}
-	
+
 }

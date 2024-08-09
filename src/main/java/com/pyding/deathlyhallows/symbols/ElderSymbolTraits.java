@@ -4,6 +4,7 @@ import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.infusion.infusions.symbols.SymbolEffect;
 import com.emoniph.witchery.util.ChatUtil;
 import com.emoniph.witchery.util.SoundEffect;
+import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.utils.ElfUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumChatFormatting;
@@ -45,5 +46,14 @@ public abstract class ElderSymbolTraits {
 			}
 		};
 	}
+
+	public static final ElderSymbolTraits ELDER =
+			new ElderSymbolTraits(RED, "dh.chat.elderWandRequired") {
+				@Override
+				public boolean check(SymbolEffect effect, World world, EntityPlayer p, int level) {
+					return p.getHeldItem() != null && p.getHeldItem().getItem() == DHItems.elderWand;
+				}
+			};
+
 
 }

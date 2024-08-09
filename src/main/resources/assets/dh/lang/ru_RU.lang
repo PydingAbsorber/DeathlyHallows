@@ -56,6 +56,7 @@ dh.chat.elfToken=§9Твой уровень Эльфа стал %d
 dh.chat.deadlyPrism1=Установленный тип урона: §5%s
 dh.chat.deadlyPrism2=Введи тип урона (числом) в ЧаАаТ:
 dh.chat.elfRequired=Чтобы рисовать запрещённые символы, Вам нужна мудрость Эльфа.
+dh.chat.elderWandRequired=Чтобы рисовать запрещённые символы, Вам нужен древний артефакт.
 dh.chat.niceCream1=Ты просто великолепен!
 dh.chat.niceCream2=Ты отлично выглядишь сегодня!
 dh.chat.niceCream3=Эти когти настоящие?

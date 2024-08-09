@@ -16,7 +16,7 @@ public class DHHooks {
 
 	public static final String classPath = "com/pyding/deathlyhallows/core/DHHooks";
 
-	public static int witcheryBranchPerform(SymbolEffect effect, World world, EntityPlayer p, int level) {
+	public static boolean witcheryBranchCanPerform(SymbolEffect effect, World world, EntityPlayer p, int level) {
 		// cancel spell if... trait check fails
 		if(effect instanceof SymbolEffectBase) {
 			for(ElderSymbolTraits trait: ((SymbolEffectBase)effect).getTraits()) {
@@ -24,9 +24,12 @@ public class DHHooks {
 					continue;
 				}
 				trait.onFail(p);
-				return 0;
+				return false;
 			}
 		}
+		return true;
+	}
+	public static int witcheryBranchPerformLevel(int level, SymbolEffect effect, World world, EntityPlayer p) {
 		// put spell in elf quest list
 		DeathlyProperties props = DeathlyProperties.get(p);
 		props.addSpell(effect.getEffectID());

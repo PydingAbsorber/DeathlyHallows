@@ -11,6 +11,8 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
+import static com.pyding.deathlyhallows.symbols.ElderSymbolTraits.ELDER;
+
 public class SymbolGraviole extends SymbolEffectBase {
 
 	public static float
@@ -20,7 +22,7 @@ public class SymbolGraviole extends SymbolEffectBase {
 			SPEED = 10F;
 
 	public SymbolGraviole() {
-		super(DHID.SYMBOL_GRAVIOLE, "graviole", 5, false, false, null, 2_500, false);
+		super(DHID.SYMBOL_GRAVIOLE, "graviole", 10, false, false, null, 2_500, false, ELDER);
 	}
 
 	@Override

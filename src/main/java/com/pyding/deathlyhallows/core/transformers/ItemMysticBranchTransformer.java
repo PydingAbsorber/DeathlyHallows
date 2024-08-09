@@ -40,18 +40,27 @@ public class ItemMysticBranchTransformer extends ClassTransformerBase {
 				new VarInsnNode(ILOAD, 7),
 				new MethodInsnNode(INVOKESTATIC,
 						DHHooks.classPath,
-						"witcheryBranchPerform",
-						"(Lcom/emoniph/witchery/infusion/infusions/symbols/SymbolEffect;Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;I)I",
+						"witcheryBranchCanPerform",
+						"(Lcom/emoniph/witchery/infusion/infusions/symbols/SymbolEffect;Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;I)Z",
 						false
 				),
-				new VarInsnNode(ISTORE, 7),
-				new VarInsnNode(ILOAD, 7),
 				new JumpInsnNode(IFNE, skip),
 				new InsnNode(RETURN),
 				skip
 		);
-
 		mnode.instructions.insertBefore(previous(node, 4), list);
+		list = list(
+				new VarInsnNode(ALOAD, 8),
+				new VarInsnNode(ALOAD, 2),
+				new VarInsnNode(ALOAD, 3),
+				new MethodInsnNode(INVOKESTATIC,
+						DHHooks.classPath,
+						"witcheryBranchPerformLevel",
+						"(ILcom/emoniph/witchery/infusion/infusions/symbols/SymbolEffect;Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;)I",
+						false
+				)
+		);
+		mnode.instructions.insertBefore(node, list);
 		return true;
 	}
 

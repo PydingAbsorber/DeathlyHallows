@@ -2,8 +2,6 @@ package com.pyding.deathlyhallows.entities;
 
 import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.render.entity.RenderAbsoluteDeath;
-import com.pyding.deathlyhallows.render.entity.RenderAnimaInteritus;
-import com.pyding.deathlyhallows.render.entity.RenderAnimaInteritusMob;
 import com.pyding.deathlyhallows.render.entity.RenderEmpoweredArrow;
 import com.pyding.deathlyhallows.render.entity.RenderNimbus;
 import cpw.mods.fml.client.registry.RenderingRegistry;
@@ -13,12 +11,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.player.EntityPlayer;
 
 public class DHEntities {
 	private static int ID = 92;
-
 	private static int EGG_ID = 6400;
 
 	private DHEntities() {
@@ -27,7 +22,7 @@ public class DHEntities {
 
 	public static void init() {
 		register(EntityAbsoluteDeath.class, "AbsoluteDeath");
-		addEgg(EntityAbsoluteDeath.class, 9502720, 11430927);
+		addEgg(EntityAbsoluteDeath.class, 0x910000, 0xB06C10);
 		register(EntityNimbus.class, "Nimbus3000", 64, 2, true);
 		register(EntityEmpoweredArrow.class, "EmpoweredArrow", 128, 2, true);
 
@@ -56,9 +51,6 @@ public class DHEntities {
 		render(EntityAbsoluteDeath.class, new RenderAbsoluteDeath());
 		render(EntityNimbus.class, new RenderNimbus());
 		render(EntityEmpoweredArrow.class, new RenderEmpoweredArrow());
-		// special renders
-		render(EntityPlayer.class, new RenderAnimaInteritus());
-		render(EntityLiving.class, new RenderAnimaInteritusMob());
 	}
 
 	@SideOnly(Side.CLIENT)

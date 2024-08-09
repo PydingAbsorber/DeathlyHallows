@@ -8,8 +8,8 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import org.lwjgl.input.Keyboard;
 
@@ -25,29 +25,24 @@ public class ItemBaubleInvisibilityMantle extends ItemBaubleBase {
 	public void onWornTick(ItemStack stack, EntityLivingBase e) {
 		World world = e.worldObj;
 		EntityPlayer p = (EntityPlayer)e;
+		NBTTagCompound tag = p.getEntityData();
 		if(!p.isSneaking()) {
-			p.noClip = false;
+			if(tag.hasKey("mantleActive")) {
+				p.noClip = false;
+			}
 			return;
 		}
-		NBTTagCompound tag = p.getEntityData();
-		if(tag.getInteger("mantlecd") == 0) {
+		if(tag.getInteger("mantlecd") <= 0) {
 			tag.setInteger("mantlecd", 1200);
 			tag.setBoolean("mantleActive", true);
 			world.playSoundAtEntity(e, "dh:mantle." + DHUtils.getRandomInt(1, 3), 1F, 1F);
 		}
-		if(tag.getBoolean("mantleActive")) {
-			float yaw = (float)Math.PI / 180F * p.rotationYaw;
-			float pitch = (float)Math.PI / 180F * p.rotationPitch;
+		if(tag.hasKey("mantleActive")) {
+			Vec3 vel = p.getLookVec();
 			float speed = 0.7F;
-			p.setVelocity(
-					-MathHelper.sin(yaw) * speed, 
-					MathHelper.cos(yaw) * speed,
-					-MathHelper.sin(pitch) * speed
-			);
+			p.setVelocity(vel.xCoord * speed, vel.yCoord * speed, vel.zCoord * speed);
 			p.noClip = true;
-			return;
 		}
-		p.noClip = false;
 	}
 
 	@Override
@@ -71,5 +66,5 @@ public class ItemBaubleInvisibilityMantle extends ItemBaubleBase {
 		l.add(StatCollector.translateToLocalFormatted("dh.desc.owner", owner));
 		l.add(StatCollector.translateToLocal("dh.desc.hallow"));
 	}
-	
+
 }
