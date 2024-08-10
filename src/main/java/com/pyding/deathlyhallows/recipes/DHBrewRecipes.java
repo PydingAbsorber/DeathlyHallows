@@ -10,13 +10,15 @@ import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.OreDictionary;
 import thaumcraft.common.config.ConfigItems;
 
 import static com.emoniph.witchery.Witchery.Items;
+import static net.minecraft.init.Items.bucket;
 import static net.minecraft.init.Items.nether_star;
 import static net.minecraft.init.Items.redstone;
 import static net.minecraft.init.Items.rotten_flesh;
-import static net.minecraft.init.Items.water_bucket;
+import static net.minecraft.init.Items.stick;
 
 public final class DHBrewRecipes {
 
@@ -25,26 +27,24 @@ public final class DHBrewRecipes {
 	}
 
 	public static void init() {
+		// TODO
 		addBrewRitual(
-				new BrewItemKey(water_bucket),
-				new ItemStack(DHItems.soupWithSawdust),
-				1000,
+				new BrewItemKey(Items.CHALK_RITUAL),
+				new ItemStack(DHItems.elderChalk),
+				4000,
 
-				new ItemStack(water_bucket),
-				new ItemStack(water_bucket),
-				new ItemStack(rotten_flesh),
-				new ItemStack(Blocks.planks, 1, 0)
+				Items.GENERIC.itemCondensedFear.createStack(),
+				new ItemStack(DHItems.gastronomicTemptation)
 		);
 		addBrewRitual(
-				new BrewItemKey(DHItems.gastronomicTemptation),
-				new ItemStack(DHItems.viscousSecretions),
-				5000,
+				new BrewItemKey(bucket),
+				new ItemStack(DHItems.soupWithSawdust),
+				250,
 
-				new ItemStack(nether_star),
-				Items.GENERIC.itemTearOfTheGoddess.createStack(),
-				new ItemStack(redstone),
-				Items.GENERIC.itemBatWool.createStack(),
-				Items.GENERIC.itemDiamondVapour.createStack()
+				new ItemStack(rotten_flesh),
+				new ItemStack(rotten_flesh),
+				new ItemStack(stick),
+				new ItemStack(Blocks.planks, 1, OreDictionary.WILDCARD_VALUE)
 		);
 		addBrewRitual(
 				new BrewItemKey(Blocks.iron_bars),
@@ -55,6 +55,18 @@ public final class DHBrewRecipes {
 				Items.GENERIC.itemKobolditeNugget.createStack(),
 				Items.GENERIC.itemKobolditeDust.createStack(),
 				new ItemStack(DHItems.hobgoblinSoul)
+		);
+		// ok
+		addBrewRitual(
+				new BrewItemKey(DHItems.gastronomicTemptation),
+				new ItemStack(DHItems.viscousSecretions),
+				5000,
+
+				new ItemStack(nether_star),
+				Items.GENERIC.itemTearOfTheGoddess.createStack(),
+				new ItemStack(redstone),
+				Items.GENERIC.itemBatWool.createStack(),
+				Items.GENERIC.itemDiamondVapour.createStack()
 		);
 
 		if(DHIntegration.thaumcraft) {

@@ -3,6 +3,7 @@ package com.pyding.deathlyhallows.items.food;
 import com.emoniph.witchery.brewing.potions.WitcheryPotions;
 import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.util.ChatUtil;
+import com.pyding.deathlyhallows.utils.DHUtils;
 import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -13,12 +14,11 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import java.util.List;
-import java.util.Random;
 
 public class ItemNiceCream extends ItemFoodBase {
 	
 	public ItemNiceCream() {
-		super("niceCream", 5, 25);
+		super("niceCream", 4, 25);
 		setAlwaysEdible();
 	}
 
@@ -30,9 +30,7 @@ public class ItemNiceCream extends ItemFoodBase {
 	public ItemStack onEaten(ItemStack stack, World world, EntityPlayer p) {
 		super.onEaten(stack, world, p);
 		if(!world.isRemote) {
-			Random random = new Random();
-			int numba = random.nextInt(6) + 1;
-			ChatUtil.sendTranslated(EnumChatFormatting.GREEN, p, "dh.chat.niceCream" + numba);
+			ChatUtil.sendTranslated(EnumChatFormatting.GREEN, p, "dh.chat.niceCream" + DHUtils.getRandomInt(1, 7));
 		}
 		p.heal(20);
 		Infusion.setCurrentEnergy(p, Math.min(Infusion.getMaxEnergy(p), Infusion.getCurrentEnergy(p) + 5));
