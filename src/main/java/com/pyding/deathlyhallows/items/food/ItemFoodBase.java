@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 import java.util.List;
 
 public class ItemFoodBase extends ItemFood {
-	
+
 	private boolean edibleInCreative = false;
 
 	public ItemFoodBase(String unlocalizedName, int hunger, float saturation, int maxStackSize, CreativeTabs tab) {
@@ -34,6 +34,24 @@ public class ItemFoodBase extends ItemFood {
 			return stack;
 		}
 		return super.onItemRightClick(stack, world, p);
+	}
+
+	public ItemStack onEaten(ItemStack stack, World world, EntityPlayer p) {
+		super.onEaten(stack, world, p);
+		ItemStack container = getContainerItem(stack);
+		if(container == null) {
+			return stack;
+		}
+		if(stack.stackSize <= 0) {
+			return container;
+		}
+		if(p.inventory.addItemStackToInventory(container)) {
+			p.inventoryContainer.detectAndSendChanges();
+		}
+		else if(!world.isRemote) {
+			p.entityDropItem(container, 1);
+		}
+		return stack;
 	}
 
 	@Override

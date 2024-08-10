@@ -27,7 +27,7 @@ public class ItemNiceCream extends ItemFoodBase {
 		l.add(StatCollector.translateToLocal("dh.desc.niceCream"));
 	}
 
-	public ItemStack onEaten(ItemStack stack, World world, EntityPlayer p) {
+	protected void onFoodEaten(ItemStack stack, World world, EntityPlayer p) {
 		super.onEaten(stack, world, p);
 		if(!world.isRemote) {
 			ChatUtil.sendTranslated(EnumChatFormatting.GREEN, p, "dh.chat.niceCream" + DHUtils.getRandomInt(1, 7));
@@ -40,7 +40,7 @@ public class ItemNiceCream extends ItemFoodBase {
 		props.setNiceCream(props.getNiceCream() + 1);
 		if(tag.getLong("NiceTime") == 0) {
 			tag.setLong("NiceTime", System.currentTimeMillis() + 20000);
-			return stack;
+			return;
 		}
 		if(tag.getLong("NiceTime") <= System.currentTimeMillis()) {
 			tag.setLong("NiceTime", System.currentTimeMillis() + 20000);
@@ -50,6 +50,6 @@ public class ItemNiceCream extends ItemFoodBase {
 			}
 			tag.setInteger("NiceCream", 0);
 		}
-		return stack;
 	}
+	
 }

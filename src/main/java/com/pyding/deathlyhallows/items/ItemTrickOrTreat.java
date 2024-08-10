@@ -43,7 +43,7 @@ public class ItemTrickOrTreat extends ItemBase {
 		l.add(StatCollector.translateToLocal("dh.desc.trick3"));
 		l.add(StatCollector.translateToLocal("dh.desc.trick4"));
 	}
-	
+
 	@Override
 	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer p) {
 		if(!p.capabilities.isCreativeMode) {
@@ -57,7 +57,7 @@ public class ItemTrickOrTreat extends ItemBase {
 		if(p.inventory.addItemStackToInventory(loot)) {
 			p.inventoryContainer.detectAndSendChanges();
 		}
-		else {
+		else if(!world.isRemote) {
 			p.entityDropItem(loot, 1);
 		}
 		(Math.random() < 0.5 ? SoundEffect.WITCHERY_MOB_BABA_DEATH : SoundEffect.WITCHERY_MOB_BABA_LIVING).playAtPlayer(world, p, 1, 1); // lolwhat?
@@ -137,5 +137,5 @@ public class ItemTrickOrTreat extends ItemBase {
 			witcheryItems.add(submissive.createStack());
 		}
 	}
-	
+
 }

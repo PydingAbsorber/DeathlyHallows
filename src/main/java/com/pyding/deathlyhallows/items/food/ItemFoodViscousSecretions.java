@@ -22,14 +22,14 @@ public class ItemFoodViscousSecretions extends ItemFoodBase implements IWarpingG
 		setAlwaysEdible();
 	}
 	
-	public ItemStack onEaten(ItemStack stack, World world, EntityPlayer p) {
-		super.onEaten(stack, world, p);
+	@Override
+	protected void onFoodEaten(ItemStack stack, World world, EntityPlayer p) {
+		p.getEntityData().setInteger("DopVoid", 3000);
 		if(!world.isRemote) {
 			ChatUtil.sendTranslated(EnumChatFormatting.DARK_RED, p, "dh.chat.food");
 		}
-		p.getEntityData().setInteger("DopVoid", 3000);
 		if(world.isRemote || !DHIntegration.thaumcraft) {
-			return stack;
+			return;
 		}
 		double random = Math.random();
 		if(random < 0.01) {
@@ -41,7 +41,6 @@ public class ItemFoodViscousSecretions extends ItemFoodBase implements IWarpingG
 		else {
 			Thaumcraft.addWarpToPlayer(p, 1, true);
 		}
-		return stack;
 	}
 
 	@Override

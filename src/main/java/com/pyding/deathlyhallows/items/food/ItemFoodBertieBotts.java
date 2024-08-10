@@ -13,37 +13,34 @@ import java.util.List;
 public class ItemFoodBertieBotts extends ItemFoodBase {
 
 	private static final List<Integer> blackList = new ArrayList<>();
-	
+
 	public ItemFoodBertieBotts() {
 		super("bertieBotts", 8, 20);
 		setAlwaysEdible();
 	}
 
-	public ItemStack onEaten(ItemStack stack, World world, EntityPlayer player) {
-		super.onEaten(stack, world, player);
-		addBuff(player, world);
-		return stack;
+	protected void onFoodEaten(ItemStack stack, World world, EntityPlayer p) {
+		addBuff(p, world);
 	}
 
-	public static void addBuff(EntityPlayer player, World world) {
+	public static void addBuff(EntityPlayer p, World world) {
 		if(world.isRemote) {
 			return;
 		}
-		int bounds = 126;
+		int bounds = Potion.potionTypes.length;
 		int random = itemRand.nextInt(bounds) + 1;
-		int random2 = itemRand.nextInt(4) + 1;
 		try {
 			while(isBlackListed(random)) {
 				random = itemRand.nextInt(bounds) + 1;
 			}
 			Potion potion = Potion.potionTypes[random];
 			if(potion != null) {
-				player.addPotionEffect(new PotionEffect(random, random2 * 600, random2));
+				p.addPotionEffect(new PotionEffect(random, (1 + itemRand.nextInt(15)) * 200, itemRand.nextInt(4)));
 			}
 			else {
 				blackList.add(random);
 				// TODO maybe a lil explosion would be better than recursion.
-				addBuff(player, world);
+				addBuff(p, world);
 			}
 		}
 		catch(NullPointerException e) {
@@ -60,7 +57,7 @@ public class ItemFoodBertieBotts extends ItemFoodBase {
 		}
 		return false;
 	}
-	
+
 	public static void addToBlackList(int potionID) {
 		blackList.add(potionID);
 	}
