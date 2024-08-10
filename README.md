@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="120" src="https://github.com/user-attachments/assets/3c79ae82-34a5-491f-b763-3373d23d3c65" alt="DHLogo">
+    <img width="120" src="https://cdn.modrinth.com/data/6xIfBqzY/dc4029e21a46028e64a26b87b036d51bd7e0d0b4.png" alt="DHLogo">
 </p>
 
 # Deathly Hallows
