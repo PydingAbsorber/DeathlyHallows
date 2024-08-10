@@ -64,7 +64,7 @@ public class ItemElderChalk extends ItemBase {
 		if(world.isRemote) {
 			return false;
 		}
-		boolean chalkUsed = drawGlyph(world, posX, posY, posZ, side, DHBlocks.elderRitualRune, player);
+		boolean chalkUsed = drawGlyph(world, posX, posY, posZ, side, DHBlocks.elderGlyph, player);
 		if(!chalkUsed || player.capabilities.isCreativeMode) {
 			return false;
 		}

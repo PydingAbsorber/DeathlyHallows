@@ -198,6 +198,14 @@ public final class DHThaumcraft {
 				DEATH, 4
 		);
 		addAspects(
+				new ItemStack(DHBlocks.elderGlyph),
+				TREE, 2,
+				FIRE, 2,
+
+				ELDRITCH, 8,
+				DEATH, 4
+		);
+		addAspects(
 				new ItemStack(DHItems.elderBook),
 				MIND, 5,
 				MAGIC, 1,

@@ -8,7 +8,7 @@ public class StructureSonata extends StructureBase {
 
 	@Override
 	protected void fillStructure() {
-		add(DHBlocks.elderRitualRune, 0, pos(0, 0, 0));
+		add(DHBlocks.elderGlyph, 0, pos(0, 0, 0));
 		add(Witchery.Blocks.GLYPH_RITUAL, pos(-4,0,4), pos(-1,0,-4), pos(0,0,-4), pos(1,0,-4), pos(4,0,4));
 		add(Witchery.Blocks.GLYPH_OTHERWHERE, pos(-3,0,0), pos(-3,0,2), pos(-2,0,-2), pos(-1,0,0), pos(-1,0,2), pos(0,0,-2), pos(1,0,0), pos(1,0,2), pos(2,0,-2), pos(3,0,0), pos(3,0,2));
 		add(Witchery.Blocks.PLANKS, 2, pos(-5,-1,2), pos(-5,-1,3), pos(-5,-1,4), pos(-4,-1,-3), pos(-4,-1,-2), pos(-4,-1,-1), pos(-4,-1,0), pos(-4,-1,1), pos(-4,-1,2), pos(-4,-1,3), pos(-4,-1,5), pos(-3,-1,-4), pos(-3,-1,-3), pos(-3,-1,-2), pos(-3,-1,-1), pos(-3,-1,1), pos(-3,-1,3), pos(-3,-1,4), pos(-3,-1,5), pos(-2,-1,-4), pos(-2,-1,-3), pos(-2,-1,-1), pos(-2,-1,0), pos(-2,-1,1), pos(-2,-1,2), pos(-2,-1,3), pos(-2,-1,4), pos(-1,-1,-5), pos(-1,-1,-3), pos(-1,-1,-2), pos(-1,-1,-1), pos(-1,-1,1), pos(-1,-1,3), pos(-1,-1,4), pos(0,-1,-5), pos(0,-1,-3), pos(0,-1,-1), pos(0,-1,0), pos(0,-1,1), pos(0,-1,2), pos(0,-1,3), pos(1,-1,-5), pos(1,-1,-3), pos(1,-1,-2), pos(1,-1,-1), pos(1,-1,1), pos(1,-1,3), pos(1,-1,4), pos(2,-1,-4), pos(2,-1,-3), pos(2,-1,-1), pos(2,-1,0), pos(2,-1,1), pos(2,-1,2), pos(2,-1,3), pos(2,-1,4), pos(3,-1,-4), pos(3,-1,-3), pos(3,-1,-2), pos(3,-1,-1), pos(3,-1,1), pos(3,-1,3), pos(3,-1,4), pos(3,-1,5), pos(4,-1,-3), pos(4,-1,-2), pos(4,-1,-1), pos(4,-1,0), pos(4,-1,1), pos(4,-1,2), pos(4,-1,3), pos(4,-1,5), pos(5,-1,2), pos(5,-1,3), pos(5,-1,4));

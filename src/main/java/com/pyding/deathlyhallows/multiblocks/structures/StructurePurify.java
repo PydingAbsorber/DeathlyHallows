@@ -8,7 +8,7 @@ public class StructurePurify extends StructureBase {
 
 	@Override
 	protected void fillStructure() {
-		add(DHBlocks.elderRitualRune, 0, pos(0, 0, 0));
+		add(DHBlocks.elderGlyph, 0, pos(0, 0, 0));
 		add(Blocks.sponge, 0, pos(-2,-2,-2), pos(-2,-2,-1), pos(-2,-2,0), pos(-2,-2,1), pos(-2,-2,2), pos(-1,-2,-2), pos(-1,-2,-1), pos(-1,-2,0), pos(-1,-2,1), pos(-1,-2,2), pos(0,-2,-2), pos(0,-2,-1), pos(0,-2,0), pos(0,-2,1), pos(0,-2,2), pos(1,-2,-2), pos(1,-2,-1), pos(1,-2,0), pos(1,-2,1), pos(1,-2,2), pos(2,-2,-2), pos(2,-2,-1), pos(2,-2,0), pos(2,-2,1), pos(2,-2,2));
 		add(Blocks.snow, 0, pos(-3,-1,-2), pos(-3,-1,-1), pos(-3,-1,0), pos(-3,-1,1), pos(-3,-1,2), pos(-2,-1,-3), pos(-2,-1,-2), pos(-2,-1,-1), pos(-2,-1,0), pos(-2,-1,1), pos(-2,-1,2), pos(-2,-1,3), pos(-1,-1,-3), pos(-1,-1,-2), pos(-1,-1,-1), pos(-1,-1,0), pos(-1,-1,1), pos(-1,-1,2), pos(-1,-1,3), pos(0,-1,-3), pos(0,-1,-2), pos(0,-1,-1), pos(0,-1,0), pos(0,-1,1), pos(0,-1,2), pos(0,-1,3), pos(1,-1,-3), pos(1,-1,-2), pos(1,-1,-1), pos(1,-1,0), pos(1,-1,1), pos(1,-1,2), pos(1,-1,3), pos(2,-1,-3), pos(2,-1,-2), pos(2,-1,-1), pos(2,-1,0), pos(2,-1,1), pos(2,-1,2), pos(2,-1,3), pos(3,-1,-2), pos(3,-1,-1), pos(3,-1,0), pos(3,-1,1), pos(3,-1,2));
 		add(Blocks.lapis_block, 0, pos(-3,0,-1), pos(-3,0,1), pos(-1,0,-3), pos(-1,0,3), pos(1,0,-3), pos(1,0,3), pos(3,0,-1), pos(3,0,1), pos(-3,1,-1), pos(-3,1,1), pos(-1,1,-3), pos(-1,1,3), pos(1,1,-3), pos(1,1,3), pos(3,1,-1), pos(3,1,1), pos(-3,2,-1), pos(-3,2,1), pos(-1,2,-3), pos(-1,2,3), pos(1,2,-3), pos(1,2,3), pos(3,2,-1), pos(3,2,1), pos(-2,3,-1), pos(-2,3,1), pos(-1,3,-2), pos(-1,3,2), pos(1,3,-2), pos(1,3,2), pos(2,3,-1), pos(2,3,1));

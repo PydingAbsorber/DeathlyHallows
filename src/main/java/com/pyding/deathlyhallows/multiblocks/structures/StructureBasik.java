@@ -8,7 +8,7 @@ public class StructureBasik extends StructureBase {
 
 	@Override
 	protected void fillStructure() {
-		add(DHBlocks.elderRitualRune, 0, pos(0, 0, 0));
+		add(DHBlocks.elderGlyph, 0, pos(0, 0, 0));
 		add(Witchery.Blocks.GLYPH_INFERNAL, pos(-2, 0, -1), pos(-2, 0, 1), pos(-1, 0, -2), pos(-1, 0, 2), pos(1, 0, -2), pos(1, 0, 2), pos(2, 0, -1), pos(2, 0, 1));
 		add(Witchery.Blocks.GLYPH_OTHERWHERE, pos(-2, 0, 0), pos(0, 0, -2), pos(0, 0, 2), pos(2, 0, 0));
 		add(ConfigBlocks.blockCosmeticSolid, 4, pos(-2, -2, -2), pos(-2, -2, 0), pos(-2, -2, 2), pos(0, -2, -2), pos(0, -2, 2), pos(2, -2, -2), pos(2, -2, 0), pos(2, -2, 2), pos(-2, -1, -1), pos(-2, -1, 1), pos(-1, -1, -2), pos(-1, -1, 2), pos(1, -1, -2), pos(1, -1, 2), pos(2, -1, -1), pos(2, -1, 1));

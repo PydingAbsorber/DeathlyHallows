@@ -213,7 +213,7 @@ public class MultiBlock {
 
 	public MultiBlockComponent getHeartGlyph() {
 		for(MultiBlockComponent component: components) {
-			if(component.getBlock().getUnlocalizedName().equals(DHBlocks.elderRitualRune.getUnlocalizedName())) {
+			if(component.getBlock().getUnlocalizedName().equals(DHBlocks.elderGlyph.getUnlocalizedName())) {
 				return component;
 			}
 		}

@@ -10,7 +10,7 @@ public class NEIDHConfig implements IConfigureNEI {
 	
 	@Override
 	public void loadConfig() {
-		API.hideItem(new ItemStack(DHBlocks.elderRitualRune));
+		API.hideItem(new ItemStack(DHBlocks.elderGlyph));
 	}
 
 	@Override

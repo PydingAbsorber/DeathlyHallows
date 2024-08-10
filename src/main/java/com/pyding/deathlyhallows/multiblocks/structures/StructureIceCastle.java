@@ -8,7 +8,7 @@ public class StructureIceCastle extends StructureBase {
 
 	@Override
 	protected void fillStructure() {
-		add(DHBlocks.elderRitualRune, 0, pos(0, 0, 0));
+		add(DHBlocks.elderGlyph, 0, pos(0, 0, 0));
 		add(Witchery.Blocks.GLYPH_OTHERWHERE, pos(-5,0,-2), pos(-5,0,-1), pos(-5,0,0), pos(-5,0,1), pos(-5,0,2), pos(-2,0,-5), pos(-2,0,5), pos(-1,0,-5), pos(-1,0,5), pos(0,0,-5), pos(0,0,5), pos(1,0,-5), pos(1,0,5), pos(2,0,-5), pos(2,0,5), pos(5,0,-2), pos(5,0,-1), pos(5,0,0), pos(5,0,1), pos(5,0,2));
 		add(Witchery.Blocks.GLYPH_INFERNAL, pos(-4,0,-3), pos(-4,0,3), pos(-3,0,-4), pos(-3,0,4), pos(3,0,-4), pos(3,0,4), pos(4,0,-3), pos(4,0,3));
 		add(Witchery.Blocks.GLYPH_RITUAL, pos(-1,0,-1), pos(-1,0,0), pos(-1,0,1), pos(0,0,-1), pos(0,0,1), pos(1,0,-1), pos(1,0,0), pos(1,0,1));

@@ -7,7 +7,7 @@ public class StructureExtremeCube extends StructureBase {
 
 	@Override
 	protected void fillStructure() {
-		add(DHBlocks.elderRitualRune, 0, pos(0, 0, 0));
+		add(DHBlocks.elderGlyph, 0, pos(0, 0, 0));
 		for(int x = -7; x <= 7; ++x) {
 			for(int y = -7; y <= 7; ++y) {
 				for(int z = -7; z <= 7; ++z) {
