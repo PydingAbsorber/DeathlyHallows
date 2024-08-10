@@ -11,6 +11,7 @@ import com.pyding.deathlyhallows.items.ItemElderWand;
 import com.pyding.deathlyhallows.symbols.SymbolEffectBase;
 import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.utils.DHUtils;
+import com.pyding.deathlyhallows.utils.ElfUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -18,6 +19,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -29,6 +31,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import static codechicken.lib.gui.GuiDraw.drawTexturedModalRect;
@@ -61,6 +64,42 @@ public final class DHPlayerRenderEvents {
 	}
 
 	@SubscribeEvent
+	public void renderElfEars(RenderPlayerEvent.Specials.Pre e) {
+		int elfLevel = ElfUtils.getElfLevel(e.entityPlayer);
+		if(elfLevel < 1) {
+			return;
+		}
+		ModelRenderer head = e.renderer.modelBipedMain.bipedHead;
+		if(head.isHidden || !head.showModel) {
+			return;
+		}
+		// note that axis are inverted at some point
+		//((AbstractClientPlayer)e.entityPlayer).getLocationSkin();
+		glPushMatrix();
+		if(head.offsetX != 0F || head.offsetY != 0F || head.offsetZ != 0F) {
+			glTranslatef(head.offsetX, head.offsetY, head.offsetZ);
+		}
+		if(head.rotationPointX != 0F || head.rotationPointY != 0F || head.rotationPointZ != 0F) {
+			final float size = 0.0625F;
+			glTranslatef(head.rotationPointX * size, head.rotationPointY * size, head.rotationPointZ * size);
+		}
+		if(head.rotateAngleZ != 0F) {
+			glRotatef(head.rotateAngleZ * (180F / (float)Math.PI), 0F, 0F, 1F);
+		}
+		if(head.rotateAngleY != 0F) {
+			glRotatef(head.rotateAngleY * (180F / (float)Math.PI), 0F, 1F, 0F);
+		}
+		if(head.rotateAngleX != 0F) {
+			glRotatef(head.rotateAngleX * (180F / (float)Math.PI), 1F, 0F, 0F);
+		}
+		glTranslatef(0F,  - 0.25f,  - 0.255f);
+		glRotatef(180F, 1F, 0F, 0F);
+		RenderManager.instance.renderEngine.bindTexture(anima);
+		drawImage();
+		glPopMatrix();
+	}
+
+	@SubscribeEvent
 	public void cancelRenderWithMantle(RenderLivingEvent.Pre e) {
 		if(e.entity.getEntityData().getBoolean("mantleActive")) {
 			e.setCanceled(true);
@@ -75,7 +114,7 @@ public final class DHPlayerRenderEvents {
 		}
 		int curse = tag.getInteger("dhcurse");
 		glPushMatrix();
-		float bobbing = 0.1F * (MathHelper.sin(2F * (float)Math.PI * (e.entity.ticksExisted % 180)/180F) + 1F);
+		float bobbing = 0.1F * (MathHelper.sin(2F * (float)Math.PI * (e.entity.ticksExisted % 180) / 180F) + 1F);
 		glTranslated(e.x, e.y + e.entity.height + 0.5D + bobbing, e.z);
 		EntityPlayer p = mc.thePlayer;
 		glRotatef(-p.rotationYaw, 0F, 1F, 0F);
