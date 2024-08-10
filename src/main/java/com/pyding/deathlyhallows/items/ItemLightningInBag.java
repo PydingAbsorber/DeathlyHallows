@@ -2,8 +2,6 @@ package com.pyding.deathlyhallows.items;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
@@ -16,6 +14,7 @@ public class ItemLightningInBag extends ItemBase {
 
 	public ItemLightningInBag() {
 		super("lightningInBag", 1);
+		setContainerItem(DHItems.bag);
 	}
 
 	@Override
@@ -28,8 +27,14 @@ public class ItemLightningInBag extends ItemBase {
 	}
 
 	@Override
-	public ItemStack onItemRightClick(ItemStack p_77659_1_, World world, EntityPlayer player) {
-		player.getEntityData().setLong("DHStrike",System.currentTimeMillis()+3000);
-		return super.onItemRightClick(p_77659_1_, world, player);
+	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer p) {
+		p.getEntityData().setLong("DHStrike", System.currentTimeMillis() + 3000);
+		return super.onItemRightClick(stack, world, p);
 	}
+
+	@Override
+	public ItemStack getContainerItem(ItemStack stack) {
+		return new ItemStack(DHItems.bag);
+	}
+	
 }
