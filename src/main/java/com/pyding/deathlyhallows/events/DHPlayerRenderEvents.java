@@ -77,11 +77,10 @@ public final class DHPlayerRenderEvents {
 			if(p.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer)) {
 				return;
 			}
-			// TODO check if it's necessary
 			glColor4f(1.0F, 1.0F, 1.0F, 0.15F);
 		}
 		int elfLevel = ElfUtils.getElfLevel(p);
-		if(elfLevel < 0) {
+		if(elfLevel < 1) {
 			return;
 		}
 		ModelRenderer head = e.renderer.modelBipedMain.bipedHead;
@@ -89,7 +88,6 @@ public final class DHPlayerRenderEvents {
 			return;
 		}
 		// note that axis are inverted at some point
-		//((AbstractClientPlayer)p).getLocationSkin();
 		glPushMatrix();
 		if(head.offsetX != 0F || head.offsetY != 0F || head.offsetZ != 0F) {
 			glTranslatef(head.offsetX, head.offsetY, head.offsetZ);
