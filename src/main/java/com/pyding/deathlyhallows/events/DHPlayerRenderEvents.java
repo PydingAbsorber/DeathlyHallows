@@ -8,6 +8,7 @@ import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.items.ItemElderWand;
+import com.pyding.deathlyhallows.render.ModelWrapperDisplayList;
 import com.pyding.deathlyhallows.symbols.SymbolEffectBase;
 import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.utils.DHUtils;
@@ -32,6 +33,9 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.client.model.AdvancedModelLoader;
+import net.minecraftforge.client.model.IModelCustom;
+import net.minecraftforge.client.model.obj.WavefrontObject;
 import net.minecraftforge.common.MinecraftForge;
 
 import static codechicken.lib.gui.GuiDraw.drawTexturedModalRect;
@@ -48,10 +52,13 @@ public final class DHPlayerRenderEvents {
 	private static final int[] glyphOffsetX = new int[]{0, 0, 1, -1, 1, -1, -1, 1};
 	private static final int[] glyphOffsetY = new int[]{-1, 1, 0, 0, -1, 1, -1, 1};
 	private static final ResourceLocation
-			TEXTURE_GRID = new ResourceLocation(DHIntegration.WITCHERY, "textures/gui/grid.png"),
-			RADIAL_LOCATION = new ResourceLocation(DHIntegration.WITCHERY, "textures/gui/radial.png"),
-			anima = new ResourceLocation(DeathlyHallows.MODID, "textures/particles/anima.png"),
-			anima2 = new ResourceLocation(DeathlyHallows.MODID, "textures/particles/anima2.png");
+			STROKES_TEXTURE = new ResourceLocation(DHIntegration.WITCHERY, "textures/gui/grid.png"),
+			RADIAL_TEXTURE = new ResourceLocation(DHIntegration.WITCHERY, "textures/gui/radial.png"),
+			ANIMA_TEXTURE = new ResourceLocation(DeathlyHallows.MODID, "textures/particles/anima.png"),
+			ANIMA2_TEXTURE = new ResourceLocation(DeathlyHallows.MODID, "textures/particles/anima2.png");
+	private static final ResourceLocation
+			ELF_EAR_MODEL = new ResourceLocation(DeathlyHallows.MODID, "models/elfEar.obj");
+	private static final IModelCustom ELF_EAR = new ModelWrapperDisplayList((WavefrontObject)AdvancedModelLoader.loadModel(ELF_EAR_MODEL));
 	private static final DHPlayerRenderEvents INSTANCE = new DHPlayerRenderEvents();
 
 	private DHPlayerRenderEvents() {
@@ -65,8 +72,16 @@ public final class DHPlayerRenderEvents {
 
 	@SubscribeEvent
 	public void renderElfEars(RenderPlayerEvent.Specials.Pre e) {
-		int elfLevel = ElfUtils.getElfLevel(e.entityPlayer);
-		if(elfLevel < 1) {
+		EntityPlayer p = e.entityPlayer;
+		if(p.isInvisible()) {
+			if(p.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer)) {
+				return;
+			}
+			// TODO check if it's necessary
+			glColor4f(1.0F, 1.0F, 1.0F, 0.15F);
+		}
+		int elfLevel = ElfUtils.getElfLevel(p);
+		if(elfLevel < 0) {
 			return;
 		}
 		ModelRenderer head = e.renderer.modelBipedMain.bipedHead;
@@ -74,7 +89,7 @@ public final class DHPlayerRenderEvents {
 			return;
 		}
 		// note that axis are inverted at some point
-		//((AbstractClientPlayer)e.entityPlayer).getLocationSkin();
+		//((AbstractClientPlayer)p).getLocationSkin();
 		glPushMatrix();
 		if(head.offsetX != 0F || head.offsetY != 0F || head.offsetZ != 0F) {
 			glTranslatef(head.offsetX, head.offsetY, head.offsetZ);
@@ -92,10 +107,20 @@ public final class DHPlayerRenderEvents {
 		if(head.rotateAngleX != 0F) {
 			glRotatef(head.rotateAngleX * (180F / (float)Math.PI), 1F, 0F, 0F);
 		}
-		glTranslatef(0F,  - 0.25f,  - 0.255f);
-		glRotatef(180F, 1F, 0F, 0F);
-		RenderManager.instance.renderEngine.bindTexture(anima);
-		drawImage();
+		glTranslatef(0F, -0.2F, -0.1F);
+		renderEar(elfLevel);
+		glScalef(-1F,1F,1F);
+		renderEar(elfLevel);
+		glPopMatrix();
+	}
+	
+	private static void renderEar(int level) {
+		glPushMatrix();
+		glTranslatef(0.2275F, 0F, 0F);
+		float scale = 0.5F + level / 40F;
+		glScalef(scale, scale, scale);
+		glRotatef(-2F * Math.max(0, 10 - level), 0F, 0F, 1F);
+		ELF_EAR.renderAll();
 		glPopMatrix();
 	}
 
@@ -119,7 +144,7 @@ public final class DHPlayerRenderEvents {
 		EntityPlayer p = mc.thePlayer;
 		glRotatef(-p.rotationYaw, 0F, 1F, 0F);
 		glRotatef(p.rotationPitch, 1F, 0F, 0F);
-		RenderManager.instance.renderEngine.bindTexture(curse > 200 ? anima : anima2);
+		RenderManager.instance.renderEngine.bindTexture(curse > 200 ? ANIMA_TEXTURE : ANIMA2_TEXTURE);
 		drawImage();
 		glRotatef(180F, 0F, 1F, 0F);
 		drawImage();
@@ -181,7 +206,7 @@ public final class DHPlayerRenderEvents {
 		try {
 			int x = scale.getScaledWidth() / 2 - 8;
 			int y = scale.getScaledHeight() / 2 - 8;
-			mc.getTextureManager().bindTexture(RADIAL_LOCATION);
+			mc.getTextureManager().bindTexture(RADIAL_TEXTURE);
 			glPushMatrix();
 			float s = 0.33333334F;
 			glTranslatef(x - 42F + 5F, y - 42F + 5F, 0.0F);
@@ -294,7 +319,7 @@ public final class DHPlayerRenderEvents {
 	}
 
 	private void renderStrokes(ScaledResolution scale, byte[] strokes) {
-		mc.getTextureManager().bindTexture(TEXTURE_GRID);
+		mc.getTextureManager().bindTexture(STROKES_TEXTURE);
 		glPushMatrix();
 		try {
 			int x = scale.getScaledWidth() / 2 - 8;
