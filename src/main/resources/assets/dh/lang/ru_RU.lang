@@ -28,8 +28,8 @@ tile.visConverter.name=§9Многополигональный Пересбор�
 tile.botania:flower.screamily.name=§4Кричилия
 tile.botania:flower.spawnlesia.name=§dПризывлезия
 # Entities
-entity.dh.AbsoluteDeath.name=§4Абсолютная смерть
-entity.dh.Nimbus3000.name=§eНимбус3000
+entity.dh.AbsoluteDeath.name=§4Абсолютная смерть§r
+entity.dh.Nimbus3000.name=§eНимбус3000§r
 entity.dh.EmpoweredArrow.name=Усиленная стрела
 # Creative Tabs
 itemGroup.tabDeathlyHallows=§cДары Смерти

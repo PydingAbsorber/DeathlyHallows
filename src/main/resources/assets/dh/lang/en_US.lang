@@ -28,8 +28,8 @@ tile.visConverter.name=§9Multipolygonal Vis Reassembler ⋚ ⋛
 tile.botania:flower.screamily.name=§4Screamily
 tile.botania:flower.spawnlesia.name=§dSpawnlesia
 # Entities
-entity.dh.AbsoluteDeath.name=§4Absolute Death
-entity.dh.Nimbus3000.name=§eNimbus3000
+entity.dh.AbsoluteDeath.name=§4Absolute Death§r
+entity.dh.Nimbus3000.name=§eNimbus3000§r
 entity.dh.EmpoweredArrow.name=Empowered Arrow
 # Creative Tabs
 itemGroup.tabDeathlyHallows=§cDeathly Hallows
