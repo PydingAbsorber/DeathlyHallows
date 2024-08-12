@@ -45,7 +45,6 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 	public float 
 			baseDamage,
 			bestDamage;
-
 	private int
 			stareTimer,
 			rage,
@@ -115,7 +114,6 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 				i.applyModifier(attackingSpeedBoostModifier);
 			}
 		}
-		@SuppressWarnings("unchecked")
 		List<Entity> projectiles = DHUtils.getEntitiesAround(Entity.class, this, 16);
 		for(Entity o: projectiles) {
 			if(o instanceof EntitySpellEffect) {
@@ -136,7 +134,6 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 		if(this.getLastAttacker() != null) {
 			daun++;
 		}
-		@SuppressWarnings("unchecked")
 		List<EntityPlayer> entities = DHUtils.getEntitiesAround(EntityPlayer.class, this, 2);
 		if(isAggressive) {
 			for(EntityPlayer player: entities) {
@@ -286,15 +283,15 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 		noClip = true;
 	}
 
-	public boolean teleportRandomly() {
-		return this.teleportTo(
+	public void teleportRandomly() {
+		this.teleportTo(
 				posX + (rand.nextDouble() - 0.5D) * 32.0D,
 				posY + rand.nextInt(64) - 32,
 				posZ + (rand.nextDouble() - 0.5D) * 32.0D
 		);
 	}
 
-	protected boolean teleportToEntity(Entity e) {
+	protected void teleportToEntity(Entity e) {
 		Vec3 vec3 = Vec3.createVectorHelper(
 								posX - e.posX,
 								boundingBox.minY + height / 2.0D - e.posY + e.getEyeHeight(),
@@ -305,10 +302,10 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 		double newX = posX + (rand.nextDouble() - 0.5D) * 8.0D - vec3.xCoord * range;
 		double newY = posY + rand.nextInt(16) - 8 - vec3.yCoord * range;
 		double newZ = posZ + (rand.nextDouble() - 0.5D) * 8.0D - vec3.zCoord * range;
-		return teleportTo(newX, newY, newZ);
+		teleportTo(newX, newY, newZ);
 	}
 
-	protected boolean teleportTo(double newX, double newY, double newZ) {
+	protected void teleportTo(double newX, double newY, double newZ) {
 		double prevX = posX;
 		double prevY = posY;
 		double prevZ = posZ;
@@ -356,16 +353,10 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 
 			worldObj.playSoundEffect(prevX, prevY, prevZ, "mob.endermen.portal", 1.0F, 1.0F);
 			worldObj.playSoundAtEntity(this, "dh:mobs.sonido", 1F, 1F);
-			return true;
+			return;
 		}
 		// no teleport
 		setPosition(prevX, prevY, prevZ);
-		return false;
-	}
-
-	@Override
-	protected String getLivingSound() {
-		return null;
 	}
 
 	@Override
@@ -404,6 +395,9 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 	@Override
 	public void onDeath(DamageSource source) {
 		super.onDeath(source);
+		if(worldObj.isRemote) {
+			return;
+		}
 		// TODO rework on GUI and maybe something else
 		findMVP();
 		giftHallows();
