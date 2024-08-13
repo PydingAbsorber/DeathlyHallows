@@ -79,7 +79,8 @@ public final class DHBrewRecipes {
 					500,
 					Items.GENERIC.itemMandrakeRoot.createStack(),
 					new ItemStack(dye, 1, 15),
-					plank
+					plank,
+					Items.GENERIC.itemOddPorkCooked.createStack()
 			);
 		}
 
