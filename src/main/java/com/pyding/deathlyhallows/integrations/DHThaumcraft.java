@@ -175,6 +175,7 @@ public final class DHThaumcraft {
 				new ItemStack(DHItems.lightningInBag),
 				CLOTH, 8,
 				WEATHER, 8,
+				ENERGY, 8,
 				getAspect("magneto"), 4,
 				getAspect("electrum"), 2
 				
