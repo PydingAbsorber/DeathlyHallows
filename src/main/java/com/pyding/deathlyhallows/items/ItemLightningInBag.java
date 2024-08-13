@@ -18,6 +18,11 @@ public class ItemLightningInBag extends ItemBase {
 	}
 
 	@Override
+	public boolean doesContainerItemLeaveCraftingGrid(ItemStack stack) {
+		return false;
+	}
+
+	@Override
 	@SideOnly(Side.CLIENT)
 	protected void addTooltip(ItemStack stack, EntityPlayer p, List<String> l, boolean devMode) {
 		l.add(StatCollector.translateToLocal("dh.desc.light"));

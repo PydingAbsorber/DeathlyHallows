@@ -10,7 +10,7 @@ public class DHIntegration {
 			THAUMCRAFT = "Thaumcraft",
 			BOTANIA = "Botania",
 			BLOOD_MAGIC = "AWWayofTime",
-			ARS_MAGICA = "ArsMagica2";
+			ARS_MAGICA = "arsmagica2";
 
 	public static boolean
 			thaumcraft = false,

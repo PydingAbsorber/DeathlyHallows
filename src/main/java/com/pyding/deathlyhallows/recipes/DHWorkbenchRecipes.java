@@ -1,5 +1,8 @@
 package com.pyding.deathlyhallows.recipes;
 
+import am2.items.ItemEssence;
+import am2.items.ItemsCommonProxy;
+import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.ItemStack;
@@ -31,6 +34,12 @@ public final class DHWorkbenchRecipes {
 				Items.GENERIC.itemContractTorment.createStack(),
 				Items.GENERIC.itemDarkCloth.createStack()
 		);
+		if(DHIntegration.arsMagica) {
+			addShapelessRecipe(
+					new ItemStack(ItemsCommonProxy.essence, 8, ItemEssence.META_LIGHTNING),
+					new ItemStack(DHItems.lightningInBag)
+			);
+		}
 	}
 
 	public static void addShapelessRecipe(ItemStack output, Object... params) {
