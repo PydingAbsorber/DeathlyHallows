@@ -28,7 +28,6 @@ public class ItemNiceCream extends ItemFoodBase {
 	}
 
 	protected void onFoodEaten(ItemStack stack, World world, EntityPlayer p) {
-		super.onEaten(stack, world, p);
 		if(!world.isRemote) {
 			ChatUtil.sendTranslated(EnumChatFormatting.GREEN, p, "dh.chat.niceCream" + DHUtils.getRandomInt(1, 7));
 		}
