@@ -34,7 +34,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
-import org.lwjgl.opengl.GL11;
 
 import static codechicken.lib.gui.GuiDraw.drawTexturedModalRect;
 import static codechicken.lib.gui.GuiDraw.getStringWidth;
@@ -103,13 +102,12 @@ public final class DHPlayerRenderEvents {
 		glTranslatef(0F, -0.25F + 0.03125F, -0.125F);
 		glEnable(GL_CULL_FACE);
 		RenderManager.instance.renderEngine.bindTexture(((AbstractClientPlayer)e.entityPlayer).getLocationSkin());
-		double
-				// minecraft skins is usually 64x32, but universe knows other cases
-				width = GL11.glGetTexLevelParameterf(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH), 
-				height = GL11.glGetTexLevelParameterf(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT);
-		drawEar(17 / width, 12 / height, 1D / width, 1D / height, true);
+		// minecraft skins is usually 64x32, but universe knows other cases
+		double height = glGetTexLevelParameterf(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH) / glGetTexLevelParameterf(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT);
+				
+		drawEar(17D / 64D, 12D / 64D * height, 1D / 64D, 1D / 64D * height, true);
 		glScalef(-1F, 1F, 1F);
-		drawEar(7 / width, 12 / height, -1D / width, 1D / height, false);
+		drawEar(7 / 64D, 12 / 64D * height, -1D / 64D, 1D / 64D * height, false);
 		glDisable(GL_CULL_FACE);
 		glPopMatrix();
 	}
