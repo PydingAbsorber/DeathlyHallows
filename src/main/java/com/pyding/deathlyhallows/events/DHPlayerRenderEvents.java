@@ -98,76 +98,101 @@ public final class DHPlayerRenderEvents {
 		if(head.rotateAngleX != 0F) {
 			glRotatef(head.rotateAngleX * (180F / (float)Math.PI), 1F, 0F, 0F);
 		}
-		glTranslatef(0F, -0.25F, 0F);
-		drawEar(elfLevel);
+		glTranslatef(0F, -0.25F + 0.03125F, -0.125F);
+		glEnable(GL_CULL_FACE);
+		// minecraft skins is usually 64x32
+		drawEar(17 / 64D, 12 / 32D, 1D / 64D, 1D / 32D, true);
 		glScalef(-1F, 1F, 1F);
-		drawEar(elfLevel);
+		drawEar(7 / 64D, 12 / 32D, -1D / 64D, 1D / 32D, false);
+		glDisable(GL_CULL_FACE);
 		glPopMatrix();
 	}
 
-	private static void drawEar(int level) {
+	private static void drawEar(double startU, double startV, double u, double v, boolean left) {
 		glPushMatrix();
 		// y-axis is inverted, it points down
-		glTranslatef(0.25F, 0.03125F, -0.125F);
+		glTranslatef(0.25F, 0F, 0F);
 		glRotatef(30, 0F, -1F, 0F);
-		// [17;12 - 19;14] {64;32}
-		final double
-				// minecraft skin faces is usually 16x16, so subdivide x2
-				x = 1D / 32D, y = 1D / 32D,
-				// minecraft skins is usually 64x32
-				u = 1D / 64D, v = 1D / 32D,
-				startU = 17 * u,
-				startV = 12 * v;
-
-		// color channel 1
-		drawQuad(0, 0, x, 2 * y, startU, startV, u / 4, v);
-		drawQuad(x, 0, 3 * x, y, startU + u / 4, startV, u / 2, v);
-		drawQuad(4 * x, -y, x, y, startU + u / 4, startV, u / 2, v);
-		drawQuad(5 * x, -y, x, y, startU + 3 * u / 4, startV, u / 4, v);
-		// color channel 2
-		drawQuad(0, 2 * y, x, y, startU + u, startV, u / 4, v);
-		drawQuad(2 * x, y, x, y, startU + u + u / 4, startV, u / 2, v);
-		drawQuad(7 * x, -3 * y, x, y, startU + u + 3 * u / 4, startV, u / 4, v);
-		// color channel 3
-		drawQuad(0, -y, 2 * x, y, startU, startV + v, u / 4, v);
-		drawTris(0, -y, 2 * x, -y / 2, startU, startV + v, u / 8, v);
-		drawQuad(2 * x, -y - y / 2, 2 * x, y + y / 2, startU + u / 4, startV + v + v / 4, u / 2, 3 * v / 4);
-		drawTris(2 * x, -y - y / 2, 2 * x, -y / 2, startU + u / 4, startV + v + v / 4, u / 2, 3 * v / 4);
-		drawQuad(4 * x, -2 * y, 2 * x, y, startU + u / 4, startV + v + v / 4, u / 2, 3 * v / 4);
-		drawTris(4 * x, -2 * y, 2 * x, -2 * y / 3, startU + u / 4, startV + v + v / 4, u / 2, 3 * v / 4);
-		drawQuad(6 * x, -2 * y -2 * y / 3, x, y + 2 * y / 3, startU + 3 * u / 4, startV + v, u / 4, v);
-		drawTris(6 * x, -2 * y -2 * y / 3, x, -y / 3, startU + 3 * u / 4, startV + v, u / 4, v);
-		drawQuad(x, y, x, y, startU + u / 4, startV + v, u / 2, v / 4);
-		// color channel 4
-		drawQuad(x, 2 * y, x, y, startU + u, startV + v, u / 4, v);
-		drawQuad(3 * x, y, x, y, startU + u + u / 4, startV + v, u / 4, v);
-		drawQuad(4 * x, 0, 2 * x, y, startU + u + u / 2, startV + v, u / 4, v);
-		drawQuad(6 * x, -y, x, y, startU + u + 3 * u / 4, startV + v, u / 4, v);
-		drawQuad(7 * x, -2 * y, x, y, startU + u + 3 * u / 4, startV + v, u / 4, v);
+		// minecraft skin faces is usually 16x16, so subdivide x2
+		final double x = (left ? 1D : -1D) / 32D, y = 1D / 32D;
+		Tessellator t = Tessellator.instance;
+		if(!left) {
+			glScalef(-1F, 1F, 1F);
+		}
+		elfEar(t, x, y, startU, startV, u, v, !left);
+		glScalef(1F, 1F, -1F);
+		elfEar(t, x, y, startU, startV, u, v, left);
 		glPopMatrix();
 	}
 
-	private static void drawQuad(double x, double y, double xLen, double yLen, double minU, double minV, double uLen, double vLen) {
+	private static void elfEar(Tessellator t, double x, double y, double startU, double startV, double u, double v, boolean invertNormals) {
+		// quads
+		t.startDrawingQuads();
+		setEarNormals(t, invertNormals);
+		// color channel 1
+		quad(t, 0, 0, x, 2 * y, startU, startV, u / 4, v, invertNormals);
+		quad(t, x, 0, 3 * x, y, startU + u / 4, startV, u / 2, v, invertNormals);
+		quad(t, 4 * x, -y, x, y, startU + u / 4, startV, u / 2, v, invertNormals);
+		quad(t, 5 * x, -y, x, y, startU + 3 * u / 4, startV, u / 4, v, invertNormals);
+		// color channel 2
+		quad(t, 0, 2 * y, x, y, startU + u, startV, u / 4, v, invertNormals);
+		quad(t, 2 * x, y, x, y, startU + u + u / 4, startV, u / 2, v, invertNormals);
+		quad(t, 7 * x, -3 * y, x, y, startU + u + 3 * u / 4, startV, u / 4, v, invertNormals);
+		// color channel 3
+		quad(t, 0, -y, 2 * x, y, startU, startV + v, u / 4, v, invertNormals);
+		quad(t, 2 * x, -y - y / 2, 2 * x, y + y / 2, startU + u / 4, startV + v + v / 4, u / 2, 3 * v / 4, invertNormals);
+		quad(t, 4 * x, -2 * y, 2 * x, y, startU + u / 4, startV + v + v / 4, u / 2, 3 * v / 4, invertNormals);
+		quad(t, 6 * x, -2 * y - 2 * y / 3, x, y + 2 * y / 3, startU + 3 * u / 4, startV + v, u / 4, v, invertNormals);
+		quad(t, x, y, x, y, startU + u / 4, startV + v, u / 2, v / 4, invertNormals);
+		// color channel 4
+		quad(t, x, 2 * y, x, y, startU + u, startV + v, u / 4, v, invertNormals);
+		quad(t, 3 * x, y, x, y, startU + u + u / 4, startV + v, u / 4, v, invertNormals);
+		quad(t, 4 * x, 0, 2 * x, y, startU + u + u / 2, startV + v, u / 4, v, invertNormals);
+		quad(t, 6 * x, -y, x, y, startU + u + 3 * u / 4, startV + v, u / 4, v, invertNormals);
+		quad(t, 7 * x, -2 * y, x, y, startU + u + 3 * u / 4, startV + v, u / 4, v, invertNormals);
+		t.draw();
+		// tris
+		t.startDrawing(GL_TRIANGLES);
+		setEarNormals(t, invertNormals);
+		tris(t, 0, -y, 2 * x, -y / 2, startU, startV + v, u / 8, v, invertNormals);
+		tris(t, 2 * x, -y - y / 2, 2 * x, -y / 2, startU + u / 4, startV + v + v / 4, u / 2, 3 * v / 4, invertNormals);
+		tris(t, 4 * x, -2 * y, 2 * x, -2 * y / 3, startU + u / 4, startV + v + v / 4, u / 2, 3 * v / 4, invertNormals);
+		tris(t, 6 * x, -2 * y - 2 * y / 3, x, -y / 3, startU + 3 * u / 4, startV + v, u / 4, v, invertNormals);
+		t.draw();
+	}
+
+	private static void setEarNormals(Tessellator t, boolean invertNormals) {
+		t.setNormal(invertNormals ? -1F : 1F, 0F, 0F);
+	}
+
+	private static void quad(Tessellator t, double x, double y, double xLen, double yLen, double minU, double minV, double uLen, double vLen, boolean inverted) {
 		double maxV = minV + vLen;
 		double maxU = minU + uLen;
-		Tessellator t = Tessellator.instance;
-		t.startDrawingQuads();
+		if(inverted) {
+			t.addVertexWithUV(x, y + yLen, 0D, minU, maxV);
+			t.addVertexWithUV(x + xLen, y + yLen, 0D, maxU, maxV);
+			t.addVertexWithUV(x + xLen, y, 0D, maxU, minV);
+			t.addVertexWithUV(x, y, 0D, minU, minV);
+			return;
+		}
 		t.addVertexWithUV(x, y, 0D, minU, minV);
 		t.addVertexWithUV(x + xLen, y, 0D, maxU, minV);
 		t.addVertexWithUV(x + xLen, y + yLen, 0D, maxU, maxV);
 		t.addVertexWithUV(x, y + yLen, 0D, minU, maxV);
-		t.draw();
 	}
 
-	private static void drawTris(double x, double y, double xLen, double yLen, double minU, double minV, double uLen, double vLen) {
+	private static void tris(Tessellator t, double x, double y, double xLen, double yLen, double minU, double minV, double uLen, double vLen, boolean inverted) {
 		double maxV = minV + vLen;
 		double maxU = minU + uLen;
-		Tessellator t = Tessellator.instance;
-		t.startDrawing(GL_TRIANGLES);
+		if(inverted) {
+			t.addVertexWithUV(x + xLen, y, 0D, minU, maxV);
+			t.addVertexWithUV(x + xLen, y + yLen, 0D, maxU, minV);
+			t.addVertexWithUV(x, y, 0D, minU, minV);
+			return;
+		}
 		t.addVertexWithUV(x, y, 0D, minU, minV);
-		t.addVertexWithUV(x + xLen, y, 0D, minU, maxV);
 		t.addVertexWithUV(x + xLen, y + yLen, 0D, maxU, minV);
-		t.draw();
+		t.addVertexWithUV(x + xLen, y, 0D, minU, maxV);
 	}
 
 	@SubscribeEvent
@@ -192,8 +217,8 @@ public final class DHPlayerRenderEvents {
 		glRotatef(p.rotationPitch, 1F, 0F, 0F);
 		RenderManager.instance.renderEngine.bindTexture(curse > 200 ? ANIMA_TEXTURE : ANIMA2_TEXTURE);
 		drawImage();
-		glRotatef(180F, 0F, 1F, 0F);
-		drawImage();
+		//glRotatef(180F, 0F, 1F, 0F);
+		//drawImage();
 		glPopMatrix();
 	}
 
