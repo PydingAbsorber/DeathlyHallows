@@ -8,7 +8,6 @@ import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.items.ItemElderWand;
-import com.pyding.deathlyhallows.render.ModelWrapperDisplayList;
 import com.pyding.deathlyhallows.symbols.SymbolEffectBase;
 import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.utils.DHUtils;
@@ -33,9 +32,6 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.client.model.AdvancedModelLoader;
-import net.minecraftforge.client.model.IModelCustom;
-import net.minecraftforge.client.model.obj.WavefrontObject;
 import net.minecraftforge.common.MinecraftForge;
 
 import static codechicken.lib.gui.GuiDraw.drawTexturedModalRect;
@@ -56,9 +52,6 @@ public final class DHPlayerRenderEvents {
 			RADIAL_TEXTURE = new ResourceLocation(DHIntegration.WITCHERY, "textures/gui/radial.png"),
 			ANIMA_TEXTURE = new ResourceLocation(DeathlyHallows.MODID, "textures/particles/anima.png"),
 			ANIMA2_TEXTURE = new ResourceLocation(DeathlyHallows.MODID, "textures/particles/anima2.png");
-	private static final ResourceLocation
-			ELF_EAR_MODEL = new ResourceLocation(DeathlyHallows.MODID, "models/elfEar.obj");
-	private static final IModelCustom ELF_EAR = new ModelWrapperDisplayList((WavefrontObject)AdvancedModelLoader.loadModel(ELF_EAR_MODEL));
 	private static final DHPlayerRenderEvents INSTANCE = new DHPlayerRenderEvents();
 
 	private DHPlayerRenderEvents() {
@@ -73,19 +66,19 @@ public final class DHPlayerRenderEvents {
 	@SubscribeEvent
 	public void renderElfEars(RenderPlayerEvent.Specials.Pre e) {
 		EntityPlayer p = e.entityPlayer;
-		if(p.isInvisible()) {
-			if(p.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer)) {
-				return;
-			}
-			glColor4f(1.0F, 1.0F, 1.0F, 0.15F);
-		}
 		int elfLevel = ElfUtils.getElfLevel(p);
-		if(elfLevel < 1) {
+		if(elfLevel < 0) {
 			return;
 		}
 		ModelRenderer head = e.renderer.modelBipedMain.bipedHead;
 		if(head.isHidden || !head.showModel) {
 			return;
+		}
+		if(p.isInvisible()) {
+			if(p.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer)) {
+				return;
+			}
+			glColor4f(1.0F, 1.0F, 1.0F, 0.15F);
 		}
 		// note that axis are inverted at some point
 		glPushMatrix();
@@ -105,21 +98,61 @@ public final class DHPlayerRenderEvents {
 		if(head.rotateAngleX != 0F) {
 			glRotatef(head.rotateAngleX * (180F / (float)Math.PI), 1F, 0F, 0F);
 		}
-		glTranslatef(0F, -0.2F, -0.1F);
-		renderEar(elfLevel);
-		glScalef(-1F,1F,1F);
-		renderEar(elfLevel);
+		glTranslatef(0F, -0.25F, 0F);
+		drawEar(elfLevel);
+		glScalef(-1F, 1F, 1F);
+		drawEar(elfLevel);
 		glPopMatrix();
 	}
-	
-	private static void renderEar(int level) {
+
+	private static void drawEar(int level) {
 		glPushMatrix();
-		glTranslatef(0.2275F, 0F, 0F);
-		float scale = 0.5F + level / 40F;
-		glScalef(scale, scale, scale);
-		glRotatef(-2F * Math.max(0, 10 - level), 0F, 0F, 1F);
-		ELF_EAR.renderAll();
+		// y-axis is inverted, it points down
+		glTranslatef(0.25F, 0.03125F, -0.125F);
+		glRotatef(30, 0F, -1F, 0F);
+		// [17;12 - 19;14] {64;32}
+		final double
+				// minecraft skin faces is usually 16x16, so subdivide x2
+				x = 1D / 32D, y = 1D / 32D,
+				// minecraft skins is usually 64x32
+				u = 1D / 64D, v = 1D / 32D,
+				startU = 17 * u,
+				startV = 12 * v;
+
+		// color channel 1
+		drawQuad(0, 0, x, 2 * y, startU, startV, u / 4, v);
+		drawQuad(x, 0, 3 * x, y, startU + u / 4, startV, u / 2, v);
+		drawQuad(4 * x, -y, x, y, startU + u / 4, startV, u / 2, v);
+		drawQuad(5 * x, -y, x, y, startU + 3 * u / 4, startV, u / 4, v);
+		// color channel 2
+		drawQuad(0, 2 * y, x, y, startU + u, startV, u / 4, v);
+		drawQuad(2 * x, y, x, y, startU + u + u / 4, startV, u / 2, v);
+		drawQuad(7 * x, -3 * y, x, y, startU + u + 3 * u / 4, startV, u / 4, v);
+		// color channel 3
+		drawQuad(0, -y, 2 * x, y, startU, startV + v, u / 4, v);
+		drawQuad(2 * x, -y, 2 * x, y, startU + u / 4, startV + v + v / 4, u / 2, 3 * v / 4);
+		drawQuad(4 * x, -2 * y, 2 * x, y, startU + u / 4, startV + v + v / 4, u / 2, 3 * v / 4);
+		drawQuad(6 * x, -2 * y, x, y, startU + 3 * u / 4, startV + v, u / 4, v);
+		drawQuad(x, y, x, y, startU + u / 4, startV + v, u / 2, v / 4);
+		// color channel 4
+		drawQuad(x, 2 * y, x, y, startU + u, startV + v, u / 4, v);
+		drawQuad(3 * x, y, x, y, startU + u + u / 4, startV + v, u / 4, v);
+		drawQuad(4 * x, 0, 2 * x, y, startU + u + u / 2, startV + v, u / 4, v);
+		drawQuad(6 * x, -y, x, y, startU + u + 3 * u / 4, startV + v, u / 4, v);
+		drawQuad(7 * x, -2 * y, x, y, startU + u + 3 * u / 4, startV + v, u / 4, v);
 		glPopMatrix();
+	}
+
+	private static void drawQuad(double x, double y, double xLen, double yLen, double minU, double minV, double uLen, double vLen) {
+		double maxV = minV + vLen;
+		double maxU = minU + uLen;
+		Tessellator t = Tessellator.instance;
+		t.startDrawingQuads();
+		t.addVertexWithUV(x, y, 0D, minU, minV);
+		t.addVertexWithUV(x + xLen, y, 0D, maxU, minV);
+		t.addVertexWithUV(x + xLen, y + yLen, 0D, maxU, maxV);
+		t.addVertexWithUV(x, y + yLen, 0D, minU, maxV);
+		t.draw();
 	}
 
 	@SubscribeEvent
