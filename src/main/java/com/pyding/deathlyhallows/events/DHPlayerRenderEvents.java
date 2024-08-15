@@ -16,6 +16,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
@@ -65,7 +66,7 @@ public final class DHPlayerRenderEvents {
 	}
 
 	@SubscribeEvent
-	public void renderElfEars(RenderPlayerEvent.Specials.Pre e) {
+	public void renderElfEars(RenderPlayerEvent.Specials.Post e) {
 		EntityPlayer p = e.entityPlayer;
 		int elfLevel = ElfUtils.getElfLevel(p);
 		if(elfLevel < 1) {
@@ -101,6 +102,7 @@ public final class DHPlayerRenderEvents {
 		}
 		glTranslatef(0F, -0.25F + 0.03125F, -0.125F);
 		glEnable(GL_CULL_FACE);
+		RenderManager.instance.renderEngine.bindTexture(((AbstractClientPlayer)e.entityPlayer).getLocationSkin());
 		double
 				// minecraft skins is usually 64x32, but universe knows other cases
 				width = GL11.glGetTexLevelParameterf(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH), 
