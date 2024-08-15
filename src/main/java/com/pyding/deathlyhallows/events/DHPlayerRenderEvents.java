@@ -216,7 +216,11 @@ public final class DHPlayerRenderEvents {
 		glRotatef(-p.rotationYaw, 0F, 1F, 0F);
 		glRotatef(p.rotationPitch, 1F, 0F, 0F);
 		RenderManager.instance.renderEngine.bindTexture(curse > 200 ? ANIMA_TEXTURE : ANIMA2_TEXTURE);
+		glDisable(GL_LIGHTING);
+		glDisable(GL_CULL_FACE);
 		drawImage();
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_LIGHTING);
 		//glRotatef(180F, 0F, 1F, 0F);
 		//drawImage();
 		glPopMatrix();
