@@ -68,7 +68,7 @@ public final class DHPlayerRenderEvents {
 	public void renderElfEars(RenderPlayerEvent.Specials.Pre e) {
 		EntityPlayer p = e.entityPlayer;
 		int elfLevel = ElfUtils.getElfLevel(p);
-		if(elfLevel < 0) {
+		if(elfLevel < 1) {
 			return;
 		}
 		ModelRenderer head = e.renderer.modelBipedMain.bipedHead;
