@@ -130,9 +130,13 @@ public final class DHPlayerRenderEvents {
 		drawQuad(7 * x, -3 * y, x, y, startU + u + 3 * u / 4, startV, u / 4, v);
 		// color channel 3
 		drawQuad(0, -y, 2 * x, y, startU, startV + v, u / 4, v);
-		drawQuad(2 * x, -y, 2 * x, y, startU + u / 4, startV + v + v / 4, u / 2, 3 * v / 4);
+		drawTris(0, -y, 2 * x, -y / 2, startU, startV + v, u / 8, v);
+		drawQuad(2 * x, -y - y / 2, 2 * x, y + y / 2, startU + u / 4, startV + v + v / 4, u / 2, 3 * v / 4);
+		drawTris(2 * x, -y - y / 2, 2 * x, -y / 2, startU + u / 4, startV + v + v / 4, u / 2, 3 * v / 4);
 		drawQuad(4 * x, -2 * y, 2 * x, y, startU + u / 4, startV + v + v / 4, u / 2, 3 * v / 4);
-		drawQuad(6 * x, -2 * y, x, y, startU + 3 * u / 4, startV + v, u / 4, v);
+		drawTris(4 * x, -2 * y, 2 * x, -2 * y / 3, startU + u / 4, startV + v + v / 4, u / 2, 3 * v / 4);
+		drawQuad(6 * x, -2 * y -2 * y / 3, x, y + 2 * y / 3, startU + 3 * u / 4, startV + v, u / 4, v);
+		drawTris(6 * x, -2 * y -2 * y / 3, x, -y / 3, startU + 3 * u / 4, startV + v, u / 4, v);
 		drawQuad(x, y, x, y, startU + u / 4, startV + v, u / 2, v / 4);
 		// color channel 4
 		drawQuad(x, 2 * y, x, y, startU + u, startV + v, u / 4, v);
@@ -152,6 +156,17 @@ public final class DHPlayerRenderEvents {
 		t.addVertexWithUV(x + xLen, y, 0D, maxU, minV);
 		t.addVertexWithUV(x + xLen, y + yLen, 0D, maxU, maxV);
 		t.addVertexWithUV(x, y + yLen, 0D, minU, maxV);
+		t.draw();
+	}
+
+	private static void drawTris(double x, double y, double xLen, double yLen, double minU, double minV, double uLen, double vLen) {
+		double maxV = minV + vLen;
+		double maxU = minU + uLen;
+		Tessellator t = Tessellator.instance;
+		t.startDrawing(GL_TRIANGLES);
+		t.addVertexWithUV(x, y, 0D, minU, minV);
+		t.addVertexWithUV(x + xLen, y, 0D, minU, maxV);
+		t.addVertexWithUV(x + xLen, y + yLen, 0D, maxU, minV);
 		t.draw();
 	}
 
