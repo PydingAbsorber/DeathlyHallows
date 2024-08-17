@@ -73,6 +73,7 @@ import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHealEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -110,6 +111,16 @@ public final class DHEvents {
 	public static void init() {
 		MinecraftForge.EVENT_BUS.register(INSTANCE);
 		FMLCommonHandler.instance().bus().register(INSTANCE);
+	}
+
+	@SubscribeEvent
+	public void onLivingFall(LivingFallEvent e) {
+		if(e.entityLiving instanceof EntityPlayer
+				&& e.entityLiving.isRiding()
+				&& e.entityLiving.ridingEntity instanceof EntityNimbus
+		) {
+			e.distance = 0.0F;
+		}
 	}
 
 	@SubscribeEvent
