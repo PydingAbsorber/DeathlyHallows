@@ -75,11 +75,12 @@ public final class DHPlayerRenderEvents {
 		if(head.isHidden || !head.showModel) {
 			return;
 		}
+		glColor4f(1F, 1F, 1F, 1F);
 		if(p.isInvisible()) {
 			if(p.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer)) {
 				return;
 			}
-			glColor4f(1.0F, 1.0F, 1.0F, 0.15F);
+			glColor4f(1F, 1F, 1F, 0.15F);
 		}
 		// note that axis are inverted at some point
 		glPushMatrix();
