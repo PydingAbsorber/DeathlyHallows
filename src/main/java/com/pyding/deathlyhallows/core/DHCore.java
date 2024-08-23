@@ -5,7 +5,7 @@ import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import java.util.Map;
 
 @IFMLLoadingPlugin.MCVersion("1.7.10")
-@IFMLLoadingPlugin.TransformerExclusions("com.pyding.deathlyhallows.*")
+@IFMLLoadingPlugin.TransformerExclusions("com.pyding.deathlyhallows.core.")
 public class DHCore implements IFMLLoadingPlugin {
 
 	@Override
