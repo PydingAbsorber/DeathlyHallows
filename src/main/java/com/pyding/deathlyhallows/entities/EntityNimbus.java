@@ -18,12 +18,39 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 public class EntityNimbus extends EntityBroom {
+	
+	private static final int 
+			WATCHER_NAME = 10,
+			WATCHER_COLOR = 16,
+			WATCHER_TIMESINCEHIT = 17,
+			WATCHER_FORWARD = 18,
+			WATCHER_DAMAGE = 19;
 
 	public EntityNimbus(World world) {
 		super(world);
 		setSize(1.2F, 0.5F);
 	}
 
+	@Override
+	protected void entityInit() {
+		// override withcery reg cuz need to set another default color
+		dataWatcher.addObject(WATCHER_NAME, "");
+		dataWatcher.addObject(WATCHER_COLOR, 0x704020);
+		dataWatcher.addObject(WATCHER_TIMESINCEHIT, 0);
+		dataWatcher.addObject(WATCHER_FORWARD, 1);
+		dataWatcher.addObject(WATCHER_DAMAGE, 0F);
+	}
+
+	@Override
+	public void setBrushColor(int color) {
+		dataWatcher.updateObject(WATCHER_COLOR, color);
+	}
+
+	@Override
+	public int getBrushColor() {
+		return dataWatcher.getWatchableObjectInt(WATCHER_COLOR);
+	}
+	
 	@Override
 	public void onUpdate() {
 		if(riddenByEntity == null) {
@@ -106,6 +133,7 @@ public class EntityNimbus extends EntityBroom {
 		return false;
 	}
 
+	@Override
 	public boolean interactFirst(EntityPlayer player) {
 		if(riddenByEntity != null && riddenByEntity instanceof EntityPlayer && riddenByEntity != player) {
 			return true;

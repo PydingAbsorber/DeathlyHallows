@@ -1,8 +1,10 @@
 package com.pyding.deathlyhallows.render.entity.model;
 
+import com.pyding.deathlyhallows.entities.EntityNimbus;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
+import org.lwjgl.opengl.GL11;
 
 public class ModelNimbus extends ModelBase {
 	public ModelRenderer
@@ -143,19 +145,26 @@ public class ModelNimbus extends ModelBase {
 		handle.addChild(backHandle1);
 		handle.addChild(backHandle2);
 	}
-
+	
 	@Override
 	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
 		handle.render(f5);
-		bristle4.render(f5);
-		bristle5.render(f5);
+		if(entity instanceof EntityNimbus) {
+			int color = ((EntityNimbus)entity).getBrushColor();
+			GL11.glColor3ub((byte)((color >> 16) & 0xFF), (byte)((color >> 8) & 0xFF), (byte)(color & 0xFF));
+		}
+		else {
+			GL11.glColor3f(0.4F, 0.3F, 0.2F);
+		}
 		bristle1.render(f5);
 		bristle2.render(f5);
-		bristle9.render(f5);
+		bristle3.render(f5);
+		bristle4.render(f5);
+		bristle5.render(f5);
 		bristle6.render(f5);
 		bristle7.render(f5);
 		bristle8.render(f5);
-		bristle3.render(f5);
+		bristle9.render(f5);
 	}
 	
 	public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
