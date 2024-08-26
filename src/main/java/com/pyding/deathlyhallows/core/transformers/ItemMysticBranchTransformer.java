@@ -1,8 +1,8 @@
 package com.pyding.deathlyhallows.core.transformers;
 
-import com.pyding.deathlyhallows.core.DHHooks;
+import airburn.fasmtel.transformers.InsnNodePredicates;
+import airburn.fasmtel.transformers.MethodData;
 import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
@@ -26,20 +26,18 @@ public class ItemMysticBranchTransformer extends ClassTransformerBase {
 	}
 
 	public static boolean onPlayerStoppedUsing(MethodNode mnode) {
-		AbstractInsnNode node = getNode(mnode.instructions,
-				(n) -> n.getOpcode() == INVOKEVIRTUAL && ((MethodInsnNode)n).name.equals("perform")
-		);
+		AbstractInsnNode node = getNode(mnode, InsnNodePredicates.Method(INVOKEVIRTUAL, "perform"));
 		if(node == null) {
 			return false;
 		}
 		LabelNode skip = new LabelNode();
-		InsnList list = list(
+		mnode.instructions.insertBefore(previous(node, 4), list(
 				new VarInsnNode(ALOAD, 8),
 				new VarInsnNode(ALOAD, 2),
 				new VarInsnNode(ALOAD, 3),
 				new VarInsnNode(ILOAD, 7),
 				new MethodInsnNode(INVOKESTATIC,
-						DHHooks.classPath,
+						ClassTransformerBase.HOOKS,
 						"witcheryBranchCanPerform",
 						"(Lcom/emoniph/witchery/infusion/infusions/symbols/SymbolEffect;Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;I)Z",
 						false
@@ -47,20 +45,18 @@ public class ItemMysticBranchTransformer extends ClassTransformerBase {
 				new JumpInsnNode(IFNE, skip),
 				new InsnNode(RETURN),
 				skip
-		);
-		mnode.instructions.insertBefore(previous(node, 4), list);
-		list = list(
+		));
+		mnode.instructions.insertBefore(node, list(
 				new VarInsnNode(ALOAD, 8),
 				new VarInsnNode(ALOAD, 2),
 				new VarInsnNode(ALOAD, 3),
 				new MethodInsnNode(INVOKESTATIC,
-						DHHooks.classPath,
+						ClassTransformerBase.HOOKS,
 						"witcheryBranchPerformLevel",
 						"(ILcom/emoniph/witchery/infusion/infusions/symbols/SymbolEffect;Lnet/minecraft/world/World;Lnet/minecraft/entity/player/EntityPlayer;)I",
 						false
 				)
-		);
-		mnode.instructions.insertBefore(node, list);
+		));
 		return true;
 	}
 

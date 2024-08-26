@@ -1,0 +1,3 @@
+[submodule "ForgeASMTreeEditLib"]
+	path = ForgeASMTreeEditLib
+	url = https://github.com/AirBurn0/ForgeASMTreeEditLib

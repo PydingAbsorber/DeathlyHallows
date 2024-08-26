@@ -34,11 +34,13 @@ minecraft {
 
 configurations {
 	provided
+	included
 }
 
 sourceSets {
     main {
 		compileClasspath += configurations.provided
+		compileClasspath += configurations.included
     }
 }
 
@@ -55,14 +57,20 @@ processResources {
     }
 }
 
+dependencies {
+	included project(':ForgeASMTreeEditLib')
+	provided fileTree(dir: "providedLibs", include: "*.jar")
+}
+
 jar {
 	manifest {
 		attributes 'FMLCorePlugin': 'com.pyding.deathlyhallows.core.DHCore'
 		attributes 'FMLCorePluginContainsFMLMod': 'true'
 		attributes 'FMLAT': 'dh_at.cfg'
 	}
-}
-
-dependencies {
-	provided fileTree(dir: "providedLibs", include: "*.jar")
+	from {
+		configurations.included.collect {
+			it.isDirectory() ? it : zipTree(it)
+		}
+	}
 }

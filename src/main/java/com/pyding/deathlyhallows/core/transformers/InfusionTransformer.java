@@ -1,7 +1,6 @@
 package com.pyding.deathlyhallows.core.transformers;
 
-import com.pyding.deathlyhallows.core.DHHooks;
-import org.objectweb.asm.tree.InsnList;
+import airburn.fasmtel.transformers.MethodData;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
@@ -25,19 +24,18 @@ public class InfusionTransformer extends ClassTransformerBase {
 	}
 
 	public static boolean infuse(MethodNode mnode) {
-		InsnList list = list(
+		mnode.instructions.insert(list(
 				new VarInsnNode(ALOAD, 0),
 				new VarInsnNode(ALOAD, 1),
 				new VarInsnNode(ILOAD, 2),
 				new MethodInsnNode(INVOKESTATIC,
-						DHHooks.classPath,
+						ClassTransformerBase.HOOKS,
 						"witcheryInfuse",
 						"(Lcom/emoniph/witchery/infusion/Infusion;Lnet/minecraft/entity/player/EntityPlayer;I)I",
 						false
 				),
 				new VarInsnNode(ISTORE, 2)
-		);
-		mnode.instructions.insert(list);
+		));
 		return true;
 	}
 

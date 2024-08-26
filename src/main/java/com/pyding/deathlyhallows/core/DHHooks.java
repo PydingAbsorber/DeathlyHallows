@@ -14,8 +14,6 @@ import net.minecraft.world.World;
 @SuppressWarnings("unused")
 public class DHHooks {
 
-	public static final String classPath = "com/pyding/deathlyhallows/core/DHHooks";
-
 	public static boolean witcheryBranchCanPerform(SymbolEffect effect, World world, EntityPlayer p, int level) {
 		// cancel spell if... trait check fails
 		if(effect instanceof SymbolEffectBase) {
