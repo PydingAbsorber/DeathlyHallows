@@ -57,7 +57,9 @@ public class EntityNimbus extends EntityBroom {
 			setDead();
 			return;
 		}
-		if(worldObj.isRemote) {
+		noClip = riddenByEntity.noClip;
+		setInvisible(riddenByEntity.isInvisible());
+		if(worldObj.isRemote && !isInvisible()) {
 			float yaw = (float)Math.PI / 180F * rotationYaw;
 			if(ticksExisted % 2 == 0) {
 				Witchery.proxy.showParticleEffect(worldObj,
@@ -141,7 +143,6 @@ public class EntityNimbus extends EntityBroom {
 		if(!worldObj.isRemote) {
 			player.mountEntity(this);
 		}
-		noClip = false;
 		return true;
 	}
 
