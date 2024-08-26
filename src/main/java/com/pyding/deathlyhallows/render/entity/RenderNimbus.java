@@ -27,7 +27,7 @@ public class RenderNimbus extends Render {
 		glPushMatrix();
 		glTranslated(x, y + 1.0D, z);
 		yaw = interpolateRotation(e.prevRotationYaw, e.rotationYaw, partial);
-		glRotatef(90.0F - yaw, 0.0F, 1.0F, 0.0F);
+		glRotatef(180F - yaw, 0.0F, 1.0F, 0.0F);
 		bindEntityTexture(e);
 		glScalef(-1.0F, -1.0F, 1.0F);
 		broom.render(e, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);

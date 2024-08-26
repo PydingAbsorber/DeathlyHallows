@@ -1,24 +1,23 @@
 package com.pyding.deathlyhallows.entities;
 
-import com.emoniph.witchery.familiar.Familiar;
-import com.emoniph.witchery.infusion.InfusedBrewEffect;
+import com.emoniph.witchery.Witchery;
+import com.emoniph.witchery.entity.EntityBroom;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.pyding.deathlyhallows.items.DHItems;
+import com.pyding.deathlyhallows.items.ItemNimbus;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
-public class EntityNimbus extends Entity {
-
-	private static final int
-			WATCHER_NAME = 10,
-			WATCHER_COLOR = 16;
-	private EntityPlayer rider = null;
+public class EntityNimbus extends EntityBroom {
 
 	public EntityNimbus(World world) {
 		super(world);
@@ -26,96 +25,75 @@ public class EntityNimbus extends Entity {
 	}
 
 	@Override
-	protected void entityInit() {
-		dataWatcher.addObject(10, "");
-		dataWatcher.addObject(16, 0x0);
-	}
-
-	public void setBrushColor(int color) {
-		dataWatcher.updateObject(WATCHER_COLOR, color);
-	}
-
-	public int getBrushColor() {
-		return dataWatcher.getWatchableObjectInt(WATCHER_COLOR);
-	}
-
-	public void setCustomNameTag(String name) {
-		dataWatcher.updateObject(WATCHER_NAME, name);
-	}
-
-	public String getCustomNameTag() {
-		return dataWatcher.getWatchableObjectString(WATCHER_NAME);
-	}
-	
-	@Override
-	public void onEntityUpdate() {
-		super.onEntityUpdate();
-		if(this.riddenByEntity != null) {
-			EntityPlayer player = (EntityPlayer)this.riddenByEntity;
-			rider = player;
-			if(ticksExisted > 4000 * speedModifier(player)) {
-				setDead();
-				for(ItemStack stack: player.inventory.mainInventory) {
-					if(stack == null || stack.getItem() != DHItems.nimbus) {
-						continue;
-					}
-					NBTTagCompound tag = stack.getTagCompound();
-					tag.setLong("NimbusCooldown", System.currentTimeMillis() + (tag.getLong("NimbusDuration") - System.currentTimeMillis()) / 2);
-					tag.setLong("NimbusDuration", 0);
-				}
-			}
-			float yaw = player.rotationYaw % 360;
-			float pitch = player.rotationPitch % 360;
-			setRotation(yaw, pitch);
-			double speed = 0.7 * speedModifier(player);
-			if(player.getEntityData().getBoolean("DHSprint")) {
-				speed *= 4;
-			}
-			double motionX = -Math.sin(Math.toRadians(yaw)) * speed;
-			double motionY = Math.sin(Math.toRadians(-pitch)) * speed * 2;
-			double motionZ = Math.cos(Math.toRadians(yaw)) * speed;
-			moveEntity(motionX, motionY, motionZ);
-			ParticleEffect.FLAME.send(SoundEffect.NONE, this, 0.25D, 0.25D, 128);
-			return;
-		}
-
-		int count = 0;
-		if(rider == null) {
+	public void onUpdate() {
+		if(riddenByEntity == null) {
 			setDead();
 			return;
 		}
-
-		for(int i = 0; i < rider.inventory.getSizeInventory(); i++) {
-			if(rider.inventory.getStackInSlot(i) == null || count != 0) {
-				continue;
-			}
-			ItemStack stack = rider.inventory.getStackInSlot(i);
-			if(stack.getItem() != DHItems.nimbus || stack.getTagCompound() == null) {
-				continue;
-			}
-			NBTTagCompound tag = stack.getTagCompound();
-
-			if(tag.getLong("NimbusDuration") > System.currentTimeMillis()) {
-				tag.setLong("NimbusCooldown", (long)(System.currentTimeMillis() + (System.currentTimeMillis() - (tag.getLong("NimbusDuration") - 160 * 1000 * speedModifier(rider))) / 2));
-			}
-			else {
-				tag.setLong("NimbusCooldown", (long)(System.currentTimeMillis() + (160 * 1000 * speedModifier(rider)) / 2));
-			}
-			tag.setLong("NimbusDuration", 0);
-			count++;
+		if(worldObj.isRemote) {
+			float yaw = (float)Math.PI / 180F * rotationYaw;
+			if(ticksExisted % 2 == 0) {
+				Witchery.proxy.showParticleEffect(worldObj,
+						prevPosX + MathHelper.sin(yaw),
+						prevPosY,
+						prevPosZ - MathHelper.cos(yaw),
+						0.05D, 0.05D,
+						SoundEffect.NONE,
+						0xFFFFFF,
+						ParticleEffect.FLAME
+				);
+			} 
+			Witchery.proxy.showParticleEffect(worldObj,
+					prevPosX + MathHelper.sin(yaw),
+					prevPosY,
+					prevPosZ - MathHelper.cos(yaw),
+					0.25D, 0.25D,
+					SoundEffect.NONE,
+					0xA0A0A0,
+					ParticleEffect.SMOKE
+			);
 		}
-		setDead();
-	}
-	
-	public float speedModifier(EntityPlayer player) {
-		float modifier = 1;
-		if(Familiar.hasActiveBroomMasteryFamiliar(player)) {
-			modifier += 0.7f;
+		super.onUpdate();
+		setRotation(riddenByEntity.rotationYaw % 360, riddenByEntity.rotationPitch % 360);
+		Vec3 look = riddenByEntity.getLookVec();
+		double motionX = look.xCoord;
+		double motionY = look.yCoord;
+		double motionZ = look.zCoord;
+		if(riddenByEntity instanceof EntityLivingBase) {
+			EntityLivingBase e = (EntityLivingBase)riddenByEntity;
+			float forward = e.moveForward;
+			motionX *= forward;
+			motionY *= forward * 2;
+			motionZ *= forward;
+			float strafe = e.moveStrafing;
+			float yaw = (float)Math.PI / 180F * rotationYaw;
+			motionX += MathHelper.cos(yaw) * strafe;
+			motionZ += MathHelper.sin(yaw) * strafe;
+			double norm = motionX * motionX + motionY * motionY + motionZ * motionZ;
+			if( norm > 0 ) {
+				motionX /= norm;
+				motionY /= norm;
+				motionZ /= norm;
+			}
 		}
-		if(InfusedBrewEffect.Soaring.isActive(player)) {
-			modifier += 0.6f;
+		float speed = 0.7F * ItemNimbus.modifier(riddenByEntity);
+		if(riddenByEntity.getEntityData().getBoolean("DHSprint")) {
+			speed *= 4;
 		}
-		return modifier;
+		final float relaxation = 0.15F;
+		this.motionX += (motionX * speed - this.motionX) * relaxation;
+		this.motionY += (motionY * speed - this.motionY) * 0.8;
+		this.motionZ += (motionZ * speed - this.motionZ) * relaxation;
+		if(ticksExisted % 100 == 0) {
+			ItemNimbus.setNumbusCooldown(riddenByEntity,5 + ticksExisted / 20);
+			NBTTagCompound tag = riddenByEntity.getEntityData();
+			if(tag.getLong("NimbusDuration") < System.currentTimeMillis()) {
+				tag.removeTag("NimbusDuration");
+				if(!worldObj.isRemote) {
+					setDead();
+				}				
+			}
+		}
 	}
 
 	@Override
@@ -124,39 +102,8 @@ public class EntityNimbus extends Entity {
 	}
 
 	@Override
-	protected boolean canTriggerWalking() {
-		return false;
-	}
-
-	@Override
 	public boolean attackEntityFrom(DamageSource source, float damage) {
 		return false;
-	}
-
-	@Override
-	protected void dealFireDamage(int damage) {
-
-	}
-
-	@Override
-	public float getShadowSize() {
-		return 0F;
-	}
-
-	@Override
-	protected void readEntityFromNBT(NBTTagCompound tag) {
-		if(tag.getString("CustomName").length() > 0) {
-			setCustomNameTag(tag.getString("CustomName"));
-		}
-		if(tag.hasKey("BrushColor")) {
-			setBrushColor(tag.getInteger("BrushColor"));
-		}
-	}
-
-	@Override
-	protected void writeEntityToNBT(NBTTagCompound tag) {
-		tag.setString("CustomName", getCustomNameTag());
-		tag.setInteger("BrushColor", getBrushColor());
 	}
 
 	public boolean interactFirst(EntityPlayer player) {

@@ -24,7 +24,6 @@ import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.items.ItemBag;
 import com.pyding.deathlyhallows.items.ItemDeadlyPrism;
-import com.pyding.deathlyhallows.items.ItemNimbus;
 import com.pyding.deathlyhallows.items.baubles.ItemBaubleResurrectionStone;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketNBTSync;
@@ -1000,15 +999,10 @@ public final class DHEvents {
 
 
 	private static void activateNimbus(EntityPlayer p) {
-		for(ItemStack sus: p.inventory.mainInventory) {
-			if(sus == null || sus.getItem() != DHItems.nimbus) {
-				continue;
-			}
-			ItemNimbus nimbus = (ItemNimbus)sus.getItem();
-			nimbus.onItemRightClick(sus, p.worldObj, p);
-			return;
+		if(p.ridingEntity == null) {
+			DHItems.nimbus.onItemRightClick(null, p.worldObj, p);
 		}
-		if(p.ridingEntity instanceof EntityNimbus) {
+		else if(p.ridingEntity instanceof EntityNimbus) {
 			EntityNimbus nimbus = (EntityNimbus)p.ridingEntity;
 			p.dismountEntity(nimbus);
 			nimbus.setDead();

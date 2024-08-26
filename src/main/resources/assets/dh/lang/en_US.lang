@@ -92,8 +92,8 @@ dh.desc.stone4=Resurrections left: §a%s
 dh.desc.stone5=Chosen Player: §a%s
 dh.desc.stone6=Press §aShift §7for additional information
 
-dh.desc.broom0=Cooldown : §e%s §7seconds more
-dh.desc.broom1=Powers remain for : §e%s §7seconds more
+dh.desc.broom0=Cooldown left for §e%s §7seconds
+dh.desc.broom1=Power left for §e%s §7seconds
 dh.desc.broom2=You can press %s for quick summon
 dh.desc.broom3=Can be obtained through ritual "Cloud chaser"
 
