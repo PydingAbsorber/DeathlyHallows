@@ -31,6 +31,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -309,7 +310,7 @@ public final class DHPlayerRenderEvents {
 			final float pointerRange = 1.5F;
 			drawPointer(x + pointer[0] * pointerRange, y + pointer[1] * pointerRange);
 			for(int i = 0; i < list.tagCount(); ++i) {
-				drawSpellSlot(getSpell(list, i), x, y, i * (float)Math.PI * 2F / length, spellRange, 0x77_FF_FF_FF);
+				drawSpellSlot(DHUtils.getBytesFromTagList(list, i), x, y, i * (float)Math.PI * 2F / length, spellRange, 0x77_FF_FF_FF);
 			}
 			if(!full) {
 				drawSpellSlot(null, x, y, (length - 1) * (float)Math.PI * 2F / length, spellRange, 0x77_FF_FF_FF);
@@ -317,18 +318,14 @@ public final class DHPlayerRenderEvents {
 			return;
 		}
 		if(full) {
-			drawSpellSlot(getSpell(list, index), x, y, index * (float)Math.PI * 2F / length, spellRange, 0xFF_FF_FF);
+			drawSpellSlot(DHUtils.getBytesFromTagList(list, index), x, y, index * (float)Math.PI * 2F / length, spellRange, 0xFF_FF_FF);
 			return;
 		}
 		if(index == list.tagCount()) {
 			drawSpellSlot(null, x, y, (length - 1) * (float)Math.PI * 2F / length, spellRange, 0xFF_FF_FF);
 			return;
 		}
-		drawSpellSlot(list.tagCount() < DHConfig.elderWandMaxSpells && index == list.tagCount() ? null : getSpell(list, index), x, y, index * (float)Math.PI * 2F / length, spellRange, 0xFF_FF_FF);
-	}
-
-	private static SymbolEffect getSpell(NBTTagList list, int index) {
-		return EffectRegistry.instance().getEffect(DHUtils.getBytesFromTagList(list, index));
+		drawSpellSlot(list.tagCount() < DHConfig.elderWandMaxSpells && index == list.tagCount() ? null : DHUtils.getBytesFromTagList(list, index), x, y, index * (float)Math.PI * 2F / length, spellRange, 0xFF_FF_FF);
 	}
 
 	private static void drawPointer(float x, float y) {
@@ -342,19 +339,26 @@ public final class DHPlayerRenderEvents {
 		glColor3f(1F, 1F, 1F);
 	}
 
-	private static void drawSpellSlot(SymbolEffect effect, float x, float y, float angle, float radius, int color) {
+	private static void drawSpellSlot(byte[] strokes, float x, float y, float angle, float radius, int color) {
 		float sin = -MathHelper.cos(angle), cos = MathHelper.sin(angle); // I know what I'm doing. -cos is just shortcuts for sin(x + pi/2), but it's still Y axis.
 		x += cos * radius;
 		y += sin * radius;
 		String s = "New Spell";
 		ItemStack icon = new ItemStack(Items.book);
-		if(effect != null) {
-			s = effect.getLocalizedName();
-			if(effect instanceof SymbolEffectBase) {
-				icon = new ItemStack(DHItems.elderBook);
-			}
-			else {
-				icon = Witchery.Items.GENERIC.itemBookWands.createStack();
+		if(strokes != null) {
+			SymbolEffect effect = EffectRegistry.instance().getEffect(strokes);
+			if(effect != null) {
+				s = effect.getLocalizedName();
+				int level = EffectRegistry.instance().getLevel(strokes);
+				if(level > 1) {
+					s += " " + StatCollector.translateToLocal("enchantment.level." + level);
+				}
+				if(effect instanceof SymbolEffectBase) {
+					icon = new ItemStack(DHItems.elderBook);
+				}
+				else {
+					icon = Witchery.Items.GENERIC.itemBookWands.createStack();
+				}
 			}
 		}
 		drawItem(x, y, icon);
