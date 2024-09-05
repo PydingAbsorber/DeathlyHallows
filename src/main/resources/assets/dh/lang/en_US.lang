@@ -130,7 +130,9 @@ dh.desc.visConverter2=Bonus: +10 to base energy for each santi vis in nearest au
 dh.desc.visConverter3=Place on magic workbench to get 10 vis per sec for your wand in cost of 100 energy
 
 dh.desc.resurrectionStone1=§aChosen Player: §r%s
-dh.desc.resurrectionStone2=§4Player is offline/Not enough charges
+dh.desc.resurrectionStone2=§aPlayer: §r%s§a last seen at §r[%s; %s; %s]§a in Dimension §r%s (id:%s)
+dh.desc.resurrectionStone3=§4Not enough charges
+dh.desc.resurrectionStone4=§4Player don't exist
 
 dh.desc.niceCream=Heals 20 hp and 5 Infusion. Don't eat too much!
 # Rites

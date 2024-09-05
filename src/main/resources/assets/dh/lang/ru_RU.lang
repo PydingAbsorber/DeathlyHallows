@@ -130,7 +130,9 @@ dh.desc.visConverter2=Бонус: +10 к базе за каждый сантив
 dh.desc.visConverter3=Если поставить на маг. верстак, будет заряжать палку 10 вис в секунду за 100 энергии
 
 dh.desc.resurrectionStone1=§aВыбранный игрок: §r%s
-dh.desc.resurrectionStone2=§4Игрок не в сети/Заряд иссяк
+dh.desc.resurrectionStone2=§aИгрок: §r%s§a замечен последний раз §r[%s; %s; %s]§a в измерении §r%s (id:%s)
+dh.desc.resurrectionStone3=§4Заряд иссяк
+dh.desc.resurrectionStone4=§4Игрок не существует
 
 dh.desc.niceCream=Восстанавливает 20 хп и 5 Инфузии. Не ешь слишком много!
 # Rites
