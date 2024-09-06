@@ -24,6 +24,7 @@ import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.items.ItemBag;
 import com.pyding.deathlyhallows.items.ItemDeadlyPrism;
+import com.pyding.deathlyhallows.items.baubles.ItemBaubleInvisibilityMantle;
 import com.pyding.deathlyhallows.items.baubles.ItemBaubleResurrectionStone;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketNBTSync;
@@ -62,6 +63,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.ISpecialArmor;
@@ -75,6 +77,7 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHealEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -421,9 +424,9 @@ public final class DHEvents {
 		if(tag.getInteger("DopVoid") > 0) {
 			tag.setInteger("DopVoid", tag.getInteger("DopVoid") - 1);
 		}
-		if(tag.getInteger("mantlecd") <= 200) {
+		if(tag.getInteger("mantlecd") <= 200 && tag.hasKey("mantleActive")) {
 			tag.removeTag("mantleActive");
-			p.noClip = false;
+			ItemBaubleInvisibilityMantle.setMantleState(p, false);
 		}
 		if(tag.getBoolean("mantleActive")) {
 			p.addPotionEffect(new PotionEffect(Potion.invisibility.id, tag.getInteger("mantlecd"), 250, true));
@@ -489,8 +492,7 @@ public final class DHEvents {
 		if(e.entityLiving.worldObj.isRemote || e.isCanceled() || !(e.entityLiving instanceof EntityPlayer)) {
 			return;
 		}
-		if(e.entityLiving.getEntityData()
-						 .getBoolean("mantleActive") && (e.source.getEntity() != null || e.source == DamageSource.inWall)) {
+		if(e.entityLiving.getEntityData().getBoolean("mantleActive") && (e.source.getEntity() != null || e.source == DamageSource.inWall)) {
 			e.setCanceled(true);
 		}
 	}
@@ -548,51 +550,60 @@ public final class DHEvents {
 		}
 	}
 
+	@SubscribeEvent
+	public void hurt(LivingSetAttackTargetEvent e) {
+		if(!(e.target instanceof EntityPlayer)) {
+			return;
+		}
+		if(!e.target.getEntityData().hasKey("mantleActive")) {
+			return;
+		}
+		e.entityLiving.setRevengeTarget(null);
+		if(e.entityLiving instanceof EntityLiving) {
+			((EntityLiving)e.entityLiving).setAttackTarget(null);
+		}
+	}
+	
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void hurt(LivingHurtEvent e) {
 		if(e.isCanceled() || e.entityLiving == null) {
 			return;
 		}
 		avengerHurt(e.source.getEntity(), e.entityLiving);
-		if(e.entityLiving instanceof EntityPlayer) {
-			EntityPlayer p = (EntityPlayer)e.entityLiving;
-			if(e.source == DamageSource.outOfWorld && p.getEntityData().getInteger("DopVoid") > 0) {
-				if(e.ammount * 10 < Float.MAX_VALUE) {
-					e.ammount = e.ammount * 10;
-				}
-			}
-			if(p.getEntityData().getDouble("mantlecd") <= 0 && hasMantle(p)) {
-				ItemStack held = p.getHeldItem();
-				if(ItemDeathsClothes.isFullSetWorn(p) && held != null && held.getItem() == Witchery.Items.DEATH_HAND) {
-					e.ammount = Math.min(e.ammount - 1000, 4);
-				}
-				else {
-					e.ammount = e.ammount - 50;
-				}
-
-			}
-			if(p.getEntityData().getInteger("invincible") > 0) {
-				e.ammount = 0;
-				e.setCanceled(true);
-			}
-			if(p.getEntityData().getLong("DHBanka") > System.currentTimeMillis()) {
-				int warp = Thaumcraft.proxy.getPlayerKnowledge().getWarpTemp(p.getCommandSenderName())
-						+ Thaumcraft.proxy.getPlayerKnowledge().getWarpSticky(p.getCommandSenderName()) * 5
-						+ Thaumcraft.proxy.getPlayerKnowledge().getWarpPerm(p.getCommandSenderName()) * 10;
-				e.ammount = DHUtils.absorbExponentially(e.ammount, warp);
-			}
+		if(!(e.entityLiving instanceof EntityPlayer)) {
+			return;
 		}
-	}
-
-	private static boolean hasMantle(EntityPlayer p) {
-		IInventory baubles = BaublesApi.getBaubles(p);
-		for(int i = 0; i < baubles.getSizeInventory(); ++i) {
-			ItemStack mantle = baubles.getStackInSlot(i);
-			if(mantle != null && mantle.getItem() == DHItems.invisibilityMantle) {
-				return true;
-			}
+		EntityPlayer p = (EntityPlayer)e.entityLiving;
+		if(e.source == DamageSource.outOfWorld && p.getEntityData().getInteger("DopVoid") > 0 && e.ammount * 10 < Float.MAX_VALUE) {
+			e.ammount = e.ammount * 10;
 		}
-		return false;
+		if(p.getEntityData().getDouble("mantlecd") <= 0 && DHUtils.hasMantle(p)) {
+			ItemStack held = p.getHeldItem();
+			if(ItemDeathsClothes.isFullSetWorn(p) && held != null && held.getItem() == Witchery.Items.DEATH_HAND) {
+				if(e.ammount > 1F) {
+					final float limitSqrt = 31F;
+					e.ammount = e.ammount > limitSqrt * limitSqrt ? MathHelper.sqrt_float(e.ammount) - limitSqrt + 1F : 1F;
+				}
+				e.entityLiving.hurtResistantTime = e.entityLiving.maxHurtResistantTime * 4;
+			}
+			else {
+				e.ammount = e.ammount - 8;
+			}
+
+		}
+		if(p.getEntityData().getInteger("invincible") > 0) {
+			e.ammount = 0;
+			e.setCanceled(true);
+		}
+		if(p.getEntityData().getLong("DHBanka") > System.currentTimeMillis()) {
+			int warp = Thaumcraft.proxy.getPlayerKnowledge().getWarpTemp(p.getCommandSenderName())
+					+ Thaumcraft.proxy.getPlayerKnowledge().getWarpSticky(p.getCommandSenderName()) * 5
+					+ Thaumcraft.proxy.getPlayerKnowledge().getWarpPerm(p.getCommandSenderName()) * 10;
+			e.ammount = DHUtils.absorbExponentially(e.ammount, warp);
+		}
+		if(e.ammount < 0.001F) {
+			e.setCanceled(true);
+		}
 	}
 
 	private static void avengerHurt(Entity source, EntityLivingBase entity) {

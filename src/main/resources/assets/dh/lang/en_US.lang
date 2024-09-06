@@ -103,12 +103,11 @@ dh.desc.book3=Rumor says that the book likes those one, who knows a lot. But who
 dh.desc.book4=Seems like this knowledge doesn't changes situation at all!
 
 dh.desc.mantle1=You gain absolute invisibility and attacks negation only for 50 seconds
-dh.desc.mantle2=With absolute invisibility mobs cant see or target you but tools still visible
-dh.desc.mantle3=Absolute invisibility cant be dispelled
-dh.desc.mantle4=Cooldown of the skill is 1 minute
-dh.desc.mantle5=Press §9Shift §7when worn to get invisibility and attacks negation
-dh.desc.mantle6=Press §9Shift §7when ability is active to enter ghost form
-dh.desc.mantle7=Press §9Shift §7for additional information
+dh.desc.mantle2=Absolute invisibility cant be dispelled
+dh.desc.mantle3=Cooldown of the skill is 1 minute
+dh.desc.mantle4=Press §9Shift §7when worn to get invisibility and attacks negation
+dh.desc.mantle5=Press §9Shift §7when ability is active to enter ghost form
+dh.desc.mantle6=Press §9Shift §7for additional information
 
 dh.desc.mutandis1=Mutandis and Mutating Sprig with a cost of vis? Useful maybe...
 dh.desc.mutandis2=Shift+RMB to use as Mutating Sprig

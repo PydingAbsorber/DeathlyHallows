@@ -42,62 +42,72 @@ public class ItemBaubleResurrectionStone extends ItemBaubleBase {
 			if(players.isEmpty()) {
 				return super.onItemRightClick(stack, world, p);
 			}
-			String pName;
-			int maxIndex = players.size();
-			if(getIndex(stack) == 0) {
-				pName = players.get(getIndex(stack)).getCommandSenderName();
-				if(getIndex(stack) + 1 <= maxIndex) {
-					setIndex(stack, getIndex(stack) + 1);
-				}
-			}
-			else if(getIndex(stack) + 1 > maxIndex) {
-				setIndex(stack, 0);
-				pName = players.get(getIndex(stack)).getCommandSenderName();
-				setIndex(stack, 1);
-			}
-			else {
-				pName = players.get(getIndex(stack)).getCommandSenderName();
-				setIndex(stack, getIndex(stack) + 1);
+			String pName = findNextPlayer(stack, players);
+			if(pName == null) {
+				// there is 2 cases where we can't find player - there actually is NO players, or everyone wearing protection
+				// but you always CAN find yourself, right?
+				pName = p.getCommandSenderName();
 			}
 			setPlayer(stack, pName);
 			ChatUtil.sendTranslated(p, "dh.desc.resurrectionStone1", pName);
 			DeathlyHallows.LOG.info("Chosen Player: " + pName);
-
 			return super.onItemRightClick(stack, world, p);
 		}
-
-		if(!p.capabilities.isCreativeMode && getCharges(stack) <= 0) {
-			ChatUtil.sendTranslated(p, "dh.desc.resurrectionStone3");
-			return super.onItemRightClick(stack, world, p);
-		}
-		String pName = getPlayer(stack);
-		if(pName == null || pName.equals("")) {
-			ChatUtil.sendTranslated(p, "dh.desc.resurrectionStone4");
-			return super.onItemRightClick(stack, world, p);
-		}
+		
 		MinecraftPosition pos;
-
-		EntityPlayer obj = world.getPlayerEntityByName(pName);
-
-		if(obj == null) {
-			NBTTagCompound tag = DHUtils.readOfflinePlayer(pName);
-			if(tag == null) {
+		String pName = getPlayer(stack);
+		if(!p.getCommandSenderName().equals(pName)) {
+			if(!p.capabilities.isCreativeMode && getCharges(stack) <= 0) {
+				ChatUtil.sendTranslated(p, "dh.desc.resurrectionStone3");
+				return super.onItemRightClick(stack, world, p);
+			}
+			if(pName == null || pName.equals("")) {
 				ChatUtil.sendTranslated(p, "dh.desc.resurrectionStone4");
 				return super.onItemRightClick(stack, world, p);
 			}
-			pos = new MinecraftPosition(tag);
+			EntityPlayer obj = world.getPlayerEntityByName(pName);
+			if(obj == null) {
+				NBTTagCompound tag = DHUtils.readOfflinePlayer(pName);
+				if(tag == null) {
+					ChatUtil.sendTranslated(p, "dh.desc.resurrectionStone4");
+					return super.onItemRightClick(stack, world, p);
+				}
+				pos = new MinecraftPosition(tag);
+			}
+			else {
+				pos = new MinecraftPosition(obj);
+			}
+			if(!p.capabilities.isCreativeMode) {
+				setCharges(stack, getCharges(stack) - 1);
+			}
 		}
 		else {
-			pos = new MinecraftPosition(obj);
-		}
-		if(!p.capabilities.isCreativeMode) {
-			setCharges(stack, getCharges(stack) - 1);
+			// find yourself? 0 cost. free. yay!
+			pos = new MinecraftPosition(p);
 		}
 		// minecraft replaces all %d %.1f and other codes to be simple %s, IDK why, so formatting manually
 		Function<Double, String> format = (d) -> String.format("%.1f", d);
 		String dimensionName = MinecraftServer.getServer().worldServerForDimension(pos.dimensionID).provider.getDimensionName();
 		ChatUtil.sendTranslated(p, "dh.desc.resurrectionStone2", pName, format.apply(pos.x), format.apply(pos.y), format.apply(pos.z), dimensionName, pos.dimensionID);
 		return super.onItemRightClick(stack, world, p);
+	}
+
+	// TODO maybe chat is not THAT bad solution, so consider rework
+	private static String findNextPlayer(ItemStack stack, List<EntityPlayerMP> players) {
+		int maxIndex = players.size();
+		int startIndex = getIndex(stack) % maxIndex;
+		int nextIndex = (startIndex + 1) % maxIndex;
+		EntityPlayer p = players.get(nextIndex);
+		while(DHUtils.hasMantle(p)) {
+			++nextIndex;
+			nextIndex %= maxIndex;
+			p = players.get(nextIndex);
+			if(nextIndex == startIndex) {
+				return null;
+			}
+		}
+		setIndex(stack, nextIndex);
+		return p.getCommandSenderName();
 	}
 
 	// found this way better than creating Object[4] or creating 4 separate var's. I hope it will be inlined in runtime

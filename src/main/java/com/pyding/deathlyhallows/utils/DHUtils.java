@@ -1,7 +1,6 @@
 package com.pyding.deathlyhallows.utils;
 
 import WayofTime.alchemicalWizardry.api.soulNetwork.SoulNetworkHandler;
-import WayofTime.alchemicalWizardry.common.items.MasterBloodOrb;
 import am2.api.ArsMagicaApi;
 import am2.api.IExtendedProperties;
 import baubles.api.BaublesApi;
@@ -11,6 +10,8 @@ import com.emoniph.witchery.util.CreatureUtil;
 import com.emoniph.witchery.util.EntityUtil;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
+import com.google.common.base.Charsets;
+import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.entities.EntityEmpoweredArrow;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
@@ -30,9 +31,11 @@ import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagByteArray;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
@@ -42,29 +45,60 @@ import net.minecraft.world.World;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.common.items.wands.ItemWandCasting;
-import thaumcraft.common.items.wands.ItemWandRod;
 import vazkii.botania.api.mana.IManaItem;
-import vazkii.botania.common.core.helper.ItemNBTHelper;
 import vazkii.botania.common.item.ItemBaubleBox;
-import vazkii.botania.common.item.ItemManaTablet;
-import vazkii.botania.common.item.equipment.bauble.ItemManaRing;
 
 import java.awt.*;
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 
 public class DHUtils {
-    private static class UtilsRandom {
+	public static NBTTagCompound readOfflinePlayer(String commandSenderName) {
+		String uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + commandSenderName).getBytes(Charsets.UTF_8)).toString();
+		try {
+			File dir = new File(MinecraftServer.getServer().worldServers[0].getSaveHandler().getWorldDirectory(), "playerdata");
+			File playerDir = new File(dir, uuid + ".dat");
+			if(!playerDir.exists() || !playerDir.isFile()) {
+				return null;
+			}
+			try(InputStream stream = Files.newInputStream(playerDir.toPath())) {
+				return CompressedStreamTools.readCompressed(stream);
+			}
+		}
+		catch(Exception e) {
+			DeathlyHallows.LOG.warn("Failed to load player data for " + commandSenderName);
+		}
+		return null;
+	}
+
+	public static boolean hasMantle(EntityPlayer p) {
+		IInventory baubles = BaublesApi.getBaubles(p);
+		for(int i = 0; i < baubles.getSizeInventory(); ++i) {
+			ItemStack mantle = baubles.getStackInSlot(i);
+			if(mantle != null && mantle.getItem() == DHItems.invisibilityMantle) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static class UtilsRandom {
 		private static final Random random = new Random();
 	}
+
 	/**
 	 Gets random int from min inclusive to max inclusive
-	 * @param min inclusive lower bound
-	 * @param max inclusive upper bound
-	 * @return random integer in range [min;max]
+
+	 @param min inclusive lower bound
+	 @param max inclusive upper bound
+	 @return random integer in range [min;max]
 	 */
 	public static int getRandomInt(int min, int max) {
 		return min + getRandomInt(max - min + 1);
@@ -72,8 +106,9 @@ public class DHUtils {
 
 	/**
 	 Gets random int from 0 inclusive to argument exclusive
-	 * @param max exclusive upper bound
-	 * @return random integer in range [0;max)
+
+	 @param max exclusive upper bound
+	 @return random integer in range [0;max)
 	 */
 	public static int getRandomInt(int max) {
 		return UtilsRandom.random.nextInt(max);
@@ -92,7 +127,8 @@ public class DHUtils {
 	public static byte[] getBytesFromTagList(NBTTagList list, int index) {
 		return ((NBTTagByteArray)((NBTTagList)list.copy()).removeTag(index)).func_150292_c();
 	}
-	public static boolean contains(String list, String element){
+
+	public static boolean contains(String list, String element) {
 		for(String name: list.split(",")) {
 			if(element.equals(name)) {
 				return true;
@@ -100,12 +136,12 @@ public class DHUtils {
 		}
 		return false;
 	}
-	
+
 	public static void spawnArrow(EntityPlayer player, int type) {
 		if(player.worldObj.isRemote) {
 			return;
 		}
-		
+
 		float damage = (float)(player.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue() * 20);
 		float radius = 4;
 		DamageSource source = DamageSource.causePlayerDamage(player).setMagicDamage();
@@ -280,7 +316,7 @@ public class DHUtils {
 			spawnParticle(entity, pos.xCoord + xOffset, pos.yCoord + yOffset, pos.zCoord + zOffset, color, resizeSpeed, scale, age, type, motionX, motionY, motionZ);
 		}
 	}
-	
+
 	public static Vec3 getPosition(Entity e) {
 		if(e instanceof EntityPlayer) {
 			EntityPlayer p = (EntityPlayer)e;
@@ -294,87 +330,87 @@ public class DHUtils {
 		DHPacketProcessor.sendToAllAround(new PacketParticle(x, y, z, color, resizeSpeed, scale, age, type, motionX, motionY, motionZ), targetPoint);
 	}
 
-    public static boolean isHallow(ItemStack stack) {
-        return stack.getItem() == DHItems.resurrectionStone || stack.getItem() == DHItems.elderWand || stack.getItem() == DHItems.invisibilityMantle;
-    }
+	public static boolean isHallow(ItemStack stack) {
+		return stack.getItem() == DHItems.resurrectionStone || stack.getItem() == DHItems.elderWand || stack.getItem() == DHItems.invisibilityMantle;
+	}
 
-    public static void removeDuplicatesFromInventory(EntityPlayer p) {
-        int count = 0;
-        for(int i = 0; i < p.inventory.getSizeInventory(); i++) {
-            ItemStack stack = p.inventory.getStackInSlot(i);
-            if(stack == null || !isHallow(stack)) {
-                continue;
-            }
-            if(!stack.hasTagCompound()) {
-                NBTTagCompound nbt = new NBTTagCompound();
-                nbt.setString("dhowner", p.getDisplayName());
-                stack.setTagCompound(nbt);
-            }
-            else if(!stack.getTagCompound().hasKey("dhowner")) {
-                NBTTagCompound nbt = stack.getTagCompound();
-                nbt.setString("dhowner", p.getDisplayName());
-                stack.setTagCompound(nbt);
-            }
-            else if(stack.hasTagCompound() && stack.getTagCompound().hasKey("dhowner")) {
-                String dhowner = stack.getTagCompound().getString("dhowner");
-                count++;
-                if(p.getDisplayName().equals(dhowner)) {
-                    if(count > 1) {
-                        p.inventory.setInventorySlotContents(i, null);
-                        p.inventoryContainer.detectAndSendChanges();
-                        ChatUtil.sendTranslated(EnumChatFormatting.RED, p, "dh.chat.dupe");
-                    }
-                }
-                else {
-                    p.inventory.setInventorySlotContents(i, null);
-                    p.inventoryContainer.detectAndSendChanges();
-                }
-            }
-        }
-        IInventory baubles = BaublesApi.getBaubles(p);
-        for(int i = 1; i < baubles.getSizeInventory(); i++) {
-            ItemStack stack = baubles.getStackInSlot(i);
-            if(stack == null
-                    || !isHallow(stack)
-                    || !stack.hasTagCompound()
-                    || !stack.getTagCompound().hasKey("dhowner")
-            ) {
-                continue;
-            }
-            if(!stack.getTagCompound().getString("dhowner").equals(p.getDisplayName())) {
-                baubles.setInventorySlotContents(i, null);
-                p.inventoryContainer.detectAndSendChanges();
-            }
-            if(++count > 1) {
-                baubles.setInventorySlotContents(i, null);
-                p.inventoryContainer.detectAndSendChanges();
-                ChatUtil.sendTranslated(EnumChatFormatting.RED, p, "dh.chat.dupe");
-            }
-        }
-    }
+	public static void removeDuplicatesFromInventory(EntityPlayer p) {
+		int count = 0;
+		for(int i = 0; i < p.inventory.getSizeInventory(); i++) {
+			ItemStack stack = p.inventory.getStackInSlot(i);
+			if(stack == null || !isHallow(stack)) {
+				continue;
+			}
+			if(!stack.hasTagCompound()) {
+				NBTTagCompound nbt = new NBTTagCompound();
+				nbt.setString("dhowner", p.getDisplayName());
+				stack.setTagCompound(nbt);
+			}
+			else if(!stack.getTagCompound().hasKey("dhowner")) {
+				NBTTagCompound nbt = stack.getTagCompound();
+				nbt.setString("dhowner", p.getDisplayName());
+				stack.setTagCompound(nbt);
+			}
+			else if(stack.hasTagCompound() && stack.getTagCompound().hasKey("dhowner")) {
+				String dhowner = stack.getTagCompound().getString("dhowner");
+				count++;
+				if(p.getDisplayName().equals(dhowner)) {
+					if(count > 1) {
+						p.inventory.setInventorySlotContents(i, null);
+						p.inventoryContainer.detectAndSendChanges();
+						ChatUtil.sendTranslated(EnumChatFormatting.RED, p, "dh.chat.dupe");
+					}
+				}
+				else {
+					p.inventory.setInventorySlotContents(i, null);
+					p.inventoryContainer.detectAndSendChanges();
+				}
+			}
+		}
+		IInventory baubles = BaublesApi.getBaubles(p);
+		for(int i = 1; i < baubles.getSizeInventory(); i++) {
+			ItemStack stack = baubles.getStackInSlot(i);
+			if(stack == null
+					|| !isHallow(stack)
+					|| !stack.hasTagCompound()
+					|| !stack.getTagCompound().hasKey("dhowner")
+			) {
+				continue;
+			}
+			if(!stack.getTagCompound().getString("dhowner").equals(p.getDisplayName())) {
+				baubles.setInventorySlotContents(i, null);
+				p.inventoryContainer.detectAndSendChanges();
+			}
+			if(++count > 1) {
+				baubles.setInventorySlotContents(i, null);
+				p.inventoryContainer.detectAndSendChanges();
+				ChatUtil.sendTranslated(EnumChatFormatting.RED, p, "dh.chat.dupe");
+			}
+		}
+	}
 
-    public static boolean hasDeathlyHallow(EntityPlayer p) {
-        int count = 0;
-        for(ItemStack stack: getAllItems(p)) {
-            if(!isHallow(stack)) {
-                continue;
-            }
-            if(!stack.hasTagCompound()) {
-                NBTTagCompound nbt = new NBTTagCompound();
-                nbt.setString("dhowner", p.getDisplayName());
-                stack.setTagCompound(nbt);
-            }
-            else if(!stack.getTagCompound().hasKey("dhowner")) {
-                NBTTagCompound nbt = stack.getTagCompound();
-                nbt.setString("dhowner", p.getDisplayName());
-                stack.setTagCompound(nbt);
-            }
-            else if(stack.hasTagCompound() && stack.getTagCompound().hasKey("dhowner")) {
-                count++;
-            }
-        }
-        return count > 0;
-    }
+	public static boolean hasDeathlyHallow(EntityPlayer p) {
+		int count = 0;
+		for(ItemStack stack: getAllItems(p)) {
+			if(!isHallow(stack)) {
+				continue;
+			}
+			if(!stack.hasTagCompound()) {
+				NBTTagCompound nbt = new NBTTagCompound();
+				nbt.setString("dhowner", p.getDisplayName());
+				stack.setTagCompound(nbt);
+			}
+			else if(!stack.getTagCompound().hasKey("dhowner")) {
+				NBTTagCompound nbt = stack.getTagCompound();
+				nbt.setString("dhowner", p.getDisplayName());
+				stack.setTagCompound(nbt);
+			}
+			else if(stack.hasTagCompound() && stack.getTagCompound().hasKey("dhowner")) {
+				count++;
+			}
+		}
+		return count > 0;
+	}
 
 	// Stolen code from Minecraft; Was @SideOnly(Side.CLIENT)
 	public static MovingObjectPosition rayTrace(EntityPlayer p) {
@@ -384,7 +420,7 @@ public class DHUtils {
 	public static MovingObjectPosition rayTrace(EntityPlayer p, double distance) {
 		return p.worldObj.rayTraceBlocks(Vec3.createVectorHelper(p.posX, p.posY + p.getEyeHeight(), p.posZ), playerLook(p, distance));
 	}
-	
+
 	private static Vec3 playerLook(EntityPlayer p, double distance) {
 		Vec3 startVec = Vec3.createVectorHelper(p.posX, p.posY + p.getEyeHeight(), p.posZ);
 		Vec3 lookVec = p.getLookVec();
@@ -398,70 +434,71 @@ public class DHUtils {
 		}
 		return mop.hitVec;
 	}
-	
-	public static List<ItemStack> getAllItems(EntityPlayer player){
+
+	public static List<ItemStack> getAllItems(EntityPlayer player) {
 		List<ItemStack> list = new ArrayList<>();
-		for(int i = 0; i > player.inventory.getSizeInventory();i++){
-			if(player.inventory.getStackInSlot(i) != null)
-				list.add(player.inventory.getStackInSlot(i));
+		for(int i = 0; i < player.inventory.getSizeInventory(); ++i) {
+			ItemStack stack = player.inventory.getStackInSlot(i);
+			if(stack != null) {
+				list.add(stack);
+			}
 		}
 		IInventory baubles = BaublesApi.getBaubles(player);
-		for(int i = 1; i < baubles.getSizeInventory(); i++) {
+		for(int i = 0; i < baubles.getSizeInventory(); ++i) {
 			ItemStack stack = baubles.getStackInSlot(i);
-			if(stack == null) {
-				continue;
+			if(stack != null) {
+				list.add(stack);
 			}
-			list.add(stack);
 		}
 		return list;
 	}
-	
-	public static float fuckMagic(EntityPlayer player, float percent){
+
+	public static float fuckMagic(EntityPlayer player, float percent) {
 		float magic = 0;
 		List<ItemStack> list = getAllItems(player);
-		magic += Infusion.getCurrentEnergy(player)*percent;
-		Infusion.setCurrentEnergy(player,(int)(Infusion.getCurrentEnergy(player)-Infusion.getCurrentEnergy(player)*percent));
-		if(DHIntegration.thaumcraft){
-			for(ItemStack stack: list){
-				if(stack.getItem() instanceof ItemWandCasting){
+		magic += Infusion.getCurrentEnergy(player) * percent;
+		Infusion.setCurrentEnergy(player, (int)(Infusion.getCurrentEnergy(player) - Infusion.getCurrentEnergy(player) * percent));
+		if(DHIntegration.thaumcraft) {
+			for(ItemStack stack: list) {
+				if(stack.getItem() instanceof ItemWandCasting) {
 					ItemWandCasting wand = (ItemWandCasting)stack.getItem();
 					AspectList aspectList = new AspectList();
 					for(Aspect aspect: Aspect.getPrimalAspects()) {
 						aspectList.add(aspect, (int)(wand.getMaxVis(stack) * percent));
 						magic += wand.getMaxVis(stack) * percent;
 					}
-					wand.consumeAllVis(stack,player, aspectList,true,false);
+					wand.consumeAllVis(stack, player, aspectList, true, false);
 				}
 			}
 		}
-		if(DHIntegration.bloodMagic){
-			magic += SoulNetworkHandler.getCurrentEssence(player.getCommandSenderName())*percent;
+		if(DHIntegration.bloodMagic) {
+			magic += SoulNetworkHandler.getCurrentEssence(player.getCommandSenderName()) * percent;
 			SoulNetworkHandler.setCurrentEssence(player.getCommandSenderName(),
-					(int)Math.min(0,SoulNetworkHandler.getCurrentEssence(player.getCommandSenderName())-SoulNetworkHandler.getCurrentEssence(player.getCommandSenderName())*percent));
+					(int)Math.min(0, SoulNetworkHandler.getCurrentEssence(player.getCommandSenderName()) - SoulNetworkHandler.getCurrentEssence(player.getCommandSenderName()) * percent));
 		}
-		if(DHIntegration.botania){
-			for(ItemStack stack: list){
-				if(stack.getItem() instanceof IManaItem){
+		if(DHIntegration.botania) {
+			for(ItemStack stack: list) {
+				if(stack.getItem() instanceof IManaItem) {
 					IManaItem item = (IManaItem)stack.getItem();
-					magic += item.getMaxMana(stack)*percent;
-					item.addMana(stack,(int)(-item.getMaxMana(stack)*percent));
+					magic += item.getMaxMana(stack) * percent;
+					item.addMana(stack, (int)(-item.getMaxMana(stack) * percent));
 				}
-				if(stack.getItem() instanceof ItemBaubleBox){
+				if(stack.getItem() instanceof ItemBaubleBox) {
 					ItemStack[] stacks = ItemBaubleBox.loadStacks(stack);
-					for(int i = 0; i < stacks.length;i++){
-						if(stacks[i].getItem() instanceof IManaItem){
-							IManaItem item = (IManaItem)stacks[i].getItem();
-							magic += item.getMaxMana(stack)*percent;
-							item.addMana(stacks[i],(int)(-item.getMaxMana(stacks[i])*percent));
+					for(ItemStack slotStack: stacks) {
+						if(slotStack.getItem() instanceof IManaItem) {
+							IManaItem item = (IManaItem)slotStack.getItem();
+							magic += item.getMaxMana(stack) * percent;
+							item.addMana(slotStack, (int)(-item.getMaxMana(slotStack) * percent));
 						}
 					}
 				}
 			}
 		}
-		if(DHIntegration.arsMagica){
+		if(DHIntegration.arsMagica) {
 			IExtendedProperties props = ArsMagicaApi.instance.getExtendedProperties(player);
-			magic += props.getMaxMana()*percent;
-			props.setCurrentMana(Math.min(0,props.getCurrentMana()-props.getMaxMana()*percent));
+			magic += props.getMaxMana() * percent;
+			props.setCurrentMana(Math.min(0, props.getCurrentMana() - props.getMaxMana() * percent));
 		}
 		return magic;
 	}
