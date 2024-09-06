@@ -4,7 +4,7 @@ import com.emoniph.witchery.dimension.WorldProviderDreamWorld;
 import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.util.ChatUtil;
 import com.emoniph.witchery.util.CreatureUtil;
-import com.pyding.deathlyhallows.rituals.ElderRiteRegistry;
+import com.pyding.deathlyhallows.rituals.ElderRites;
 import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLivingBase;
@@ -175,7 +175,7 @@ public final class ElfUtils {
 				break;
 			}
 			case 9: {
-				if(props.getRites() >= DHConfig.getElfRequirements(10) || props.getRites() >= ElderRiteRegistry.instance().getRituals().size()) {
+				if(props.getRites() >= DHConfig.getElfRequirements(10) || props.getRites() >= ElderRites.getSortedRituals().size()) {
 					props.setAllNull();
 					props.setElfLevel(10);
 					messageChatLevelUp(p);

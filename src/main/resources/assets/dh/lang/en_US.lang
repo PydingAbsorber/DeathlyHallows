@@ -16,7 +16,7 @@ item.deathShard.name=§8Death Shard
 item.tarotCards.name=Mystic Cards(WIP)
 item.monsterBook.name=§bThe Monster Book of Monsters
 item.trickOrTreat.name=§eTrick Or Treat!
-item.elderBook.name=Elder Book: Rituals
+item.elderBook.name=§5Dark Arts§r: Circles and Structures
 item.chalkelder.name=§5Elder §rChalk
 item.lightningInBag.name=§bLightning in Bag
 item.focus_mutandis.name=Inferiois Mutandis
@@ -134,6 +134,8 @@ dh.desc.resurrectionStone3=§4Not enough charges
 dh.desc.resurrectionStone4=§4Player don't exist
 
 dh.desc.niceCream=Heals 20 hp and 5 Infusion. Don't eat too much!
+# Book entries
+dh.book.rites1={5{lDark Arts{r{o:|Circles and Structures{r||{0Hello Pyding! Please supply some entry and picture for right page! 
 # Rites
 dh.rite.soup=The mighty soup!{r||Get some nutrients!
 dh.rite.death=§5Rite of Gloomy Rebirth{r||

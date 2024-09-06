@@ -29,6 +29,7 @@ import static com.emoniph.witchery.ritual.RitualTraits.ONLY_AT_NIGHT;
 import static com.pyding.deathlyhallows.items.DHItems.gastronomicTemptation;
 import static com.pyding.deathlyhallows.items.DHItems.nimbus;
 import static com.pyding.deathlyhallows.items.DHItems.viscousSecretions;
+import static com.pyding.deathlyhallows.rituals.ElderRites.Category.*;
 import static net.minecraft.init.Items.bread;
 import static net.minecraft.init.Items.feather;
 import static net.minecraft.init.Items.fishing_rod;
@@ -43,11 +44,28 @@ public final class DHRituals {
 
 	public static void init() {
 		DHStructures.init();
-		ElderRiteRegistry.instance().rituals.clear();
-
-		int id = 111; // TODO ???
-
-		ElderRiteRegistry.addRecipe(id++, 26,
+		ElderRites.clearRituals();
+		int id = 1;
+		ElderRites.addRecipe(id++, CIRCLE, 0,
+				"dh.rite.elf",
+				new RiteOfElvenVanishing(8, 40.0f, 0),
+				new ElderSacrificeMultiple(
+						new ElderSacrificeItem(
+								Items.GENERIC.itemBrewOfWasting.createStack(),
+								Items.GENERIC.itemBrewOfSoaring.createStack(),
+								Items.GENERIC.itemWormyApple.createStack(),
+								Items.GENERIC.itemBrewSoulAnguish.createStack(),
+								Items.GENERIC.itemBrewGrave.createStack(),
+								Items.GENERIC.itemOwletsWing.createStack()
+						),
+						new ElderSacrificePower(12000.0F, 20)
+				),
+				EnumSet.of(ONLY_AT_NIGHT),
+				new Circle(0, 16, 0),
+				new Circle(0, 28, 0),
+				new Circle(0, 40, 0)
+		);
+		ElderRites.addRecipe(id++, CIRCLE,10,
 				"dh.rite.death",
 				new ElderSummonCreature(EntityAbsoluteDeath.class, false),
 				new ElderSacrificeMultiple(
@@ -74,7 +92,7 @@ public final class DHRituals {
 				new Circle(0, 28, 0),
 				new Circle(16, 0, 0)
 		);
-		ElderRiteRegistry.addRecipe(id++, 35,
+		ElderRites.addRecipe(id++, CIRCLE, 20,
 				"dh.rite.nimbus",
 				new ElderSummonItem(new ItemStack(nimbus),
 						ElderSummonItem.Binding.NONE),
@@ -93,27 +111,8 @@ public final class DHRituals {
 				new Circle(28, 0, 0),
 				new Circle(40, 0, 0)
 		);
-		ElderRiteRegistry.addRecipe(id++, 5,
-				"dh.rite.elf",
-				new RiteOfElvenVanishing(8, 40.0f, 0),
-				new ElderSacrificeMultiple(
-						new ElderSacrificeItem(
-								Items.GENERIC.itemBrewOfWasting.createStack(),
-								Items.GENERIC.itemBrewOfSoaring.createStack(),
-								Items.GENERIC.itemWormyApple.createStack(),
-								Items.GENERIC.itemBrewSoulAnguish.createStack(),
-								Items.GENERIC.itemBrewGrave.createStack(),
-								Items.GENERIC.itemOwletsWing.createStack()
-						),
-						new ElderSacrificePower(20000.0F, 20)
-				),
-				EnumSet.of(ONLY_AT_NIGHT),
-				new Circle(0, 16, 0),
-				new Circle(0, 28, 0),
-				new Circle(0, 40, 0)
-		);
 		if(DHConfig.despairSonataCost > -1) {
-			ElderRiteRegistry.addRecipe(id++, 5,
+			ElderRites.addRecipe(id++, SONATA, 0,
 					"dh.rite.sonata",
 					new SummonSpiritRite(8, 40.0f, 0),
 					new ElderSacrificeMultiple(
@@ -133,7 +132,9 @@ public final class DHRituals {
 			);
 		}
 		if(DHConfig.fishCatchCost > -1) {
-			ElderRiteRegistry.addRecipe(id++, 5, "dh.rite.catch", new FishCatchRite(8, 40.0f, 0),
+			ElderRites.addRecipe(id++, LAKE, 0, 
+					"dh.rite.catch",
+					new FishCatchRite(8, 40.0f, 0),
 					new ElderSacrificeMultiple(
 							new ElderSacrificeItem(
 									new ItemStack(fishing_rod),
@@ -148,7 +149,7 @@ public final class DHRituals {
 			;
 		}
 		if(DHConfig.soulCurseCost > -1) {
-			ElderRiteRegistry.addRecipe(id++, 5,
+			ElderRites.addRecipe(id++, CURSE, 0,
 					"dh.rite.soul_curse",
 					new CurseSoulRitual(),
 					new ElderSacrificeMultiple(
@@ -168,7 +169,7 @@ public final class DHRituals {
 			);
 		}
 		if(DHConfig.iceCastleCost > -1) {
-			ElderRiteRegistry.addRecipe(id++, 5,
+			ElderRites.addRecipe(id++, ICECASTLE, 0,
 					"dh.rite.castle",
 					new IceFortressRite(8, 40.0f, 0),
 					new ElderSacrificeMultiple(
@@ -185,7 +186,7 @@ public final class DHRituals {
 					EnumSet.noneOf(RitualTraits.class),
 					DHStructures.iceCastle
 			);
-			ElderRiteRegistry.addRecipe(id++, 5,
+			ElderRites.addRecipe(id++, ICECASTLE, 10,
 					"dh.rite.niceCream",
 					new ElderSummonItem(
 							new ItemStack(DHItems.niceCream, 4)
@@ -209,7 +210,7 @@ public final class DHRituals {
 			);
 		}
 		if(DHConfig.healMendingCost > -1) {
-			ElderRiteRegistry.addRecipe(id++, 5,
+			ElderRites.addRecipe(id++, MENDING, 0,
 					"dh.rite.mending",
 					new RiteWithEffect(8, 80.0f, 0, "DHMending", System.currentTimeMillis() + 60 * 60 * 1000),
 					new ElderSacrificeMultiple(
@@ -230,7 +231,7 @@ public final class DHRituals {
 			);
 		}
 		if(DHConfig.huntMagicCreaturesCost > -1) {
-			ElderRiteRegistry.addRecipe(id++, 5,
+			ElderRites.addRecipe(id++, HUNT, 0,
 					"dh.rite.hunt",
 					new RiteWithEffect(8, 80.0f, 0, "DHHunt", System.currentTimeMillis() + 60 * 60 * 1000),
 					new ElderSacrificeMultiple(
@@ -263,7 +264,7 @@ public final class DHRituals {
 			if(DHIntegration.thaumcraft) {
 				sacrifice.add(new ElderSacrificeItem(new ItemStack(ConfigItems.itemSanitySoap)));
 			}
-			ElderRiteRegistry.addRecipe(id++, 5,
+			ElderRites.addRecipe(id++, PURIFY, 0,
 					"dh.rite.purify",
 					new PurifyRite(8, 40.0f, 0),
 					new ElderSacrificeMultiple(
@@ -276,7 +277,7 @@ public final class DHRituals {
 			);
 		}
 		if(DHConfig.covenWitchCost > -1) {
-			ElderRiteRegistry.addRecipe(id++, 5,
+			ElderRites.addRecipe(id++, COVEN, 0,
 					"dh.rite.coven",
 					new ElderSummonCreature(EntityCovenWitch.class, false),
 					new ElderSacrificeMultiple(
@@ -297,7 +298,7 @@ public final class DHRituals {
 		}
 		// TODO reindex all that I can dynamically calculate page index, and make a jumpButton jump to this ritual
 		if(DHIntegration.thaumcraft && DHConfig.bathHouseCost > -1) {
-			ElderRiteRegistry.addRecipe(id++, 5,
+			ElderRites.addRecipe(id++, INTEGRATION, 0,
 					"dh.rite.banka",
 					new RiteWithEffect(8, 80.0f, 0, "DHBanka", System.currentTimeMillis() + 60 * 60 * 1000),
 					new ElderSacrificeMultiple(

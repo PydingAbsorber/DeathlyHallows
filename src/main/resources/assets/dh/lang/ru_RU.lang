@@ -16,7 +16,7 @@ item.deathShard.name=§8Осколок Смерти
 item.tarotCards.name=Карты Таро(WIP)
 item.monsterBook.name=§bМонстро-книга о монстрах
 item.trickOrTreat.name=§eКошелёк или жизнь!
-item.elderBook.name=Мудрая книга: Ритуалы
+item.elderBook.name=§5Темные искусства§r: Круги и Структуры
 item.chalkelder.name=§5Мудрый §rмел
 item.lightningInBag.name=§bМолния в сумке
 item.focus_mutandis.name=Мутандис Худшимис
@@ -134,6 +134,8 @@ dh.desc.resurrectionStone3=§4Заряд иссяк
 dh.desc.resurrectionStone4=§4Игрок не существует
 
 dh.desc.niceCream=Восстанавливает 20 хп и 5 Инфузии. Не ешь слишком много!
+# Book entries
+dh.book.rites1={5{lТемные искусства{r{o:|Круги и Структуры{r||{0Пудинг, привет! А ты знаешь что справа можно нарисовать смешную картинку, а тут можно написать какое-нибудь лорное или не очень вступление?
 # Rites
 dh.rite.soup=О великий суп наварили!{r||Поешь-ка чутка
 dh.rite.death=§5Ритуал Мрачного Перерождения{r||Посмей бросить непростительный и дерзкий вызов настоящей смерти
