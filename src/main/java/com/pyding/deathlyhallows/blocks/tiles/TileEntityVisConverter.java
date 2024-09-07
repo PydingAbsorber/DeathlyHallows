@@ -103,9 +103,4 @@ public class TileEntityVisConverter extends TileEntity {
 		}
 	}
 
-	@Override
-	public boolean canUpdate() {
-		return true;
-	}
-	
 }

@@ -22,6 +22,10 @@ item.lightningInBag.name=§bМолния в сумке
 item.focus_mutandis.name=Мутандис Худшимис
 item.niceCream.name=§3Доброженое
 item.bag.name=Обычная Сумка?
+item.Wand.koboldite.cap=Закаленный кобольдитом
+item.Wand.rowan.rod=рябиновый
+item.Wand.alder.rod=ольховый
+item.Wand.hawthorn.rod=боярышниковый
 # Blocks
 tile.elderGlyph.name=Мудрый глиф
 tile.visConverter.name=§9Многополигональный Пересборщик Вис ⋚ ⋛

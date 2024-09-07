@@ -36,7 +36,6 @@ public final class DHItems {
 			nimbus,
 			deathShard,
 			tarotCards,
-			inferioisMutandis,
 			monsterBook,
 			trickOrTreat,
 			elderBook,
@@ -44,7 +43,11 @@ public final class DHItems {
 			bag,
 			elderChalk,
 			niceCream,
-			elfBook;
+			elfBook,
+			// thaumcraft
+			wandRod,
+			wandCap,
+			inferioisMutandis;
 
 	private DHItems() {
 

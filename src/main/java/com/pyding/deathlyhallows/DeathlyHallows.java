@@ -20,7 +20,8 @@ import org.apache.logging.log4j.Logger;
 		modid = DeathlyHallows.MODID,
 		name = DeathlyHallows.NAME,
 		version = DeathlyHallows.VERSION,
-		dependencies = "required-after:witchery;"
+		dependencies = "before:gtnhtcwands;"
+				+ "required-after:witchery;"
 				+ "required-after:Baubles;"
 				+ "after:Thaumcraft;"
 				+ "after:AWWayofTime;"
@@ -36,7 +37,7 @@ public class DeathlyHallows {
 
 	@Mod.Instance("dh")
 	public static DeathlyHallows Instance;
-	
+
 	@SidedProxy(
 			clientSide = "com.pyding.deathlyhallows.proxy.ClientProxy",
 			serverSide = "com.pyding.deathlyhallows.proxy.CommonProxy"
@@ -81,5 +82,5 @@ public class DeathlyHallows {
 			FMLCommonHandler.instance().handleExit(0);
 		}
 	}
-	
+
 }
