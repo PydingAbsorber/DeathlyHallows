@@ -12,7 +12,11 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 @SuppressWarnings("unused")
-public class DHHooks {
+public final class DHHooks {
+	
+	private DHHooks() {
+		
+	}
 
 	public static boolean witcheryBranchCanPerform(SymbolEffect effect, World world, EntityPlayer p, int level) {
 		// cancel spell if... trait check fails

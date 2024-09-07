@@ -3,6 +3,7 @@ package com.pyding.deathlyhallows.core;
 import airburn.fasmtel.transformers.ClassTransformerBase;
 import com.pyding.deathlyhallows.core.transformers.InfusionTransformer;
 import com.pyding.deathlyhallows.core.transformers.ItemMysticBranchTransformer;
+import com.pyding.deathlyhallows.core.transformers.ItemWandCastingTransformer;
 import com.pyding.deathlyhallows.core.transformers.SymbolEffectTransformer;
 import net.minecraft.launchwrapper.IClassTransformer;
 
@@ -25,6 +26,8 @@ public class DHClassTransformer implements IClassTransformer {
 				return new SymbolEffectTransformer(basicClass);
 			case "com.emoniph.witchery.infusion.Infusion":
 				return new InfusionTransformer(basicClass);
+			case "thaumcraft.common.items.wands.ItemWandCasting":
+				return new ItemWandCastingTransformer(basicClass);
 		}
 		return null;
 	}
