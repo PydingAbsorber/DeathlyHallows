@@ -18,7 +18,7 @@ import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.google.common.collect.Lists;
 import com.pyding.deathlyhallows.items.DHItems;
-import com.pyding.deathlyhallows.rituals.ElderRiteRegistry;
+import com.pyding.deathlyhallows.rituals.ElderRites;
 import com.pyding.deathlyhallows.rituals.rites.ElderRitualStep;
 import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import cpw.mods.fml.relauncher.Side;
@@ -197,7 +197,7 @@ public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 		}
 		boolean success = false;
 		int covenSize = summonCoven ? EntityCovenWitch.getCovenSize(player) : 0;
-		for(ElderRiteRegistry.Ritual o: ElderRiteRegistry.instance().getRituals()) {
+		for(ElderRites.ElderRitual o: ElderRites.getSortedRituals()) {
 			if(!o.isMatch(world, posX, posY, posZ, entities, grassperStacks, isDaytime2, isRaining2, isThundering2)) {
 				continue;
 			}
@@ -276,7 +276,7 @@ public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 			}
 			byte[] covens = tag.hasKey("RitualCovens") ? tag.getByteArray("RitualCovens") : null;
 			for(int i = 0; i < ritualIDs.length; ++i) {
-				ElderRiteRegistry.Ritual ritual = ElderRiteRegistry.instance().getRitual(ritualIDs[i]);
+				ElderRites.ElderRitual ritual = ElderRites.getRitual(ritualIDs[i]);
 				if(ritual == null) {
 					continue;
 				}
@@ -374,7 +374,6 @@ public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 					case ABORTED_REFUND: {
 						result.steps.clear();
 						SoundEffect.NOTE_SNARE.playAt(this);
-						continue;
 					}
 				}
 			}
@@ -401,7 +400,7 @@ public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 			return !activeRituals.isEmpty() || !upkeepRituals.isEmpty();
 		}
 
-		public void queueRitual(ElderRiteRegistry.Ritual ritual, AxisAlignedBB bounds, EntityPlayer player, int covenSize, boolean summonCoven) {
+		public void queueRitual(ElderRites.ElderRitual ritual, AxisAlignedBB bounds, EntityPlayer player, int covenSize, boolean summonCoven) {
 			ArrayList<RitualStep> ritualSteps = new ArrayList<>();
 			if(summonCoven) {
 				EntityCovenWitch.summonCoven(ritualSteps, player.worldObj, player, new int[][]{{xCoord - 2, yCoord, zCoord - 2}, {xCoord + 2, yCoord, zCoord - 2}, {xCoord - 2, yCoord, zCoord + 2}, {xCoord + 2, yCoord, zCoord + 2}, {xCoord, yCoord, zCoord + 3}, {xCoord, yCoord, zCoord - 3}});
@@ -426,14 +425,14 @@ public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 		}
 
 		public static class ActivatedElderRitual {
-			public final ElderRiteRegistry.Ritual ritual;
+			public final ElderRites.ElderRitual ritual;
 			private final ArrayList<RitualStep> steps;
 			public final String playerName;
 			public final ArrayList<RitualStep.SacrificedItem> sacrificedItems;
 			public final int covenSize;
 			private Coord coord;
 
-			private ActivatedElderRitual(ElderRiteRegistry.Ritual ritual, ArrayList<RitualStep> steps, String playerName, int covenSize) {
+			private ActivatedElderRitual(ElderRites.ElderRitual ritual, ArrayList<RitualStep> steps, String playerName, int covenSize) {
 				sacrificedItems = new ArrayList<>();
 				this.ritual = ritual;
 				this.steps = steps;
@@ -465,22 +464,12 @@ public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 				for(int i = 0; i < sacrificedItems.size(); ++i) {
 					RitualStep.SacrificedItem sacrificedItem = sacrificedItems.get(i);
 					if(sacrificedItem != null && sacrificedItem.itemstack != null) {
-						if(!ritual.isConsumeAttunedStoneCharged() && Witchery.Items.GENERIC.itemAttunedStoneCharged.isMatch(sacrificedItem.itemstack)) {
-							world.spawnEntityInWorld(new EntityItem(world, 0.5 + sacrificedItem.location.x, 0.5 + sacrificedItem.location.y, 0.5 + sacrificedItem.location.z, Witchery.Items.GENERIC.itemAttunedStone.createStack()));
-							sacrificedItems.remove(i);
-							break;
-						}
 						if(sacrificedItem.itemstack.getItem() == Witchery.Items.ARTHANA) {
 							world.spawnEntityInWorld(new EntityItem(world, 0.5 + sacrificedItem.location.x, 0.5 + sacrificedItem.location.y, 0.5 + sacrificedItem.location.z, sacrificedItem.itemstack));
 							sacrificedItems.remove(i);
 							break;
 						}
 						if(sacrificedItem.itemstack.getItem() == Witchery.Items.BOLINE) {
-							world.spawnEntityInWorld(new EntityItem(world, 0.5 + sacrificedItem.location.x, 0.5 + sacrificedItem.location.y, 0.5 + sacrificedItem.location.z, sacrificedItem.itemstack));
-							sacrificedItems.remove(i);
-							break;
-						}
-						if(!ritual.isConsumeNecroStone() && Witchery.Items.GENERIC.itemNecroStone.isMatch(sacrificedItem.itemstack)) {
 							world.spawnEntityInWorld(new EntityItem(world, 0.5 + sacrificedItem.location.x, 0.5 + sacrificedItem.location.y, 0.5 + sacrificedItem.location.z, sacrificedItem.itemstack));
 							sacrificedItems.remove(i);
 							break;
@@ -493,7 +482,7 @@ public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 				return steps.isEmpty() ? 0 : steps.get(0).getCurrentStage();
 			}
 
-			ActivatedElderRitual(ElderRiteRegistry.Ritual x0, ArrayList<RitualStep> x1, String x2, int x3, Result x4) {
+			ActivatedElderRitual(ElderRites.ElderRitual x0, ArrayList<RitualStep> x1, String x2, int x3, Result x4) {
 				this(x0, x1, x2, x3);
 			}
 		}

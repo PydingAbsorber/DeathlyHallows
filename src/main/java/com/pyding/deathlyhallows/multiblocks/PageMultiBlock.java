@@ -64,6 +64,11 @@ public class PageMultiBlock {
 		}
 		DHMultiBlockRenderEvents.renderMultiBlockOnPage(mb);
 		glPopMatrix();
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void renderMaterialsTooltip(int mx, int my) {
+		TextureManager render = Minecraft.getMinecraft().renderEngine;
 		FontRenderer font = Minecraft.getMinecraft().fontRenderer;
 		glEnable(GL12.GL_RESCALE_NORMAL);
 		RenderHelper.enableGUIStandardItemLighting();
@@ -78,15 +83,15 @@ public class PageMultiBlock {
 			List<String> mats = new ArrayList<>();
 			mats.add(StatCollector.translateToLocal("witchery.book.materialsRequired"));
 			for(ItemStack stack: mb.materials) {
-				if(stack != null && stack.getItem() != null) {
-					String size = String.valueOf(stack.stackSize);
-					if(size.length() < 2) {
-						size = "0" + size;
-					}
-					mats.add(" " + EnumChatFormatting.AQUA + size + " " + EnumChatFormatting.GRAY + stack.getDisplayName());
+				if(stack == null || stack.getItem() == null) {
+					continue;
 				}
+				String size = String.valueOf(stack.stackSize);
+				if(size.length() < 2) {
+					size = "0" + size;
+				}
+				mats.add(" " + EnumChatFormatting.AQUA + size + " " + EnumChatFormatting.GRAY + stack.getDisplayName());
 			}
-
 			renderTooltip(mx, my, mats);
 		}
 		glPopMatrix();

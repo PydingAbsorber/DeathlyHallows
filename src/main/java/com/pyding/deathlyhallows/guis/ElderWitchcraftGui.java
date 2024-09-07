@@ -1,28 +1,22 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
 package com.pyding.deathlyhallows.guis;
 
 import com.emoniph.witchery.Witchery;
 import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.events.DHMultiBlockRenderEvents;
-import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.multiblocks.MultiBlock;
 import com.pyding.deathlyhallows.multiblocks.PageMultiBlock;
 import com.pyding.deathlyhallows.multiblocks.structures.DHStructures;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketElderBookPage;
-import com.pyding.deathlyhallows.rituals.ElderRiteRegistry;
+import com.pyding.deathlyhallows.rituals.ElderRites;
 import com.pyding.deathlyhallows.utils.IMultiBlockHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -37,11 +31,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 @SideOnly(Side.CLIENT)
 public class ElderWitchcraftGui extends GuiScreen {
-	private static final ResourceLocation
-			// TODO redraw in-color
-			DOUBLE_BOOK_TEXTURE = new ResourceLocation(DHIntegration.WITCHERY, "textures/gui/bookDouble.png"),
-			BOOK_TEXTURE = new ResourceLocation("textures/gui/book.png"),
-			ICONS_TEXTURE = new ResourceLocation(DeathlyHallows.MODID, "textures/gui/book/icons.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation(DeathlyHallows.MODID, "textures/gui/bookDouble.png");
 	private final EntityPlayer player;
 	private final ItemStack stack;
 	private final int
@@ -68,15 +58,10 @@ public class ElderWitchcraftGui extends GuiScreen {
 		bookPages = new NBTTagList();
 		NBTTagCompound tag = new NBTTagCompound();
 		// TODO entry localization fix
-		String intro = Witchery.resource("witchery.book.rites1");
-		String intro2 = Witchery.resource("witchery.book.rites2");
+		String intro = Witchery.resource("dh.book.rites1");
 		tag.setString("Summary", intro);
-		tag.setString("Summary2", intro2);
 		bookPages.appendTag(tag);
-		for(ElderRiteRegistry.Ritual ritual: ElderRiteRegistry.instance().getRituals()) {
-			if(!ritual.showInBook()) {
-				continue;
-			}
+		for(ElderRites.ElderRitual ritual: ElderRites.getSortedRituals()) {
 			tag = new NBTTagCompound();
 			tag.setString("Summary", ritual.getDescription());
 			tag.setInteger("RitualID", ritual.ritualID);
@@ -119,24 +104,22 @@ public class ElderWitchcraftGui extends GuiScreen {
 	public void initGui() {
 		buttonList.clear();
 		Keyboard.enableRepeatEvents(true);
-		buttonList.add(new GuiButton(0, width / 2 - 100, 4 + guiHeight, 200, 20, I18n.format("gui.done")));
-		
+		buttonList.add(new GuiButton(0, width / 2 - 100, 4 + guiHeight, 200, 20, StatCollector.translateToLocal("gui.done")));
 		final int
 				left = (width - guiWidth) / 2,
 				top = 2;
 		buttonList.add(buttonNextPage = new GuiButtonNext(1, left + 212, top + 154, true));
 		buttonList.add(buttonPreviousPage = new GuiButtonNext(2, left + 142, top + 154, false));
-		buttonList.add(buttonNextIngredientPage = new GuiButtonNext(10, left + 90, top + 154, true));
-		buttonList.add(buttonPreviousIngredientPage = new GuiButtonNext(11, left + 20, top + 154, false));
-		buttonList.add(new GuiButtonJump(9, left + 246, top + 138, 69, 48, 248));
-		buttonList.add(new GuiButtonJump(8, left + 246, top + 118, 58, 40, 248));
-		buttonList.add(new GuiButtonJump(7, left + 246, top + 98, 47, 32, 248));
-		buttonList.add(new GuiButtonJump(6, left + 246, top + 78, 29, 24, 248));
-		buttonList.add(new GuiButtonJump(5, left + 246, top + 58, 23, 16, 248));
-		buttonList.add(new GuiButtonJump(4, left + 246, top + 38, 17, 8, 248));
-		buttonList.add(new GuiButtonJump(3, left + 246, top + 18, 2, 0, 248));
-		buttonList.add(new GuiButtonVisualize(12, left + 183, top + 156));
-		((GuiButton)buttonList.get(12)).visible = false;
+		buttonList.add(buttonNextIngredientPage = new GuiButtonNext(3, left + 90, top + 154, true));
+		buttonList.add(buttonPreviousIngredientPage = new GuiButtonNext(4, left + 20, top + 154, false));
+		buttonList.add(new GuiButtonVisualize(5, left + 183, top + 156));
+		ElderRites.Category[] values = ElderRites.Category.values();
+		int pages = bookTotalPages + 1;
+		for(int i = values.length - 1; i >= 0; --i) {
+			// don't ask why. it's just reverse dynamic page calculation, because f*ck static constants
+			pages -= ElderRites.getRituals(values[i]).size();
+			buttonList.add(new GuiButtonJump(6 + i, left + 246 + 10 * (i / 7), top + 18 + 20 * (i % 7), pages, 8 * values[i].index, 248));
+		}
 	}
 
 	public void onGuiClosed() {
@@ -154,13 +137,14 @@ public class ElderWitchcraftGui extends GuiScreen {
 	}
 
 	private void sendBookToServer() {
-		// TODO WHAT?
-		if(player != null && currPage >= 0 && currPage < 1000 && player.inventory.currentItem >= 0) {
-			ItemStack book = player.inventory.getCurrentItem();
-			if(book != null && book.getItem() == DHItems.elderBook) {
-				DHPacketProcessor.sendToServer(new PacketElderBookPage(player.inventory.currentItem, currPage, visualizedPage));
-			}
+		if(player == null || currPage < 0 || currPage >= 1000 || player.inventory.currentItem < 0) {
+			return;
 		}
+		ItemStack book = player.inventory.getCurrentItem();
+		if(book == null || book.getItem() != DHItems.elderBook) {
+			return;
+		}
+		DHPacketProcessor.sendToServer(new PacketElderBookPage(player.inventory.currentItem, currPage, visualizedPage));
 	}
 
 	protected void actionPerformed(GuiButton button) {
@@ -172,65 +156,67 @@ public class ElderWitchcraftGui extends GuiScreen {
 			recipePageCurrent = 0;
 			recipePageCount = 1;
 			storeCurrentPage();
+			updateButtons();
+			return;
 		}
-		else {
-			switch(button.id) {
-				case 0: {
-					mc.displayGuiScreen(null);
-					break;
-				}
 
-				case 1: {
-					if(currPage < bookTotalPages - 1) {
-						++currPage;
-						recipePageCurrent = 0;
-						recipePageCount = 1;
-						storeCurrentPage();
-					}
+		switch(button.id) {
+			case 0: {
+				mc.displayGuiScreen(null);
+				break;
+			}
+
+			case 1: {
+				if(currPage < bookTotalPages - 1) {
+					++currPage;
+					recipePageCurrent = 0;
+					recipePageCount = 1;
+					storeCurrentPage();
+				}
+				break;
+			}
+			case 2: {
+				if(currPage > 0) {
+					--currPage;
+					recipePageCurrent = 0;
+					recipePageCount = 1;
+					storeCurrentPage();
+				}
+				break;
+			}
+			case 3: {
+				if(recipePageCurrent < recipePageCount - 1) {
+					recipePageCurrent++;
+				}
+				break;
+			}
+			case 4: {
+				if(recipePageCurrent > 0) {
+					recipePageCurrent--;
+				}
+				break;
+			}
+			case 5: {
+				if(visualizedPage == currPage) {
+					visualizedPage = -1;
+					PageMultiBlock.resetVisualization();
 					break;
 				}
-				case 2: {
-					if(currPage > 0) {
-						--currPage;
-						recipePageCurrent = 0;
-						recipePageCount = 1;
-						storeCurrentPage();
-					}
-					break;
+				if(pageMultiBlock != null && pageMultiBlock.set != null) {
+					visualizedPage = currPage;
+					pageMultiBlock.setVisualization();
 				}
-				case 10: {
-					if(recipePageCurrent < recipePageCount - 1) {
-						recipePageCurrent++;
-					}
-					break;
-				}
-				case 11: {
-					if(recipePageCurrent > 0) {
-						recipePageCurrent--;
-					}
-					break;
-				}
-				case 12: {
-					if(visualizedPage == currPage) {
-						visualizedPage = -1;
-						PageMultiBlock.resetVisualization();
-						break;
-					}
-					if(pageMultiBlock != null && pageMultiBlock.set != null) {
-						visualizedPage = currPage;
-						pageMultiBlock.setVisualization();
-					}
-					break;
-				}
+				break;
 			}
 		}
+
 		updateButtons();
 	}
 
 	public void drawScreen(int x, int y, float partial) {
 		glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.getTextureManager().bindTexture(ElderWitchcraftGui.DOUBLE_BOOK_TEXTURE);
-		final int 
+		mc.getTextureManager().bindTexture(TEXTURE);
+		final int
 				left = (width - guiWidth) / 2,
 				top = 2;
 		drawTexturedModalRect(left, top, 0, 0, guiWidth, guiHeight);
@@ -241,7 +227,7 @@ public class ElderWitchcraftGui extends GuiScreen {
 			final NBTTagCompound compound = bookPages.getCompoundTagAt(currPage);
 			int ritualID = (compound.getInteger("RitualID"));
 			if(ritualID > 0) {
-				ElderRiteRegistry.Ritual ritual = ElderRiteRegistry.instance().getRitual(ritualID);
+				ElderRites.ElderRitual ritual = ElderRites.getRitual(ritualID);
 				s5 = ritual.getDescription();
 				IMultiBlockHandler[] circles = ritual.circles;
 				for(IMultiBlockHandler c: circles) {
@@ -252,6 +238,7 @@ public class ElderWitchcraftGui extends GuiScreen {
 				s5 = compound.getString("Summary");
 			}
 		}
+
 		final int l = fontRendererObj.getStringWidth(s4);
 		fontRendererObj.drawString(s4, left - l + guiWidth - 16, top + 16, 0);
 		@SuppressWarnings("unchecked")
@@ -266,7 +253,10 @@ public class ElderWitchcraftGui extends GuiScreen {
 
 		pageMultiBlock = new PageMultiBlock(mb.makeSet(), left + guiWidth / 2, top, guiWidth / 2, guiHeight, updateCount);
 		pageMultiBlock.renderScreen(x, y);
-		((GuiButton)buttonList.get(12)).visible = !pageMultiBlock.mb.equals(DHStructures.EMPTY.getMultiBlock());
+		if(currPage > 0) {
+			pageMultiBlock.renderMaterialsTooltip(x, y);
+		}
+		((GuiButton)buttonList.get(5)).visible = !pageMultiBlock.mb.equals(DHStructures.EMPTY.getMultiBlock());
 		updateButtons();
 		super.drawScreen(x, y, partial);
 	}
@@ -285,7 +275,7 @@ public class ElderWitchcraftGui extends GuiScreen {
 				return;
 			}
 			glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			mc.getTextureManager().bindTexture(BOOK_TEXTURE);
+			mc.getTextureManager().bindTexture(TEXTURE);
 			boolean selected = x >= xPosition && x < xPosition + width && y >= yPosition && y < yPosition + height;
 			drawTexturedModalRect(xPosition, yPosition, selected ? 23 : 0, right ? 192 : 205, 23, 13);
 		}
@@ -298,7 +288,7 @@ public class ElderWitchcraftGui extends GuiScreen {
 		private final int iconY;
 
 		private GuiButtonJump(int id, int x, int y, int page, int iconX, int iconY) {
-			super(id, x, y, 20, 20, "");
+			super(id, x, y, 10, 20, "");
 			jumpToPage = page;
 			this.iconX = iconX;
 			this.iconY = iconY;
@@ -311,19 +301,43 @@ public class ElderWitchcraftGui extends GuiScreen {
 			glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 			boolean flag = x >= xPosition && y >= yPosition && x < xPosition + width && y < yPosition + height;
-			mc.getTextureManager().bindTexture(DOUBLE_BOOK_TEXTURE);
+			mc.getTextureManager().bindTexture(TEXTURE);
+			if(flag) {
+				zLevel += 100;
+			}
 			drawTexturedModalRect(xPosition, yPosition, flag ? 15 : 3, 220, 9, 24);
+			// long
+			if(id > 7 + 5) {
+				int width = 10;
+				drawTexturedRect(xPosition - width, yPosition, width, 24, flag ? 15 : 3, 220, 1, 24, 256, 256);
+			}
 			if(iconX >= 0 && iconY >= 0) {
 				drawTexturedModalRect(xPosition, yPosition + 9, iconX, iconY, 8, 8);
 			}
-
+			if(flag) {
+				zLevel -= 100;
+			}
 		}
+
+		private void drawTexturedRect(int x, int y, int w, int h, int minU, int minV, int stepU, int stepV, int textureX, int textureY) {
+			float uStep = 1F / textureX;
+			float vStep = 1F / textureY;
+			Tessellator tessellator = Tessellator.instance;
+			tessellator.startDrawingQuads();
+			tessellator.addVertexWithUV(x, y + h, zLevel, minU * uStep, (minV + stepV) * vStep);
+			tessellator.addVertexWithUV(x + w, y + h, zLevel, (minU + stepU) * uStep, (minV + stepV) * vStep);
+			tessellator.addVertexWithUV(x + w, y, zLevel, (minU + stepU) * uStep, minV * vStep);
+			tessellator.addVertexWithUV(x, y, zLevel, minU * uStep, minV * vStep);
+			tessellator.draw();
+		}
+
 	}
 
 	public class GuiButtonVisualize extends GuiButton {
 
 		public GuiButtonVisualize(int id, int x, int y) {
 			super(id, x, y, 14, 14, "");
+			visible = false;
 		}
 
 		public void drawButton(Minecraft mc, int x, int y) {
@@ -331,10 +345,10 @@ public class ElderWitchcraftGui extends GuiScreen {
 				return;
 			}
 			glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			mc.getTextureManager().bindTexture(ICONS_TEXTURE);
+			mc.getTextureManager().bindTexture(TEXTURE);
 			boolean selected = x >= xPosition && x < xPosition + width && y >= yPosition && y < yPosition + height;
 			boolean visualized = visualizedPage == currPage;
-			drawTexturedModalRect(xPosition, yPosition, selected ? 12 : 0, visualized ? 10 : 0, 12, 10);
+			drawTexturedModalRect(xPosition, yPosition, (selected ? 12 : 0) + 45, (visualized ? 10 : 0) + 193, 12, 10);
 		}
 
 	}

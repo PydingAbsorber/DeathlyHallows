@@ -148,13 +148,14 @@ public class ModelNimbus extends ModelBase {
 	
 	@Override
 	public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
+		GL11.glColor4f(1F, 1F, 1F, f);
 		handle.render(f5);
 		if(entity instanceof EntityNimbus) {
 			int color = ((EntityNimbus)entity).getBrushColor();
-			GL11.glColor3ub((byte)((color >> 16) & 0xFF), (byte)((color >> 8) & 0xFF), (byte)(color & 0xFF));
+			GL11.glColor4ub((byte)((color >> 16) & 0xFF), (byte)((color >> 8) & 0xFF), (byte)(color & 0xFF), (byte)(f * 0xFF));
 		}
 		else {
-			GL11.glColor3f(0.4F, 0.3F, 0.2F);
+			GL11.glColor4f(0.4F, 0.3F, 0.2F, f);
 		}
 		bristle1.render(f5);
 		bristle2.render(f5);

@@ -6,6 +6,7 @@ import net.minecraft.world.World;
 
 public class ItemTarotCards extends ItemBase {
 	
+	// that not exactly tartos; thats Chocolate Frog Card or Famous Witches and Wizards Cards)
 	public ItemTarotCards() {
 		super("tarotCards", 1);
 	}

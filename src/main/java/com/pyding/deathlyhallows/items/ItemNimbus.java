@@ -37,7 +37,7 @@ public class ItemNimbus extends ItemBase {
 			return super.onItemRightClick(stack, world, p);
 		}
 		EntityNimbus nimbus = new EntityNimbus(world);
-		nimbus.setPosition(p.posX, p.posY, p.posZ);
+		nimbus.setPosition(p.posX, p.posY + 0.255D, p.posZ);
 		world.spawnEntityInWorld(nimbus);
 		nimbus.interactFirst(p);
 		return super.onItemRightClick(stack, world, p);
