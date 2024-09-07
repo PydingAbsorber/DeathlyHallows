@@ -4,8 +4,11 @@ import WayofTime.alchemicalWizardry.api.soulNetwork.SoulNetworkHandler;
 import am2.api.ArsMagicaApi;
 import am2.api.IExtendedProperties;
 import baubles.api.BaublesApi;
+import com.emoniph.witchery.common.IPowerSource;
+import com.emoniph.witchery.common.PowerSources;
 import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.util.ChatUtil;
+import com.emoniph.witchery.util.Coord;
 import com.emoniph.witchery.util.CreatureUtil;
 import com.emoniph.witchery.util.EntityUtil;
 import com.emoniph.witchery.util.ParticleEffect;
@@ -36,6 +39,7 @@ import net.minecraft.nbt.NBTTagByteArray;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
@@ -53,6 +57,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -89,7 +95,38 @@ public class DHUtils {
 		return false;
 	}
 
-	private static class UtilsRandom {
+	public static IPowerSource findClosestPowerSource(TileEntity e, int radius) {
+		return findClosestPowerSource(e.getWorldObj(), new Coord(e.xCoord, e.yCoord, e.zCoord), radius);
+	}
+	
+	public static IPowerSource findClosestPowerSource(Entity e, int radius) {
+		return findClosestPowerSource(e.worldObj, new Coord((int)e.posX, (int)e.posY, (int)e.posZ), radius);
+	}
+	
+	public static IPowerSource findClosestPowerSource(World world, Coord location, int radius) {
+		List<IPowerSource> sources = findPowerSourcesInRange(world, location, radius);
+		if(sources.size() == 0) {
+			return null;
+		}
+		sources.sort(Comparator.comparingDouble(a -> location.distanceSqTo(a.getLocation())));
+		return sources.get(0);
+	}
+
+	public static List<IPowerSource> findPowerSourcesInRange(World world, Coord location, int radius) {
+		if(PowerSources.instance() == null) {
+			return Collections.emptyList();
+		}
+		ArrayList<IPowerSource> nearbyPowerSources = new ArrayList<>();
+		double radiusSq = radius * radius;
+		for(IPowerSource source: PowerSources.instance().powerSources) {
+			if(source.getWorld() == world && location.distanceSqTo(source.getLocation()) < radiusSq) {
+				nearbyPowerSources.add(source);
+			}
+		}
+		return nearbyPowerSources;
+	}
+
+    private static class UtilsRandom {
 		private static final Random random = new Random();
 	}
 

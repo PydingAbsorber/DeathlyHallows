@@ -46,7 +46,7 @@ public final class DHThaumcraft {
 		DHItems.register(wandRod = new ItemWandRod());
 		DHItems.register(wandCap = new ItemWandCap());
 		wandRodRowan = new DHWandRod(ItemWandRod.Rods.rowan).setWandUpdate(new DHWandUpdate(12, 50, 20, 32));
-		wandRodAlder = new DHWandRod(ItemWandRod.Rods.alder).setWandUpdate(new DHWandUpdate(18, 75, 20, 8));
+		wandRodAlder = new DHWandRod(ItemWandRod.Rods.alder).setWandUpdate(new DHWandUpdate(18, 75, 15, 8));
 		wandRodHawthorn = new DHWandRod(ItemWandRod.Rods.hawthorn).setWandUpdate(new DHWandUpdate(18, 50, 20, 64));
 		wandCapKoboldite = new DHWandCap(ItemWandCap.Caps.koboldite);
 		DHBlocks.register(visConverter = new BlockVisConverter());
