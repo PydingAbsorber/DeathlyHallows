@@ -43,10 +43,11 @@ public final class DHItems {
 			lightningInBag,
 			bag,
 			elderChalk,
-			niceCream;
+			niceCream,
+			elfBook;
 
 	private DHItems() {
-		
+
 	}
 
 	public static void init() {
@@ -72,6 +73,7 @@ public final class DHItems {
 		register(bag = new ItemBag());
 		register(lightningInBag = new ItemLightningInBag());
 		register(niceCream = new ItemNiceCream());
+		register(elfBook = new ItemElfBook());
 	}
 
 	@SideOnly(Side.CLIENT)

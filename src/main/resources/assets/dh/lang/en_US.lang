@@ -155,6 +155,9 @@ dh.rite.coven=§9Enlightenment into the Coven{r||Transforms a regular witch into
 death.attack.adaptive=You died from... §4Absolute Death: me!!!! HAHAHAHAHA
 # Witchery books
 witchery.book.materialsRequired=Materials Required:
+# Witchery markup book entries
+dh:elfBook.toc=[next=page1][h1 Elf][br][br][br][green Elf Book demo]
+dh:elfBook.page1=Nya. Nya. Nya. Nya. Buruuuuuu!!! Dori Dori Dori
 # Witchery symbols
 witchery.pott.dh.animainteritus=§5Anima §cInteritus
 witchery.pott.dh.horcrux=§5Hor§ccrux

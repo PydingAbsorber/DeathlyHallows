@@ -155,6 +155,9 @@ dh.rite.coven=§9Просветление в Шабаш{r||Превращает 
 death.attack.adaptive=Ты умер от... §4Абсолютная Смерть: Меня!!!! ХАХАХАХАХАХА
 # Witchery books
 witchery.book.materialsRequired=Необходимые материалы:
+# Witchery markup book entries
+dh:elfBook.toc=[next=page1][h1 Эльф][br][br][br][green Демка книги эльфа]
+dh:elfBook.page1=Ня. Ня. Ня. Бурууууууу!!! Дори Дори Дори
 # Botania Flowers
 dh.flower.screamily.name=§4Кричилия
 botania.entry.screamily=Кричилия
