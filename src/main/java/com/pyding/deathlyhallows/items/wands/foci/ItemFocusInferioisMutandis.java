@@ -1,4 +1,4 @@
-package com.pyding.deathlyhallows.items.foci;
+package com.pyding.deathlyhallows.items.wands.foci;
 
 import com.emoniph.witchery.Witchery;
 import com.emoniph.witchery.util.Config;

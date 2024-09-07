@@ -22,6 +22,14 @@ item.lightningInBag.name=§bLightning in Bag
 item.focus_mutandis.name=Inferiois Mutandis
 item.niceCream.name=§3Nicecream
 item.bag.name=Common Bag?
+item.wandCap.koboldite.name=Koboldite Cap
+item.wandRod.rowan.name=Rowan Rod
+item.wandRod.alder.name=Alder Rod
+item.wandRod.hawthorn.name=Hawthorn Rod
+item.Wand.koboldite.cap=Koboldite Forged
+item.Wand.rowan.rod=Rowan
+item.Wand.alder.rod=Alder
+item.Wand.hawthorn.rod=Hawthorn
 # Blocks
 tile.elderGlyph.name=Elder Glyph
 tile.visConverter.name=§9Multipolygonal Vis Reassembler ⋚ ⋛
@@ -180,4 +188,4 @@ botania.page.spawnlesiaabobka=A very voracious and patient flower, which, when r
 # Thaumcraft FocusUpgradeType
 focus.upgrade.dh.extremis.name=Mutandis Extremis
 focus.upgrade.dh.extremis.text=This upgrade increases the mutation abilities of the focus, makes its effect similar to Mutandis Extremis.
-
+# Thaumcraft wands
