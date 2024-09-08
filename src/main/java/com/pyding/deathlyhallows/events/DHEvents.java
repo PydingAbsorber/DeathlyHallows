@@ -126,15 +126,21 @@ public final class DHEvents {
 	}
 
 	@SubscribeEvent
-	public void onStruck(EntityStruckByLightningEvent event) {
-		if(event.entity instanceof EntityPlayer) {
-			EntityPlayer player = (EntityPlayer)event.entity;
-			if(player.getEntityData().getLong("DHBag") > System.currentTimeMillis() && player.getHeldItem().getItem() instanceof ItemBag) {
-				player.getEntityData().setLong("DHBag", 0);
-				player.getHeldItem().splitStack(1);
-				player.inventory.addItemStackToInventory(new ItemStack(DHItems.lightningInBag));
-			}
+	public void onStruck(EntityStruckByLightningEvent e) {
+		if(!(e.entity instanceof EntityPlayer)) {
+			return;
 		}
+		EntityPlayer p = (EntityPlayer)e.entity;
+		NBTTagCompound tag = p.getEntityData();
+		ItemStack stack = p.getHeldItem();
+		if(tag.getLong("DHBag") <= System.currentTimeMillis() || stack == null || !(stack.getItem() instanceof ItemBag)) {
+			return;
+		}
+		tag.setLong("DHBag", 0);
+		stack.splitStack(1);
+		p.inventory.addItemStackToInventory(new ItemStack(DHItems.lightningInBag));
+		p.inventoryContainer.detectAndSendChanges();
+		e.setCanceled(true);
 	}
 
 	@SubscribeEvent
