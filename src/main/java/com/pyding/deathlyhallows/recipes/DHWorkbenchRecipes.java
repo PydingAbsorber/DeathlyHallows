@@ -4,8 +4,10 @@ import am2.items.ItemEssence;
 import am2.items.ItemsCommonProxy;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
+import com.pyding.deathlyhallows.items.wands.ItemWandCap;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import static com.emoniph.witchery.Witchery.Items;
 import static net.minecraft.init.Items.dye;
@@ -17,6 +19,12 @@ public final class DHWorkbenchRecipes {
 	}
 
 	public static void init() {
+		addShapeledRecipe(
+				new ItemStack(DHItems.wandCap, 1, ItemWandCap.Caps.koboldite.ordinal()),
+				"KKK",
+				"K K",
+				'K', Items.GENERIC.itemKobolditeIngot.createStack()
+		);
 		addShapelessRecipe(
 				new ItemStack(DHItems.bertieBots),
 				new ItemStack(dye, 1, 3),
@@ -48,6 +56,10 @@ public final class DHWorkbenchRecipes {
 
 	public static void addShapedRecipe(ItemStack output, Object... params) {
 		GameRegistry.addShapedRecipe(output, params);
+	}
+
+	private static void addShapeledRecipe(ItemStack i, Object... o) {
+		GameRegistry.addRecipe(new ShapedOreRecipe(i, o));
 	}
 
 }

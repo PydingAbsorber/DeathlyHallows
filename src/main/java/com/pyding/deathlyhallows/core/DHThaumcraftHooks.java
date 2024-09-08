@@ -30,7 +30,14 @@ public final class DHThaumcraftHooks {
 		if(api.getCap(stack).getTag().equals(ItemWandCap.Caps.cotton.name()) 
 				&& p.worldObj.provider instanceof WorldProviderDreamWorld
 		) {
-			return 0F; // totally free
+			switch(WorldProviderDreamWorld.getPlayerHasNightmare(p)) {
+				case 2:
+					return 0.0F; // totally free
+				case 1:
+					return 0.6F; // well...
+				default:
+					return 0.9F; // nah
+			}
 		}
 		return modifier;
 	}

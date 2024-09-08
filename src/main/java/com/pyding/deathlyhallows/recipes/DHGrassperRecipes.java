@@ -4,6 +4,7 @@ import com.emoniph.witchery.Witchery;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.items.wands.ItemWandCap;
+import com.pyding.deathlyhallows.items.wands.ItemWandRod;
 import net.minecraft.item.ItemStack;
 import thaumcraft.common.config.ConfigItems;
 
@@ -23,6 +24,9 @@ public final class DHGrassperRecipes {
 			addRecipe(Witchery.Items.GENERIC.itemMutandis.createStack(), new ItemStack(ConfigItems.itemFocusPech), new ItemStack(DHItems.inferioisMutandis));
 			addRecipe(Witchery.Items.GENERIC.itemMutandis.createStack(), new ItemStack(DHItems.inferioisMutandis), new ItemStack(ConfigItems.itemFocusPech));
 			addRecipe(Witchery.Items.GENERIC.itemFancifulThread.createStack(), new ItemStack(ConfigItems.itemWandCap), new ItemStack(DHItems.wandCap, 1, ItemWandCap.Caps.cotton.ordinal()));
+			addRecipe(new ItemStack(Witchery.Blocks.SAPLING, 1, 0), Witchery.Items.GENERIC.itemGraveyardDust.createStack(), new ItemStack(DHItems.wandRod, 1, ItemWandRod.Rods.rowan.ordinal()));
+			addRecipe(new ItemStack(Witchery.Blocks.SAPLING, 1, 1), Witchery.Items.GENERIC.itemRefinedEvil.createStack(), new ItemStack(DHItems.wandRod, 1, ItemWandRod.Rods.alder.ordinal()));
+			addRecipe(new ItemStack(Witchery.Blocks.SAPLING, 1, 2), Witchery.Items.GENERIC.itemNullCatalyst.createStack(), new ItemStack(DHItems.wandRod, 1, ItemWandRod.Rods.hawthorn.ordinal()));
 		}
 	}
 	
