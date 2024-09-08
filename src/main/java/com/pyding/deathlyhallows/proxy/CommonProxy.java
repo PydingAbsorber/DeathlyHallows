@@ -11,6 +11,7 @@ import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.items.ItemTrickOrTreat;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.recipes.DHBrewRecipes;
+import com.pyding.deathlyhallows.recipes.DHGrassperRecipes;
 import com.pyding.deathlyhallows.recipes.DHWorkbenchRecipes;
 import com.pyding.deathlyhallows.rituals.DHRituals;
 import com.pyding.deathlyhallows.symbols.DHSymbols;
@@ -43,6 +44,7 @@ public class CommonProxy {
 	public void postInit(FMLPostInitializationEvent event) {
 		DHWorkbenchRecipes.init();
 		DHBrewRecipes.init();
+		DHGrassperRecipes.init();
 		GuiHandler.init();
 		DHRituals.init();
 		DHIntegration.postInit();

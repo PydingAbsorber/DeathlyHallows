@@ -28,6 +28,7 @@ import com.pyding.deathlyhallows.items.baubles.ItemBaubleInvisibilityMantle;
 import com.pyding.deathlyhallows.items.baubles.ItemBaubleResurrectionStone;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketNBTSync;
+import com.pyding.deathlyhallows.recipes.DHGrassperRecipes;
 import com.pyding.deathlyhallows.symbols.SymbolHorcrux;
 import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.utils.DHUtils;
@@ -64,7 +65,6 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.ISpecialArmor;
 import net.minecraftforge.common.MinecraftForge;
@@ -127,19 +127,21 @@ public final class DHEvents {
 
 	@SubscribeEvent
 	public void onStruck(EntityStruckByLightningEvent e) {
-		if(!(e.entity instanceof EntityPlayer)) {
+		if(!(e.entity instanceof EntityPlayer) || e.lightning == null || e.lightning.isDead) {
 			return;
 		}
 		EntityPlayer p = (EntityPlayer)e.entity;
 		NBTTagCompound tag = p.getEntityData();
 		ItemStack stack = p.getHeldItem();
-		if(tag.getLong("DHBag") <= System.currentTimeMillis() || stack == null || !(stack.getItem() instanceof ItemBag)) {
+		// you can dupe it but you will need at least 1 friend
+		if(tag.getLong("DHStrike") > System.currentTimeMillis() || tag.getLong("DHBag") <= System.currentTimeMillis() || stack == null || !(stack.getItem() instanceof ItemBag)) {
 			return;
 		}
-		tag.setLong("DHBag", 0);
+		tag.setLong("DHBag", System.currentTimeMillis() + ItemBag.COOLDOWN);
 		stack.splitStack(1);
 		p.inventory.addItemStackToInventory(new ItemStack(DHItems.lightningInBag));
 		p.inventoryContainer.detectAndSendChanges();
+		e.lightning.setDead();
 		e.setCanceled(true);
 	}
 
@@ -961,45 +963,25 @@ public final class DHEvents {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void createMutandisInferiois(PlayerInteractEvent e) {
 		// TODO maybe ritual will be better
-		if(!DHIntegration.thaumcraft || e.entityPlayer.getHeldItem() == null) {
+		if(!DHIntegration.thaumcraft || e.entityPlayer.getHeldItem() == null || e.world.isRemote) {
 			return;
 		}
 		ItemStack stack = e.entityPlayer.getHeldItem();
-		if(!stack.isItemEqual(Witchery.Items.GENERIC.itemMutandis.createStack())) {
-			return;
-		}
 		EntityPlayer p = e.entityPlayer;
-		MovingObjectPosition mop = DHUtils.rayTrace(p);
-		if(mop == null) {
-			return;
-		}
-		if(mop.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) {
-			return;
-		}
-		int blockX = mop.blockX;
-		int blockY = mop.blockY;
-		int blockZ = mop.blockZ;
-		TileEntity tile = p.worldObj.getTileEntity(blockX, blockY, blockZ);
+		TileEntity tile = p.worldObj.getTileEntity(e.x, e.y, e.z);
 		if(!(tile instanceof BlockGrassper.TileEntityGrassper)) {
 			return;
 		}
 		IInventory grassper = (IInventory)tile;
 		ItemStack inSlot = grassper.getStackInSlot(0);
-		ItemStack focus;
-		if(inSlot.getItem() == ConfigItems.itemFocusPech) {
-			focus = new ItemStack(DHItems.inferioisMutandis);
-		}
-		else if(inSlot.getItem() == DHItems.inferioisMutandis) {
-			focus = new ItemStack(ConfigItems.itemFocusPech);
-		}
-		else {
+		ItemStack result = DHGrassperRecipes.getResult(stack, inSlot);
+		if(result == null) {
 			return;
 		}
 		--stack.stackSize;
-		ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_FIZZ, e.world, blockX, blockY, blockZ, 1.0, 1.0, 8);
-		grassper.decrStackSize(0, 1);
-		e.world.setBlock(blockX, blockY, blockZ, Blocks.air);
-		p.inventory.addItemStackToInventory(focus);
+		ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_FIZZ, e.world, e.x + 0.5D, e.y  + 0.5D, e.z  + 0.5D, 1.0, 1.0, 8);
+		grassper.setInventorySlotContents(0, result);
+		e.setCanceled(true);
 	}
 
 	public static void processDHKeys(EntityPlayer p, int key, boolean pressed) {

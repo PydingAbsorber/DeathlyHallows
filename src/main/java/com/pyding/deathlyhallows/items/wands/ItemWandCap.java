@@ -18,7 +18,8 @@ public class ItemWandCap extends ItemBase {
 
 	public enum Caps {
 		
-		koboldite(0.8F, 6, 0.5F, Aspect.EARTH);
+		koboldite(0.8F, 6, 0.5F, Aspect.EARTH),
+		cotton(2F, 0);
 
 		public final List<Aspect> aspects;
 		public final int cost;

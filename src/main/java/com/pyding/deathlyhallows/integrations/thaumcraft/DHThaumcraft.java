@@ -4,6 +4,7 @@ import com.emoniph.witchery.Witchery;
 import com.pyding.deathlyhallows.blocks.BlockVisConverter;
 import com.pyding.deathlyhallows.blocks.DHBlocks;
 import com.pyding.deathlyhallows.blocks.tiles.TileEntityVisConverter;
+import com.pyding.deathlyhallows.integrations.thaumcraft.research.DHResearches;
 import com.pyding.deathlyhallows.integrations.thaumcraft.wand.DHWandCap;
 import com.pyding.deathlyhallows.integrations.thaumcraft.wand.DHWandRod;
 import com.pyding.deathlyhallows.integrations.thaumcraft.wand.DHWandUpdate;
@@ -30,6 +31,11 @@ import static com.pyding.deathlyhallows.items.DHItems.hobgoblinSoul;
 import static com.pyding.deathlyhallows.items.DHItems.inferioisMutandis;
 import static com.pyding.deathlyhallows.items.DHItems.wandCap;
 import static com.pyding.deathlyhallows.items.DHItems.wandRod;
+import static com.pyding.deathlyhallows.items.wands.ItemWandCap.Caps.cotton;
+import static com.pyding.deathlyhallows.items.wands.ItemWandCap.Caps.koboldite;
+import static com.pyding.deathlyhallows.items.wands.ItemWandRod.Rods.alder;
+import static com.pyding.deathlyhallows.items.wands.ItemWandRod.Rods.hawthorn;
+import static com.pyding.deathlyhallows.items.wands.ItemWandRod.Rods.rowan;
 import static thaumcraft.api.aspects.Aspect.*;
 
 public final class DHThaumcraft {
@@ -39,18 +45,21 @@ public final class DHThaumcraft {
 			wandRodAlder,
 			wandRodHawthorn;
 	public static WandCap
-			wandCapKoboldite;
+			wandCapKoboldite,
+			wandCapCotton;
 
 	public static void init() {
 		DHItems.register(inferioisMutandis = new ItemFocusInferioisMutandis());
 		DHItems.register(wandRod = new ItemWandRod());
 		DHItems.register(wandCap = new ItemWandCap());
-		wandRodRowan = new DHWandRod(ItemWandRod.Rods.rowan).setWandUpdate(new DHWandUpdate(12, 50, 20, 32));
-		wandRodAlder = new DHWandRod(ItemWandRod.Rods.alder).setWandUpdate(new DHWandUpdate(18, 75, 15, 8));
-		wandRodHawthorn = new DHWandRod(ItemWandRod.Rods.hawthorn).setWandUpdate(new DHWandUpdate(18, 50, 20, 64));
-		wandCapKoboldite = new DHWandCap(ItemWandCap.Caps.koboldite);
+		wandRodRowan = new DHWandRod(rowan).setWandUpdate(new DHWandUpdate(12, 50, 20, 32));
+		wandRodAlder = new DHWandRod(alder).setWandUpdate(new DHWandUpdate(18, 75, 15, 8));
+		wandRodHawthorn = new DHWandRod(hawthorn).setWandUpdate(new DHWandUpdate(18, 50, 20, 64));
+		wandCapKoboldite = new DHWandCap(koboldite);
+		wandCapCotton = new DHWandCap(cotton);
 		DHBlocks.register(visConverter = new BlockVisConverter());
 		DHBlocks.registerTile(TileEntityVisConverter.class, "visConverterTile");
+		DHResearches.init();
 	}
 
 	public static void recipes() {
@@ -278,8 +287,20 @@ public final class DHThaumcraft {
 			ItemStack wand = new ItemStack(wandHandler);
 			wandHandler.setCap(wand, wandCapKoboldite);
 			wandHandler.setRod(wand, rod);
+			fillWand(wand, wandHandler);
 			tabList.add(wand);
 		});
+		ItemStack wand = new ItemStack(wandHandler);
+		wandHandler.setCap(wand, wandCapCotton);
+		wandHandler.setRod(wand, ConfigItems.WAND_ROD_WOOD);
+		fillWand(wand, wandHandler);
+		tabList.add(wand);
+	}
+	
+	private static void fillWand(ItemStack wand, ItemWandCasting api) {
+		for(Aspect primal : Aspect.getPrimalAspects()) {
+			api.addVis(wand, primal, api.getMaxVis(wand), true);
+		}
 	}
 
 }

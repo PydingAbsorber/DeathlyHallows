@@ -31,6 +31,19 @@ public class ItemWandCastingTransformer extends ClassTransformerBase {
 		if(node == null) {
 			return false;
 		}
+		mnode.instructions.insert(node, list(
+				new VarInsnNode(ALOAD, 0),
+				new VarInsnNode(ALOAD, 1),
+				new VarInsnNode(ALOAD, 2),
+				new VarInsnNode(ALOAD, 3),
+				new VarInsnNode(ILOAD, 4),
+				new MethodInsnNode(INVOKESTATIC,
+						getPath(DHThaumcraftHooks.class),
+						"thaumcraftWandVisDiscountUnlimited",
+						"(FLthaumcraft/common/items/wands/ItemWandCasting;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/EntityPlayer;Lthaumcraft/api/aspects/Aspect;Z)F",
+						false
+				)
+		));
 		node = previous(node, InsnNodePredicates.Var(FLOAD, 5));
 		if(node == null) {
 			return false;
@@ -43,7 +56,7 @@ public class ItemWandCastingTransformer extends ClassTransformerBase {
 				new VarInsnNode(ILOAD, 4),
 				new MethodInsnNode(INVOKESTATIC,
 						getPath(DHThaumcraftHooks.class),
-						"thaumcraftWandVisDiscount",
+						"thaumcraftWandVisDiscountPost",
 						"(FLthaumcraft/common/items/wands/ItemWandCasting;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/player/EntityPlayer;Lthaumcraft/api/aspects/Aspect;Z)F",
 						false
 				)
