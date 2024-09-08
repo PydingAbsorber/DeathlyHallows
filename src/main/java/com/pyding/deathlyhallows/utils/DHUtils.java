@@ -24,6 +24,7 @@ import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameData;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
@@ -126,7 +127,19 @@ public class DHUtils {
 		return nearbyPowerSources;
 	}
 
-    private static class UtilsRandom {
+	public static void drawTexturedRect(int x, int y, int zLevel, int w, int h, int minU, int minV, int stepU, int stepV, int textureX, int textureY) {
+		float uStep = 1F / textureX;
+		float vStep = 1F / textureY;
+		Tessellator tessellator = Tessellator.instance;
+		tessellator.startDrawingQuads();
+		tessellator.addVertexWithUV(x, y + h, zLevel, minU * uStep, (minV + stepV) * vStep);
+		tessellator.addVertexWithUV(x + w, y + h, zLevel, (minU + stepU) * uStep, (minV + stepV) * vStep);
+		tessellator.addVertexWithUV(x + w, y, zLevel, (minU + stepU) * uStep, minV * vStep);
+		tessellator.addVertexWithUV(x, y, zLevel, minU * uStep, minV * vStep);
+		tessellator.draw();
+	}
+
+	private static class UtilsRandom {
 		private static final Random random = new Random();
 	}
 

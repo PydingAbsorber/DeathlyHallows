@@ -10,13 +10,13 @@ import com.pyding.deathlyhallows.multiblocks.structures.DHStructures;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketElderBookPage;
 import com.pyding.deathlyhallows.rituals.ElderRites;
+import com.pyding.deathlyhallows.utils.DHUtils;
 import com.pyding.deathlyhallows.utils.IMultiBlockHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -309,7 +309,7 @@ public class ElderWitchcraftGui extends GuiScreen {
 			// long
 			if(id > 7 + 5) {
 				int width = 10;
-				drawTexturedRect(xPosition - width, yPosition, width, 24, flag ? 15 : 3, 220, 1, 24, 256, 256);
+				DHUtils.drawTexturedRect(xPosition - width, yPosition, (int)zLevel, width, 24, flag ? 15 : 3, 220, 1, 24, 256, 256);
 			}
 			if(iconX >= 0 && iconY >= 0) {
 				drawTexturedModalRect(xPosition, yPosition + 9, iconX, iconY, 8, 8);
@@ -317,18 +317,6 @@ public class ElderWitchcraftGui extends GuiScreen {
 			if(flag) {
 				zLevel -= 100;
 			}
-		}
-
-		private void drawTexturedRect(int x, int y, int w, int h, int minU, int minV, int stepU, int stepV, int textureX, int textureY) {
-			float uStep = 1F / textureX;
-			float vStep = 1F / textureY;
-			Tessellator tessellator = Tessellator.instance;
-			tessellator.startDrawingQuads();
-			tessellator.addVertexWithUV(x, y + h, zLevel, minU * uStep, (minV + stepV) * vStep);
-			tessellator.addVertexWithUV(x + w, y + h, zLevel, (minU + stepU) * uStep, (minV + stepV) * vStep);
-			tessellator.addVertexWithUV(x + w, y, zLevel, (minU + stepU) * uStep, minV * vStep);
-			tessellator.addVertexWithUV(x, y, zLevel, minU * uStep, minV * vStep);
-			tessellator.draw();
 		}
 
 	}

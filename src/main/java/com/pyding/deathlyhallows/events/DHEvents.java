@@ -966,21 +966,20 @@ public final class DHEvents {
 		if(!DHIntegration.thaumcraft || e.entityPlayer.getHeldItem() == null || e.world.isRemote) {
 			return;
 		}
-		ItemStack stack = e.entityPlayer.getHeldItem();
+		ItemStack catalyst = e.entityPlayer.getHeldItem();
 		EntityPlayer p = e.entityPlayer;
 		TileEntity tile = p.worldObj.getTileEntity(e.x, e.y, e.z);
 		if(!(tile instanceof BlockGrassper.TileEntityGrassper)) {
 			return;
 		}
 		IInventory grassper = (IInventory)tile;
-		ItemStack inSlot = grassper.getStackInSlot(0);
-		ItemStack result = DHGrassperRecipes.getResult(stack, inSlot);
-		if(result == null) {
+		ItemStack output = DHGrassperRecipes.getResult(grassper.getStackInSlot(0), catalyst);
+		if(output == null) {
 			return;
 		}
-		--stack.stackSize;
+		--catalyst.stackSize;
 		ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_FIZZ, e.world, e.x + 0.5D, e.y  + 0.5D, e.z  + 0.5D, 1.0, 1.0, 8);
-		grassper.setInventorySlotContents(0, result);
+		grassper.setInventorySlotContents(0, output);
 		e.setCanceled(true);
 	}
 
