@@ -4,6 +4,7 @@ import WayofTime.alchemicalWizardry.api.soulNetwork.SoulNetworkHandler;
 import am2.api.ArsMagicaApi;
 import am2.api.IExtendedProperties;
 import baubles.api.BaublesApi;
+import baubles.common.container.InventoryBaubles;
 import com.emoniph.witchery.common.IPowerSource;
 import com.emoniph.witchery.common.PowerSources;
 import com.emoniph.witchery.infusion.Infusion;
@@ -84,9 +85,52 @@ public class DHUtils {
 		}
 		return null;
 	}
+	
+	public static IInventory readOfflineBaubles(String commandSenderName) {
+		InventoryBaubles baubles = new InventoryBaubles(null);
+		NBTTagCompound tag = null;
+		try {
+			File dir = new File(MinecraftServer.getServer().worldServers[0].getSaveHandler().getWorldDirectory(), "playerdata");
+			File baublesDir = new File(dir, commandSenderName + ".baub");
+			if(!baublesDir.exists() || !baublesDir.isFile()) {
+				return null;
+			}
+			try(InputStream stream = Files.newInputStream(baublesDir.toPath())) {
+				tag = CompressedStreamTools.readCompressed(stream);
+			}
+			
+		}
+		catch(Exception e) {
+			DeathlyHallows.LOG.warn("Failed to load baubles data for " + commandSenderName);
+		}
+		if(tag == null) {
+			try {
+				File dir = new File(MinecraftServer.getServer().worldServers[0].getSaveHandler().getWorldDirectory(), "playerdata");
+				File baublesDir = new File(dir, commandSenderName + ".baubback");
+				if(!baublesDir.exists() || !baublesDir.isFile()) {
+					return null;
+				}
+				try(InputStream stream = Files.newInputStream(baublesDir.toPath())) {
+					tag = CompressedStreamTools.readCompressed(stream);
+				}
+
+			}
+			catch(Exception e) {
+				DeathlyHallows.LOG.warn("Failed to load backup baubles data for " + commandSenderName);
+			}
+		}
+		if(tag == null) {
+			return null;
+		}
+		baubles.readNBT(tag);
+		return baubles;
+	}
 
 	public static boolean hasMantle(EntityPlayer p) {
-		IInventory baubles = BaublesApi.getBaubles(p);
+		return hasMantle(BaublesApi.getBaubles(p));
+	}
+
+	public static boolean hasMantle(IInventory baubles) {
 		for(int i = 0; i < baubles.getSizeInventory(); ++i) {
 			ItemStack mantle = baubles.getStackInSlot(i);
 			if(mantle != null && mantle.getItem() == DHItems.invisibilityMantle) {

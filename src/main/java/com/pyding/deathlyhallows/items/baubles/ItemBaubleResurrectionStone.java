@@ -10,6 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -67,8 +68,12 @@ public class ItemBaubleResurrectionStone extends ItemBaubleBase {
 			}
 			EntityPlayer obj = world.getPlayerEntityByName(pName);
 			if(obj == null) {
-				NBTTagCompound tag = DHUtils.readOfflinePlayer(pName);
-				if(tag == null) {
+				NBTTagCompound tag;
+				IInventory baubles = DHUtils.readOfflineBaubles(pName);
+				if(baubles == null 
+						|| DHUtils.hasMantle(baubles) 
+						|| (tag = DHUtils.readOfflinePlayer(pName)) == null
+				) {
 					ChatUtil.sendTranslated(p, "dh.desc.resurrectionStone4");
 					return super.onItemRightClick(stack, world, p);
 				}
@@ -98,7 +103,7 @@ public class ItemBaubleResurrectionStone extends ItemBaubleBase {
 		int startIndex = getIndex(stack) % maxIndex;
 		int nextIndex = (startIndex + 1) % maxIndex;
 		EntityPlayer p = players.get(nextIndex);
-		while(DHUtils.hasMantle(p)) {
+		while(isValidPlayer(p)) {
 			++nextIndex;
 			nextIndex %= maxIndex;
 			p = players.get(nextIndex);
@@ -109,7 +114,11 @@ public class ItemBaubleResurrectionStone extends ItemBaubleBase {
 		setIndex(stack, nextIndex);
 		return p.getCommandSenderName();
 	}
-
+	
+	private static boolean isValidPlayer(EntityPlayer p) {
+		return DHUtils.hasMantle(p);
+	}
+	
 	// found this way better than creating Object[4] or creating 4 separate var's. I hope it will be inlined in runtime
 	private static class MinecraftPosition {
 		private final double x, y, z;
