@@ -53,7 +53,7 @@ public class EntityNimbus extends EntityBroom {
 	
 	@Override
 	public void onUpdate() {
-		if(riddenByEntity == null) {
+		if(riddenByEntity == null || riddenByEntity.isDead) {
 			setDead();
 			return;
 		}
@@ -83,6 +83,9 @@ public class EntityNimbus extends EntityBroom {
 			);
 		}
 		super.onUpdate();
+		if(riddenByEntity == null) { // something setting this no null in super.onUpdate()
+			return;
+		}
 		setRotation(riddenByEntity.rotationYaw % 360, riddenByEntity.rotationPitch % 360);
 		Vec3 look = riddenByEntity.getLookVec();
 		double motionX = look.xCoord;
