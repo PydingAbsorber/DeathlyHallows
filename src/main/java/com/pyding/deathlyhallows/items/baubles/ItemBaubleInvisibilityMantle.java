@@ -48,7 +48,9 @@ public class ItemBaubleInvisibilityMantle extends ItemBaubleBase {
 		}
 		Vec3 vel = p.getLookVec();
 		float speed = 0.7F;
-		p.setVelocity(vel.xCoord * speed, vel.yCoord * speed, vel.zCoord * speed);
+		p.motionX = vel.xCoord * speed;
+		p.motionY = vel.yCoord * speed;
+		p.motionZ = vel.zCoord * speed;
 		setMantleState(p, true);
 		p.fallDistance = 0F;
 		if(e.ticksExisted % 4 != 0) {
