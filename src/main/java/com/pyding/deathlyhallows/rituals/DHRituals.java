@@ -209,31 +209,30 @@ public final class DHRituals {
 					DHStructures.iceCastle
 			);
 		}
-		if(DHConfig.healMendingCost > -1) {
-			ElderRites.addRecipe(id++, MENDING, 0,
-					"dh.rite.mending",
-					new RiteWithEffect(8, 80.0f, 0, "DHMending", System.currentTimeMillis() + 60 * 60 * 1000),
+		// TODO reindex all that I can dynamically calculate page index, and make a jumpButton jump to this ritual
+		if(DHIntegration.thaumcraft && DHConfig.bathHouseCost > -1) {
+			ElderRites.addRecipe(id++, INTEGRATION, 0,
+					"dh.rite.banka",
+					new RiteWithEffect(8, 80.0f, 0, 1, System.currentTimeMillis() + 60 * 60 * 1000),
 					new ElderSacrificeMultiple(
 							new ElderSacrificeItem(
-									Items.GENERIC.itemSoulOfTheWorld.createStack(),
-									Items.GENERIC.itemBrewOfHollowTears.createStack(),
-									Items.GENERIC.itemBrewOfErosion.createStack(),
-									Items.GENERIC.itemMutandisExtremis.createStack(),
-									Items.GENERIC.itemHeartOfGold.createStack(),
-									Items.GENERIC.itemBloodWarm.createStack(),
-									Items.GENERIC.itemKobolditeIngot.createStack(),
-									new ItemStack(Items.POPPET, 1, 11)
+									new ItemStack(DHItems.lightningInBag),
+									new ItemStack(ConfigItems.itemBucketDeath),
+									new ItemStack(ConfigItems.itemBottleTaint),
+									new ItemStack(ConfigItems.itemSanitySoap),
+									new ItemStack(Witchery.Blocks.VOID_BRAMBLE),
+									new ItemStack(gastronomicTemptation),
+									new ItemStack(viscousSecretions)
 							),
-							new ElderSacrificePower(DHConfig.healMendingCost, 20)
-					),
+							new ElderSacrificePower(DHConfig.bathHouseCost, 20)),
 					EnumSet.noneOf(RitualTraits.class),
-					DHStructures.mending
+					DHStructures.basik
 			);
 		}
 		if(DHConfig.huntMagicCreaturesCost > -1) {
 			ElderRites.addRecipe(id++, HUNT, 0,
 					"dh.rite.hunt",
-					new RiteWithEffect(8, 80.0f, 0, "DHHunt", System.currentTimeMillis() + 60 * 60 * 1000),
+					new RiteWithEffect(8, 80.0f, 0, 2, System.currentTimeMillis() + 60 * 60 * 1000),
 					new ElderSacrificeMultiple(
 							new ElderSacrificeItem(
 									new ItemStack(DHItems.lightningInBag),
@@ -249,6 +248,27 @@ public final class DHRituals {
 					),
 					EnumSet.noneOf(RitualTraits.class),
 					DHStructures.hunt
+			);
+		}
+		if(DHConfig.healMendingCost > -1) {
+			ElderRites.addRecipe(id++, MENDING, 0,
+					"dh.rite.mending",
+					new RiteWithEffect(8, 80.0f, 0, 3, System.currentTimeMillis() + 60 * 60 * 1000),
+					new ElderSacrificeMultiple(
+							new ElderSacrificeItem(
+									Items.GENERIC.itemSoulOfTheWorld.createStack(),
+									Items.GENERIC.itemBrewOfHollowTears.createStack(),
+									Items.GENERIC.itemBrewOfErosion.createStack(),
+									Items.GENERIC.itemMutandisExtremis.createStack(),
+									Items.GENERIC.itemHeartOfGold.createStack(),
+									Items.GENERIC.itemBloodWarm.createStack(),
+									Items.GENERIC.itemKobolditeIngot.createStack(),
+									new ItemStack(Items.POPPET, 1, 11)
+							),
+							new ElderSacrificePower(DHConfig.healMendingCost, 20)
+					),
+					EnumSet.noneOf(RitualTraits.class),
+					DHStructures.mending
 			);
 		}
 		if(DHConfig.purifyCost > -1) {
@@ -294,26 +314,6 @@ public final class DHRituals {
 					),
 					EnumSet.noneOf(RitualTraits.class),
 					DHStructures.coven
-			);
-		}
-		// TODO reindex all that I can dynamically calculate page index, and make a jumpButton jump to this ritual
-		if(DHIntegration.thaumcraft && DHConfig.bathHouseCost > -1) {
-			ElderRites.addRecipe(id++, INTEGRATION, 0,
-					"dh.rite.banka",
-					new RiteWithEffect(8, 80.0f, 0, "DHBanka", System.currentTimeMillis() + 60 * 60 * 1000),
-					new ElderSacrificeMultiple(
-							new ElderSacrificeItem(
-									new ItemStack(DHItems.lightningInBag),
-									new ItemStack(ConfigItems.itemBucketDeath),
-									new ItemStack(ConfigItems.itemBottleTaint),
-									new ItemStack(ConfigItems.itemSanitySoap),
-									new ItemStack(Witchery.Blocks.VOID_BRAMBLE),
-									new ItemStack(gastronomicTemptation),
-									new ItemStack(viscousSecretions)
-							),
-							new ElderSacrificePower(DHConfig.bathHouseCost, 20)),
-					EnumSet.noneOf(RitualTraits.class),
-					DHStructures.basik
 			);
 		}
 	}

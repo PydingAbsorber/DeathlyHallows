@@ -42,6 +42,10 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 	private String monsters = "";
 	private String rites = "";
 	private String spells = "";
+	private long
+			banka,
+			hunt,
+			heal;
 	
 	// unsaved
 	public int
@@ -101,6 +105,9 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 		tag.setInteger("DHNiceCream", niceCream);
 		tag.setInteger("DHShots", shots);
 		tag.setString("DHRites", rites);
+		tag.setLong("DHBanka",banka);
+		tag.setLong("DHHunt",hunt);
+		tag.setLong("DHHeal",heal);
 		int i = 0;
 		for(String food: foodCollection) {
 			tag.setString("DHFood" + i++, food);
@@ -135,6 +142,9 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 		niceCream = tag.getInteger("DHNiceCream");
 		shots = tag.getInteger("DHShots");
 		rites = tag.getString("DHRites");
+		banka = tag.getLong("DHBanka");
+		hunt = tag.getLong("DHHunt");
+		heal = tag.getLong("DHHeal");
 		for(int i = 0; i < tag.getInteger("DHFoodSize"); ++i) {
 			foodCollection.add(i, tag.getString("DHFood" + i));
 		}
@@ -171,6 +181,30 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 			}
 		}
 		foodCollection.add(name);
+	}
+	
+	public void setBanka(long number){
+		banka = number;
+	}
+	
+	public long getBanka(){
+		return banka;
+	}
+
+	public void setHunt(long number){
+		hunt = number;
+	}
+
+	public long getHunt(){
+		return hunt;
+	}
+
+	public void setHeal(long number){
+		heal = number;
+	}
+
+	public long getHeal(){
+		return heal;
 	}
 
 	public void setCursed(int number) {

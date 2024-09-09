@@ -7,6 +7,7 @@ import com.emoniph.witchery.util.Coord;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.pyding.deathlyhallows.blocks.BlockElderRitual;
+import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -20,14 +21,14 @@ public class RiteWithEffect extends ElderRite {
 	private final float upkeepPowerCost;
 	private final int ticksToLive;
 	private final int radius;
-	private final String tag;
+	private final int id;
 	private final Long time;
 
-	public RiteWithEffect(int radius, float upkeepPowerCost, int ticksToLive, String tag, Long time) {
+	public RiteWithEffect(int radius, float upkeepPowerCost, int ticksToLive, int id, Long time) {
 		this.radius = radius;
 		this.upkeepPowerCost = upkeepPowerCost;
 		this.ticksToLive = ticksToLive;
-		this.tag = tag;
+		this.id = id;
 		this.time = time;
 	}
 
@@ -84,7 +85,18 @@ public class RiteWithEffect extends ElderRite {
 						Object obj = i$.next();
 						EntityPlayer player = (EntityPlayer)obj;
 						if(Coord.distance(player.posX, player.posY, player.posZ, posX, posY, posZ) <= (double)r) {
-							player.getEntityData().setLong(rite.tag, rite.time);
+							DeathlyProperties props = DeathlyProperties.get(player);
+							switch(rite.id){
+								case 1:{
+									props.setBanka(rite.time);
+								}
+								case 2:{
+									props.setHunt(rite.time);
+								}
+								case 3:{
+									props.setHeal(rite.time);
+								}
+							}
 							ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_BABA_LIVING, player, 1.0, 2.0, 8);
 							ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_IMP_LAUGH, player, 1.0, 2.0, 8);
 							return Result.COMPLETED;
