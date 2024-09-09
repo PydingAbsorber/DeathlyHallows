@@ -1,7 +1,6 @@
 package com.pyding.deathlyhallows.recipes;
 
-import am2.items.ItemEssence;
-import am2.items.ItemsCommonProxy;
+import com.pyding.deathlyhallows.integrations.DHArsMagica2;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.items.wands.ItemWandCap;
@@ -44,12 +43,12 @@ public final class DHWorkbenchRecipes {
 		);
 		if(DHIntegration.arsMagica) {
 			addShapelessRecipe(
-					new ItemStack(ItemsCommonProxy.essence, 8, ItemEssence.META_LIGHTNING),
+					DHArsMagica2.essence(8, 7),
 					new ItemStack(DHItems.lightningInBag)
 			);
 		}
 	}
-
+	
 	public static void addShapelessRecipe(ItemStack output, Object... params) {
 		GameRegistry.addShapelessRecipe(output, params);
 	}
