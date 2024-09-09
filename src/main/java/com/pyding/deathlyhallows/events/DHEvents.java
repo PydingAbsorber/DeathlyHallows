@@ -116,7 +116,7 @@ public final class DHEvents {
 		FMLCommonHandler.instance().bus().register(INSTANCE);
 	}
 
-	@SubscribeEvent // needed for elf ears to be seen for all
+	@SubscribeEvent // sends data to all dudes if there is data to sync
 	public void onPlayerTick(TickEvent.PlayerTickEvent e) {
 		if(e.side != Side.SERVER || e.player.worldObj.isRemote || e.player.ticksExisted % 40 != 0) {
 			return;
@@ -130,6 +130,21 @@ public final class DHEvents {
 		}
 	}
 
+	@SubscribeEvent // gets cosmetics data from all dudes who already on server 
+	public void onJoinSyncCosmetic(PlayerEvent.PlayerLoggedInEvent e) {
+		@SuppressWarnings("unchecked")
+		List<EntityPlayer> prayers = (List<EntityPlayer>)e.player.worldObj.playerEntities;
+		for(EntityPlayer p : prayers) {
+			if(p == e.player) {
+				continue;
+			}
+			DeathlyProperties props = DeathlyProperties.get(p);
+			if(props != null) {
+				props.syncToClient(e.player);
+			}
+		}
+	}
+	
 	@SubscribeEvent
 	public void onStruck(EntityStruckByLightningEvent e) {
 		if(!(e.entity instanceof EntityPlayer) || e.lightning == null || e.lightning.isDead) {
@@ -193,7 +208,7 @@ public final class DHEvents {
 		NBTTagCompound persist = data.getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
 		persist.setTag(PLAYER_KEPT_DROPS_TAG, cmp);
 	}
-
+	
 	@SubscribeEvent
 	public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent e) {
 		NBTTagCompound data = e.player.getEntityData();

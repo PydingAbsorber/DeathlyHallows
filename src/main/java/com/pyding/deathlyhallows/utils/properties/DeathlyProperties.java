@@ -160,6 +160,12 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 		elfLevel = tag.getInteger("ElfLvl");
 	}
 
+	public void syncToClient(EntityPlayer p) {
+		if(player.worldObj.isRemote) {
+			return;
+		}
+		DHPacketProcessor.sendToPlayer(new PacketPropertiesCosmetic(player), p);
+	}
 
 	public void syncToClient() {
 		if(player.worldObj.isRemote) {
