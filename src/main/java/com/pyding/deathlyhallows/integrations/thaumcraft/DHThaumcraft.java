@@ -316,24 +316,25 @@ public final class DHThaumcraft {
 	}
 
 	public static void addWandsToTab(List<ItemStack> tabList) {
+		Stream.of(wandRodRowan, wandRodAlder, wandRodHawthorn).forEach(rod -> 
+			addWandToList(tabList, wandCapKoboldite, rod)
+		);
+		addWandToList(tabList, wandCapCotton, ConfigItems.WAND_ROD_WOOD);
+	}
+	
+	private static void addWandToList(List<ItemStack> tabList, WandCap caps, WandRod rod) {
 		ItemWandCasting wandHandler = ((ItemWandCasting)ConfigItems.itemWandCasting);
-		Stream.of(wandRodRowan, wandRodAlder, wandRodHawthorn).forEach(rod -> {
-			ItemStack wand = new ItemStack(wandHandler);
-			wandHandler.setCap(wand, wandCapKoboldite);
-			wandHandler.setRod(wand, rod);
-			fillWand(wand, wandHandler);
-			tabList.add(wand);
-		});
 		ItemStack wand = new ItemStack(wandHandler);
-		wandHandler.setCap(wand, wandCapCotton);
-		wandHandler.setRod(wand, ConfigItems.WAND_ROD_WOOD);
-		fillWand(wand, wandHandler);
+		wandHandler.setCap(wand, caps);
+		wandHandler.setRod(wand, rod);
+		fillWand(wand);
 		tabList.add(wand);
 	}
 	
-	private static void fillWand(ItemStack wand, ItemWandCasting api) {
+	private static void fillWand(ItemStack wand) {
+		ItemWandCasting wandHandler = ((ItemWandCasting)ConfigItems.itemWandCasting);
 		for(Aspect primal : Aspect.getPrimalAspects()) {
-			api.addVis(wand, primal, api.getMaxVis(wand), true);
+			wandHandler.addVis(wand, primal, wandHandler.getMaxVis(wand), true);
 		}
 	}
 
