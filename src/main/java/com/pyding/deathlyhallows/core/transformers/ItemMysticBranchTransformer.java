@@ -20,7 +20,8 @@ public class ItemMysticBranchTransformer extends ClassTransformerBase {
 				0,
 				new MethodData(
 						ItemMysticBranchTransformer::onPlayerStoppedUsing,
-						"onPlayerStoppedUsing"
+						"onPlayerStoppedUsing",
+						"func_77615_a"
 				)
 		);
 	}
