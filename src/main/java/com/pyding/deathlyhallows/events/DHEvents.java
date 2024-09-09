@@ -38,7 +38,9 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -74,7 +76,6 @@ import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHealEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
@@ -115,13 +116,17 @@ public final class DHEvents {
 		FMLCommonHandler.instance().bus().register(INSTANCE);
 	}
 
-	@SubscribeEvent
-	public void onLivingFall(LivingFallEvent e) {
-		if(e.entityLiving instanceof EntityPlayer
-				&& e.entityLiving.isRiding()
-				&& e.entityLiving.ridingEntity instanceof EntityNimbus
-		) {
-			e.distance = 0.0F;
+	@SubscribeEvent // needed for elf ears to be seen for all
+	public void onPlayerTick(TickEvent.PlayerTickEvent e) {
+		if(e.side != Side.SERVER || e.player.worldObj.isRemote || e.player.ticksExisted % 40 != 0) {
+			return;
+		}
+		if(e.phase != TickEvent.Phase.START) {
+			return;
+		}
+		DeathlyProperties props = DeathlyProperties.get(e.player);
+		if(props != null && props.shouldSync()) {
+			props.syncToClients();
 		}
 	}
 

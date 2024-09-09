@@ -3,6 +3,7 @@ package com.pyding.deathlyhallows.utils.properties;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
+import com.pyding.deathlyhallows.network.packets.PacketPropertiesCosmetic;
 import com.pyding.deathlyhallows.network.packets.PacketPropertiesToClient;
 import com.pyding.deathlyhallows.network.packets.PacketPropertiesToServer;
 import com.pyding.deathlyhallows.utils.DHUtils;
@@ -51,8 +52,7 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 	public int
 			elfTimeSurvived,
 			elfInfusionTimer;
-
-
+	private boolean synced = false;
 	private final List<String> foodCollection = new ArrayList<>();
 
 	public DeathlyProperties(EntityPlayer player) {
@@ -149,12 +149,43 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 			foodCollection.add(i, tag.getString("DHFood" + i));
 		}
 	}
+	
+	public NBTTagCompound getCosmeticData() {
+		NBTTagCompound tag = new NBTTagCompound();
+		tag.setInteger("ElfLvl", elfLevel);
+		return tag;
+	}
+	
+	public void setCosmeticData(NBTTagCompound tag) {
+		elfLevel = tag.getInteger("ElfLvl");
+	}
+
 
 	public void syncToClient() {
 		if(player.worldObj.isRemote) {
 			return;
 		}
 		DHPacketProcessor.sendToPlayer(new PacketPropertiesToClient(player, DeathlyProperties.NAME), player);
+		synced = false;
+	}
+	
+	public boolean shouldSync() {
+		return !synced;
+	}
+
+	public void syncToClients() {
+		if(player.worldObj.isRemote) {
+			return;
+		}
+		@SuppressWarnings("unchecked")
+		List<EntityPlayer> prayers = (List<EntityPlayer>)player.worldObj.playerEntities;
+		for(EntityPlayer p : prayers) {
+			if(p == player) {
+				continue;
+			}
+			DHPacketProcessor.sendToPlayer(new PacketPropertiesCosmetic(player), p);
+		}
+		synced = true;
 	}
 	
 	public void syncToServer() {
@@ -303,7 +334,7 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 	}
 
 	public void addRite(int riteId) {
-		if(!DHUtils.contains(rites,riteId+""))
+		if(!DHUtils.contains(rites, String.valueOf(riteId)))
 			rites += riteId + ",";
 	}
 
@@ -315,7 +346,7 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 	}
 
 	public void addSpell(int spellId) {
-		if(!DHUtils.contains(spells,spellId+""))
+		if(!DHUtils.contains(spells, String.valueOf(spellId)))
 			spells += spellId + ",";
 	}
 

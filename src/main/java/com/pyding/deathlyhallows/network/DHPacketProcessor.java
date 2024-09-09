@@ -8,6 +8,7 @@ import com.pyding.deathlyhallows.network.packets.PacketElderWandStrokes;
 import com.pyding.deathlyhallows.network.packets.PacketKeyBindings;
 import com.pyding.deathlyhallows.network.packets.PacketNBTSync;
 import com.pyding.deathlyhallows.network.packets.PacketParticle;
+import com.pyding.deathlyhallows.network.packets.PacketPropertiesCosmetic;
 import com.pyding.deathlyhallows.network.packets.PacketPropertiesToClient;
 import com.pyding.deathlyhallows.network.packets.PacketPropertiesToServer;
 import com.pyding.deathlyhallows.network.packets.PacketRenderAbsoluteDeath;
@@ -29,6 +30,7 @@ public class DHPacketProcessor {
 		int id = 1;
 		channel.registerMessage(PacketPropertiesToServer.class, PacketPropertiesToServer.class, id++, Side.SERVER);
 		channel.registerMessage(PacketPropertiesToClient.class, PacketPropertiesToClient.class, id++, Side.CLIENT);
+		channel.registerMessage(PacketPropertiesCosmetic.class, PacketPropertiesCosmetic.class, id++, Side.CLIENT);
 		channel.registerMessage(PacketKeyBindings.class, PacketKeyBindings.class, id++, Side.SERVER);
 		channel.registerMessage(PacketDisableFlight.class, PacketDisableFlight.class, id++, Side.CLIENT);
 		channel.registerMessage(PacketNBTSync.class, PacketNBTSync.class, id++, Side.CLIENT);
