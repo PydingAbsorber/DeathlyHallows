@@ -389,7 +389,11 @@ public class DHUtils {
 		if(victim instanceof EntityPlayer && ((EntityPlayer)victim).capabilities.isCreativeMode) {
 			return;
 		}
-		EntityPlayer bound = DeathlyProperties.get(player).getSource();
+		DeathlyProperties props = DeathlyProperties.get(player);
+		EntityPlayer bound = null;
+		if(props != null) {
+			bound = props.getSource();
+		}
 		EntityUtil.instantDeath(victim, bound != null ? bound : player);
 	}
 
