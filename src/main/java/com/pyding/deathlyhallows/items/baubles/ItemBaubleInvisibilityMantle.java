@@ -1,6 +1,7 @@
 package com.pyding.deathlyhallows.items.baubles;
 
 import baubles.api.BaubleType;
+import com.pyding.deathlyhallows.entities.EntityAbsoluteDeath;
 import com.pyding.deathlyhallows.utils.DHUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -33,8 +34,8 @@ public class ItemBaubleInvisibilityMantle extends ItemBaubleBase {
 		EntityPlayer p = (EntityPlayer)e;
 		NBTTagCompound tag = p.getEntityData();
 		if(!p.isSneaking()) {
-			if(tag.hasKey("mantleActive")) {
-				setMantleState(p, false);
+			if(isMantleActive(p)) {
+				setMantleAbilityState(p, false);
 			}
 			return;
 		}
@@ -43,7 +44,7 @@ public class ItemBaubleInvisibilityMantle extends ItemBaubleBase {
 			tag.setBoolean("mantleActive", true);
 			world.playSoundAtEntity(e, "dh:mantle." + DHUtils.getRandomInt(1, 3), 1F, 1F);
 		}
-		if(!tag.hasKey("mantleActive")) {
+		if(!isMantleActive(p)) {
 			return;
 		}
 		Vec3 vel = p.getLookVec();
@@ -51,7 +52,7 @@ public class ItemBaubleInvisibilityMantle extends ItemBaubleBase {
 		p.motionX = vel.xCoord * speed;
 		p.motionY = vel.yCoord * speed;
 		p.motionZ = vel.zCoord * speed;
-		setMantleState(p, true);
+		setMantleAbilityState(p, true);
 		p.fallDistance = 0F;
 		if(e.ticksExisted % 4 != 0) {
 			return;
@@ -59,7 +60,11 @@ public class ItemBaubleInvisibilityMantle extends ItemBaubleBase {
 		@SuppressWarnings("unchecked")
 		List<EntityLivingBase> entities = world.getEntitiesWithinAABB(EntityLivingBase.class, p.boundingBox.expand(1, 0, 1));
 		for(EntityLivingBase living : entities) {
-			if(living == p || living.isEntityInvulnerable()) {
+			if(living == p 
+					|| living.isEntityInvulnerable()
+					|| living instanceof EntityAbsoluteDeath 
+					|| living instanceof EntityPlayer && ((EntityPlayer)living).capabilities.isCreativeMode
+			) {
 				continue;
 			}
 			float health = living.getHealth();
@@ -76,10 +81,19 @@ public class ItemBaubleInvisibilityMantle extends ItemBaubleBase {
 		}
 	}
 	
-	public static void setMantleState(EntityPlayer p, boolean active) {
+	public static boolean isMantleActive(EntityLivingBase e) {
+		return e.getEntityData().hasKey("mantleActive");
+	}
+	
+	public static void setMantleAbilityState(EntityPlayer p, boolean active) {
 		p.noClip = active;
-		p.capabilities.disableDamage = active;
-		p.hurtResistantTime = active ? 1000 : 0;
+	}
+
+	public static void setMantleState(EntityPlayer p, boolean active) {
+		if(!p.capabilities.isCreativeMode) {
+			p.capabilities.disableDamage = active;
+			p.hurtResistantTime = active ? 1000 : 0;
+		}
 	}
 
 	@Override

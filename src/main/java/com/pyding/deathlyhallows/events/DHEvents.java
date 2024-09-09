@@ -434,9 +434,11 @@ public final class DHEvents {
 		}
 		if(tag.getInteger("mantlecd") <= 200 && tag.hasKey("mantleActive")) {
 			tag.removeTag("mantleActive");
+			ItemBaubleInvisibilityMantle.setMantleAbilityState(p, false);
 			ItemBaubleInvisibilityMantle.setMantleState(p, false);
 		}
 		if(tag.getBoolean("mantleActive")) {
+			ItemBaubleInvisibilityMantle.setMantleState(p, true);
 			p.addPotionEffect(new PotionEffect(Potion.invisibility.id, tag.getInteger("mantlecd"), 250, true));
 		}
 		if(tag.getInteger("invincible") > 0) {
@@ -569,6 +571,32 @@ public final class DHEvents {
 		e.entityLiving.setRevengeTarget(null);
 		if(e.entityLiving instanceof EntityLiving) {
 			((EntityLiving)e.entityLiving).setAttackTarget(null);
+		}
+	}
+
+	@SubscribeEvent
+	public void hurt(LivingEvent.LivingUpdateEvent e) {
+		EntityLivingBase target = e.entityLiving.getAITarget();
+		if(target != null && target.getEntityData().hasKey("mantleActive")) {
+			e.entityLiving.setRevengeTarget(null);
+		}
+		target = e.entityLiving.getLastAttacker();
+		if(target != null && target.getEntityData().hasKey("mantleActive")) {
+			e.entityLiving.setLastAttacker(null);
+		}
+		if(e.entityLiving instanceof EntityLiving) {
+			EntityLiving living = ((EntityLiving)e.entityLiving);
+			EntityLivingBase livingTarget = living.getAttackTarget();
+			if(livingTarget != null && livingTarget.getEntityData().hasKey("mantleActive")) {
+				living.setAttackTarget(null);
+			}
+		}
+		if(e.entityLiving instanceof EntityCreature) {
+			EntityCreature creature = ((EntityCreature)e.entityLiving);
+			Entity creatureTarget = creature.getEntityToAttack();
+			if(creatureTarget != null && creatureTarget.getEntityData().hasKey("mantleActive")) {
+				creature.setTarget(null);
+			}
 		}
 	}
 	
@@ -768,7 +796,7 @@ public final class DHEvents {
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void death(LivingDeathEvent e) throws NoSuchMethodException {
+	public void death(LivingDeathEvent e) {
 		if(e.entityLiving == null) {
 			return;
 		}
@@ -819,11 +847,7 @@ public final class DHEvents {
 		}
 		EntityPlayer p = (EntityPlayer)e.entityLiving;
 		kickAllAround(p);
-		if(probablyRessurectByStone(p)) {
-			e.setCanceled(true);
-			return;
-		}
-		if(orHorcruxLives(p)) {
+		if(evenDeathCantFind(p) || probablyRessurectByStone(p) || orHorcruxLives(p)) {
 			e.setCanceled(true);
 		}
 	}
@@ -858,6 +882,10 @@ public final class DHEvents {
 			return true;
 		}
 		return false;
+	}
+
+	private static boolean evenDeathCantFind(EntityPlayer p) {
+		return p.getEntityData().hasKey("mantleActive");
 	}
 
 	private static void kickAllAround(EntityPlayer p) {

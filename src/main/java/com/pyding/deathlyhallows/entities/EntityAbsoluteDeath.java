@@ -36,13 +36,13 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, IHandleDT {
-	
+
 	private static final UUID attackingSpeedBoostModifierUUID = UUID.fromString("9c7e6fd9-2913-4c02-a0e9-330f5f3bf211");
 	private static final AttributeModifier attackingSpeedBoostModifier = (new AttributeModifier(attackingSpeedBoostModifierUUID, "Govno", 12.99999809265137D, 0)).setSaved(false);
 	private Entity lastEntityToAttack;
 	private EntityPlayer mvp;
 	private boolean isAggressive;
-	public float 
+	public float
 			baseDamage,
 			bestDamage;
 	private int
@@ -77,7 +77,7 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 	public boolean getCanSpawnHere() {
 		return false;
 	}
-	
+
 	@Override
 	protected Entity findPlayerToAttack() {
 		EntityPlayer entityplayer = worldObj.getClosestVulnerablePlayerToEntity(this, 64D);
@@ -104,7 +104,7 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 		double d1 = vec3.dotProduct(vec31);
 		return d1 > 1.0D - 0.025D / d0;
 	}
-	
+
 	@Override
 	public void onLivingUpdate() {
 		if(this.lastEntityToAttack != super.entityToAttack) {
@@ -226,16 +226,17 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 		}
 		DamageSource source = getDamageSource(damageType);
 		damage(player, baseDamage * multiplier, source);
-		if(DHConfig.deathDifficulty > 1)
-			DHUtils.fuckMagic(player,0.01f);
+		if(DHConfig.deathDifficulty > 1) {
+			DHUtils.fuckMagic(player, 0.01f);
+		}
 	}
 
 	private DamageSource getDamageSource(int damageType) {
 		switch(damageType) {
-			case 8: 
+			case 8:
 				return DamageSource.outOfWorld;
 			case 9:
-				return DamageSource.starve; 
+				return DamageSource.starve;
 		}
 		return new DamageSourceAdaptive(damageType);
 	}
@@ -276,7 +277,7 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 			swingItem();
 			if(DHConfig.deathDifficulty > 1) {
 				heal(1);
-				DHUtils.fuckMagic(player,0.1f);
+				DHUtils.fuckMagic(player, 0.1f);
 			}
 		}
 		motionY = posY > target.posY ? -1 : 1;
