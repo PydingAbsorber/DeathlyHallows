@@ -15,7 +15,7 @@ public class StructureSonata extends StructureBase {
 		add(Blocks.planks, 5, pos(-4,-1,4), pos(-3,-1,0), pos(-3,-1,2), pos(-2,-1,-2), pos(-1,-1,-4), pos(-1,-1,0), pos(-1,-1,2), pos(0,-1,-4), pos(0,-1,-2), pos(1,-1,-4), pos(1,-1,0), pos(1,-1,2), pos(2,-1,-2), pos(3,-1,0), pos(3,-1,2), pos(4,-1,4));
 		add(Witchery.Blocks.WOLFHEAD, 1, pos(-4,0,0), pos(4,0,0));
 		add(Blocks.skull, 1, pos(-2,0,3), pos(0,0,-5), pos(2,0,3));
-		add(Blocks.daylight_detector, 15, pos(4,0,3));
+		add(Blocks.daylight_detector, pos(4,0,3));
 		add(Witchery.Blocks.CRYSTAL_BALL, 0, pos(-4,0,3));
 		add(Witchery.Blocks.CHALICE, 1, pos(-4,0,5));
 		add(Witchery.Blocks.CANDELABRA, 0, pos(4,0,5));

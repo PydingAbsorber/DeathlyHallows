@@ -16,9 +16,8 @@ public class StructureBasik extends StructureBase {
 		add(ConfigBlocks.blockTaint, 2, pos(-1, -2, -1), pos(-1, -2, 1), pos(0, -2, 0), pos(1, -2, -1), pos(1, -2, 1));
 		add(ConfigBlocks.blockCosmeticOpaque, 0, pos(-1, -2, 0), pos(0, -2, -1), pos(0, -2, 1), pos(1, -2, 0));
 		add(ConfigBlocks.blockCosmeticSolid, 7, pos(-2, -1, -2), pos(-2, -1, 2), pos(2, -1, -2), pos(2, -1, 2));
-		add(ConfigBlocks.blockFluidDeath, 3, pos(-1, -1, -1), pos(-1, -1, 0), pos(-1, -1, 1), pos(0, -1, -1), pos(0, -1, 1), pos(1, -1, -1), pos(1, -1, 1));
+		add(ConfigBlocks.blockFluidDeath, 3, pos(-1, -1, -1), pos(-1, -1, 0), pos(-1, -1, 1), pos(0, -1, -1), pos(0, -1, 1), pos(1, -1, -1), pos(1, -1, 1), pos(1, -1, 0));
 		add(ConfigBlocks.blockStoneDevice, 12, pos(0, -1, 0));
-		add(ConfigBlocks.blockFluidDeath, 2, pos(1, -1, 0));
 		add(Witchery.Blocks.BLOOD_ROSE, 1, pos(-2, 0, -2), pos(-2, 0, 2), pos(2, 0, -2), pos(2, 0, 2));
 	}
 	
