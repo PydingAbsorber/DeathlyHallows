@@ -23,7 +23,7 @@ public final class DHWorkbenchRecipes {
 				new ItemStack(DHItems.wandCap, 1, ItemWandCap.Caps.koboldite.ordinal()),
 				"KKK",
 				"K K",
-				'K', Items.GENERIC.itemKobolditeIngot.createStack()
+				'K', Items.GENERIC.itemKobolditeNugget.createStack()
 		);
 		addShapelessRecipe(
 				new ItemStack(DHItems.bertieBots),

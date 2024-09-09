@@ -29,8 +29,11 @@ public final class DHGrassperRecipes {
 			addRecipe(new ItemStack(DHItems.inferioisMutandis), mutandis, new ItemStack(ConfigItems.itemFocusPech));
 			addRecipe(new ItemStack(ConfigItems.itemWandCap), Witchery.Items.GENERIC.itemFancifulThread.createStack(), new ItemStack(DHItems.wandCap, 1, ItemWandCap.Caps.cotton.ordinal()));
 			addRecipe(new ItemStack(Witchery.Blocks.SAPLING, 1, 0), Witchery.Items.GENERIC.itemGraveyardDust.createStack(), new ItemStack(DHItems.wandRod, 1, ItemWandRod.Rods.rowan.ordinal()));
-			addRecipe(new ItemStack(Witchery.Blocks.SAPLING, 1, 1), Witchery.Items.GENERIC.itemRefinedEvil.createStack(), new ItemStack(DHItems.wandRod, 1, ItemWandRod.Rods.alder.ordinal()));
-			addRecipe(new ItemStack(Witchery.Blocks.SAPLING, 1, 2), Witchery.Items.GENERIC.itemNullCatalyst.createStack(), new ItemStack(DHItems.wandRod, 1, ItemWandRod.Rods.hawthorn.ordinal()));
+			addRecipe(new ItemStack(Witchery.Blocks.SAPLING, 1, 1), Witchery.Items.GENERIC.itemNullCatalyst.createStack(), new ItemStack(DHItems.wandRod, 1, ItemWandRod.Rods.alder.ordinal()));
+			addRecipe(new ItemStack(Witchery.Blocks.SAPLING, 1, 2), Witchery.Items.GENERIC.itemRefinedEvil.createStack(), new ItemStack(DHItems.wandRod, 1, ItemWandRod.Rods.hawthorn.ordinal()));
+			for(ItemWandRod.Rods rod : ItemWandRod.Rods.values()) {
+				addRecipe(new ItemStack(Witchery.Blocks.SAPLING, 1, rod.ordinal()), new ItemStack(ConfigItems.itemResource, 1, 14), new ItemStack(DHItems.wandRod, 1, rod.ordinal()));
+			}
 		}
 	}
 	

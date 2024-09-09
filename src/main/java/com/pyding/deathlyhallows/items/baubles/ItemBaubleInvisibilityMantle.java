@@ -47,7 +47,7 @@ public class ItemBaubleInvisibilityMantle extends ItemBaubleBase {
 			return;
 		}
 		Vec3 vel = p.getLookVec();
-		float speed = 0.7F;
+		final float speed = 0.7F;
 		p.motionX = vel.xCoord * speed;
 		p.motionY = vel.yCoord * speed;
 		p.motionZ = vel.zCoord * speed;

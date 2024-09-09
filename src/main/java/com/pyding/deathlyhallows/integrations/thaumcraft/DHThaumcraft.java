@@ -258,6 +258,40 @@ public final class DHThaumcraft {
 				SOUL, 12,
 				ORDER, 8
 		);
+		addAspects(
+				new ItemStack(wandCap, 1, koboldite.ordinal()),
+				METAL, 3,
+				
+				MINE, 4,
+				EARTH, 2,
+				MAGIC, 1
+		);
+		addAspects(
+				new ItemStack(wandCap, 1, cotton.ordinal()),
+				CLOTH, 3,
+
+				LIGHT, 2,
+				DARKNESS, 2,
+				MAGIC, 1
+		);
+		addAspects(
+				new ItemStack(wandRod, 1, rowan.ordinal()),
+				TREE, 4,
+				SOUL, 2,
+				MAGIC, 1
+		);
+		addAspects(
+				new ItemStack(wandRod, 1, alder.ordinal()),
+				TREE, 4,
+				VOID, 2,
+				MAGIC, 1
+		);
+		addAspects(
+				new ItemStack(wandRod, 1, hawthorn.ordinal()),
+				TREE, 4,
+				MIND, 2,
+				MAGIC, 1
+		);
 		// lol
 		addAspects(
 				new ItemStack(DHItems.itemLogo),
