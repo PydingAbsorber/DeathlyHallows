@@ -40,7 +40,7 @@ public class ItemWandCap extends ItemBase {
 	}
 
 	public ItemWandCap() {
-		super("wandCap", 64, null);
+		super("wandCap", 64);
 		hasSubtypes = true;
 	}
 

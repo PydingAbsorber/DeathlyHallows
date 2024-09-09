@@ -33,7 +33,7 @@ public class ItemWandRod extends ItemBase {
 	}
 
 	public ItemWandRod() {
-		super("wandRod", 64, null);
+		super("wandRod", 64);
 		hasSubtypes = true;
 	}
 
