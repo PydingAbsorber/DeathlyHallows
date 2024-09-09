@@ -21,11 +21,9 @@ public class DHStructures {
 			mending,
 			hunt,
 			purify,
-			coven,
-			test;
+			coven;
 	
 	public static void init() {
-		test = new StructureExtremeCube();
 		sonata = new StructureSonata();
 		iceCastle = new StructureIceCastle();
 		fishLake = new StructureFishLake();
