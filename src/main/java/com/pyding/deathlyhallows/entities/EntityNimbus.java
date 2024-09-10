@@ -82,15 +82,24 @@ public class EntityNimbus extends EntityBroom {
 					ParticleEffect.SMOKE
 			);
 		}
+		double motionX = this.motionX;
+		double motionY = this.motionY;
+		double motionZ = this.motionZ;
+		this.motionX = 0;
+		this.motionY = 0;
+		this.motionZ = 0;
 		super.onUpdate();
+		this.motionX = motionX;
+		this.motionY = motionY;
+		this.motionZ = motionZ;
 		if(riddenByEntity == null) { // something setting this no null in super.onUpdate()
 			return;
 		}
 		setRotation(riddenByEntity.rotationYaw % 360, riddenByEntity.rotationPitch % 360);
 		Vec3 look = riddenByEntity.getLookVec();
-		double motionX = look.xCoord;
-		double motionY = look.yCoord;
-		double motionZ = look.zCoord;
+		motionX = look.xCoord;
+		motionY = look.yCoord;
+		motionZ = look.zCoord;
 		if(riddenByEntity instanceof EntityLivingBase) {
 			EntityLivingBase e = (EntityLivingBase)riddenByEntity;
 			float forward = e.moveForward;
@@ -116,6 +125,7 @@ public class EntityNimbus extends EntityBroom {
 		this.motionX += (motionX * speed - this.motionX) * relaxation;
 		this.motionY += (motionY * speed - this.motionY) * 0.8;
 		this.motionZ += (motionZ * speed - this.motionZ) * relaxation;
+		moveEntity(this.motionX, this.motionY, this.motionZ);
 		if(ticksExisted % 100 == 0) {
 			ItemNimbus.setNumbusCooldown(riddenByEntity,5 + ticksExisted / 20);
 			NBTTagCompound tag = riddenByEntity.getEntityData();
