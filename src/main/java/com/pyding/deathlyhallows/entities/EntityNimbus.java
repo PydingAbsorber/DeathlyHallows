@@ -18,8 +18,8 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 public class EntityNimbus extends EntityBroom {
-	
-	private static final int 
+
+	private static final int
 			WATCHER_NAME = 10,
 			WATCHER_COLOR = 16,
 			WATCHER_TIMESINCEHIT = 17,
@@ -50,7 +50,7 @@ public class EntityNimbus extends EntityBroom {
 	public int getBrushColor() {
 		return dataWatcher.getWatchableObjectInt(WATCHER_COLOR);
 	}
-	
+
 	@Override
 	public void onUpdate() {
 		if(riddenByEntity == null || riddenByEntity.isDead) {
@@ -71,7 +71,7 @@ public class EntityNimbus extends EntityBroom {
 						0xFFFFFF,
 						ParticleEffect.FLAME
 				);
-			} 
+			}
 			Witchery.proxy.showParticleEffect(worldObj,
 					prevPosX + MathHelper.sin(yaw),
 					prevPosY,
@@ -82,6 +82,7 @@ public class EntityNimbus extends EntityBroom {
 					ParticleEffect.SMOKE
 			);
 		}
+		// preserving motion to surpass witchery superclass code
 		double motionX = this.motionX;
 		double motionY = this.motionY;
 		double motionZ = this.motionZ;
@@ -96,10 +97,26 @@ public class EntityNimbus extends EntityBroom {
 			return;
 		}
 		setRotation(riddenByEntity.rotationYaw % 360, riddenByEntity.rotationPitch % 360);
+		moveBroom();
+		if(ticksExisted % 100 == 0) {
+			ItemNimbus.setNumbusCooldown(riddenByEntity, 5 + ticksExisted / 20);
+			NBTTagCompound tag = riddenByEntity.getEntityData();
+			if(tag.getLong("NimbusDuration") < System.currentTimeMillis()) {
+				tag.removeTag("NimbusDuration");
+				if(!worldObj.isRemote) {
+					setDead();
+				}
+			}
+		}
+	}
+
+	private void moveBroom() {
+
 		Vec3 look = riddenByEntity.getLookVec();
-		motionX = look.xCoord;
-		motionY = look.yCoord;
-		motionZ = look.zCoord;
+		double
+				motionX = look.xCoord,
+				motionY = look.yCoord,
+				motionZ = look.zCoord;
 		if(riddenByEntity instanceof EntityLivingBase) {
 			EntityLivingBase e = (EntityLivingBase)riddenByEntity;
 			float forward = e.moveForward;
@@ -111,7 +128,7 @@ public class EntityNimbus extends EntityBroom {
 			motionX += MathHelper.cos(yaw) * strafe;
 			motionZ += MathHelper.sin(yaw) * strafe;
 			double norm = motionX * motionX + motionY * motionY + motionZ * motionZ;
-			if( norm > 0 ) {
+			if(norm > 0) {
 				motionX /= norm;
 				motionY /= norm;
 				motionZ /= norm;
@@ -121,21 +138,15 @@ public class EntityNimbus extends EntityBroom {
 		if(riddenByEntity.getEntityData().getBoolean("DHSprint")) {
 			speed *= 4;
 		}
+		// relaxation determines how fast new motion trajectory will be applied
+		// relaxation = 0 - never;
+		// relaxation = 1 - imminently;
+		// can be considered as non-linear acceleration
 		final float relaxation = 0.15F;
 		this.motionX += (motionX * speed - this.motionX) * relaxation;
 		this.motionY += (motionY * speed - this.motionY) * 0.8;
 		this.motionZ += (motionZ * speed - this.motionZ) * relaxation;
 		moveEntity(this.motionX, this.motionY, this.motionZ);
-		if(ticksExisted % 100 == 0) {
-			ItemNimbus.setNumbusCooldown(riddenByEntity,5 + ticksExisted / 20);
-			NBTTagCompound tag = riddenByEntity.getEntityData();
-			if(tag.getLong("NimbusDuration") < System.currentTimeMillis()) {
-				tag.removeTag("NimbusDuration");
-				if(!worldObj.isRemote) {
-					setDead();
-				}				
-			}
-		}
 	}
 
 	@Override
