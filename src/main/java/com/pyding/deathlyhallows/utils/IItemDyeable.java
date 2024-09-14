@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 
 public interface IItemDyeable {
 
-
 	default boolean isDyed(ItemStack stack) {
 		if(!stack.hasTagCompound()) {
 			return false;
