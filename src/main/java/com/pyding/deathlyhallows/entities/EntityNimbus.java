@@ -35,7 +35,7 @@ public class EntityNimbus extends EntityBroom {
 	protected void entityInit() {
 		// override withcery reg cuz need to set another default color
 		dataWatcher.addObject(WATCHER_NAME, "");
-		dataWatcher.addObject(WATCHER_COLOR, 0x704020);
+		dataWatcher.addObject(WATCHER_COLOR, -1);
 		dataWatcher.addObject(WATCHER_TIMESINCEHIT, 0);
 		dataWatcher.addObject(WATCHER_FORWARD, 1);
 		dataWatcher.addObject(WATCHER_DAMAGE, 0F);
@@ -59,7 +59,12 @@ public class EntityNimbus extends EntityBroom {
 		}
 		noClip = riddenByEntity.noClip;
 		setInvisible(riddenByEntity.isInvisible());
-		if(worldObj.isRemote && !isInvisible()) {
+		if(worldObj.isRemote 
+				&& !isInvisible() 
+				&& Vec3.createVectorHelper(motionX, motionY, motionZ)
+					   .squareDistanceTo(0, 0,0) > 0.01D
+		) {
+			double speed  = Vec3.createVectorHelper(motionX, motionY, motionZ).squareDistanceTo(0, 0,0);
 			float yaw = (float)Math.PI / 180F * rotationYaw;
 			if(ticksExisted % 2 == 0) {
 				Witchery.proxy.showParticleEffect(worldObj,
@@ -99,7 +104,7 @@ public class EntityNimbus extends EntityBroom {
 		setRotation(riddenByEntity.rotationYaw % 360, riddenByEntity.rotationPitch % 360);
 		moveBroom();
 		if(ticksExisted % 100 == 0) {
-			ItemNimbus.setNumbusCooldown(riddenByEntity, 5 + ticksExisted / 20);
+			ItemNimbus.addNumbusCooldown(riddenByEntity, 5 + ticksExisted / 20);
 			NBTTagCompound tag = riddenByEntity.getEntityData();
 			if(tag.getLong("NimbusDuration") < System.currentTimeMillis()) {
 				tag.removeTag("NimbusDuration");
@@ -111,28 +116,22 @@ public class EntityNimbus extends EntityBroom {
 	}
 
 	private void moveBroom() {
-
+		// vec3 is mutable; this is not okay usually but this time it's okay
 		Vec3 look = riddenByEntity.getLookVec();
-		double
-				motionX = look.xCoord,
-				motionY = look.yCoord,
-				motionZ = look.zCoord;
+		if(look == null) { // generic case
+			return;
+		}
 		if(riddenByEntity instanceof EntityLivingBase) {
 			EntityLivingBase e = (EntityLivingBase)riddenByEntity;
 			float forward = e.moveForward;
-			motionX *= forward;
-			motionY *= forward * 2;
-			motionZ *= forward;
+			look.xCoord *= forward;
+			look.yCoord *= forward * 2;
+			look.zCoord *= forward;
 			float strafe = e.moveStrafing;
 			float yaw = (float)Math.PI / 180F * rotationYaw;
-			motionX += MathHelper.cos(yaw) * strafe;
-			motionZ += MathHelper.sin(yaw) * strafe;
-			double norm = motionX * motionX + motionY * motionY + motionZ * motionZ;
-			if(norm > 0) {
-				motionX /= norm;
-				motionY /= norm;
-				motionZ /= norm;
-			}
+			look.xCoord += MathHelper.cos(yaw) * strafe;
+			look.zCoord += MathHelper.sin(yaw) * strafe;
+			look = look.normalize();
 		}
 		float speed = 0.7F * ItemNimbus.modifier(riddenByEntity);
 		if(riddenByEntity.getEntityData().getBoolean("DHSprint")) {
@@ -143,12 +142,12 @@ public class EntityNimbus extends EntityBroom {
 		// relaxation = 1 - imminently;
 		// can be considered as non-linear acceleration
 		final float relaxation = 0.15F;
-		this.motionX += (motionX * speed - this.motionX) * relaxation;
-		this.motionY += (motionY * speed - this.motionY) * 0.8;
-		this.motionZ += (motionZ * speed - this.motionZ) * relaxation;
-		moveEntity(this.motionX, this.motionY, this.motionZ);
+		motionX += (look.xCoord * speed - motionX) * relaxation;
+		motionY += (look.yCoord * speed - motionY) * 0.8;
+		motionZ += (look.zCoord * speed - motionZ) * relaxation;
+		moveEntity(motionX, motionY, motionZ);
 	}
-
+	
 	@Override
 	public boolean shouldDismountInWater(Entity rider) {
 		return false;
