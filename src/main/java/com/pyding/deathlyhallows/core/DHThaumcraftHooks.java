@@ -11,6 +11,7 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.wands.WandCap;
 import thaumcraft.common.items.wands.ItemWandCasting;
 
+@SuppressWarnings("unused")
 public final class DHThaumcraftHooks {
 
 	private DHThaumcraftHooks() {
