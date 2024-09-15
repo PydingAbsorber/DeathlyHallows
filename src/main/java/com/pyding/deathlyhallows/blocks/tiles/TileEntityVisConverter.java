@@ -1,10 +1,13 @@
 package com.pyding.deathlyhallows.blocks.tiles;
 
+import com.emoniph.witchery.Witchery;
 import com.emoniph.witchery.blocks.BlockAltar;
 import com.emoniph.witchery.common.IPowerSource;
 import com.emoniph.witchery.common.PowerSources;
 import com.emoniph.witchery.util.ParticleEffect;
+import net.minecraft.block.Block;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -54,6 +57,24 @@ public class TileEntityVisConverter extends TileEntity {
 			// vanilla softcap is 4490
 			coreNBT.setFloat("MaxPower", 4400 + total * 10);
 			coreNBT.setInteger("RechargeScale", 12 + total / 10);
+			int range = 1;
+			boolean pentacle = false;
+			boolean arthana = false;
+			for(int i = 1; i < 3; i++){
+				for(int j = 1; j < 3; j++){
+					Block block = core.getWorld().getBlock(x+i,y+1,z+j);
+					if(!arthana && Witchery.Items.ARTHANA == Item.getItemFromBlock(block)) {
+						range++;
+						arthana = true;
+					}
+					if(!pentacle && Witchery.Items.GENERIC.itemKobolditePentacle.isMatch(new ItemStack(Item.getItemFromBlock(block)))) {
+						range *= 2;
+						pentacle = true;
+					}
+				}
+			}
+			range *= 4;
+			coreNBT.setInteger("RangeScale",range);
 			core.readFromNBT(coreNBT);
 			core.markDirty();
 			worldObj.markBlockForUpdate(x, y, z);

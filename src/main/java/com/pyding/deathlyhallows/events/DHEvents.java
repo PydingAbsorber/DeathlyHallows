@@ -452,7 +452,7 @@ public final class DHEvents {
 		if(tag.getInteger("DopVoid") > 0) {
 			tag.setInteger("DopVoid", tag.getInteger("DopVoid") - 1);
 		}
-		if(tag.getInteger("mantlecd") <= 200 && tag.hasKey("mantleActive")) {
+		if(tag.getInteger("mantlecd") <= 600 && tag.hasKey("mantleActive")) {
 			tag.removeTag("mantleActive");
 			ItemBaubleInvisibilityMantle.setMantleAbilityState(p, false);
 			ItemBaubleInvisibilityMantle.setMantleState(p, false);
@@ -651,7 +651,8 @@ public final class DHEvents {
 			e.ammount = 0;
 			e.setCanceled(true);
 		}
-		if(p.getEntityData().getLong("DHBanka") > System.currentTimeMillis()) {
+		DeathlyProperties props = DeathlyProperties.get(p);
+		if(props.getBanka() > System.currentTimeMillis()) {
 			int warp = Thaumcraft.proxy.getPlayerKnowledge().getWarpTemp(p.getCommandSenderName())
 					+ Thaumcraft.proxy.getPlayerKnowledge().getWarpSticky(p.getCommandSenderName()) * 5
 					+ Thaumcraft.proxy.getPlayerKnowledge().getWarpPerm(p.getCommandSenderName()) * 10;
@@ -719,23 +720,24 @@ public final class DHEvents {
 
 	@SubscribeEvent
 	public void onHeal(LivingHealEvent e) {
-		if(!(e.entityLiving instanceof EntityPlayer)
-				// TODO replace System.currentTimeMillis() to entity.tickExisted, considered more bug-safe
-				|| e.entityLiving.getEntityData().getLong("DHMending") <= System.currentTimeMillis()
-		) {
+		if(!(e.entityLiving instanceof EntityPlayer)) 
 			return;
-		}
 		EntityPlayer p = (EntityPlayer)e.entityLiving;
-		for(ItemStack stack: p.inventory.armorInventory) {
-			if(stack.isItemDamaged()) {
-				stack.setItemDamage(stack.getItemDamage() - 1);
+		DeathlyProperties props = DeathlyProperties.get(p);
+		if(props.getHeal() > System.currentTimeMillis()) {
+			for(ItemStack stack: p.inventory.armorInventory) {
+				if(stack.isItemDamaged()) {
+					stack.setItemDamage(stack.getItemDamage() - 1);
+				}
+			}
+			for(ItemStack stack: p.inventory.mainInventory) {
+				if(stack.isItemDamaged()) {
+					stack.setItemDamage(stack.getItemDamage() - 1);
+				}
 			}
 		}
-		for(ItemStack stack: p.inventory.mainInventory) {
-			if(stack.isItemDamaged()) {
-				stack.setItemDamage(stack.getItemDamage() - 1);
-			}
-		}
+		if(props.getCursed() > System.currentTimeMillis())
+			e.setCanceled(true);
 	}
 
 	@SubscribeEvent
@@ -823,6 +825,21 @@ public final class DHEvents {
 		playerDeath(e);
 		dropAnimalsSpecialLoot(e);
 		dropNice(e);
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
+	public void lowestDeath(LivingDeathEvent event) {
+		if(event.entityLiving == null) {
+			return;
+		}
+		if(event.isCanceled() && event.entityLiving instanceof EntityPlayer){
+			EntityPlayer player = (EntityPlayer)event.entityLiving;
+			DeathlyProperties props = DeathlyProperties.get(player);
+			if(props.getCursed() > System.currentTimeMillis()){
+				event.setCanceled(false);
+				player.setHealth(0);
+			}
+		}
 	}
 
 	private void dropNice(LivingDeathEvent e) {
