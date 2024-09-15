@@ -2,7 +2,7 @@ package com.pyding.deathlyhallows.rituals;
 
 import com.pyding.deathlyhallows.multiblocks.MultiBlock;
 import com.pyding.deathlyhallows.utils.IMultiBlockHandler;
-import cpw.mods.fml.common.registry.GameData;
+import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTTagCompound;
@@ -28,7 +28,8 @@ public class BlockList implements IMultiBlockHandler {
 					int meta = 0;
 					NBTTagCompound nbt = null;
 					if(spl.length > 0 && spl[0].length() > 0) {
-						block = GameData.blockRegistry.get(spl[0]);
+						String[] blockName = spl[0].split(":");
+						block = GameRegistry.findBlock(blockName[0], blockName[1]);
 					}
 					if(spl.length > 1) {
 						try {

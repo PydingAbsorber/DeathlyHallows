@@ -1,5 +1,6 @@
 package com.pyding.deathlyhallows.events;
 
+import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.multiblocks.MultiBlock;
 import com.pyding.deathlyhallows.multiblocks.MultiBlockBlockAccess;
 import com.pyding.deathlyhallows.multiblocks.MultiBlockComponent;
@@ -22,6 +23,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -99,7 +101,7 @@ public final class DHMultiBlockRenderEvents {
 		boolean didAny = false;
 
 		blockAccess.update(p.worldObj, mb, anchorX, anchorY, anchorZ);
-
+		mc.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
 		for(MultiBlockComponent comp: mb.getComponents()) {
 			if(renderComponentInWorld(p.worldObj, mb, comp, anchorX, anchorY, anchorZ)) {
 				didAny = true;
@@ -113,7 +115,7 @@ public final class DHMultiBlockRenderEvents {
 			return;
 		}
 		setMultiBlock(null);
-		p.addChatComponentMessage(new ChatComponentTranslation("botaniamisc.structureComplete").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GREEN)));
+		p.addChatComponentMessage(new ChatComponentTranslation("dh.chat.structureComplete").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GREEN)));
 	}
 
 	private boolean renderComponentInWorld(World world, MultiBlock mb, MultiBlockComponent comp, int anchorX, int anchorY, int anchorZ) {
@@ -135,7 +137,8 @@ public final class DHMultiBlockRenderEvents {
 
 	public static void renderMultiBlockOnPage(MultiBlock mb) {
 		glTranslated(-0.5, -0.5, -0.5);
-		blockAccess.update(null, mb, mb.anchorX, mb.anchorY, mb.anchorZ);
+		blockAccess.update(Minecraft.getMinecraft().theWorld, mb, mb.anchorX, mb.anchorY, mb.anchorZ);
+		mc.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
 		for(MultiBlockComponent comp: mb.getComponents()) {
 			ChunkCoordinates pos = comp.getRelativePosition();
 			doRenderComponent(mb, comp, pos.posX + mb.anchorX, pos.posY + mb.anchorY, pos.posZ + mb.anchorZ, 1);
@@ -148,9 +151,7 @@ public final class DHMultiBlockRenderEvents {
 		if(block == null) {
 			return;
 		}
-		mc.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
 		blockRender.useInventoryTint = false;
-		
 		glPushMatrix();
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -191,7 +192,8 @@ public final class DHMultiBlockRenderEvents {
 				glPopMatrix();
 			}
 			catch(Exception ignored) {
-				comp.doFancyRender = false;
+				DeathlyHallows.LOG.info(block.getUnlocalizedName());
+				//comp.doFancyRender = false;
 			}
 		}
 		else { // vanilla blocks or forge will handle
@@ -202,7 +204,8 @@ public final class DHMultiBlockRenderEvents {
 				blockRender.renderBlockByRenderType(block, x, y, z);
 			}
 			catch(Exception ignored) {
-				comp.doFancyRender = false;
+				DeathlyHallows.LOG.info(block.getUnlocalizedName());
+				//comp.doFancyRender = false;
 			}
 			t.draw();
 		}
@@ -275,6 +278,7 @@ public final class DHMultiBlockRenderEvents {
 		if(!TileEntityRendererDispatcher.instance.hasSpecialRenderer(tile)) {
 			return;
 		}
+		
 		// setting the tile and world properties
 		tile.setWorldObj(w);
 		tile.blockMetadata = meta;
@@ -284,11 +288,15 @@ public final class DHMultiBlockRenderEvents {
 		if(comp.tag != null) {
 			tile.readFromNBT(comp.tag);
 		}
+		
 		Block trueBlock = w.getBlock(x,y,z);
 		int trueMeta = w.getBlockMetadata(x,y,z);
-		if(!w.setBlock(x, y, z, block, meta, 5)) {
-			w.setBlock(x, y, z, trueBlock, trueMeta, 5);
+		int flag = 0;
+		Chunk chunk = w.getChunkFromChunkCoords(x >> 4, z >> 4);
+		if(!chunk.func_150807_a(x & 15, y, z & 15, block, meta)) {
+			chunk.func_150807_a(x & 15, y, z & 15, trueBlock, trueMeta);
 		}
+		
 		// actually render
 		try {
 			glPushMatrix();
@@ -296,9 +304,11 @@ public final class DHMultiBlockRenderEvents {
 			glDisable(GL_LIGHTING);
 		}
 		finally {
-			w.setBlock(x, y, z, trueBlock, trueMeta, 5);
-			glPopMatrix();	
+			chunk.func_150807_a(x & 15, y, z & 15, trueBlock, trueMeta);
+			glPopMatrix();
+			mc.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
 		}
+		
 	}
 
 }

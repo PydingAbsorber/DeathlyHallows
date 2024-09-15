@@ -9,6 +9,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.Set;
 
@@ -70,7 +71,7 @@ public class MultiBlockComponent {
 		if(block instanceof BlockStairs || block instanceof BlockSlab) {
 			return new ItemStack[]{new ItemStack(block, 1, -1)};
 		}
-		return new ItemStack[]{new ItemStack(block, 1, meta)};
+		return new ItemStack[]{new ItemStack(block, 1, meta == -1 ? OreDictionary.WILDCARD_VALUE : meta)};
 	}
 
 	public void rotate(double angle) {
