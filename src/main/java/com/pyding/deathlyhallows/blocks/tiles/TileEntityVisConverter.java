@@ -112,7 +112,8 @@ public class TileEntityVisConverter extends TileEntity {
 			return;
 		}
 		ItemWandCasting itemWand = ((ItemWandCasting)wand.getItem());
-		for(Aspect aspect: itemWand.getAspectsWithRoom(wand).getAspects()) {
+		// .getAspects() gives Aspect[1]{null}, .getAspectsSorted() gives Aspect[0]{} when there is empty list
+		for(Aspect aspect: itemWand.getAspectsWithRoom(wand).getAspectsSorted()) {
 			int drain = Math.min(100, itemWand.getMaxVis(tile.getStackInSlot(10)) - itemWand.getVis(tile.getStackInSlot(10), aspect));
 			if(drain <= 0) {
 				continue;
