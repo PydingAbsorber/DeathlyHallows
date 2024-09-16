@@ -27,7 +27,7 @@ public class MultiBlockComponent {
 	}
 
 	public MultiBlockComponent(ChunkCoordinates relPos, Block block, int meta, NBTTagCompound tag) {
-		this(relPos, block, meta, false, null, tag);
+		this(relPos, block, meta, true, null, tag);
 	}
 	
 	public MultiBlockComponent(ChunkCoordinates relPos, Block block, int meta, boolean doFancyRender, TileEntity tileEntity, NBTTagCompound tag) {
