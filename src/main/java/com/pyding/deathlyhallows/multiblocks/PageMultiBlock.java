@@ -38,7 +38,7 @@ public class PageMultiBlock {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void renderScreen(int mx, int my) {
+	public void renderScreen(int mx, int my, int layer) {
 		TextureManager render = Minecraft.getMinecraft().renderEngine;
 
 		glEnable(GL_BLEND);
@@ -62,7 +62,7 @@ public class PageMultiBlock {
 			glRotatef(-25F, 1, 0, 0);
 			glRotatef(ticksElapsed, 0, 1, 0);
 		}
-		DHMultiBlockRenderEvents.renderMultiBlockOnPage(mb);
+		DHMultiBlockRenderEvents.renderMultiBlockOnPage(mb, layer);
 		glPopMatrix();
 	}
 

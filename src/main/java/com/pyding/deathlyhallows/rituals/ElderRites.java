@@ -28,22 +28,16 @@ public class ElderRites {
 
 	public enum Category {
 		
-		CIRCLE(0),
-		SONATA(1),
-		LAKE(2),
-		CURSE(3),
-		ICECASTLE(4),
-		MENDING(3),
-		HUNT(3),
-		COVEN(3),
-		PURIFY(5),
-		INTEGRATION(6);
-
-		public final int index;
-
-		Category(int index) {
-			this.index = index;
-		}
+		CIRCLE,
+		SONATA,
+		LAKE,
+		CURSE,
+		ICECASTLE,
+		MENDING,
+		HUNT,
+		COVEN,
+		PURIFY,
+		INTEGRATION
 
 	}
 

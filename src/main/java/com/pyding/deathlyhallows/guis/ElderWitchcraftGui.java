@@ -41,7 +41,7 @@ public class ElderWitchcraftGui extends GuiScreen {
 	private int
 			updateCount,
 			currPage,
-			visualizedPage = -1,
+			visualizedPage = 0,
 			recipePageCount,
 			recipePageCurrent;
 	private final NBTTagList bookPages;
@@ -51,6 +51,8 @@ public class ElderWitchcraftGui extends GuiScreen {
 			buttonNextIngredientPage,
 			buttonPreviousIngredientPage;
 	private PageMultiBlock pageMultiBlock;
+
+	private int currentLayer = -1;
 
 	public ElderWitchcraftGui(EntityPlayer player, ItemStack stack) {
 		this.player = player;
@@ -112,13 +114,14 @@ public class ElderWitchcraftGui extends GuiScreen {
 		buttonList.add(buttonPreviousPage = new GuiButtonNext(2, left + 142, top + 154, false));
 		buttonList.add(buttonNextIngredientPage = new GuiButtonNext(3, left + 90, top + 154, true));
 		buttonList.add(buttonPreviousIngredientPage = new GuiButtonNext(4, left + 20, top + 154, false));
-		buttonList.add(new GuiButtonVisualize(5, left + 183, top + 156));
+		buttonList.add(new GuiButtonVisualize(5, left + 183, top + 155));
+		buttonList.add(new GuiButtonLayer(6, left + 230, top + 26));
 		ElderRites.Category[] values = ElderRites.Category.values();
 		int pages = bookTotalPages + 1;
 		for(int i = values.length - 1; i >= 0; --i) {
 			// don't ask why. it's just reverse dynamic page calculation, because f*ck static constants
 			pages -= ElderRites.getRituals(values[i]).size();
-			buttonList.add(new GuiButtonJump(6 + i, left + 246 + 10 * (i / 7), top + 18 + 20 * (i % 7), pages, 8 * values[i].index, 248));
+			buttonList.add(new GuiButtonJump(7 + i, left + 246 + 10 * (i / 7), top + 18 + 20 * (i % 7), pages, 8 * values[i].ordinal(), 248));
 		}
 	}
 
@@ -151,6 +154,13 @@ public class ElderWitchcraftGui extends GuiScreen {
 		if(!button.enabled) {
 			return;
 		}
+		if(button instanceof GuiButtonLayer) {
+			++currentLayer;
+			currentLayer %= pageMultiBlock.mb.getYSize();
+			updateButtons();
+			return;
+		}
+		currentLayer = -1;
 		if(button instanceof GuiButtonJump) {
 			currPage = ((GuiButtonJump)button).jumpToPage - 1;
 			recipePageCurrent = 0;
@@ -159,7 +169,6 @@ public class ElderWitchcraftGui extends GuiScreen {
 			updateButtons();
 			return;
 		}
-
 		switch(button.id) {
 			case 0: {
 				mc.displayGuiScreen(null);
@@ -209,7 +218,6 @@ public class ElderWitchcraftGui extends GuiScreen {
 				break;
 			}
 		}
-
 		updateButtons();
 	}
 
@@ -250,13 +258,17 @@ public class ElderWitchcraftGui extends GuiScreen {
 			fontRendererObj.drawString(list.get(i), left + 20, initialHeight, 0, false);
 			initialHeight += fontRendererObj.FONT_HEIGHT;
 		}
-
 		pageMultiBlock = new PageMultiBlock(mb.makeSet(), left + guiWidth / 2, top, guiWidth / 2, guiHeight, updateCount);
-		pageMultiBlock.renderScreen(x, y);
+		if(currentLayer == -1) {
+			currentLayer = pageMultiBlock.mb.getYSize() - 1;
+		}
+		pageMultiBlock.renderScreen(x, y, currentLayer);
 		if(currPage > 0) {
 			pageMultiBlock.renderMaterialsTooltip(x, y);
 		}
-		((GuiButton)buttonList.get(5)).visible = !pageMultiBlock.mb.equals(DHStructures.EMPTY.getMultiBlock());
+		boolean hasBultiblock = !pageMultiBlock.mb.equals(DHStructures.EMPTY.getMultiBlock());
+		((GuiButton)buttonList.get(5)).visible = hasBultiblock;
+		((GuiButton)buttonList.get(6)).visible = hasBultiblock && pageMultiBlock.mb.getYSize() > 1;
 		updateButtons();
 		super.drawScreen(x, y, partial);
 	}
@@ -307,7 +319,7 @@ public class ElderWitchcraftGui extends GuiScreen {
 			}
 			drawTexturedModalRect(xPosition, yPosition, flag ? 15 : 3, 220, 9, 24);
 			// long
-			if(id > 7 + 5) {
+			if(id > 8 + 5) {
 				int width = 10;
 				DHUtils.drawTexturedRect(xPosition - width, yPosition, (int)zLevel, width, 24, flag ? 15 : 3, 220, 1, 24, 256, 256);
 			}
@@ -324,7 +336,7 @@ public class ElderWitchcraftGui extends GuiScreen {
 	public class GuiButtonVisualize extends GuiButton {
 
 		public GuiButtonVisualize(int id, int x, int y) {
-			super(id, x, y, 14, 14, "");
+			super(id, x, y, 12, 12, "");
 			visible = false;
 		}
 
@@ -336,7 +348,26 @@ public class ElderWitchcraftGui extends GuiScreen {
 			mc.getTextureManager().bindTexture(TEXTURE);
 			boolean selected = x >= xPosition && x < xPosition + width && y >= yPosition && y < yPosition + height;
 			boolean visualized = visualizedPage == currPage;
-			drawTexturedModalRect(xPosition, yPosition, (selected ? 12 : 0) + 45, (visualized ? 10 : 0) + 193, 12, 10);
+			drawTexturedModalRect(xPosition, yPosition + 1, (selected ? 12 : 0) + 45, (visualized ? 10 : 0) + 193, 12, 10);
+		}
+
+	}
+
+	public class GuiButtonLayer extends GuiButton {
+
+		public GuiButtonLayer(int id, int x, int y) {
+			super(id, x, y, 11, 11, "");
+			visible = false;
+		}
+
+		public void drawButton(Minecraft mc, int x, int y) {
+			if(!visible) {
+				return;
+			}
+			glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			mc.getTextureManager().bindTexture(TEXTURE);
+			boolean selected = x >= xPosition && x < xPosition + width && y >= yPosition && y < yPosition + height;
+			drawTexturedModalRect(xPosition, yPosition, (selected ? 11 : 0) + 69, 193, 11, 11);
 		}
 
 	}

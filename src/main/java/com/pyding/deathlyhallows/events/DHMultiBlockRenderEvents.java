@@ -22,6 +22,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -132,12 +133,15 @@ public final class DHMultiBlockRenderEvents {
 		return true;
 	}
 
-	public static void renderMultiBlockOnPage(MultiBlock mb) {
+	public static void renderMultiBlockOnPage(MultiBlock mb, int layer) {
 		glTranslated(-0.5, -0.5, -0.5);
 		blockAccess.update(null, mb, mb.anchorX, mb.anchorY, mb.anchorZ);
 		mc.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
 		for(MultiBlockComponent comp: mb.getComponents()) {
 			ChunkCoordinates pos = comp.getRelativePosition();
+			if(pos.posY - mb.minY > layer) {
+				continue;
+			}
 			doRenderComponent(comp, pos.posX + mb.anchorX, pos.posY + mb.anchorY, pos.posZ + mb.anchorZ, 1);
 		}
 	}
@@ -315,13 +319,21 @@ public final class DHMultiBlockRenderEvents {
 		}
 		finally {
 			setBlockSilent(w, x, y, z, trueBlock, trueMeta);
+
 			glPopMatrix();
 			mc.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
 		}
 	}
-	
+
 	private static void setBlockSilent(World world, int x, int y, int z, Block block, int meta) {
-		world.getChunkFromChunkCoords(x >> 4, z >> 4).func_150807_a(x & 15, y, z & 15, block, meta);
+		Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
+		x &= 15;
+		z &= 15;
+		if(chunk.getTileEntityUnsafe(x, y, z) != null) {
+			chunk.removeTileEntity(x, y, z);
+			chunk.removeInvalidTileEntity(x, y, z);
+		}
+		chunk.func_150807_a(x, y, z, block, meta);
 	}
 
 }
