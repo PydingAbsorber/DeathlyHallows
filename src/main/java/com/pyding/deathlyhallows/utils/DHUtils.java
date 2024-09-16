@@ -5,6 +5,7 @@ import am2.api.ArsMagicaApi;
 import am2.api.IExtendedProperties;
 import baubles.api.BaublesApi;
 import baubles.common.container.InventoryBaubles;
+import com.emoniph.witchery.common.ExtendedPlayer;
 import com.emoniph.witchery.common.IPowerSource;
 import com.emoniph.witchery.common.PowerSources;
 import com.emoniph.witchery.infusion.Infusion;
@@ -29,6 +30,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
@@ -44,6 +46,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
@@ -85,7 +88,7 @@ public class DHUtils {
 		}
 		return null;
 	}
-	
+
 	public static IInventory readOfflineBaubles(String commandSenderName) {
 		InventoryBaubles baubles = new InventoryBaubles(null);
 		NBTTagCompound tag = null;
@@ -98,7 +101,7 @@ public class DHUtils {
 			try(InputStream stream = Files.newInputStream(baublesDir.toPath())) {
 				tag = CompressedStreamTools.readCompressed(stream);
 			}
-			
+
 		}
 		catch(Exception e) {
 			DeathlyHallows.LOG.warn("Failed to load baubles data for " + commandSenderName);
@@ -143,11 +146,11 @@ public class DHUtils {
 	public static IPowerSource findClosestPowerSource(TileEntity e, int radius) {
 		return findClosestPowerSource(e.getWorldObj(), new Coord(e.xCoord, e.yCoord, e.zCoord), radius);
 	}
-	
+
 	public static IPowerSource findClosestPowerSource(Entity e, int radius) {
 		return findClosestPowerSource(e.worldObj, new Coord((int)e.posX, (int)e.posY, (int)e.posZ), radius);
 	}
-	
+
 	public static IPowerSource findClosestPowerSource(World world, Coord location, int radius) {
 		List<IPowerSource> sources = findPowerSourcesInRange(world, location, radius);
 		if(sources.size() == 0) {
@@ -386,15 +389,39 @@ public class DHUtils {
 	}
 
 	public static void deadInside(EntityLivingBase victim, EntityPlayer player) { // FOX! DIE!
-		if(victim instanceof EntityPlayer && ((EntityPlayer)victim).capabilities.isCreativeMode) {
+		if(victim == null
+				|| victim.worldObj == null
+				|| victim.worldObj.isRemote
+		) {
 			return;
 		}
 		DeathlyProperties props = DeathlyProperties.get(player);
-		EntityPlayer bound = null;
+		EntityLivingBase bound = null;
 		if(props != null) {
 			bound = props.getSource();
 		}
-		EntityUtil.instantDeath(victim, bound != null ? bound : player);
+		deadInside(victim, bound != null ? bound : player);
+	}
+
+	public static void deadInside(EntityLivingBase entity, EntityLivingBase attacker) { // FOX! DIE!
+		if(entity == null || entity.worldObj == null || entity.worldObj.isRemote) {
+			return;
+		}
+		entity.setHealth(0F);
+		if(entity instanceof EntityPlayer) {
+			EntityPlayer player = (EntityPlayer)entity;
+			if(player.isPlayerSleeping()) {
+				player.wakeUpPlayer(true, true, false);
+			}
+			if(ExtendedPlayer.get(player).isVampire()) {
+				entity.onDeath(attacker == null ? EntityUtil.DamageSourceSunlight.SUN : new EntityUtil.DamageSourceSunlight(attacker));
+				return;
+			}
+		}
+		entity.onDeath(attacker == null ? DamageSource.magic : new EntityDamageSource(DamageSource.magic.getDamageType(), attacker));
+		if(entity instanceof EntityLiving) {
+			entity.setDead();
+		}
 	}
 
 	public static void spawnSphere(Entity entity, Vec3 pos, int count, float radius, Color color, float resizeSpeed, float scale, int age, int type) {

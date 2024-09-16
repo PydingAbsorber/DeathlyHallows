@@ -12,7 +12,6 @@ import com.emoniph.witchery.entity.EntitySpirit;
 import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.item.ItemDeathsClothes;
 import com.emoniph.witchery.util.ChatUtil;
-import com.emoniph.witchery.util.EntityUtil;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.google.common.collect.HashMultimap;
@@ -336,7 +335,8 @@ public final class DHEvents {
 			DHPacketProcessor.sendToAllAround(new PacketNBTSync(tag, e.getEntityId()), new NetworkRegistry.TargetPoint(e.dimension, e.posX, e.posY, e.posZ, 64));
 		}
 		if(!e.isDead && curse < 1) {
-			EntityUtil.instantDeath(e, e.getLastAttacker());
+			e.setHealth(0);
+			DHUtils.deadInside(e, e.getLastAttacker());
 		}
 		if(curse > 0) {
 			tag.setInteger(DHCURSE_TAG, curse - 1);
