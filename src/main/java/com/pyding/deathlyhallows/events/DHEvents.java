@@ -134,7 +134,7 @@ public final class DHEvents {
 	public void onJoinSyncCosmetic(PlayerEvent.PlayerLoggedInEvent e) {
 		@SuppressWarnings("unchecked")
 		List<EntityPlayer> prayers = (List<EntityPlayer>)e.player.worldObj.playerEntities;
-		for(EntityPlayer p : prayers) {
+		for(EntityPlayer p: prayers) {
 			if(p == e.player) {
 				continue;
 			}
@@ -144,7 +144,7 @@ public final class DHEvents {
 			}
 		}
 	}
-	
+
 	@SubscribeEvent
 	public void onStruck(EntityStruckByLightningEvent e) {
 		if(!(e.entity instanceof EntityPlayer) || e.lightning == null || e.lightning.isDead) {
@@ -208,7 +208,7 @@ public final class DHEvents {
 		NBTTagCompound persist = data.getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);
 		persist.setTag(PLAYER_KEPT_DROPS_TAG, cmp);
 	}
-	
+
 	@SubscribeEvent
 	public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent e) {
 		NBTTagCompound data = e.player.getEntityData();
@@ -560,8 +560,7 @@ public final class DHEvents {
 			DeathlyProperties props = DeathlyProperties.get(p);
 			if(props.getDamageLog()) {
 				if(e.source.getEntity() != null) {
-					ChatUtil.sendPlain(p, "Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName() + " Dealer: " + e.source.getEntity()
-																																							.getCommandSenderName());
+					ChatUtil.sendPlain(p, "Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName() + " Dealer: " + e.source.getEntity().getCommandSenderName());
 				}
 				else {
 					ChatUtil.sendPlain(p, "Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName());
@@ -573,8 +572,7 @@ public final class DHEvents {
 			EntityPlayer ps = (EntityPlayer)e.source.getEntity();
 			DeathlyProperties props = DeathlyProperties.get(ps);
 			if(props.getDamageLog()) {
-				ChatUtil.sendPlain(ps, "Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName() + " Dealer: " + e.source.getEntity()
-																																						 .getCommandSenderName());
+				ChatUtil.sendPlain(ps, "Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName() + " Dealer: " + e.source.getEntity().getCommandSenderName());
 				ChatUtil.sendPlain(ps, "Amount: §5" + e.ammount);
 			}
 		}
@@ -619,7 +617,7 @@ public final class DHEvents {
 			}
 		}
 	}
-	
+
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void hurt(LivingHurtEvent e) {
 		if(e.isCanceled() || e.entityLiving == null) {
@@ -706,12 +704,12 @@ public final class DHEvents {
 			EntityLivingBase entity = (EntityLivingBase)e.entity;
 			EntityPlayer playerSource = (EntityPlayer)e.source.getEntity();
 			DeathlyProperties props = DeathlyProperties.get(playerSource);
-			if(entity instanceof EntityPlayer) {
-				EntityPlayer p = (EntityPlayer)entity;
-				double afterDamage = ISpecialArmor.ArmorProperties.ApplyArmor(p, p.inventory.armorInventory, e.source, e.ammount);
-				playerSource.addChatMessage(new ChatComponentText("Amount after absorption: §5" + afterDamage));
-			}
 			if(props.getDamageLog()) {
+				if(entity instanceof EntityPlayer) {
+					EntityPlayer p = (EntityPlayer)entity;
+					double afterDamage = ISpecialArmor.ArmorProperties.ApplyArmor(p, p.inventory.armorInventory, e.source, e.ammount);
+					playerSource.addChatMessage(new ChatComponentText("Amount after absorption: §5" + afterDamage));
+				}
 				playerSource.addChatMessage(new ChatComponentText("Amount after absorption: §5" + e.ammount));
 			}
 		}
@@ -720,8 +718,9 @@ public final class DHEvents {
 
 	@SubscribeEvent
 	public void onHeal(LivingHealEvent e) {
-		if(!(e.entityLiving instanceof EntityPlayer)) 
+		if(!(e.entityLiving instanceof EntityPlayer)) {
 			return;
+		}
 		EntityPlayer p = (EntityPlayer)e.entityLiving;
 		DeathlyProperties props = DeathlyProperties.get(p);
 		if(props.getHeal() > System.currentTimeMillis()) {
@@ -736,8 +735,9 @@ public final class DHEvents {
 				}
 			}
 		}
-		if(props.getCursed() > System.currentTimeMillis())
+		if(props.getCursed() > System.currentTimeMillis()) {
 			e.setCanceled(true);
+		}
 	}
 
 	@SubscribeEvent
@@ -832,10 +832,10 @@ public final class DHEvents {
 		if(event.entityLiving == null) {
 			return;
 		}
-		if(event.isCanceled() && event.entityLiving instanceof EntityPlayer){
+		if(event.isCanceled() && event.entityLiving instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer)event.entityLiving;
 			DeathlyProperties props = DeathlyProperties.get(player);
-			if(props.getCursed() > System.currentTimeMillis()){
+			if(props.getCursed() > System.currentTimeMillis()) {
 				event.setCanceled(false);
 				player.setHealth(0);
 			}
@@ -1043,7 +1043,7 @@ public final class DHEvents {
 			return;
 		}
 		--catalyst.stackSize;
-		ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_FIZZ, e.world, e.x + 0.5D, e.y  + 0.5D, e.z  + 0.5D, 1.0, 1.0, 8);
+		ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_FIZZ, e.world, e.x + 0.5D, e.y + 0.5D, e.z + 0.5D, 1.0, 1.0, 8);
 		grassper.setInventorySlotContents(0, output);
 		e.setCanceled(true);
 	}
