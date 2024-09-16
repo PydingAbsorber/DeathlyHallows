@@ -22,7 +22,6 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -98,7 +97,6 @@ public final class DHMultiBlockRenderEvents {
 		rendering = true;
 		MultiBlock mb = anchor != null ? currentMultiBlock.getForIndex(angle) : currentMultiBlock.getForEntity(p);
 		boolean didAny = false;
-
 		blockAccess.update(p.worldObj, mb, anchorX, anchorY, anchorZ);
 		mc.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
 		for(MultiBlockComponent comp: mb.getComponents()) {
@@ -129,22 +127,22 @@ public final class DHMultiBlockRenderEvents {
 		glPushMatrix();
 		glTranslated(-RenderManager.renderPosX, -RenderManager.renderPosY, -RenderManager.renderPosZ);
 		glDisable(GL_DEPTH_TEST);
-		doRenderComponent(mb, comp, x, y, z, 0.4F);
+		doRenderComponent(comp, x, y, z, 0.4F);
 		glPopMatrix();
 		return true;
 	}
 
 	public static void renderMultiBlockOnPage(MultiBlock mb) {
 		glTranslated(-0.5, -0.5, -0.5);
-		blockAccess.update(Minecraft.getMinecraft().theWorld, mb, mb.anchorX, mb.anchorY, mb.anchorZ);
+		blockAccess.update(null, mb, mb.anchorX, mb.anchorY, mb.anchorZ);
 		mc.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
 		for(MultiBlockComponent comp: mb.getComponents()) {
 			ChunkCoordinates pos = comp.getRelativePosition();
-			doRenderComponent(mb, comp, pos.posX + mb.anchorX, pos.posY + mb.anchorY, pos.posZ + mb.anchorZ, 1);
+			doRenderComponent(comp, pos.posX + mb.anchorX, pos.posY + mb.anchorY, pos.posZ + mb.anchorZ, 1);
 		}
 	}
 
-	private static void doRenderComponent(MultiBlock mb, MultiBlockComponent comp, int x, int y, int z, float alpha) {
+	private static void doRenderComponent(MultiBlockComponent comp, int x, int y, int z, float alpha) {
 		Block block = comp.getBlock();
 		int meta = comp.getMeta();
 		if(block == null) {
@@ -159,16 +157,29 @@ public final class DHMultiBlockRenderEvents {
 				renderBlock(x, y, z, alpha, comp, block, meta);
 			}
 			else {
-				renderBlockSpecial(comp, x, y, z, alpha, block);
+				renderBlockSpecial(comp, x, y, z, alpha, block, meta);
 			}
 		}
-		renderTileEntity(x, y, z, comp, block, meta);
+		if(blockAccess.hasBlockAccess()) {
+			// render in-world
+			renderTileEntity(x, y, z, comp, block, meta);
+		}
+		else {
+			// render in-book, using world as buffer for block data, so need to be placed at player in order to ensure that chunk is exists
+			int
+					posX = MathHelper.floor_double(mc.thePlayer.posX),
+					posY = MathHelper.floor_double(mc.thePlayer.posY),
+					posZ = MathHelper.floor_double(mc.thePlayer.posZ);
+			glTranslated(-posX, -posY, -posZ);
+			glTranslated(x, y, z);
+			renderTileEntity(posX, posY, posZ, comp, block, meta);
+		}
 		glColor4f(1F, 1F, 1F, 1F);
 		glEnable(GL_DEPTH_TEST);
 		glPopMatrix();
 	}
 
-	private static void renderBlockSpecial(MultiBlockComponent comp, int x, int y, int z, float alpha, Block block) {
+	private static void renderBlockSpecial(MultiBlockComponent comp, int x, int y, int z, float alpha, Block block, int meta) {
 		int color;
 		try {
 			color = block.colorMultiplier(blockAccess, x, y, z);
@@ -182,6 +193,10 @@ public final class DHMultiBlockRenderEvents {
 		glColor4f(red, green, blue, alpha);
 		IBlockAccess old = blockRender.blockAccess;
 		blockRender.blockAccess = blockAccess;
+		boolean fake = !blockAccess.hasBlockAccess();
+		if(fake) {
+			blockAccess.setOriginal(mc.theWorld);
+		}
 		blockRender.renderAllFaces = true;
 		if(block.getRenderType() == 0) { // handle witchery reshaped blocks
 			try {
@@ -208,6 +223,9 @@ public final class DHMultiBlockRenderEvents {
 		}
 		blockRender.renderAllFaces = false;
 		blockRender.blockAccess = old;
+		if(fake) {
+			blockAccess.setOriginal(null);
+		}
 	}
 
 	private static void renderInventory(Block block) {
@@ -275,7 +293,7 @@ public final class DHMultiBlockRenderEvents {
 		if(!TileEntityRendererDispatcher.instance.hasSpecialRenderer(tile)) {
 			return;
 		}
-		
+
 		// setting the tile and world properties
 		tile.setWorldObj(w);
 		tile.blockMetadata = meta;
@@ -285,15 +303,10 @@ public final class DHMultiBlockRenderEvents {
 		if(comp.tag != null) {
 			tile.readFromNBT(comp.tag);
 		}
-		
-		Block trueBlock = w.getBlock(x,y,z);
-		int trueMeta = w.getBlockMetadata(x,y,z);
-		int flag = 0;
-		Chunk chunk = w.getChunkFromChunkCoords(x >> 4, z >> 4);
-		if(!chunk.func_150807_a(x & 15, y, z & 15, block, meta)) {
-			chunk.func_150807_a(x & 15, y, z & 15, trueBlock, trueMeta);
-		}
-		
+		// setting block to buffer world
+		Block trueBlock = w.getBlock(x, y, z);
+		int trueMeta = w.getBlockMetadata(x, y, z);
+		setBlockSilent(w, x, y, z, block, meta);
 		// actually render
 		try {
 			glPushMatrix();
@@ -301,11 +314,14 @@ public final class DHMultiBlockRenderEvents {
 			glDisable(GL_LIGHTING);
 		}
 		finally {
-			chunk.func_150807_a(x & 15, y, z & 15, trueBlock, trueMeta);
+			setBlockSilent(w, x, y, z, trueBlock, trueMeta);
 			glPopMatrix();
 			mc.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
 		}
-		
+	}
+	
+	private static void setBlockSilent(World world, int x, int y, int z, Block block, int meta) {
+		world.getChunkFromChunkCoords(x >> 4, z >> 4).func_150807_a(x & 15, y, z & 15, block, meta);
 	}
 
 }

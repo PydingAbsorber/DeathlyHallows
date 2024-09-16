@@ -77,16 +77,24 @@ public class MultiBlockBlockAccess implements IBlockAccess {
 	}
 
 	public void update(IBlockAccess access, MultiBlock mb, int anchorX, int anchorY, int anchorZ) {
-		originalBlockAccess = access;
 		multiblock = mb;
 		this.anchorX = anchorX;
 		this.anchorY = anchorY;
 		this.anchorZ = anchorZ;
-		hasBlockAccess = access != null;
+		setOriginal(access);
 	}
 
 	protected MultiBlockComponent getComponent(int x, int y, int z) {
 		return multiblock.getComponentForLocation(x - anchorX, y - anchorY, z - anchorZ);
 	}
 
+	public boolean hasBlockAccess() {
+		return hasBlockAccess;
+	}
+
+	public void setOriginal(IBlockAccess originalBlockAccess) {
+		this.originalBlockAccess = originalBlockAccess;
+		hasBlockAccess = originalBlockAccess != null;
+	}
+	
 }
