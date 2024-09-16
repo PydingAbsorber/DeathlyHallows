@@ -1,6 +1,5 @@
 package com.pyding.deathlyhallows.events;
 
-import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.multiblocks.MultiBlock;
 import com.pyding.deathlyhallows.multiblocks.MultiBlockBlockAccess;
 import com.pyding.deathlyhallows.multiblocks.MultiBlockComponent;
@@ -156,7 +155,7 @@ public final class DHMultiBlockRenderEvents {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		if(block.getRenderType() != -1) {
-			if(block.isOpaqueCube() || block.renderAsNormalBlock()) {
+			if(block.isOpaqueCube() || block.renderAsNormalBlock() || !comp.doFancyRender) {
 				renderBlock(x, y, z, alpha, comp, block, meta);
 			}
 			else {
@@ -192,8 +191,7 @@ public final class DHMultiBlockRenderEvents {
 				glPopMatrix();
 			}
 			catch(Exception ignored) {
-				DeathlyHallows.LOG.info(block.getUnlocalizedName());
-				//comp.doFancyRender = false;
+				comp.doFancyRender = false;
 			}
 		}
 		else { // vanilla blocks or forge will handle
@@ -204,8 +202,7 @@ public final class DHMultiBlockRenderEvents {
 				blockRender.renderBlockByRenderType(block, x, y, z);
 			}
 			catch(Exception ignored) {
-				DeathlyHallows.LOG.info(block.getUnlocalizedName());
-				//comp.doFancyRender = false;
+				comp.doFancyRender = false;
 			}
 			t.draw();
 		}
