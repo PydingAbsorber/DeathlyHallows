@@ -6,8 +6,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
+import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -94,20 +96,19 @@ public class MultiBlock {
 				addStack(stack);
 			}
 		}
+		this.materials.sort(Comparator.comparingInt(s -> -s.stackSize));
 	}
 
 	private void addStack(ItemStack stack) {
 		if(stack == null) {
 			return;
 		}
-
 		for(ItemStack oStack: materials) {
-			if(oStack.isItemEqual(stack) && ItemStack.areItemStackTagsEqual(oStack, stack)) {
+			if(OreDictionary.itemMatches(stack, oStack, false) && ItemStack.areItemStackTagsEqual(oStack, stack)) {
 				oStack.stackSize += stack.stackSize;
 				return;
 			}
 		}
-
 		materials.add(stack);
 	}
 

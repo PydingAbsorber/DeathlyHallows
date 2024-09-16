@@ -3,13 +3,13 @@ package com.pyding.deathlyhallows.multiblocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.BlockStairs;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
-import net.minecraftforge.oredict.OreDictionary;
 
 import java.util.Set;
 
@@ -71,7 +71,18 @@ public class MultiBlockComponent {
 		if(block instanceof BlockStairs || block instanceof BlockSlab) {
 			return new ItemStack[]{new ItemStack(block, 1, -1)};
 		}
-		return new ItemStack[]{new ItemStack(block, 1, meta == -1 ? OreDictionary.WILDCARD_VALUE : meta)};
+		int meta = this.meta == -1 ? 0 : this.meta;
+		ItemStack ret;
+		if(Item.getItemFromBlock(block) == null) {
+			ret = new ItemStack(block.getItem(null, 0, 0, 0), 1, meta);
+		}
+		else {
+			ret = new ItemStack(block, 1, meta);
+		}
+		if(!ret.getHasSubtypes()) {
+			ret.setItemDamage(0);
+		}
+		return new ItemStack[] {ret};
 	}
 
 	public void rotate(double angle) {
