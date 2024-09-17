@@ -32,7 +32,6 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
@@ -239,23 +238,7 @@ public class DHUtils {
 			return;
 		}
 
-		float damage = (float)(player.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue() * 20);
-		float radius = 4;
-		DamageSource source = DamageSource.causePlayerDamage(player).setMagicDamage();
-		if(type == 2) {
-			damage = damage * 20 + 1000;
-			radius *= 2;
-			source.setDamageIsAbsolute();
-		}
-		else if(type == 3) {
-			damage = damage * 20 + 5000;
-			radius *= 3;
-			source.setDamageBypassesArmor().setDamageIsAbsolute();
-		}
-		else {
-			source.setProjectile();
-		}
-		EntityEmpoweredArrow arrow = new EntityEmpoweredArrow(player.getEntityWorld(), player, damage, radius, source, type);
+		EntityEmpoweredArrow arrow = new EntityEmpoweredArrow(player.getEntityWorld(), player, type);
 		player.worldObj.spawnEntityInWorld(arrow);
 		if(type == 1) {
 			player.worldObj.playSoundAtEntity(player, "dh:spell.arrow", 1F, 1F);
@@ -395,12 +378,16 @@ public class DHUtils {
 		) {
 			return;
 		}
-		DeathlyProperties props = DeathlyProperties.get(player);
-		EntityLivingBase bound = null;
-		if(props != null) {
-			bound = props.getSource();
+		if(player != null) {
+			DeathlyProperties props = DeathlyProperties.get(player);
+			EntityLivingBase bound;
+			if(props != null) {
+				bound = props.getSource();
+				deadInside(victim, bound != null ? bound : player);
+				return;
+			}
 		}
-		deadInside(victim, bound != null ? bound : player);
+		deadInside(victim, player);
 	}
 
 	public static void deadInside(EntityLivingBase entity, EntityLivingBase attacker) { // FOX! DIE!

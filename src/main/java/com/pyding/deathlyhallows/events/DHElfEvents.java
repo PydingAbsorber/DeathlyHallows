@@ -41,15 +41,17 @@ public final class DHElfEvents {
 
 	private static final DHElfEvents INSTANCE = new DHElfEvents();
 
-	private static long firstShot(EntityPlayer player){
-		if(ElfUtils.getElfLevel(player) >= 10)
+	private static long firstShot(EntityPlayer player) {
+		if(ElfUtils.getElfLevel(player) >= 10) {
 			return 1000;
+		}
 		return 2000;
 	}
 
-	private static long secondShot(EntityPlayer player){
-		if(ElfUtils.getElfLevel(player) >= 10)
+	private static long secondShot(EntityPlayer player) {
+		if(ElfUtils.getElfLevel(player) >= 10) {
 			return 2000;
+		}
 		return 4000;
 	}
 
@@ -62,9 +64,9 @@ public final class DHElfEvents {
 	}
 
 	private static final String charReplace = "\\s+|§[0-9a-r]|[`~!@#$%^&*()_+\\\\;',./{}|:\"<>?\\[\\]]";
-	
+
 	@SubscribeEvent
-	public void elfTheCharmcaster(ServerChatEvent e){
+	public void elfTheCharmcaster(ServerChatEvent e) {
 		if(ElfUtils.getElfLevel(e.player) < 2 || !ItemElderWand.isBinding(e.player)) {
 			return;
 		}
@@ -73,7 +75,7 @@ public final class DHElfEvents {
 			return;
 		}
 		String msg = e.message.toLowerCase().replaceAll(charReplace, "").replace("witchery.pott.", "");
-		for(Map.Entry<ByteBuffer, SymbolEffect> effect : EffectRegistry.instance().effects.entrySet()) {
+		for(Map.Entry<ByteBuffer, SymbolEffect> effect: EffectRegistry.instance().effects.entrySet()) {
 			String spell = effect.getValue().getLocalizedName().toLowerCase().replaceAll(charReplace, "");
 			if(msg.contains(spell)) {
 				ItemElderWand.setBinding(e.player, false);
@@ -84,7 +86,7 @@ public final class DHElfEvents {
 			}
 		}
 	}
-	
+
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void elfTheLiveEnjoyer(LivingEvent.LivingUpdateEvent e) {
 		if(e.entity.worldObj.isRemote || !(e.entity instanceof EntityPlayer)) {
@@ -119,8 +121,9 @@ public final class DHElfEvents {
 		if(ElfUtils.getElfLevel(e.entityPlayer) >= 3 && (Infusion.getCurrentEnergy(e.entityPlayer) > DHConfig.arrowCost || e.entityPlayer.capabilities.isCreativeMode)) {
 			entityTag.setLong("DHArrow", System.currentTimeMillis());
 			entityTag.setBoolean("DHArrowShow", true);
-			if(ElfUtils.getElfLevel(e.entityPlayer) >= 7 && (Infusion.getCurrentEnergy(e.entityPlayer) > DHConfig.betterArrowCost || e.entityPlayer.capabilities.isCreativeMode))
+			if(ElfUtils.getElfLevel(e.entityPlayer) >= 7 && (Infusion.getCurrentEnergy(e.entityPlayer) > DHConfig.betterArrowCost || e.entityPlayer.capabilities.isCreativeMode)) {
 				entityTag.setBoolean("DHArrowShow2", true);
+			}
 		}
 	}
 
@@ -133,33 +136,38 @@ public final class DHElfEvents {
 		tag.setLong("DHArrow", 0);
 		int elfLevel = ElfUtils.getElfLevel(props);
 		long perfectTime;
-		if(elfLevel >= 10)
+		if(elfLevel >= 10) {
 			perfectTime = secondShot(p) + 200;
-		else perfectTime = secondShot(p) + 150;
+		}
+		else {
+			perfectTime = secondShot(p) + 150;
+		}
 		if(elfLevel >= 7 && (time > secondShot(p) || tag.getInteger("DHShot") > 0)) {
 			if(tag.getInteger("DHShot") > 0) {
-				props.setShots(props.getShots()+1);
+				props.setShots(props.getShots() + 1);
 				DHUtils.spawnArrow(p, 3);
 				tag.setInteger("DHShot", tag.getInteger("DHShot") - 1);
 				e.setCanceled(true);
 			}
 			else if(time < perfectTime) {
-				props.setShots(props.getShots()+1);
+				props.setShots(props.getShots() + 1);
 				DHUtils.spawnArrow(p, 3);
 				tag.setInteger("DHShot", 5);
 				e.setCanceled(true);
 			}
-			else if(Infusion.getCurrentEnergy(e.entityPlayer) > DHConfig.betterArrowCost || e.entityPlayer.capabilities.isCreativeMode){
-				if(!e.entityPlayer.capabilities.isCreativeMode)
-					Infusion.setCurrentEnergy(e.entityPlayer, Infusion.getCurrentEnergy(p)-DHConfig.betterArrowCost);
+			else if(Infusion.getCurrentEnergy(e.entityPlayer) > DHConfig.betterArrowCost || e.entityPlayer.capabilities.isCreativeMode) {
+				if(!e.entityPlayer.capabilities.isCreativeMode) {
+					Infusion.setCurrentEnergy(e.entityPlayer, Infusion.getCurrentEnergy(p) - DHConfig.betterArrowCost);
+				}
 				DHUtils.spawnArrow(p, 2);
 				e.setCanceled(true);
 			}
 			return;
 		}
 		if(elfLevel >= 3 && time > firstShot(p) && (Infusion.getCurrentEnergy(e.entityPlayer) > DHConfig.arrowCost || e.entityPlayer.capabilities.isCreativeMode)) {
-			if(!e.entityPlayer.capabilities.isCreativeMode)
-				Infusion.setCurrentEnergy(e.entityPlayer, Infusion.getCurrentEnergy(p)-DHConfig.arrowCost);
+			if(!e.entityPlayer.capabilities.isCreativeMode) {
+				Infusion.setCurrentEnergy(e.entityPlayer, Infusion.getCurrentEnergy(p) - DHConfig.arrowCost);
+			}
 			DHUtils.spawnArrow(p, 1);
 			e.setCanceled(true);
 		}
@@ -252,7 +260,7 @@ public final class DHElfEvents {
 		}
 		if(elfLevel == 10 && e.entityLiving instanceof EntityPlayer) {
 			e.entityLiving.hurtResistantTime = 0;
-			e.entityLiving.attackEntityFrom(DamageSource.outOfWorld,DHUtils.fuckMagic((EntityPlayer)e.entityLiving, 0.1f));
+			e.entityLiving.attackEntityFrom(DamageSource.outOfWorld, DHUtils.fuckMagic((EntityPlayer)e.entityLiving, 0.1f));
 		}
 	}
 
@@ -280,5 +288,5 @@ public final class DHElfEvents {
 			}
 		}
 	}
-	
+
 }

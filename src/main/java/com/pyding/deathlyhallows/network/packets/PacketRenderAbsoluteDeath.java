@@ -21,9 +21,9 @@ public class PacketRenderAbsoluteDeath implements IMessage, IMessageHandler<Pack
 		
 	}
 
-	public PacketRenderAbsoluteDeath(NBTTagCompound nbt, int identifier) {
-		nbtData = nbt;
-		id = identifier;
+	public PacketRenderAbsoluteDeath(EntityAbsoluteDeath death) {
+		nbtData = death.getResistsData();
+		id = death.getEntityId();
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class PacketRenderAbsoluteDeath implements IMessage, IMessageHandler<Pack
 		}
 		Entity entity = Minecraft.getMinecraft().theWorld.getEntityByID(message.id);
 		if(entity instanceof EntityAbsoluteDeath) {
-			entity.getEntityData().setTag("dhData", message.nbtData);
+			((EntityAbsoluteDeath)entity).setResists(message.nbtData);
 		}
 		return null;
 	}

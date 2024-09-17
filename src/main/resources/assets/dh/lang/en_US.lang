@@ -77,6 +77,10 @@ dh.chat.niceCream5=Have a wonderful day!
 dh.chat.niceCream6=Is this as sweet as you?
 dh.chat.niceCream7=Love yourself! I love you!
 dh.chat.structureComplete=Structure Complete!
+dh.chat.damageLog.damage=§rAmount: §5%s§r.
+dh.chat.damageLog.absorption=§rAmount after absorption: §5%s§r.
+dh.chat.damageLog.victim=§rDamage Source: §1%s; Victim: §7%s.
+dh.chat.damageLog.victimAndDealer=§rDamage Source: §1%s; Victim: §7%s; Dealer: §6%s§r.
 # Item tooltips
 dh.desc.elfToken=You have §9%d§7 Elf Level
 

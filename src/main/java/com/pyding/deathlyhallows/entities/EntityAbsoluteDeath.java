@@ -28,11 +28,14 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, IHandleDT {
@@ -105,6 +108,70 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 		return d1 > 1.0D - 0.025D / d0;
 	}
 
+	public enum EnumResists {
+
+		WITHER(source -> isDamageSourceTypeEquals(source, DamageSource.wither)),
+		EARTH(source -> isDamageSourceTypeEquals(source, DamageSource.fall) || isDamageSourceTypeEquals(source, DamageSource.inWall)),
+		WATER(source -> isDamageSourceTypeEquals(source, DamageSource.drown)),
+		FIRE(DamageSource::isFireDamage),
+		MAGIC(DamageSource::isMagicDamage),
+		VOID(source -> isDamageSourceTypeEquals(source, DamageSource.outOfWorld)),
+		ABSOLUTE(DamageSource::isDamageAbsolute),
+		GENERIC(source -> true);
+
+		private final Predicate<DamageSource> condition;
+
+		private final ResourceLocation shieldTexture;
+
+		EnumResists(Predicate<DamageSource> condition) {
+			this.condition = condition;
+			this.shieldTexture = new ResourceLocation(DeathlyHallows.MODID, "textures/particles/shields/" + name().toLowerCase() + ".png");
+		}
+		
+		public boolean isResisted(DamageSource source) {
+			return condition.test(source);
+		}
+
+		public ResourceLocation getShieldTexture() {
+			return shieldTexture;
+		}
+
+		public String getDataKey() {
+			return name().toLowerCase() + "block";
+		}
+		
+		private static boolean isDamageSourceTypeEquals(DamageSource s1, DamageSource s2) {
+			if(s1 == null) {
+				return s2.damageType.equals(DamageSource.generic.damageType);
+			}
+			return s1 == s2 
+					|| (s1.damageType == null && s2.damageType == null) 
+					|| s2.damageType != null && s2.damageType.equals(s1.damageType);
+		}
+	}
+	
+	private static final String DEATH_RESISTANCES_TAG = "dhDeathResistances";
+	
+	public NBTTagCompound getResistsData() {
+		NBTTagCompound entityTag = getEntityData();
+		if(!entityTag.hasKey(DEATH_RESISTANCES_TAG)) {
+			setResists(new NBTTagCompound());
+		}
+		return entityTag.getCompoundTag(DEATH_RESISTANCES_TAG);
+	}
+	
+	public void setResists(NBTTagCompound resistsTag) {
+		getEntityData().setTag(DEATH_RESISTANCES_TAG, resistsTag);
+	}
+
+	public void setResist(EntityAbsoluteDeath.EnumResists type, int amount) {
+		getResistsData().setInteger(type.getDataKey(), MathHelper.clamp_int(amount, 0, 100));
+	}
+
+	public int getResist(EntityAbsoluteDeath.EnumResists type) {
+		return getResistsData().getInteger(type.getDataKey());
+	}
+
 	@Override
 	public void onLivingUpdate() {
 		if(this.lastEntityToAttack != super.entityToAttack) {
@@ -157,41 +224,15 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 				}
 			}
 		}
-		int block = 0;
-		if(getEntityData().getInteger("fireblock") >= 100) {
-			block++;
-		}
-		if(getEntityData().getInteger("waterblock") >= 100) {
-			block++;
-		}
-		if(getEntityData().getInteger("earthblock") >= 100) {
-			block++;
-		}
-		if(getEntityData().getInteger("genericblock") >= 100) {
-			block++;
-		}
-		if(getEntityData().getInteger("magicblock") >= 100) {
-			block++;
-		}
-		if(getEntityData().getInteger("voidblock") >= 100) {
-			block++;
-		}
-		if(getEntityData().getInteger("absoluteblock") >= 100) {
-			block++;
-		}
-		if(getEntityData().getInteger("witherblock") >= 100) {
-			block++;
-		}
-		if(block >= 7) {
-			NBTTagCompound tag = getEntityData();
-			tag.setInteger("fireblock", 0);
-			tag.setInteger("waterblock", 0);
-			tag.setInteger("earthblock", 0);
-			tag.setInteger("genericblock", 0);
-			tag.setInteger("magicblock", 0);
-			tag.setInteger("voidblock", 0);
-			tag.setInteger("absoluteblock", 0);
-			tag.setInteger("witherblock", 0);
+		final int shieldAmount = 90;
+		// filter().count() FUCKING SUCKS!!!!! embrace mapToInt(e -> f(e) ? 1 : 0).sum()!!!!
+		int block = Arrays.stream(EntityAbsoluteDeath.EnumResists.values())
+						   .mapToInt(resist -> getResist(resist) >= shieldAmount ? 1 : 0)
+						   .sum();
+		if(block > 3 + DHConfig.deathDifficulty) {
+			for(EntityAbsoluteDeath.EnumResists resist: EntityAbsoluteDeath.EnumResists.values()) {
+				setResist(resist, 0);
+			}
 			if(isAggressive) {
 				for(EntityPlayer p: entities) {
 					if(p.capabilities.isCreativeMode) {
@@ -209,6 +250,9 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 			makePainfully();
 		}
 		else {
+			noClip = false;
+		}
+		if(getLastAttacker() == null || getLastAttacker().isDead) {
 			noClip = false;
 		}
 		super.onLivingUpdate();
@@ -246,22 +290,28 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 		player.attackEntityFrom(source, amount);
 	}
 
+	private boolean wasHitByCreativePlayer = false;
+	
 	public void makePainfully() {
 		if(getAITarget() == null || !(getAITarget() instanceof EntityPlayer)) {
 			return;
 		}
 		EntityPlayer player = (EntityPlayer)getAITarget();
 		if(player.capabilities.isCreativeMode) {
-			ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "dh.chat.creative");
+			if(!wasHitByCreativePlayer) {
+				ChatUtil.sendTranslated(EnumChatFormatting.RED, player, "dh.chat.creative");
+				wasHitByCreativePlayer = true;
+				// reload means reset, but that's how it should work
+			}
 			noClip = true;
-			teleportRandomly();
+			tryTeleportRandomly();
 			rage = 0;
 			return;
 		}
 
 		double speed = 2;
-		EntityLivingBase target = this.getAITarget();
-		double distanceToTarget = this.getDistanceToEntity(target);
+		EntityLivingBase target = getAITarget();
+		double distanceToTarget = getDistanceToEntity(target);
 		if(distanceToTarget > 2) {
 			Vec3 targetPosition = Vec3.createVectorHelper(target.posX, target.posY, target.posZ);
 			double angle = Math.atan2(targetPosition.zCoord - posZ, targetPosition.xCoord - posX);
@@ -271,7 +321,7 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 			this.motionZ = motionZ;
 		}
 		else {
-			teleportRandomly();
+			tryTeleportRandomly();
 			motionX = 0;
 			motionZ = 0;
 			swingItem();
@@ -284,11 +334,29 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 		noClip = true;
 	}
 
-	public void teleportRandomly() {
-		this.teleportTo(
-				posX + (rand.nextDouble() - 0.5D) * 32.0D,
-				posY + rand.nextInt(64) - 32,
-				posZ + (rand.nextDouble() - 0.5D) * 32.0D
+	public void tryTeleportRandomly() {
+		if(rand.nextDouble() > 0.9D) {
+			teleportRandomly();
+			return;
+		}
+		if(getLastAttacker() != null && rand.nextDouble() > 0.8D) {
+			teleportToEntity(getLastAttacker());
+			return;
+		}
+		if(getLastAttacker() != null && rand.nextDouble() > 0.4D) {
+			List<EntityPlayer> players = DHUtils.getEntitiesAround(EntityPlayer.class, this, 16);
+			if(players.size() > 0) {
+				teleportToEntity(players.get(rand.nextInt(players.size())));
+			}
+		}
+	}
+
+	protected void teleportRandomly() {
+		final int twiceRange = 32;
+		teleportTo(
+				posX + (rand.nextDouble() - 0.5D) * twiceRange,
+				posY + 0.5D * (rand.nextDouble() - 0.5D) * twiceRange,
+				posZ + (rand.nextDouble() - 0.5D) * twiceRange
 		);
 	}
 

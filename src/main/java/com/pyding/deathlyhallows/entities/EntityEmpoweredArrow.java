@@ -4,9 +4,11 @@ import com.pyding.deathlyhallows.utils.DHUtils;
 import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
@@ -22,23 +24,37 @@ public class EntityEmpoweredArrow extends Entity {
 	private float 
 			damage = 0,
 			radius = 0;
-	private DamageSource source = null;
+	private final DamageSource source;
 	private int type = 0;
 
 	public EntityEmpoweredArrow(World world) {
 		super(world);
 		setSize(0.5F, 0.5F);
+		source = new EntityDamageSourceIndirect("arrow", this, this).setProjectile();
 	}
 
-	public EntityEmpoweredArrow(World world, EntityPlayer shooter, float damage, float radius, DamageSource source, int type) {
-		this(world);
-		setSize(0.5F, 0.5F);
+	public EntityEmpoweredArrow(World world, EntityPlayer shooter, int type) {
+		super(world);
 		setShooter(shooter);
 		setPositionAndRotation(shooter.posX, shooter.posY + shooter.eyeHeight, shooter.posZ, shooter.rotationYaw, shooter.rotationPitch);
 		setRotation(rotationYaw, rotationPitch);
-		this.damage = damage;
-		this.radius = radius;
-		this.source = source;
+		damage = (float)(shooter.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue() * 20);
+		radius = 4;
+		source = DamageSource.causePlayerDamage(shooter).setMagicDamage();
+		// TODO NERF
+		if(type == 2) {
+			damage = damage * 20 + 1000;
+			radius *= 2;
+			source.setDamageIsAbsolute();
+		}
+		else if(type == 3) {
+			damage = damage * 20 + 5000;
+			radius *= 3;
+			source.setDamageBypassesArmor().setDamageIsAbsolute();
+		}
+		else {
+			source.setProjectile();
+		}
 		this.type = type;
 	}
 
@@ -62,10 +78,8 @@ public class EntityEmpoweredArrow extends Entity {
 	@Override
 	public void onEntityUpdate() {
 		super.onEntityUpdate();
-		if(ticksExisted > 200) {
+		if(ticksExisted > 200 || getShooter() == null) {
 			kill();
-		}
-		if(getShooter() == null) {
 			return;
 		}
 		switch(type) {
@@ -113,17 +127,18 @@ public class EntityEmpoweredArrow extends Entity {
 
 	private void attackInRadius() {
 		for(EntityLivingBase entity: DHUtils.getEntitiesAround(EntityLivingBase.class, this, radius)) {
-			if(entity == getShooter()) {
+			if(entity == getShooter() || entity.isDead) {
 				continue;
 			}
 			int hrt = entity.hurtResistantTime;
 			entity.hurtResistantTime = 0;
 			entity.attackEntityFrom(source, damage);
 			entity.hurtResistantTime = hrt;
-			if(list.size() == 30) {
+			if(list.size() >= 30 && getShooter() != null) {
 				DeathlyProperties props = DeathlyProperties.get(shooter);
-				props.setMobsKilled(props.getMobsKilled() + 1);
-				list.add(entity.getEntityId());			
+				if(props != null) {
+					props.setMobsKilled(props.getMobsKilled() + 1);
+				}
 			}
 			if(!list.contains(entity.getEntityId()))
 				list.add(entity.getEntityId());

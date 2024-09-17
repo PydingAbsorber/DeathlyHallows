@@ -2,6 +2,7 @@ package com.pyding.deathlyhallows.utils.properties;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketPropertiesCosmetic;
 import com.pyding.deathlyhallows.network.packets.PacketPropertiesToClient;
@@ -164,6 +165,7 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 		if(player.worldObj.isRemote) {
 			return;
 		}
+		DeathlyHallows.LOG.info("sending" + p.getCommandSenderName() + " data to " + p.getCommandSenderName());
 		DHPacketProcessor.sendToPlayer(new PacketPropertiesCosmetic(player), p);
 	}
 
@@ -333,10 +335,7 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 	}
 
 	public int getRites() {
-		int count = 0;
-		for(String element: rites.split(","))
-			count++;
-		return count;
+		return rites.split(",").length;
 	}
 
 	public void addRite(int riteId) {
@@ -345,10 +344,7 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 	}
 
 	public int getSpellsUsed() {
-		int count = 0;
-		for(String element: spells.split(","))
-			count++;
-		return count;
+		return spells.split(",").length;
 	}
 
 	public void addSpell(int spellId) {

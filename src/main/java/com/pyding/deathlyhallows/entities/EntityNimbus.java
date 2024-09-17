@@ -33,9 +33,9 @@ public class EntityNimbus extends EntityBroom {
 
 	@Override
 	protected void entityInit() {
-		// override withcery reg cuz need to set another default color
+		// override witchery reg cuz need to set another default color
 		dataWatcher.addObject(WATCHER_NAME, "");
-		dataWatcher.addObject(WATCHER_COLOR, -1);
+		dataWatcher.addObject(WATCHER_COLOR, 0x704020);
 		dataWatcher.addObject(WATCHER_TIMESINCEHIT, 0);
 		dataWatcher.addObject(WATCHER_FORWARD, 1);
 		dataWatcher.addObject(WATCHER_DAMAGE, 0F);
@@ -64,7 +64,6 @@ public class EntityNimbus extends EntityBroom {
 				&& Vec3.createVectorHelper(motionX, motionY, motionZ)
 					   .squareDistanceTo(0, 0,0) > 0.01D
 		) {
-			double speed  = Vec3.createVectorHelper(motionX, motionY, motionZ).squareDistanceTo(0, 0,0);
 			float yaw = (float)Math.PI / 180F * rotationYaw;
 			if(ticksExisted % 2 == 0) {
 				Witchery.proxy.showParticleEffect(worldObj,

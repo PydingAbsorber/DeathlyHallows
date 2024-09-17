@@ -16,6 +16,7 @@ import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.blocks.DHBlocks;
 import com.pyding.deathlyhallows.entities.EntityAbsoluteDeath;
 import com.pyding.deathlyhallows.entities.EntityNimbus;
@@ -131,12 +132,16 @@ public final class DHEvents {
 
 	@SubscribeEvent // gets cosmetics data from all dudes who already on server 
 	public void onJoinSyncCosmetic(PlayerEvent.PlayerLoggedInEvent e) {
+		DeathlyHallows.LOG.info(e.player.getCommandSenderName() + "fired logging");
 		@SuppressWarnings("unchecked")
 		List<EntityPlayer> prayers = (List<EntityPlayer>)e.player.worldObj.playerEntities;
 		for(EntityPlayer p: prayers) {
+			DeathlyHallows.LOG.info("Chosen player: "+p.getCommandSenderName());
 			if(p == e.player) {
+				DeathlyHallows.LOG.info("But no need to sync yourself");
 				continue;
 			}
+			DeathlyHallows.LOG.info("Chosen player: "+p.getCommandSenderName());
 			DeathlyProperties props = DeathlyProperties.get(p);
 			if(props != null) {
 				props.syncToClient(e.player);
@@ -551,33 +556,7 @@ public final class DHEvents {
 			event.drops.addAll(drops);
 		}
 	}
-
-
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void highestHit(LivingHurtEvent e) {
-		if(e.entity instanceof EntityPlayer) {
-			EntityPlayer p = (EntityPlayer)e.entity;
-			DeathlyProperties props = DeathlyProperties.get(p);
-			if(props.getDamageLog()) {
-				if(e.source.getEntity() != null) {
-					ChatUtil.sendPlain(p, "Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName() + " Dealer: " + e.source.getEntity().getCommandSenderName());
-				}
-				else {
-					ChatUtil.sendPlain(p, "Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName());
-				}
-				ChatUtil.sendPlain(p, "Amount: §5" + e.ammount);
-			}
-		}
-		if(e.source.getEntity() != null && e.source.getEntity() instanceof EntityPlayer) {
-			EntityPlayer ps = (EntityPlayer)e.source.getEntity();
-			DeathlyProperties props = DeathlyProperties.get(ps);
-			if(props.getDamageLog()) {
-				ChatUtil.sendPlain(ps, "Damage Source: " + e.source.damageType + " §7Victim: " + e.entity.getCommandSenderName() + " Dealer: " + e.source.getEntity().getCommandSenderName());
-				ChatUtil.sendPlain(ps, "Amount: §5" + e.ammount);
-			}
-		}
-	}
-
+	
 	@SubscribeEvent
 	public void hurt(LivingSetAttackTargetEvent e) {
 		if(!(e.target instanceof EntityPlayer)) {
@@ -685,35 +664,60 @@ public final class DHEvents {
 			tag.setInteger("DHMagicAvenger", tag.getInteger("DHMagicAvenger") + 1);
 		}
 	}
+	
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void highestHit(LivingHurtEvent e) {
+		if(e.entity instanceof EntityPlayer) {
+			tryDamageLogFor((EntityPlayer)e.entity, e.source, e.ammount);
+		}
+		if(e.source.getEntity() != null && e.source.getEntity() instanceof EntityPlayer) {
+			tryDamageLogFor((EntityPlayer)e.source.getEntity(), e.source, e.ammount);
+		}
+	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void lowestHit(LivingHurtEvent e) {
 		if(e.entity instanceof EntityPlayer) {
 			EntityPlayer p = (EntityPlayer)e.entity;
-			DeathlyProperties props = DeathlyProperties.get(p);
-			double afterDamage = ISpecialArmor.ArmorProperties.ApplyArmor(p, p.inventory.armorInventory, e.source, e.ammount);
-			if(props.getDamageLog()) {
-				p.addChatMessage(new ChatComponentText("Amount after absorption: §5" + afterDamage));
-			}
+			float afterDamage = getAbsorption(p, e.source, e.ammount);
+			TryAndGetAbsorptionLog(p, afterDamage);
 			if(p.getEntityData().getBoolean("adaptiveDamage")) {
 				p.getEntityData().setBoolean("adaptiveDamage", false);
 				p.getEntityData().setBoolean("absorbedDamage", afterDamage < 7);
 			}
 		}
-		if(e.source.getEntity() != null && e.source.getEntity() instanceof EntityPlayer && e.entity instanceof EntityLivingBase) {
-			EntityLivingBase entity = (EntityLivingBase)e.entity;
+		if(e.source.getEntity() != null 
+				&& e.source.getEntity() instanceof EntityPlayer 
+				&& e.entity instanceof EntityLivingBase
+		) {
 			EntityPlayer playerSource = (EntityPlayer)e.source.getEntity();
-			DeathlyProperties props = DeathlyProperties.get(playerSource);
-			if(props.getDamageLog()) {
-				if(entity instanceof EntityPlayer) {
-					EntityPlayer p = (EntityPlayer)entity;
-					double afterDamage = ISpecialArmor.ArmorProperties.ApplyArmor(p, p.inventory.armorInventory, e.source, e.ammount);
-					playerSource.addChatMessage(new ChatComponentText("Amount after absorption: §5" + afterDamage));
-				}
-				playerSource.addChatMessage(new ChatComponentText("Amount after absorption: §5" + e.ammount));
-			}
+			TryAndGetAbsorptionLog(playerSource, getAbsorption(playerSource, e.source, e.ammount));
 		}
+	}
 
+	private static float getAbsorption(EntityPlayer p, DamageSource source, float amount) {
+		return ISpecialArmor.ArmorProperties.ApplyArmor(p, p.inventory.armorInventory, source, amount);
+	}
+	
+	private static void TryAndGetAbsorptionLog(EntityPlayer p, float amount) {
+		DeathlyProperties props = DeathlyProperties.get(p);
+		if(props != null && props.getDamageLog()) {
+			ChatUtil.sendTranslated(p,"dh.chat.damageLog.absorption", amount);
+		}
+	}
+
+	private void tryDamageLogFor(EntityPlayer victim, DamageSource source, float amount) {
+		DeathlyProperties props = DeathlyProperties.get(victim);
+		if(props == null || !props.getDamageLog()) {
+			return;
+		}
+		if(source.getEntity() == null) {
+			ChatUtil.sendTranslated(victim, "dh.chat.damageLog.victim", source.damageType, victim.getCommandSenderName());
+		}
+		else {
+			ChatUtil.sendTranslated(victim, "dh.chat.damageLog.victimAndDealer", source.damageType, victim.getCommandSenderName(), source.getEntity().getCommandSenderName());
+		}
+		ChatUtil.sendTranslated(victim, "dh.chat.damageLog.damage", amount);
 	}
 
 	@SubscribeEvent
@@ -1063,9 +1067,17 @@ public final class DHEvents {
 
 	private static void activateNimbus(EntityPlayer p) {
 		if(p.ridingEntity == null) {
-			DHItems.nimbus.onItemRightClick(null, p.worldObj, p);
+			for(int i = 0; i < p.inventory.getSizeInventory(); ++i) {
+				ItemStack stack = p.inventory.getStackInSlot(i);
+				if(stack == null || stack.getItem() != DHItems.nimbus) {
+					continue;
+				}
+				DHItems.nimbus.onItemRightClick(stack, p.worldObj, p);
+				return;
+			}
+			return;
 		}
-		else if(p.ridingEntity instanceof EntityNimbus) {
+		if(p.ridingEntity instanceof EntityNimbus) {
 			EntityNimbus nimbus = (EntityNimbus)p.ridingEntity;
 			p.dismountEntity(nimbus);
 			nimbus.setDead();

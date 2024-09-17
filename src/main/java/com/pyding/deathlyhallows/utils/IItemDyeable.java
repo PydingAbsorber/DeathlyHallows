@@ -2,6 +2,7 @@ package com.pyding.deathlyhallows.utils;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 
@@ -12,7 +13,7 @@ public interface IItemDyeable {
 			return false;
 		}
 		NBTTagCompound tag = stack.getTagCompound();
-		return tag.hasKey("display", 10) && tag.getCompoundTag("display").hasKey("color", 3);
+		return tag.hasKey("display", Constants.NBT.TAG_COMPOUND) && tag.getCompoundTag("display").hasKey("color", Constants.NBT.TAG_INT);
 	}
 
 
@@ -24,7 +25,7 @@ public interface IItemDyeable {
 		}
 
 		NBTTagCompound sub = tag.getCompoundTag("display");
-		if(!tag.hasKey("display", 10)) {
+		if(!tag.hasKey("display", Constants.NBT.TAG_COMPOUND)) {
 			sub = new NBTTagCompound();
 			tag.setTag("display", sub);
 		}
@@ -36,9 +37,9 @@ public interface IItemDyeable {
 	}
 
 	default int getColor(ItemStack stack) {
-		if(stack.hasTagCompound()) {
+		if(stack != null && stack.hasTagCompound()) {
 			NBTTagCompound sub = stack.getTagCompound().getCompoundTag("display");
-			if(sub != null && sub.hasKey("color", 3)) {
+			if(sub.hasKey("color", Constants.NBT.TAG_INT)) {
 				return sub.getInteger("color");
 			}
 		}
