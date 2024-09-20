@@ -11,15 +11,11 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-
-import java.util.AbstractMap;
-import java.util.function.Predicate;
 
 @SuppressWarnings("unused")
 public final class DHDeathEvents {
@@ -55,10 +51,6 @@ public final class DHDeathEvents {
 		}
 	}
 
-	private static AbstractMap.SimpleEntry<String, Predicate<DamageSource>> entryFactory(String name, Predicate<DamageSource> condition) {
-		return new AbstractMap.SimpleEntry<>(name + "block", condition);
-	}
-	
 	private static void recalculateBlockAmount(EntityAbsoluteDeath death, EntityAbsoluteDeath.EnumResists resist, int points) {
 		int absorbedAmount = death.getResist(resist);
 		if(DHConfig.deathDifficulty < 2) {
@@ -88,7 +80,7 @@ public final class DHDeathEvents {
 		}
 		EntityAbsoluteDeath death = (EntityAbsoluteDeath)e.entity;
 		// resists calculation and sync
-		int points = Math.max(1, MathHelper.ceiling_float_int(100F * Math.min(e.ammount /  death.getMaxHealth(), 1F)));
+		int points = Math.max(1, MathHelper.ceiling_float_int(400F * Math.min(e.ammount / death.getMaxHealth(), 0.25F)));
 		if(e.source == null) {
 			recalculateBlockAmount(death, EntityAbsoluteDeath.EnumResists.GENERIC, points);
 		}
