@@ -15,6 +15,8 @@ import com.pyding.deathlyhallows.utils.ElfUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityClientPlayerMP;
@@ -32,9 +34,12 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
+
+import java.awt.*;
 
 import static codechicken.lib.gui.GuiDraw.drawTexturedModalRect;
 import static codechicken.lib.gui.GuiDraw.getStringWidth;
@@ -54,8 +59,11 @@ public final class DHPlayerRenderEvents {
 			RADIAL_TEXTURE = new ResourceLocation(DHIntegration.WITCHERY, "textures/gui/radial.png"),
 			ANIMA_TEXTURE = new ResourceLocation(DeathlyHallows.MODID, "textures/particles/anima.png"),
 			ANIMA2_TEXTURE = new ResourceLocation(DeathlyHallows.MODID, "textures/particles/anima2.png");
+	private static String currentTooltip;
+	private static long tooltipDisplayTime;
+	private static final long maxDisplayTime = 2500L;
 	private static final DHPlayerRenderEvents INSTANCE = new DHPlayerRenderEvents();
-
+	
 	private DHPlayerRenderEvents() {
 
 	}
@@ -63,6 +71,37 @@ public final class DHPlayerRenderEvents {
 	public static void init() {
 		MinecraftForge.EVENT_BUS.register(INSTANCE);
 		FMLCommonHandler.instance().bus().register(INSTANCE);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void setTooltip(String tooltip) {
+		if (!tooltip.equals(currentTooltip)) {
+			currentTooltip = tooltip;
+			tooltipDisplayTime = System.currentTimeMillis() + maxDisplayTime;
+		}
+	}
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void drawDislocationFocusHUD(RenderGameOverlayEvent.Post event) {
+		if(event.type != RenderGameOverlayEvent.ElementType.ALL || tooltipDisplayTime <= System.currentTimeMillis() || MathHelper.stringNullOrLengthZero(currentTooltip)) {
+			return;
+		}
+		Minecraft mc = Minecraft.getMinecraft();
+		ScaledResolution resolution = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+		FontRenderer font = mc.fontRenderer;
+		int tooltipStartX = (resolution.getScaledWidth() - font.getStringWidth(currentTooltip)) / 2;
+		int tooltipStartY = resolution.getScaledHeight() - 72;
+		int opacity = MathHelper.clamp_int((int) (255 * (tooltipDisplayTime - System.currentTimeMillis()) / maxDisplayTime), 0, 255);
+		if (opacity > 5) {
+			glPushMatrix();
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			int color = Color.getHSBColor(1F + 0.5F * (float)Math.cos(System.currentTimeMillis() / 1e3), 0.6F, 1.0F).getRGB();
+			font.drawStringWithShadow(currentTooltip, tooltipStartX, tooltipStartY, color + (opacity << 24));
+			glDisable(GL_BLEND);
+			glPopMatrix();
+		}
 	}
 
 	@SubscribeEvent
@@ -273,12 +312,44 @@ public final class DHPlayerRenderEvents {
 		if(stack == null) {
 			return;
 		}
-		if(stack.getItem() == DHItems.elderWand) {
-			if(!p.isSneaking()) {
-				renderHotSpells(scale, p, ItemElderWand.getLastSpells(stack), ItemElderWand.getIndex(stack.getTagCompound()));
+		if(stack.getItem() != DHItems.elderWand) {
+			return;
+		}
+		switch(ItemElderWand.getMode(stack)) {
+			case LIST: {
+				renderSpells(scale, p, ItemElderWand.getListCounter(stack.getTagCompound()));
 				return;
 			}
-			renderStrokes(scale, p.getEntityData().getByteArray("Strokes"));
+			case BIND: {
+				if(!ItemElderWand.isBinding(p)) {
+					renderHotSpells(scale, p, ItemElderWand.getLastSpells(stack), ItemElderWand.getIndex(stack.getTagCompound()));
+					return;
+				}
+				// else render strokes
+			}
+			case STROKE: {
+				renderStrokes(scale, p.getEntityData().getByteArray("Strokes"));
+			}
+		}
+	}
+
+	private static void renderSpells(ScaledResolution scale, EntityPlayer p, int index) {
+		glPushMatrix();
+		try {
+			int x = scale.getScaledWidth() / 2 - 8;
+			int y = scale.getScaledHeight() / 2 - 8;
+			mc.getTextureManager().bindTexture(RADIAL_TEXTURE);
+			glPushMatrix();
+			float s = 0.33333334F;
+			glTranslatef(x - 42F + 5F, y - 42F + 5F, 0.0F);
+			glScalef(s, s, s);
+			glColor4f(1F, 1F, 1F, 1F);
+			drawTexturedModalRect(8, 8, 0, 0, 256, 256);
+			glPopMatrix();
+			//drawSpells(ItemElderWand.getXY(p), list, index, x, y);
+		}
+		finally {
+			glPopMatrix();
 		}
 	}
 

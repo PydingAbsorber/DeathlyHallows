@@ -3,6 +3,7 @@ package com.pyding.deathlyhallows.items;
 import com.emoniph.witchery.Witchery;
 import com.emoniph.witchery.blocks.BlockPlacedItem;
 import com.emoniph.witchery.infusion.infusions.symbols.EffectRegistry;
+import com.pyding.deathlyhallows.events.DHPlayerRenderEvents;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketElderWandLastSpell;
 import com.pyding.deathlyhallows.network.packets.PacketElderWandStrokes;
@@ -34,6 +35,8 @@ public class ItemElderWand extends ItemBase {
 			START_Y_TAG = "startY",
 			STROKES_TAG = "Strokes",
 			INDEX_TAG = "index",
+			LIST_COUNTER_TAG = "listCounter",
+			MODE_TAG = "castingMode",
 			START_PITCH_TAG = "startPitch",
 			START_YAW_TAG = "startYaw";
 	private static final float
@@ -45,7 +48,7 @@ public class ItemElderWand extends ItemBase {
 		super("elderWand", 1);
 		setFull3D();
 	}
-
+	
 	@SideOnly(Side.CLIENT)
 	public EnumRarity getRarity(ItemStack stack) {
 		return EnumRarity.rare;
@@ -88,14 +91,39 @@ public class ItemElderWand extends ItemBase {
 	}
 
 	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer p) {
-		if(!p.isSneaking()) {
+		if(p.isSneaking()) {
+			EnumCastingMode mode = getMode(stack).next();
+			setMode(stack, mode);
 			if(world.isRemote) {
-				setXY(p);
+				setTooltip(mode);
 			}
-			p.setItemInUse(stack, getMaxItemUseDuration(stack));
+			setBinding(p, false);
+			setIndex(-1, stack.getTagCompound());
 			return stack;
 		}
-		return Witchery.Items.MYSTIC_BRANCH.onItemRightClick(stack, world, p);
+		switch(getMode(stack)) {
+			case LIST:
+				return stack;
+			case BIND: {
+				if(isBinding(p)) {
+					setMode(stack, EnumCastingMode.STROKE);
+					if(world.isRemote) {
+						setTooltip("dh.desc.wandMode.bindStart");
+					}
+					p.setItemInUse(stack, getMaxItemUseDuration(stack));
+					return stack;
+				}
+				if(world.isRemote) {
+					setXY(p);
+				}
+				p.setItemInUse(stack, getMaxItemUseDuration(stack));
+				return stack;
+			}
+			default:
+			case STROKE: {
+				return Witchery.Items.MYSTIC_BRANCH.onItemRightClick(stack, world, p);
+			}
+		}
 	}
 
 	public void onUsingTick(ItemStack stack, EntityPlayer p, int countdown) {
@@ -103,49 +131,145 @@ public class ItemElderWand extends ItemBase {
 			return;
 		}
 		NBTTagCompound tag = p.getEntityData();
-		if(p.isSneaking() == (tag.hasKey(INDEX_TAG) || tag.hasKey(START_X_TAG))) {
-			if(p.isSneaking()) {
-				setIndex(-1, stack.getTagCompound());
-				DHPacketProcessor.sendToServer(new PacketElderWandLastSpell(-1));
-				resetXY(p);
-			}
-			else {
-				setXY(p);
-			}
-			return;
-		}
-
-		if(!p.isSneaking()) {
-			if(!tag.hasKey(START_X_TAG)) {
-				return;
-			}
-			if(!stack.hasTagCompound()) {
-				stack.setTagCompound(new NBTTagCompound());
-			}
-			if(stack.getTagCompound().hasKey(INDEX_TAG)) {
-				if(Minecraft.getMinecraft().gameSettings.keyBindAttack.getIsKeyPressed()) {
-					int index = getIndex(stack.getTagCompound());
-					removeLastSpell(stack, index);
-					DHPacketProcessor.sendToServer(new PacketElderWandLastSpell(index, true));
-					setIndex(-1, stack.getTagCompound());
-					resetXY(p);
+		switch(getMode(stack)) {
+			case BIND: {
+				if(isBinding(p)) {
+					return;
+				}
+				if(!tag.hasKey(START_X_TAG)) {
+					setXY(p);
+				}
+				if(!stack.hasTagCompound()) {
+					stack.setTagCompound(new NBTTagCompound());
+				}
+				if(stack.getTagCompound().hasKey(INDEX_TAG)) {
+					if(Minecraft.getMinecraft().gameSettings.keyBindAttack.getIsKeyPressed()) {
+						int index = getIndex(stack.getTagCompound());
+						removeLastSpell(stack, index);
+						DHPacketProcessor.sendToServer(new PacketElderWandLastSpell(index, true));
+						setIndex(-1, stack.getTagCompound());
+						resetXY(p);
+					}
+					return;
+				}
+				NBTTagList list = getLastSpells(stack);
+				int size = list.tagCount();
+				int index = getIdFromPosition(size, getXY(p));
+				if(index == -1) {
+					return;
+				}
+				DHPacketProcessor.sendToServer(new PacketElderWandLastSpell(index));
+				setIndex(index, stack.getTagCompound());
+				if(size < DHConfig.elderWandMaxSpells && index == size) {
+					setBinding(p, true);
 				}
 				return;
 			}
-			NBTTagList list = getLastSpells(stack);
-			int size = list.tagCount();
-			int index = getIdFromPosition(size, getXY(p));
-			if(index == -1) {
+			case LIST: {
 				return;
 			}
-			DHPacketProcessor.sendToServer(new PacketElderWandLastSpell(index));
-			setIndex(index, stack.getTagCompound());
-			if(size < DHConfig.elderWandMaxSpells && index == size) {
-				setBinding(p, true);
+			default:
+				Witchery.Items.MYSTIC_BRANCH.onUsingTick(stack, p, countdown);
+		}
+	}
+
+	public void onPlayerStoppedUsing(ItemStack stack, World world, EntityPlayer p, int countdown) {
+		NBTTagCompound tag = p.getEntityData();
+		if(world.isRemote) {
+			tag.removeTag(START_X_TAG);
+			tag.removeTag(START_Y_TAG);
+		}
+		switch(getMode(stack)) {
+			case BIND: {
+				int size = getLastSpells(stack).tagCount();
+				if(world.isRemote && isBinding(p) && getIndex(stack.getTagCompound()) != size && size < DHConfig.elderWandMaxSpells) {
+					setBinding(p, false);
+					DHPacketProcessor.sendToServer(new PacketElderWandLastSpell(-1));
+					setIndex(-1, stack.getTagCompound());
+					return;
+				}
+				setIndex(-1, stack.getTagCompound());
+				if(!world.isRemote && tag.hasKey("WITCSpellEffectID")) {
+					Witchery.Items.MYSTIC_BRANCH.onPlayerStoppedUsing(stack, world, p, countdown);
+					return;
+				}
+				return;
 			}
+			case STROKE: {
+				if(isBinding(p)) {
+					setBinding(p, false);
+					setMode(stack, EnumCastingMode.BIND);
+					if(world.isRemote) {
+
+						byte[] strokes = tag.getByteArray(STROKES_TAG);
+						if(strokes.length < 1 || EffectRegistry.instance().getEffect(strokes) == null) {
+							setTooltip("dh.desc.wandMode.bindFail");
+							return;
+						}
+						setTooltip("dh.desc.wandMode.bindFinish");
+						DHPacketProcessor.sendToServer(new PacketElderWandStrokes(strokes));
+						addLastSpell(stack, strokes);
+						tag.removeTag(STROKES_TAG);
+						tag.removeTag(START_YAW_TAG);
+						tag.removeTag(START_PITCH_TAG);
+					}
+					return;
+				}
+			}
+			default: // stroke if no binding & list
+				Witchery.Items.MYSTIC_BRANCH.onPlayerStoppedUsing(stack, world, p, countdown);
+		}
+	}
+
+	@Override
+	public String getItemStackDisplayName(ItemStack p_77653_1_) {
+		return super.getItemStackDisplayName(p_77653_1_);
+	}
+
+	public enum EnumCastingMode {
+
+		STROKE,
+		BIND,
+		LIST;
+
+		private EnumCastingMode next() {
+			EnumCastingMode[] values = values();
+			return values[(ordinal() + 1) % values.length];
+		}
+
+	}
+
+	private static void setTooltip(String toolitp) {
+		DHPlayerRenderEvents.setTooltip(StatCollector.translateToLocal(toolitp));
+	}
+
+	private static void setTooltip(EnumCastingMode mode) {
+		setTooltip("dh.desc.wandMode." + mode.name().toLowerCase());
+	}
+
+	public static void setMode(ItemStack stack, EnumCastingMode mode) {
+		NBTTagCompound tag = stack.getTagCompound();
+		if(tag == null) {
+			tag = new NBTTagCompound();
+			stack.setTagCompound(tag);
+		}
+		tag.setByte(MODE_TAG, (byte)mode.ordinal());
+	}
+
+	public static EnumCastingMode getMode(ItemStack stack) {
+		NBTTagCompound tag = stack.getTagCompound();
+		return tag == null || !tag.hasKey(MODE_TAG) ? EnumCastingMode.STROKE : EnumCastingMode.values()[tag.getByte(MODE_TAG)];
+	}
+
+	private static void setListCounter(int index, NBTTagCompound tag) {
+		if(tag == null) {
 			return;
 		}
-		Witchery.Items.MYSTIC_BRANCH.onUsingTick(stack, p, countdown);
+		tag.setInteger(LIST_COUNTER_TAG, (byte)index);
+	}
+
+	public static int getListCounter(NBTTagCompound tag) {
+		return tag == null ? 0 : tag.getInteger(LIST_COUNTER_TAG);
 	}
 
 	private static void setIndex(int index, NBTTagCompound tag) {
@@ -161,39 +285,6 @@ public class ItemElderWand extends ItemBase {
 
 	public static byte getIndex(NBTTagCompound tag) {
 		return tag == null || !tag.hasKey(INDEX_TAG) ? -1 : tag.getByte(INDEX_TAG);
-	}
-
-	public void onPlayerStoppedUsing(ItemStack stack, World world, EntityPlayer p, int countdown) {
-		NBTTagCompound tag = p.getEntityData();
-		if(world.isRemote) {
-			tag.removeTag(START_X_TAG);
-			tag.removeTag(START_Y_TAG);
-		}
-		if(!isBinding(p)) {
-			setIndex(-1, stack.getTagCompound());
-			if(tag.hasKey("WITCSpellEffectID")) {
-				Witchery.Items.MYSTIC_BRANCH.onPlayerStoppedUsing(stack, world, p, countdown);
-			}
-			return;
-		}
-		int size = getLastSpells(stack).tagCount();
-		if(world.isRemote && getIndex(stack.getTagCompound()) != size && size < DHConfig.elderWandMaxSpells) {
-			setBinding(p, false);
-			DHPacketProcessor.sendToServer(new PacketElderWandLastSpell(-1));
-		}
-		setIndex(-1, stack.getTagCompound());
-		if(!world.isRemote || !tag.hasKey(STROKES_TAG)) {
-			return;
-		}
-		tag.removeTag(START_YAW_TAG);
-		tag.removeTag(START_PITCH_TAG);
-		byte[] strokes = tag.getByteArray(STROKES_TAG);
-		if(strokes.length < 1 || EffectRegistry.instance().getEffect(strokes) == null) {
-			return;
-		}
-		DHPacketProcessor.sendToServer(new PacketElderWandStrokes(strokes));
-		addLastSpell(stack, strokes);
-		tag.removeTag(STROKES_TAG);
 	}
 
 	public static NBTTagList getLastSpells(ItemStack stack) {

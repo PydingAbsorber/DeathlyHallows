@@ -138,6 +138,12 @@ dh.desc.wand1=Get access to §c8 §7new powerful spells
 dh.desc.wand2=All spells are described in the Elder Book: Spells
 dh.desc.wand3=Last spell: %s
 dh.desc.wand4=Cast last spell by pressing §c%s
+dh.desc.wandMode.stroke=Stroke Mode
+dh.desc.wandMode.bind=Bind Mode
+dh.desc.wandMode.list=List Mode
+dh.desc.wandMode.bindStart=Draw strokes to bind spell
+dh.desc.wandMode.bindFail=Spell binding failed
+dh.desc.wandMode.bindFinish=Spell bound!
 
 dh.desc.visConverter1=Place on the Altar to get maximum base energy!
 dh.desc.visConverter2=Bonus: +10 to base energy for each santi vis in nearest aura
@@ -149,6 +155,7 @@ dh.desc.resurrectionStone3=§4Not enough charges
 dh.desc.resurrectionStone4=§4Player don't exist
 
 dh.desc.niceCream=Heals 20 hp and 5 Infusion. Don't eat too much!
+
 # Book entries
 dh.book.rites1={5{lDark Arts{r{o:|Circles and Structures{r||{0Hello Pyding! Please supply some entry and picture for right page! 
 # Rites
