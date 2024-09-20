@@ -81,7 +81,7 @@ public class RecipeUnDyeable implements IRecipe {
 				if(temp.getItem() instanceof IItemDyeable) {
 					stack = temp.copy();
 					stack.stackSize = 1;
-					((IItemDyeable)stack.getItem()).removeColor(stack);
+					((IItemDyeable)stack.getItem()).removeDyedColor(stack);
 					return stack;
 				}
 			}

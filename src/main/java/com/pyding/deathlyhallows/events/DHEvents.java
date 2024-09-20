@@ -33,6 +33,7 @@ import com.pyding.deathlyhallows.symbols.SymbolHorcrux;
 import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.utils.DHUtils;
 import com.pyding.deathlyhallows.utils.ElfUtils;
+import com.pyding.deathlyhallows.utils.IItemDyeable;
 import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -41,6 +42,8 @@ import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockCauldron;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -116,6 +119,26 @@ public final class DHEvents {
 		FMLCommonHandler.instance().bus().register(INSTANCE);
 	}
 
+	@SubscribeEvent
+	public void a(PlayerInteractEvent e) {
+		if(e.world.isRemote || e.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
+			return;
+		}
+		ItemStack stack = e.entityPlayer.getHeldItem();
+		if(stack == null || !(stack.getItem() instanceof IItemDyeable) || !((IItemDyeable)stack.getItem()).canWashInCauldron(stack)) {
+			return;
+		}
+		Block block = e.world.getBlock(e.x, e.y, e.z);
+		if(block != Blocks.cauldron) {
+			return;
+		}
+		BlockCauldron cauldron = (BlockCauldron)block;
+		int waterLevel = BlockCauldron.func_150027_b(e.world.getBlockMetadata(e.x, e.y, e.z));
+		if(waterLevel > 0) {
+			cauldron.func_150024_a(e.world, e.x, e.y, e.z, waterLevel - 1);
+			((IItemDyeable)stack.getItem()).removeDyedColor(stack);
+		}
+	}
 	@SubscribeEvent // sends data to all dudes if there is data to sync
 	public void onPlayerTick(TickEvent.PlayerTickEvent e) {
 		if(e.side != Side.SERVER || e.player.worldObj.isRemote || e.player.ticksExisted % 40 != 0) {

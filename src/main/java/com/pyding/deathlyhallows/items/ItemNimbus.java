@@ -61,7 +61,7 @@ public class ItemNimbus extends ItemBase implements IItemDyeable {
 	@Override
 	public int getColorFromItemStack(ItemStack stack, int pass) {
 		if(pass == 1) {
-			return getColor(stack);
+			return getDyedColor(stack);
 		}
 		return 0xFFFFFF;
 	}
@@ -81,7 +81,7 @@ public class ItemNimbus extends ItemBase implements IItemDyeable {
 		}
 		EntityNimbus nimbus = new EntityNimbus(world);
 		nimbus.setPosition(p.posX, p.posY + 0.255D, p.posZ);
-		nimbus.setBrushColor(getColor(stack));
+		nimbus.setBrushColor(getDyedColor(stack));
 		world.spawnEntityInWorld(nimbus);
 		nimbus.interactFirst(p);
 		return super.onItemRightClick(stack, world, p);

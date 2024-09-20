@@ -17,7 +17,7 @@ public interface IItemDyeable {
 	}
 
 
-	default void setColor(ItemStack stack, int color) {
+	default void setDyedColor(ItemStack stack, int color) {
 		NBTTagCompound tag = stack.getTagCompound();
 		if(tag == null) {
 			tag = new NBTTagCompound();
@@ -36,8 +36,8 @@ public interface IItemDyeable {
 		return 0xFFFFFF;
 	}
 
-	default int getColor(ItemStack stack) {
-		if(stack != null && stack.hasTagCompound()) {
+	default int getDyedColor(ItemStack stack) {
+		if(stack.hasTagCompound()) {
 			NBTTagCompound sub = stack.getTagCompound().getCompoundTag("display");
 			if(sub.hasKey("color", Constants.NBT.TAG_INT)) {
 				return sub.getInteger("color");
@@ -46,7 +46,7 @@ public interface IItemDyeable {
 		return getDefaultColor(stack);
 	}
 
-	default void removeColor(ItemStack stack) {
+	default void removeDyedColor(ItemStack stack) {
 		if(!isDyed(stack)) {
 			return;
 		}
@@ -59,6 +59,10 @@ public interface IItemDyeable {
 	@Nullable
 	default ItemStack getBleach(ItemStack stack) {
 		return stack;
+	}
+
+	default boolean canWashInCauldron(ItemStack stack) {
+		return true;
 	}
 	
 }

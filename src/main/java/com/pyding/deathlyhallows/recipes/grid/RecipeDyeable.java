@@ -93,7 +93,7 @@ public class RecipeDyeable implements IRecipe {
 					if(!((IItemDyeable)temp.getItem()).isDyed(temp)) {
 						continue;
 					}
-					currentColour = ((IItemDyeable)temp.getItem()).getColor(temp);
+					currentColour = ((IItemDyeable)temp.getItem()).getDyedColor(temp);
 					float r = (currentColour >> 16 & 255) / 255.0F;
 					float g = (currentColour >> 8 & 255) / 255.0F;
 					float b = (currentColour & 255) / 255.0F;
@@ -127,7 +127,7 @@ public class RecipeDyeable implements IRecipe {
 			colour[k] = colour[k] * f2 * 255.0F;
 		}
 		currentColour = (((Math.round(colour[0]) << 8) + Math.round(colour[1])) << 8) + Math.round(colour[2]);
-		((IItemDyeable)stack.getItem()).setColor(stack, currentColour);
+		((IItemDyeable)stack.getItem()).setDyedColor(stack, currentColour);
 
 		return stack;
 	}
