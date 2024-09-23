@@ -120,7 +120,7 @@ public final class DHEvents {
 	}
 
 	@SubscribeEvent
-	public void a(PlayerInteractEvent e) {
+	public void washInCauldron(PlayerInteractEvent e) {
 		if(e.world.isRemote || e.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
 			return;
 		}
