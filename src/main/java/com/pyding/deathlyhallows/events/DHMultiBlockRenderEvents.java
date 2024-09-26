@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ChatStyle;
@@ -20,9 +21,11 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -74,10 +77,16 @@ public final class DHMultiBlockRenderEvents {
 
 	@SubscribeEvent
 	public void onPlayerInteract(PlayerInteractEvent e) {
-		if(currentMultiBlock == null || anchor != null || e.action != Action.RIGHT_CLICK_BLOCK || e.entityPlayer != mc.thePlayer) {
+		if(currentMultiBlock == null || anchor != null || e.action == Action.LEFT_CLICK_BLOCK || e.entityPlayer != mc.thePlayer) {
 			return;
 		}
-		anchor = new ChunkCoordinates(e.x, e.y + 1, e.z);
+		if(e.action == Action.RIGHT_CLICK_BLOCK) {
+			anchor = new ChunkCoordinates(e.x, e.y + 1, e.z);
+		}
+		else {
+			MovingObjectPosition mop = mc.objectMouseOver;
+			anchor = new ChunkCoordinates(mop.blockX, mop.blockY + 1, mop.blockZ);
+		}
 		angle = MathHelper.floor_double(e.entityPlayer.rotationYaw * 4.0 / 360.0 + 0.5) & 3;
 		e.setCanceled(true);
 	}
@@ -237,7 +246,6 @@ public final class DHMultiBlockRenderEvents {
 		Tessellator t = Tessellator.instance;
 		t.disableColor();
 		block.setBlockBoundsForItemRender();
-		glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
 		glTranslatef(-0.5F, -0.5F, -0.5F);
 		blockRender.setRenderBoundsFromBlock(block);
 		if(block.shouldSideBeRendered(access, DOWN.offsetX, DOWN.offsetY, DOWN.offsetZ, DOWN.ordinal())) {
@@ -285,6 +293,7 @@ public final class DHMultiBlockRenderEvents {
 		float blue = (color & 255) / 255.0F;
 		glColor4f(red, green, blue, alpha);
 		glTranslated(x + 0.5, y + 0.5, z + 0.5);
+		glRotatef(-90F, 0F, 1F, 0F);
 		blockRender.renderBlockAsItem(block, meta, 1F);
 	}
 
@@ -297,29 +306,32 @@ public final class DHMultiBlockRenderEvents {
 		if(!TileEntityRendererDispatcher.instance.hasSpecialRenderer(tile)) {
 			return;
 		}
-
-		// setting the tile and world properties
-		tile.setWorldObj(w);
-		tile.blockMetadata = meta;
-		tile.xCoord = x;
-		tile.yCoord = y;
-		tile.zCoord = z;
-		if(comp.tag != null) {
-			tile.readFromNBT(comp.tag);
-		}
-		// setting block to buffer world
+		// memorizing real block
 		Block trueBlock = w.getBlock(x, y, z);
 		int trueMeta = w.getBlockMetadata(x, y, z);
-		setBlockSilent(w, x, y, z, block, meta);
+		// memorizing real tile to buffer world
+		TileEntity trueTile = getTileSilent(w, x, y, z);
 		// actually render
 		try {
+			// setting block and tile to buffer world in order to render some tiles correctly
+			setBlockSilent(w, x, y, z, block, meta);
+			// setting tile data
+			tile.xCoord = x;
+			tile.yCoord = y;
+			tile.zCoord = z;
+			tile.setWorldObj(w);
+			if(comp.tag != null) {
+				tile.readFromNBT(comp.tag);
+			}
+			setTileSilent(w, x, y, z, tile);
 			glPushMatrix();
 			TileEntityRendererDispatcher.instance.getSpecialRenderer(tile).renderTileEntityAt(tile, x, y, z, 0);
 			glDisable(GL_LIGHTING);
 		}
 		finally {
+			// putting things back
 			setBlockSilent(w, x, y, z, trueBlock, trueMeta);
-
+			setTileSilent(w, x, y, z, trueTile);
 			glPopMatrix();
 			mc.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
 		}
@@ -327,13 +339,35 @@ public final class DHMultiBlockRenderEvents {
 
 	private static void setBlockSilent(World world, int x, int y, int z, Block block, int meta) {
 		Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
-		x &= 15;
-		z &= 15;
-		if(chunk.getTileEntityUnsafe(x, y, z) != null) {
-			chunk.removeTileEntity(x, y, z);
-			chunk.removeInvalidTileEntity(x, y, z);
+		ChunkPosition pos = new ChunkPosition(x & 15, y, z & 15);
+		ExtendedBlockStorage extendedblockstorage = chunk.getBlockStorageArray()[y >> 4];
+		if (extendedblockstorage == null) {
+			if (block == Blocks.air) {
+				return;
+			}
+			extendedblockstorage = chunk.getBlockStorageArray()[y >> 4] = new ExtendedBlockStorage(y >> 4 << 4, !world.provider.hasNoSky);
 		}
-		chunk.func_150807_a(x, y, z, block, meta);
+		extendedblockstorage.func_150818_a(pos.chunkPosX, pos.chunkPosY & 15, pos.chunkPosZ, block);
+		extendedblockstorage.setExtBlockMetadata(pos.chunkPosX, pos.chunkPosY & 15, pos.chunkPosZ, meta);
+	}
+	
+	private static void setTileSilent(World world, int x, int y, int z, TileEntity tile) {
+		Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
+		ChunkPosition pos = new ChunkPosition(x & 15, y, z & 15);
+		TileEntity trueTile = (TileEntity)chunk.chunkTileEntityMap.get(pos);
+		if(trueTile != null) {
+			chunk.chunkTileEntityMap.remove(pos);
+			world.loadedTileEntityList.remove(trueTile);
+		}
+		if(tile != null) {
+			chunk.chunkTileEntityMap.put(pos, tile);
+			world.loadedTileEntityList.add(tile);
+		}
+	}
+
+	private static TileEntity getTileSilent(World world, int x, int y, int z) {
+		Chunk chunk = world.getChunkFromChunkCoords(x >> 4, z >> 4);
+		return (TileEntity)chunk.chunkTileEntityMap.get(new ChunkPosition(x & 15, y, z & 15));
 	}
 
 }

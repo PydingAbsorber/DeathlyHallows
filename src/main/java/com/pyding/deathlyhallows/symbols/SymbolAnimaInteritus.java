@@ -3,7 +3,6 @@ package com.pyding.deathlyhallows.symbols;
 import com.emoniph.witchery.util.SoundEffect;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketNBTSync;
-import com.pyding.deathlyhallows.network.packets.PacketPropertiesToClient;
 import com.pyding.deathlyhallows.utils.DHID;
 import com.pyding.deathlyhallows.utils.DHUtils;
 import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
@@ -29,7 +28,7 @@ public class SymbolAnimaInteritus extends SymbolEffectBase {
 		// TODO rework
 		int cursedCount = 0;
 		int maxCursed = MathHelper.floor_float(1.5F * level) - 1;
-		float radius = 64F;
+		float radius = 16F * level;
 		DeathlyProperties casterProps = DeathlyProperties.get(p);
 		for(EntityLivingBase e: DHUtils.getEntitiesAround(EntityLivingBase.class, p, radius)) {
 			if(cursedCount > maxCursed) {
@@ -64,9 +63,6 @@ public class SymbolAnimaInteritus extends SymbolEffectBase {
 			}
 			NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(e.dimension, e.posX, e.posY, e.posZ, radius * 1.5D);
 			DHPacketProcessor.sendToAllAround(new PacketNBTSync(tag, e.getEntityId()), targetPoint);
-			if(e.getExtendedProperties(DeathlyProperties.NAME) != null) {
-				DHPacketProcessor.sendToAllAround(new PacketPropertiesToClient(e, DeathlyProperties.NAME), targetPoint);
-			}
 		}
 		if(cursedCount > 0) {
 			world.playSoundAtEntity(p, "dh:spell.anima" + DHUtils.getRandomInt(1, 3), 1F, 1F);

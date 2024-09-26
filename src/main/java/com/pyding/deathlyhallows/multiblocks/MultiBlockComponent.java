@@ -17,26 +17,32 @@ public class MultiBlockComponent {
 
 	public ChunkCoordinates relPos;
 	public final Block block;
-	public final int meta;
+	public int meta;
 	public final NBTTagCompound tag;
 	public final TileEntity tileEntity;
+	private final BlockMetaRotator axisToRotation;
 	public boolean doFancyRender;
 
 	public MultiBlockComponent(ChunkCoordinates relPos, Block block, int meta) {
-		this(relPos, block, meta, null);
+		this(relPos, block, meta, true, null, null, null);
 	}
 
 	public MultiBlockComponent(ChunkCoordinates relPos, Block block, int meta, NBTTagCompound tag) {
-		this(relPos, block, meta, true, null, tag);
+		this(relPos, block, meta, true, null, tag, null);
+	}
+
+	public MultiBlockComponent(ChunkCoordinates relPos, Block block, int meta, BlockMetaRotator axisToRotation) {
+		this(relPos, block, meta, true, null, null, axisToRotation);
 	}
 	
-	public MultiBlockComponent(ChunkCoordinates relPos, Block block, int meta, boolean doFancyRender, TileEntity tileEntity, NBTTagCompound tag) {
+	public MultiBlockComponent(ChunkCoordinates relPos, Block block, int meta, boolean doFancyRender, TileEntity tileEntity, NBTTagCompound tag, BlockMetaRotator axisToRotation) {
 		this.relPos = relPos;
 		this.block = block;
 		this.meta = meta;
 		this.tileEntity = tileEntity;
-		this.doFancyRender = doFancyRender;
 		this.tag = tag;
+		this.axisToRotation = axisToRotation;
+		this.doFancyRender = doFancyRender;
 	}
 
 	public ChunkCoordinates getRelativePosition() {
@@ -85,17 +91,25 @@ public class MultiBlockComponent {
 		return new ItemStack[] {ret};
 	}
 
-	public void rotate(double angle) {
-		double 
+	public void rotate(int intAngle) { // from 0 to 3
+		int 
 				x = relPos.posX,
 				z = relPos.posZ,
-				sin = Math.sin(angle),
-				cos = Math.cos(angle);
-		relPos = new ChunkCoordinates((int)Math.round(x * cos - z * sin), relPos.posY, (int)Math.round(x * sin + z * cos));
+				sin = intSin(intAngle),
+				cos = intSin(intAngle + 1);
+		relPos = new ChunkCoordinates(x * cos - z * sin, relPos.posY, x * sin + z * cos);
+		if(axisToRotation != null) {
+			meta = axisToRotation.rotate(meta, intAngle);
+		}
+	}
+	
+	private int intSin(int intAngle) {
+		intAngle &= 3;
+		return intAngle == 0 ? 0 : 2 - intAngle;
 	}
 
 	public MultiBlockComponent copy() {
-		return new MultiBlockComponent(relPos, block, meta, doFancyRender, tileEntity, tag);
+		return new MultiBlockComponent(relPos, block, meta, doFancyRender, tileEntity, tag, axisToRotation);
 	}
 
 	public TileEntity getTileEntity() {
@@ -130,4 +144,10 @@ public class MultiBlockComponent {
 	public String toString() { // json parsable
 		return "{\"pos\": [" + relPos.posX + "," + relPos.posY +","+ relPos.posZ + "], \"block\": \"" + block.getUnlocalizedName() + "\"" + (meta != 0 ? ", \"meta\": " + meta : "") + (tag != null ? ", \"tag\": " + tag : "") + "}";
 	}
+
+	@FunctionalInterface
+	public interface BlockMetaRotator {
+		int rotate(int meta, int intAngle);
+	}
+	
 }

@@ -32,21 +32,26 @@ public class MultiBlock {
 		calculateCostForNewComponent(component);
 		addComponentToLocationCache(component);
 	}
-
-	public void addComponent(int x, int y, int z, Block block, int meta) {
-		addComponent(new MultiBlockComponent(new ChunkCoordinates(x, y, z), block, meta));
-	}
-
-	public void addComponent(int x, int y, int z, Block block, int meta, NBTTagCompound tag) {
-		addComponent(new MultiBlockComponent(new ChunkCoordinates(x, y, z), block, meta, tag));
-	}
-
+	
 	public void addComponent(ChunkCoordinates coords, Block block, int meta) {
 		addComponent(new MultiBlockComponent(coords, block, meta));
 	}
 
 	public void addComponent(ChunkCoordinates coords, Block block, int meta, NBTTagCompound tag) {
 		addComponent(new MultiBlockComponent(coords, block, meta, tag));
+	}
+
+	public void addComponent(ChunkCoordinates coords, Block block, int meta, MultiBlockComponent.BlockMetaRotator axisToRotation) {
+		addComponent(new MultiBlockComponent(coords, block, meta, axisToRotation));
+	}
+
+	// Legacy API, remove when done with structures 
+	public void addComponent(int x, int y, int z, Block block, int meta) {
+		addComponent(new ChunkCoordinates(x, y, z), block, meta);
+	}
+
+	public void addComponent(int x, int y, int z, Block block, int meta, NBTTagCompound tag) {
+		addComponent(new ChunkCoordinates(x, y, z), block, meta, tag);
 	}
 
 	public void mergeMultiBlocks(MultiBlock mb) {
@@ -116,9 +121,9 @@ public class MultiBlock {
 		return components;
 	}
 
-	public void rotate(double angle) {
+	public void rotate(int facing) { // from 0 to 3
 		for(MultiBlockComponent comp: getComponents()) {
-			comp.rotate(angle);
+			comp.rotate(facing);
 		}
 		updateLocationCache();
 	}
@@ -136,8 +141,8 @@ public class MultiBlock {
 		MultiBlock[] blocks = new MultiBlock[4];
 		blocks[0] = this;
 		for(int i = 1; i < 4; ++i) {
-			blocks[i] = blocks[i - 1].copy();
-			blocks[i].rotate(Math.PI / 2);
+			blocks[i] = this.copy();
+			blocks[i].rotate(i);
 		}
 		return blocks;
 	}

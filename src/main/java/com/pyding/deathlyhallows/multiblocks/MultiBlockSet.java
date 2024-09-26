@@ -3,9 +3,6 @@ package com.pyding.deathlyhallows.multiblocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
 
-/**
- A set of MultiBlock objects for various rotations.
- */
 public class MultiBlockSet {
 
 	private final MultiBlock[] mbs;

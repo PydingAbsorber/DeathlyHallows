@@ -23,12 +23,6 @@ public final class DHWorkbenchRecipes {
 	}
 
 	public static void init() {
-		addShapeledRecipe(
-				new ItemStack(DHItems.wandCap, 1, ItemWandCap.Caps.koboldite.ordinal()),
-				"KKK",
-				"K K",
-				'K', Items.GENERIC.itemKobolditeNugget.createStack()
-		);
 		addShapelessRecipe(
 				new ItemStack(DHItems.bertieBots),
 				new ItemStack(dye, 1, 3),
@@ -52,7 +46,14 @@ public final class DHWorkbenchRecipes {
 					new ItemStack(DHItems.lightningInBag)
 			);
 		}
-
+		if(DHIntegration.thaumcraft) {
+			addShapeledRecipe(
+					new ItemStack(DHItems.wandCap, 1, ItemWandCap.Caps.koboldite.ordinal()),
+					"KKK",
+					"K K",
+					'K', Items.GENERIC.itemKobolditeNugget.createStack()
+			);
+		}
 		recipe(new RecipeDyeable(), "dyeable", RecipeSorter.Category.SHAPELESS);
 		recipe(new RecipeUnDyeable(), "undyeable", RecipeSorter.Category.SHAPELESS);
 	}

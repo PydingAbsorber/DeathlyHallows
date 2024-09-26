@@ -3,6 +3,7 @@ package com.pyding.deathlyhallows.rituals.rites;
 import com.emoniph.witchery.blocks.BlockAltar;
 import com.emoniph.witchery.common.IPowerSource;
 import com.emoniph.witchery.common.PowerSources;
+import com.emoniph.witchery.ritual.RitualStep;
 import com.emoniph.witchery.util.Coord;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
@@ -14,7 +15,6 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class RiteWithEffect extends ElderRite {
@@ -31,17 +31,15 @@ public class RiteWithEffect extends ElderRite {
 		this.id = id;
 		this.time = time;
 	}
-
-	public void addSteps(ArrayList steps, int intialStage) {
+	
+	public void addSteps(ArrayList<RitualStep> steps, int intialStage) {
 		steps.add(new StepVanish(this, intialStage));
 	}
 
 	private static class StepVanish extends ElderRitualStep {
 		private final RiteWithEffect rite;
-		private final boolean activated = false;
 		protected int ticksSoFar;
 		Coord powerSourceCoord;
-		static final int POWER_SOURCE_RADIUS = 16;
 
 		public StepVanish(RiteWithEffect rite, int ticksSoFar) {
 			super(false);
@@ -50,7 +48,7 @@ public class RiteWithEffect extends ElderRite {
 		}
 
 		public int getCurrentStage() {
-			return this.ticksSoFar;
+			return ticksSoFar;
 		}
 
 
@@ -59,75 +57,74 @@ public class RiteWithEffect extends ElderRite {
 			if(ticks % 20L != 0L) {
 				return Result.STARTING;
 			}
-			else {
-				if(!world.isRemote) {
-					if(this.rite.upkeepPowerCost > 0.0F) {
-						IPowerSource powerSource = this.getPowerSource(world, posX, posY, posZ);
-						if(powerSource == null) {
-							return Result.ABORTED;
-						}
 
-						this.powerSourceCoord = powerSource.getLocation();
-						if(!powerSource.consumePower(this.rite.upkeepPowerCost)) {
-							return Result.ABORTED;
-						}
-					}
-
-					if(this.rite.ticksToLive > 0 && ticks % 20L == 0L && ++this.ticksSoFar >= this.rite.ticksToLive) {
-						return Result.COMPLETED;
-					}
-
-					int r = this.rite.radius;
-					AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(posX - r, posY, posZ - r, posX + r, posY + 1, posZ + r);
-					Iterator i$ = world.getEntitiesWithinAABB(EntityPlayer.class, bounds).iterator();
-
-					while(i$.hasNext()) {
-						Object obj = i$.next();
-						EntityPlayer player = (EntityPlayer)obj;
-						if(Coord.distance(player.posX, player.posY, player.posZ, posX, posY, posZ) <= (double)r) {
-							DeathlyProperties props = DeathlyProperties.get(player);
-							switch(rite.id){
-								case 1:{
-									props.setBanka(rite.time);
-								}
-								case 2:{
-									props.setHunt(rite.time);
-								}
-								case 3:{
-									props.setHeal(rite.time);
-								}
-							}
-							ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_BABA_LIVING, player, 1.0, 2.0, 8);
-							ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_IMP_LAUGH, player, 1.0, 2.0, 8);
-							return Result.COMPLETED;
-						}
-					}
-				}
-
+			if(world.isRemote) {
 				return Result.UPKEEP;
 			}
+			if(rite.upkeepPowerCost > 0.0F) {
+				IPowerSource powerSource = getPowerSource(world, posX, posY, posZ);
+				if(powerSource == null) {
+					return Result.ABORTED;
+				}
+
+				powerSourceCoord = powerSource.getLocation();
+				if(!powerSource.consumePower(rite.upkeepPowerCost)) {
+					return Result.ABORTED;
+				}
+			}
+
+			if(rite.ticksToLive > 0 && ++ticksSoFar >= rite.ticksToLive) {
+				return Result.COMPLETED;
+			}
+
+			int r = rite.radius;
+			AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(posX - r, posY, posZ - r, posX + r, posY + 1, posZ + r);
+			for(Object obj: world.getEntitiesWithinAABB(EntityPlayer.class, bounds)) {
+				EntityPlayer player = (EntityPlayer)obj;
+				if(Coord.distanceSq(player.posX, player.posY, player.posZ, posX, posY, posZ) > r * r) {
+					continue;
+				}
+				DeathlyProperties props = DeathlyProperties.get(player);
+				switch(rite.id) {
+					case 1: {
+						props.setBanka(rite.time);
+					}
+					case 2: {
+						props.setHunt(rite.time);
+					}
+					case 3: {
+						props.setHeal(rite.time);
+					}
+				}
+				ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_BABA_LIVING, player, 1.0, 2.0, 8);
+				ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_IMP_LAUGH, player, 1.0, 2.0, 8);
+				return Result.COMPLETED;
+			}
+
+			return Result.UPKEEP;
+
 		}
 
 		IPowerSource getPowerSource(World world, int posX, int posY, int posZ) {
-			if(this.powerSourceCoord != null && world.rand.nextInt(5) != 0) {
-				TileEntity tileEntity = this.powerSourceCoord.getBlockTileEntity(world);
-				if(!(tileEntity instanceof BlockAltar.TileEntityAltar)) {
-					return this.findNewPowerSource(world, posX, posY, posZ);
-				}
-				else {
-					BlockAltar.TileEntityAltar altarTileEntity = (BlockAltar.TileEntityAltar)tileEntity;
-					return !altarTileEntity.isValid() ? this.findNewPowerSource(world, posX, posY, posZ) : altarTileEntity;
-				}
+			if(powerSourceCoord == null || world.rand.nextInt(5) == 0) {
+				return findNewPowerSource(world, posX, posY, posZ);
 			}
-			else {
-				return this.findNewPowerSource(world, posX, posY, posZ);
+
+			TileEntity tileEntity = powerSourceCoord.getBlockTileEntity(world);
+			if(!(tileEntity instanceof BlockAltar.TileEntityAltar)) {
+				return findNewPowerSource(world, posX, posY, posZ);
 			}
+			BlockAltar.TileEntityAltar altarTileEntity = (BlockAltar.TileEntityAltar)tileEntity;
+			return !altarTileEntity.isValid() ? findNewPowerSource(world, posX, posY, posZ) : altarTileEntity;
 		}
 
 		private IPowerSource findNewPowerSource(World world, int posX, int posY, int posZ) {
-			List<PowerSources.RelativePowerSource> sources = PowerSources.instance() != null ? PowerSources.instance()
-																										   .get(world, new Coord(posX, posY, posZ), 16) : null;
-			return sources != null && sources.size() > 0 ? sources.get(0).source() : null;
+			PowerSources powerSources = PowerSources.instance();
+			if(powerSources == null) {
+				return null;
+			}
+			List<PowerSources.RelativePowerSource> sources = powerSources.get(world, new Coord(posX, posY, posZ), 0);
+			return sources.size() > 0 ? sources.get(0).source() : null;
 		}
 	}
 }

@@ -2,11 +2,8 @@ package com.pyding.deathlyhallows.utils.properties;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
-import com.pyding.deathlyhallows.network.packets.PacketPropertiesCosmetic;
-import com.pyding.deathlyhallows.network.packets.PacketPropertiesToClient;
-import com.pyding.deathlyhallows.network.packets.PacketPropertiesToServer;
+import com.pyding.deathlyhallows.network.packets.PacketPropertiesSync;
 import com.pyding.deathlyhallows.utils.DHUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -53,7 +50,6 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 	public int
 			elfTimeSurvived,
 			elfInfusionTimer;
-	private boolean synced = false;
 	private final List<String> foodCollection = new ArrayList<>();
 
 	public DeathlyProperties(EntityPlayer player) {
@@ -62,9 +58,7 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 
 	@Override
 	public void init(Entity entity, World world) {
-		if(player.worldObj.isRemote) {
-			syncToServer();
-		}
+
 	}
 
 	public static void register(EntityPlayer player) {
@@ -151,55 +145,14 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 		}
 	}
 	
-	public NBTTagCompound getCosmeticData() {
-		NBTTagCompound tag = new NBTTagCompound();
+	public void saveCosmeticData(NBTTagCompound tag) {
 		tag.setInteger("ElfLvl", elfLevel);
-		return tag;
 	}
 	
-	public void setCosmeticData(NBTTagCompound tag) {
+	public void loadCosmeticData(NBTTagCompound tag) {
 		elfLevel = tag.getInteger("ElfLvl");
 	}
-
-	public void syncToClient(EntityPlayer p) {
-		if(player.worldObj.isRemote) {
-			return;
-		}
-		DeathlyHallows.LOG.info("sending" + p.getCommandSenderName() + " data to " + p.getCommandSenderName());
-		DHPacketProcessor.sendToPlayer(new PacketPropertiesCosmetic(player), p);
-	}
-
-	public void syncToClient() {
-		if(player.worldObj.isRemote) {
-			return;
-		}
-		DHPacketProcessor.sendToPlayer(new PacketPropertiesToClient(player, DeathlyProperties.NAME), player);
-		synced = false;
-	}
 	
-	public boolean shouldSync() {
-		return !synced;
-	}
-
-	public void syncToClients() {
-		if(player.worldObj.isRemote) {
-			return;
-		}
-		@SuppressWarnings("unchecked")
-		List<EntityPlayer> prayers = (List<EntityPlayer>)player.worldObj.playerEntities;
-		for(EntityPlayer p : prayers) {
-			if(p == player) {
-				continue;
-			}
-			DHPacketProcessor.sendToPlayer(new PacketPropertiesCosmetic(player), p);
-		}
-		synced = true;
-	}
-	
-	public void syncToServer() {
-		DHPacketProcessor.sendToServer(new PacketPropertiesToServer(DeathlyProperties.NAME));
-	}
-
 	public void setAllNull() {
 		trigger = 0;
 		elfCount = 0;
@@ -415,7 +368,7 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 		if(elfLevel == 0) {
 			setAllNull();
 		}
-		syncToClient();
+		DHPacketProcessor.sendToAll(new PacketPropertiesSync.Client(PacketPropertiesSync.Type.COSMETIC, player));
 	}
 
 	public int getTrigger() {

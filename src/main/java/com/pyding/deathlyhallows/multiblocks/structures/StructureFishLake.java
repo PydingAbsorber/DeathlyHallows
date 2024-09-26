@@ -33,7 +33,7 @@ public class StructureFishLake extends StructureBase {
 		add(Witchery.Blocks.WOOD_SLAB_SINGLE, 9, pos(6,0,4), pos(7,0,4));
 		add(Witchery.Blocks.DREAM_CATCHER, 2, pos(7,2,5));
 		add(Witchery.Blocks.DREAM_CATCHER, 5, pos(8,2,6));
-		add(Witchery.Blocks.STAIRS_ALDER, 6, pos(6,0,3), pos(6,0,5), pos(7,0,3), pos(7,0,5));
+		add(Witchery.Blocks.STAIRS_ALDER, 6, SIMPLE_ROTATOR, pos(6,0,3), pos(6,0,5), pos(7,0,3), pos(7,0,5));
 		add(Witchery.Blocks.LEAPING_LILY, 0, pos(-2,0,3), pos(-1,0,-3), pos(-1,0,0), pos(0,0,-1), pos(0,0,1), pos(1,0,0), pos(2,0,2), pos(3,0,-1));
 		add(Witchery.Blocks.GLINT_WEED, 0, pos(5,4,8));
 	}

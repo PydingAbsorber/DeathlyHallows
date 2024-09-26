@@ -16,7 +16,6 @@ import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.blocks.DHBlocks;
 import com.pyding.deathlyhallows.entities.EntityAbsoluteDeath;
 import com.pyding.deathlyhallows.entities.EntityNimbus;
@@ -28,6 +27,7 @@ import com.pyding.deathlyhallows.items.baubles.ItemBaubleInvisibilityMantle;
 import com.pyding.deathlyhallows.items.baubles.ItemBaubleResurrectionStone;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketNBTSync;
+import com.pyding.deathlyhallows.network.packets.PacketPropertiesSync;
 import com.pyding.deathlyhallows.recipes.DHGrassperRecipes;
 import com.pyding.deathlyhallows.symbols.SymbolHorcrux;
 import com.pyding.deathlyhallows.utils.DHConfig;
@@ -39,9 +39,9 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCauldron;
 import net.minecraft.crash.CrashReportCategory;
@@ -75,6 +75,7 @@ import net.minecraftforge.common.ISpecialArmor;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -95,6 +96,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -139,37 +141,18 @@ public final class DHEvents {
 			((IItemDyeable)stack.getItem()).removeDyedColor(stack);
 		}
 	}
-	@SubscribeEvent // sends data to all dudes if there is data to sync
-	public void onPlayerTick(TickEvent.PlayerTickEvent e) {
-		if(e.side != Side.SERVER || e.player.worldObj.isRemote || e.player.ticksExisted % 40 != 0) {
+	
+	@SideOnly(Side.CLIENT)
+	@SubscribeEvent 
+	public void onJoinSyncCosmetic(EntityJoinWorldEvent e) {
+		if(!(e.entity instanceof EntityPlayer)) {
 			return;
 		}
-		if(e.phase != TickEvent.Phase.START) {
-			return;
-		}
-		DeathlyProperties props = DeathlyProperties.get(e.player);
-		if(props != null && props.shouldSync()) {
-			props.syncToClients();
-		}
-	}
-
-	@SubscribeEvent // gets cosmetics data from all dudes who already on server 
-	public void onJoinSyncCosmetic(PlayerEvent.PlayerLoggedInEvent e) {
-		DeathlyHallows.LOG.info(e.player.getCommandSenderName() + "fired logging");
-		@SuppressWarnings("unchecked")
-		List<EntityPlayer> prayers = (List<EntityPlayer>)e.player.worldObj.playerEntities;
-		for(EntityPlayer p: prayers) {
-			DeathlyHallows.LOG.info("Chosen player: "+p.getCommandSenderName());
-			if(p == e.player) {
-				DeathlyHallows.LOG.info("But no need to sync yourself");
-				continue;
-			}
-			DeathlyHallows.LOG.info("Chosen player: "+p.getCommandSenderName());
-			DeathlyProperties props = DeathlyProperties.get(p);
-			if(props != null) {
-				props.syncToClient(e.player);
-			}
-		}
+		String target = e.entity.getCommandSenderName();
+		DHPacketProcessor.sendToServer(new PacketPropertiesSync.Server(
+				PacketPropertiesSync.Type.COSMETIC,
+				target
+		));
 	}
 
 	@SubscribeEvent
@@ -277,7 +260,6 @@ public final class DHEvents {
 			props.setCurrentDuration(0);
 			DHUtils.deadInside(p, p);
 		}
-		props.syncToClient();
 		if(p.getDisplayName().equalsIgnoreCase("pyding")) {
 			ServerConfigurationManager sconfig = MinecraftServer.getServer().getConfigurationManager();
 			if(sconfig != null) {
@@ -383,14 +365,11 @@ public final class DHEvents {
 		stopChainedFromLeave(entity, tag);
 	}
 
-	private static void stopChainedFromLeave(EntityLiving entity, NBTTagCompound tag) {
-		if(!(entity instanceof EntityCreature) || !tag.hasKey("chainX")) {
+	private static void stopChainedFromLeave(EntityLiving e, NBTTagCompound tag) {
+		if(!(e instanceof EntityCreature) || !tag.hasKey("chainX")) {
 			return;
 		}
-		double x = tag.getDouble("chainX"), y = tag.getDouble("chainY"), z = tag.getDouble("chainZ");
-		if(entity.getDistance(x, y, z) > 16) {
-			entity.setPositionAndUpdate(x, y, z);
-		}
+		teleportBack(e, tag.getDouble("chainX"), tag.getDouble("chainY"), tag.getDouble("chainZ"));
 	}
 
 	private static void updatePlayer(EntityLivingBase living) {
@@ -437,13 +416,18 @@ public final class DHEvents {
 		if(free) {
 			return;
 		}
-		if(Math.abs(p.posX - props.getX()) >= 25 || Math.abs(p.posY - props.getY()) >= 25 || Math.abs(p.posZ - props.getZ()) >= 25) {
-			p.setPositionAndUpdate(props.getX(), props.getY(), props.getZ());
-			p.worldObj.playSoundAtEntity(p, "dh:spell.anima" + DHUtils.getRandomInt(2), 1F, 1F);
-			ParticleEffect.PORTAL.send(SoundEffect.MOB_ENDERMEN_PORTAL, p, 6.0D, 6.0D, 16);
-		}
+		teleportBack(p, props.getX(), props.getY(), props.getZ());
 		if(p.dimension != props.getDimension()) {
 			p.travelToDimension(props.getDimension());
+		}
+	}
+	
+	private static void teleportBack(EntityLivingBase e, double x, double y, double z) {
+		final double range = 16F;
+		if(e.getDistanceSq(x, y, z) > range * range) {
+			e.setPositionAndUpdate(x, y, z);
+			e.worldObj.playSoundAtEntity(e, "dh:spell.anima" + DHUtils.getRandomInt(2), 1F, 1F);
+			ParticleEffect.PORTAL.send(SoundEffect.MOB_ENDERMEN_PORTAL, e, 6.0D, 6.0D, 16);
 		}
 	}
 
@@ -579,7 +563,7 @@ public final class DHEvents {
 			event.drops.addAll(drops);
 		}
 	}
-	
+
 	@SubscribeEvent
 	public void hurt(LivingSetAttackTargetEvent e) {
 		if(!(e.target instanceof EntityPlayer)) {
@@ -687,7 +671,7 @@ public final class DHEvents {
 			tag.setInteger("DHMagicAvenger", tag.getInteger("DHMagicAvenger") + 1);
 		}
 	}
-	
+
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void highestHit(LivingHurtEvent e) {
 		if(e.entity instanceof EntityPlayer) {
@@ -709,8 +693,8 @@ public final class DHEvents {
 				p.getEntityData().setBoolean("absorbedDamage", afterDamage < 7);
 			}
 		}
-		if(e.source.getEntity() != null 
-				&& e.source.getEntity() instanceof EntityPlayer 
+		if(e.source.getEntity() != null
+				&& e.source.getEntity() instanceof EntityPlayer
 				&& e.entity instanceof EntityLivingBase
 		) {
 			EntityPlayer playerSource = (EntityPlayer)e.source.getEntity();
@@ -721,11 +705,11 @@ public final class DHEvents {
 	private static float getAbsorption(EntityPlayer p, DamageSource source, float amount) {
 		return ISpecialArmor.ArmorProperties.ApplyArmor(p, p.inventory.armorInventory, source, amount);
 	}
-	
+
 	private static void TryAndGetAbsorptionLog(EntityPlayer p, float amount) {
 		DeathlyProperties props = DeathlyProperties.get(p);
 		if(props != null && props.getDamageLog()) {
-			ChatUtil.sendTranslated(p,"dh.chat.damageLog.absorption", amount);
+			ChatUtil.sendTranslated(p, "dh.chat.damageLog.absorption", amount);
 		}
 	}
 
@@ -743,27 +727,27 @@ public final class DHEvents {
 		ChatUtil.sendTranslated(victim, "dh.chat.damageLog.damage", amount);
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent()
 	public void onHeal(LivingHealEvent e) {
 		if(!(e.entityLiving instanceof EntityPlayer)) {
 			return;
 		}
+		
 		EntityPlayer p = (EntityPlayer)e.entityLiving;
 		DeathlyProperties props = DeathlyProperties.get(p);
-		if(props.getHeal() > System.currentTimeMillis()) {
-			for(ItemStack stack: p.inventory.armorInventory) {
-				if(stack.isItemDamaged()) {
-					stack.setItemDamage(stack.getItemDamage() - 1);
-				}
-			}
-			for(ItemStack stack: p.inventory.mainInventory) {
-				if(stack.isItemDamaged()) {
-					stack.setItemDamage(stack.getItemDamage() - 1);
-				}
-			}
-		}
 		if(props.getCursed() > System.currentTimeMillis()) {
 			e.setCanceled(true);
+		}
+		if(props.getHeal() > System.currentTimeMillis()) {
+			List<ItemStack> items = new ArrayList<>();
+			Collections.addAll(items, p.inventory.armorInventory);
+			Collections.addAll(items, p.inventory.mainInventory);
+			for(ItemStack stack: items) {
+				if(stack == null || !stack.isItemDamaged()) {
+					continue;
+				}
+				stack.setItemDamage(stack.getItemDamage() - 1);
+			}
 		}
 	}
 

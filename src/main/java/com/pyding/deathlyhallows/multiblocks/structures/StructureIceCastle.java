@@ -20,12 +20,12 @@ public class StructureIceCastle extends StructureBase {
 		add(Witchery.Blocks.PERPETUAL_ICE_DOOR, 0, pos(-2,0,0));
 		add(Witchery.Blocks.PERPETUAL_ICE_DOOR, 2, pos(2,0,0));
 		add(Witchery.Blocks.PERPETUAL_ICE_DOOR, 8, pos(-2,1,0), pos(2,1,0));
-		add(Witchery.Blocks.PERPETUAL_ICE_STAIRS, 5, pos(-1,1,-3));
-		add(Witchery.Blocks.PERPETUAL_ICE_STAIRS, 4, pos(1,1,-3));
-		add(Witchery.Blocks.PERPETUAL_ICE_STAIRS, 2, pos(-1,2,-3), pos(1,2,-3), pos(-2,4,-3), pos(-2,4,1), pos(2,4,-3), pos(2,4,1));
-		add(Witchery.Blocks.PERPETUAL_ICE_STAIRS, 0, pos(-2,3,0), pos(-3,4,-2), pos(-3,4,2), pos(1,4,-2), pos(1,4,2));
-		add(Witchery.Blocks.PERPETUAL_ICE_STAIRS, 3, pos(0,3,2), pos(-2,4,-1), pos(-2,4,3), pos(2,4,-1), pos(2,4,3));
-		add(Witchery.Blocks.PERPETUAL_ICE_STAIRS, 1, pos(2,3,0), pos(-1,4,-2), pos(-1,4,2), pos(3,4,-2), pos(3,4,2));
+		add(Witchery.Blocks.PERPETUAL_ICE_STAIRS, 5, SIMPLE_ROTATOR, pos(-1,1,-3));
+		add(Witchery.Blocks.PERPETUAL_ICE_STAIRS, 4, SIMPLE_ROTATOR, pos(1,1,-3));
+		add(Witchery.Blocks.PERPETUAL_ICE_STAIRS, 2, SIMPLE_ROTATOR, pos(-1,2,-3), pos(1,2,-3), pos(-2,4,-3), pos(-2,4,1), pos(2,4,-3), pos(2,4,1));
+		add(Witchery.Blocks.PERPETUAL_ICE_STAIRS, 0, SIMPLE_ROTATOR, pos(-2,3,0), pos(-3,4,-2), pos(-3,4,2), pos(1,4,-2), pos(1,4,2));
+		add(Witchery.Blocks.PERPETUAL_ICE_STAIRS, 3, SIMPLE_ROTATOR, pos(0,3,2), pos(-2,4,-1), pos(-2,4,3), pos(2,4,-1), pos(2,4,3));
+		add(Witchery.Blocks.PERPETUAL_ICE_STAIRS, 1, SIMPLE_ROTATOR, pos(2,3,0), pos(-1,4,-2), pos(-1,4,2), pos(3,4,-2), pos(3,4,2));
 	}
 	
 }
