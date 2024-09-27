@@ -41,9 +41,8 @@ import net.minecraftforge.common.MinecraftForge;
 
 import java.awt.*;
 
-import static codechicken.lib.gui.GuiDraw.drawTexturedModalRect;
-import static codechicken.lib.gui.GuiDraw.getStringWidth;
 import static com.emoniph.witchery.client.PlayerRender.drawString;
+import static com.emoniph.witchery.client.PlayerRender.getStringWidth;
 import static org.lwjgl.opengl.GL11.*;
 
 @SuppressWarnings("unused")
@@ -160,18 +159,18 @@ public final class DHPlayerRenderEvents {
 		glRotatef(30, 0F, -1F, 0F);
 		// minecraft skin faces is usually 16x16, so subdivide x2
 		final double x = (left ? 1D : -1D) / 32D, y = 1D / 32D;
-		Tessellator t = Tessellator.instance;
 		if(!left) {
 			glScalef(-1F, 1F, 1F);
 		}
-		elfEar(t, x, y, startU, startV, u, v, !left);
+		elfEar(x, y, startU, startV, u, v, !left);
 		glScalef(1F, 1F, -1F);
-		elfEar(t, x, y, startU, startV, u, v, left);
+		elfEar(x, y, startU, startV, u, v, left);
 		glPopMatrix();
 	}
 
-	private static void elfEar(Tessellator t, double x, double y, double startU, double startV, double u, double v, boolean invertNormals) {
+	private static void elfEar(double x, double y, double startU, double startV, double u, double v, boolean invertNormals) {
 		// quads
+		Tessellator t = Tessellator.instance;
 		t.startDrawingQuads();
 		setEarNormals(t, invertNormals);
 		// color channel 1
@@ -486,7 +485,7 @@ public final class DHPlayerRenderEvents {
 			for(byte stroke: strokes) {
 				x += glyphOffsetX[stroke] * 16;
 				y += glyphOffsetY[stroke] * 16;
-				drawTexturedModalRect(x, y, offsetX + stroke * 16, offsetY * 16, 16, 16);
+				drawTexturedModalRect(x, y, offsetX + stroke * 16, offsetY * 16, 16, 16, 256, 256);
 			}
 			SymbolEffect symbol = EffectRegistry.instance().getEffect(strokes);
 			if(symbol != null) {
@@ -499,6 +498,24 @@ public final class DHPlayerRenderEvents {
 		finally {
 			glPopMatrix();
 		}
+	}
+
+	// draw all texture, but need to specify it sizes
+	private static void drawTexturedModalRect(double x, double y, double u, double v, double width, double height) {
+		drawTexturedModalRect(x, y, u, v, width, height, width, height);
+	}
+	
+	// draw segment of texture
+	private static void drawTexturedModalRect(double x, double y, double u, double v, double width, double height, double textureWidth, double textureHeight) {
+		double xPerPixel = 1.0F / textureWidth;
+		double yPerPixel = 1.0F / textureHeight;
+		Tessellator t = Tessellator.instance;
+		t.startDrawingQuads();
+		t.addVertexWithUV(x, y + height, 0.0D, u * xPerPixel, (v + height) * yPerPixel);
+		t.addVertexWithUV(x + width, y + height, 0.0D, (u + width) * xPerPixel, (v + height) * yPerPixel);
+		t.addVertexWithUV(x + width, y, 0.0D, (u + width) * xPerPixel, v * yPerPixel);
+		t.addVertexWithUV(x, y, 0.0D, u * xPerPixel, v * yPerPixel);
+		t.draw();
 	}
 
 }
