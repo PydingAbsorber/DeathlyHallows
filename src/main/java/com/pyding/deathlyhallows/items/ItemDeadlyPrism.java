@@ -5,6 +5,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.StatCollector;
@@ -13,23 +14,103 @@ import net.minecraft.world.World;
 import java.util.List;
 
 public class ItemDeadlyPrism extends ItemBase {
-	public int damage;
-	public float damageAmount;
-
+	private static final int SOURCES_COUNT = 14;
+	private static final String 
+			DAMAGE_TAG = "PrismDamage",
+			SOURCE_TAG = "PrismDamageSource";
 	public ItemDeadlyPrism() {
 		super("deadlyPrism", 1);
 	}
 
-	public String damageSource() {
-		switch(damage) {
-			case 0: {
-				return "Void";
+	@Override
+	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer p) {
+		if(p.worldObj.isRemote) {
+			return stack;
+		}
+		int meta = stack.getItemDamage();
+		DamageSource ds;
+		if(meta == 13) {
+			ds = new DamageSource(getDamageSourceFromTag(stack));
+		}
+		else {
+			ds = getDamageSourceFromMeta(p, stack.getItemDamage());
+		}
+		try {
+			p.attackEntityFrom(ds, getPrismDamage(stack));
+		}
+		catch(Exception ignored) {
+
+		}
+		return stack;
+	}
+
+	@Override
+	public boolean onEntitySwing(EntityLivingBase e, ItemStack stack) {
+		if(!(e instanceof EntityPlayer) || e.worldObj.isRemote) {
+			return false;
+		}
+		EntityPlayer p = (EntityPlayer)e;
+		if(!p.isSneaking()) {
+			int meta = stack.getItemDamage();
+			++meta;
+			meta %= SOURCES_COUNT;
+			stack.setItemDamage(meta);
+			p.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocalFormatted("dh.chat.deadlyPrism1", getDamageSourceString(meta))));
+			return false;
+		}
+		p.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocalFormatted("dh.chat.deadlyPrism2")));
+		p.getEntityData().setBoolean("DeadlyPrism", true);
+		return true;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	protected void addTooltip(ItemStack stack, EntityPlayer p, List<String> l, boolean devMode) {
+		l.add(StatCollector.translateToLocal("dh.desc.prism"));
+	}
+
+	private static String getDamageSourceFromTag(ItemStack stack) {
+		if(!stack.hasTagCompound()) {
+			return "Custom";
+		}
+		return stack.getTagCompound().getString(SOURCE_TAG);
+	}
+
+	public static void getDamageSourceFromTag(ItemStack stack, String damageSource) {
+		NBTTagCompound tag = stack.getTagCompound();
+		if(tag == null) {
+			tag = new NBTTagCompound();
+			stack.setTagCompound(tag);
+		}
+		tag.setString(SOURCE_TAG, damageSource);
+	}
+	
+	private static float getPrismDamage(ItemStack stack) {
+		if(!stack.hasTagCompound()) {
+			return 0F;
+		}
+		return stack.getTagCompound().getFloat(DAMAGE_TAG);
+	}
+
+	public static void setPrismDamage(ItemStack stack, float damage) {
+		NBTTagCompound tag = stack.getTagCompound();
+		if(tag == null) {
+			tag = new NBTTagCompound();
+			stack.setTagCompound(tag);
+		}
+		tag.setFloat(DAMAGE_TAG, damage);
+	}
+
+	private static String getDamageSourceString(int meta) {
+		switch(meta) {
+			default: {
+				return "Generic";
 			}
 			case 1: {
 				return "Magic";
 			}
 			case 2: {
-				return "Generic";
+				return "Void";
 			}
 			case 3: {
 				return "Bypass Armor";
@@ -62,91 +143,53 @@ public class ItemDeadlyPrism extends ItemBase {
 				return "Starve";
 			}
 			case 13: {
-				return "Neco Arc";
+				return "Custom";
 			}
 		}
-		return null;
 	}
-
-	@Override
-	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer p) {
-		if(p.worldObj.isRemote) {
-			return super.onItemRightClick(stack, world, p);
-		}
-		try {
-			switch(damage) {
-				case 0: {
-					p.attackEntityFrom(DamageSource.outOfWorld, damageAmount);
-				}
-				case 1: {
-					p.attackEntityFrom(DamageSource.magic, damageAmount);
-				}
-				case 2: {
-					p.attackEntityFrom(DamageSource.generic, damageAmount);
-				}
-				case 3: {
-					p.attackEntityFrom(new DamageSource("bypass").setDamageBypassesArmor(), damageAmount);
-				}
-				case 4: {
-					p.attackEntityFrom(new DamageSource("fire").setFireDamage(), damageAmount);
-				}
-				case 5: {
-					p.attackEntityFrom(new DamageSource("explosion").setExplosion(), damageAmount);
-				}
-				case 6: {
-					p.attackEntityFrom(new DamageSource("creative").setDamageAllowedInCreativeMode(), damageAmount);
-				}
-				case 7: {
-					p.attackEntityFrom(new DamageSource("projectile").setProjectile(), damageAmount);
-				}
-				case 8: {
-					p.attackEntityFrom(new DamageSource("absolute").setDamageIsAbsolute(), damageAmount);
-				}
-				case 9: {
-					p.attackEntityFrom(DamageSource.anvil, damageAmount);
-				}
-				case 10: {
-					p.attackEntityFrom(DamageSource.wither, damageAmount);
-				}
-				case 11: {
-					p.attackEntityFrom(DamageSource.lava, damageAmount);
-				}
-				case 12: {
-					p.attackEntityFrom(DamageSource.starve, damageAmount);
-				}
+	
+	private static DamageSource getDamageSourceFromMeta(EntityPlayer p, int itemDamage) {
+		switch(itemDamage) {
+			default: {
+				return DamageSource.generic;
+			}
+			case 1: {
+				return DamageSource.magic;
+			}
+			case 2: {
+				return DamageSource.outOfWorld;
+			}
+			case 3: {
+				return DamageSource.causePlayerDamage(p).setDamageBypassesArmor();
+			}
+			case 4: {
+				return DamageSource.inFire;
+			}
+			case 5: {
+				return DamageSource.setExplosionSource(null);
+			}
+			case 6: {
+				return DamageSource.causePlayerDamage(p).setDamageAllowedInCreativeMode();
+			}
+			case 7: {
+				return DamageSource.causePlayerDamage(p).setProjectile();
+			}
+			case 8: {
+				return DamageSource.causePlayerDamage(p).setDamageIsAbsolute();
+			}
+			case 9: {
+				return DamageSource.anvil;
+			}
+			case 10: {
+				return DamageSource.wither;
+			}
+			case 11: {
+				return DamageSource.lava;
+			}
+			case 12: {
+				return DamageSource.starve;
 			}
 		}
-		catch(Exception ignored) {
-
-		}
-		return super.onItemRightClick(stack, world, p);
-	}
-
-	@Override
-	public boolean onEntitySwing(EntityLivingBase entityLiving, ItemStack stack) {
-		if(!(entityLiving instanceof EntityPlayer) || entityLiving.worldObj.isRemote) {
-			return super.onEntitySwing(entityLiving, stack);
-		}
-		EntityPlayer player = (EntityPlayer)entityLiving;
-		if(!player.isSneaking()) {
-			if(damage == 0 || damage < 12) {
-				damage++;
-			}
-			else {
-				damage = 0;
-			}
-			player.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocalFormatted("dh.chat.deadlyPrism1", damageSource())));
-			return super.onEntitySwing(entityLiving, stack);
-		}
-		player.addChatComponentMessage(new ChatComponentText(StatCollector.translateToLocalFormatted("dh.chat.deadlyPrism2")));
-		player.getEntityData().setBoolean("DeadlyPrism", true);
-		return super.onEntitySwing(entityLiving, stack);
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	protected void addTooltip(ItemStack stack, EntityPlayer p, List<String> l, boolean devMode) {
-		l.add(StatCollector.translateToLocal("dh.desc.prism"));
 	}
 	
 }

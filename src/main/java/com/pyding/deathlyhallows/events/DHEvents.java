@@ -762,16 +762,18 @@ public final class DHEvents {
 			return;
 		}
 		p.getEntityData().setBoolean("DeadlyPrism", false);
-		if(p.getHeldItem() == null || !(p.getHeldItem().getItem() instanceof ItemDeadlyPrism)) {
+		ItemStack stack = p.getHeldItem();
+		if(stack == null || !(stack.getItem() instanceof ItemDeadlyPrism)) {
 			return;
 		}
-		ItemDeadlyPrism prism = (ItemDeadlyPrism)p.getHeldItem().getItem();
-		if(message.matches("-?\\d+(\\.\\d+)?")) {
-			prism.damageAmount = Float.parseFloat(message);
-			p.addChatComponentMessage(new ChatComponentText("Damage set to: §5" + prism.damageAmount));
+		if(!message.matches("-?\\d+(\\.\\d+)?")) {
+			p.addChatComponentMessage(new ChatComponentText("It's not a number..."));
 			return;
 		}
-		p.addChatComponentMessage(new ChatComponentText("It's not a number..."));
+		float damage = Float.parseFloat(message);
+		ItemDeadlyPrism.setPrismDamage(stack, damage);
+		p.addChatComponentMessage(new ChatComponentText("Damage set to: §5" + damage));
+		
 	}
 
 	private static void chooseHallow(String message, EntityPlayer p) {
