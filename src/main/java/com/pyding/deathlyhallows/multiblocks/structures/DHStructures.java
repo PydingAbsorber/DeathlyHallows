@@ -5,13 +5,13 @@ import com.pyding.deathlyhallows.rituals.BlockList;
 import com.pyding.deathlyhallows.utils.IMultiBlockHandler;
 
 public class DHStructures {
-	
-	public static final IMultiBlockHandler EMPTY = new StructureBase(){
+
+	public static final IMultiBlockHandler EMPTY = new StructureBase() {
 		@Override
 		protected void fillStructure() {
 		}
 	};
-	
+
 	public static IMultiBlockHandler
 			basik,
 			iceCastle,
@@ -22,7 +22,7 @@ public class DHStructures {
 			hunt,
 			purify,
 			coven;
-	
+
 	public static void init() {
 		sonata = new StructureSonata();
 		iceCastle = new StructureIceCastle();
@@ -37,5 +37,5 @@ public class DHStructures {
 		mending = new BlockList(new int[]{0, 0, 0}, new String[][][]{});
 		hunt = new BlockList(new int[]{0, 0, 0}, new String[][][]{});
 	}
-	
+
 }

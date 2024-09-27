@@ -20,5 +20,5 @@ public class StructureBasik extends StructureBase {
 		add(ConfigBlocks.blockStoneDevice, 12, pos(0, -1, 0));
 		add(Witchery.Blocks.BLOOD_ROSE, 1, pos(-2, 0, -2), pos(-2, 0, 2), pos(2, 0, -2), pos(2, 0, 2));
 	}
-	
+
 }

@@ -11,7 +11,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 public abstract class StructureBase implements IMultiBlockHandler {
 
 	public static final MultiBlockComponent.BlockMetaRotator
-			SIMPLE_ROTATOR = (meta, intAngle) -> (meta + intAngle) & 3,
+			SIMPLE_ROTATOR = (meta, intAngle) -> (meta + intAngle) % 3,
 			HELL_ROTATOR = (meta, intAngle) -> { // I hate forge & minecraft 1.7.10 rotations SOOOO much
 				switch(intAngle & 3) {
 					default:
@@ -23,10 +23,11 @@ public abstract class StructureBase implements IMultiBlockHandler {
 					case 3:
 						return ForgeDirection.ROTATION_MATRIX[0][meta];
 				}
-			};
+			},
+			STAIRS_ROTATOR = (meta, intAngle) -> (HELL_ROTATOR.rotate(((meta + 2) % 4) + 2, intAngle) % 4) + 4 * (meta / 4);
 
 	private final MultiBlock multiBlock = new MultiBlock();
-
+	
 	public StructureBase() {
 		fillStructure();
 	}
@@ -65,5 +66,5 @@ public abstract class StructureBase implements IMultiBlockHandler {
 	protected final ChunkCoordinates pos(int x, int y, int z) {
 		return new ChunkCoordinates(x, y, z);
 	}
-	
+
 }
