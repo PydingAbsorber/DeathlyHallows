@@ -4,6 +4,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
@@ -172,7 +173,7 @@ public class ItemDeadlyPrism extends ItemBase {
 				return DamageSource.causePlayerDamage(p).setDamageAllowedInCreativeMode();
 			}
 			case 7: {
-				return DamageSource.causePlayerDamage(p).setProjectile();
+				return DamageSource.causeArrowDamage(new EntityArrow(p.worldObj), p).setProjectile();
 			}
 			case 8: {
 				return DamageSource.causePlayerDamage(p).setDamageIsAbsolute();
