@@ -46,21 +46,21 @@ public class ElderRites {
 	}
 
 	public static List<ElderRitual> getRituals(Category category) {
+		if(!rituals.containsKey(category)) {
+			rituals.put(category, new ArrayList<>());
+		}
 		return rituals.get(category);
 	}
 
 	public static void addRecipe(int ritualID, Category category, int bookIndex, String name, ElderRite rite, ElderSacrifice initialSacrifice, EnumSet<RitualTraits> traits, IMultiBlockHandler... circles) {
 		ElderRitual ritual = new ElderRitual(ritualID, bookIndex, rite, initialSacrifice, traits, circles);
 		ritual.setUnlocalizedName(name);
-		if(!rituals.containsKey(category)) {
-			rituals.put(category, new ArrayList<>());
-		}
-		rituals.get(category).add(ritual);
+		getRituals(category).add(ritual);
 	}
 
 	public static ElderRitual getRitual(int ritualID) {
 		for(Category category: Category.values()) {
-			for(ElderRitual ritual: rituals.get(category)) {
+			for(ElderRitual ritual: getRituals(category)) {
 				if(ritual.ritualID == ritualID) {
 					return ritual;
 				}
@@ -72,7 +72,7 @@ public class ElderRites {
 	public static List<ElderRitual> getSortedRituals() {
 		ArrayList<ElderRitual> sortedRituals = new ArrayList<>();
 		for(Category category: Category.values()) {
-			ArrayList<ElderRitual> l = new ArrayList<>(rituals.get(category));
+			ArrayList<ElderRitual> l = new ArrayList<>(getRituals(category));
 			l.sort(Comparator.comparingInt(r -> r.bookIndex));
 			sortedRituals.addAll(l);
 		}
