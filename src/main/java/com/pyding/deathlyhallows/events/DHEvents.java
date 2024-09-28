@@ -516,7 +516,7 @@ public final class DHEvents {
 				vel.zCoord += MathHelper.sin(yaw) * p.moveStrafing;
 			}
 			vel = vel.normalize();
-			final double speed = 0.75F;
+			final double speed = 0.75D;
 			p.motionX = vel.xCoord * speed;
 			p.motionY = vel.yCoord * speed;
 			p.motionZ = vel.zCoord * speed;
