@@ -16,6 +16,7 @@ import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.blocks.DHBlocks;
 import com.pyding.deathlyhallows.entities.EntityAbsoluteDeath;
 import com.pyding.deathlyhallows.entities.EntityNimbus;
@@ -71,6 +72,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
+import net.minecraft.util.Vec3;
 import net.minecraftforge.common.ISpecialArmor;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
@@ -382,6 +384,7 @@ public final class DHEvents {
 			updateAvengerPlayer(p, props);
 		}
 		updateTags(p);
+		updateMantle(p);
 		updateThaumcraftWandFocus(p);
 		if(!(p.worldObj.isRemote)) {
 			if(DHConfig.shouldRemove) {
@@ -458,23 +461,81 @@ public final class DHEvents {
 
 	private static void updateTags(EntityPlayer p) {
 		NBTTagCompound tag = p.getEntityData();
-		if(tag.getInteger("mantlecd") > 0) {
-			tag.setInteger("mantlecd", tag.getInteger("mantlecd") - 1);
+		if(tag.getInteger("invincible") > 0) {
+			tag.setInteger("invincible", tag.getInteger("invincible") - 1);
 		}
 		if(tag.getInteger("DopVoid") > 0) {
 			tag.setInteger("DopVoid", tag.getInteger("DopVoid") - 1);
 		}
-		if(tag.getInteger("mantlecd") <= 600 && tag.hasKey("mantleActive")) {
-			tag.removeTag("mantleActive");
-			ItemBaubleInvisibilityMantle.setMantleAbilityState(p, false);
-			ItemBaubleInvisibilityMantle.setMantleState(p, false);
+	}
+
+	private static void updateMantle(EntityPlayer p) {
+		if(!p.worldObj.isRemote) {
+			DeathlyHallows.LOG.info(p.getCommandSenderName() + " start");
 		}
-		if(tag.getBoolean("mantleActive")) {
-			ItemBaubleInvisibilityMantle.setMantleState(p, true);
-			p.addPotionEffect(new PotionEffect(Potion.invisibility.id, tag.getInteger("mantlecd"), 250, true));
+		NBTTagCompound tag = p.getEntityData();
+		if(tag.getInteger("mantlecd") > 0) {
+			tag.setInteger("mantlecd", tag.getInteger("mantlecd") - 1);
 		}
-		if(tag.getInteger("invincible") > 0) {
-			tag.setInteger("invincible", tag.getInteger("invincible") - 1);
+		if(tag.hasKey("mantleActive")) {
+			if(tag.getInteger("mantlecd") <= 600) {
+				tag.removeTag("mantleActive");
+				ItemBaubleInvisibilityMantle.setMantleAbilityState(p, false);
+				ItemBaubleInvisibilityMantle.setMantleState(p, false);
+			}
+			else {
+				ItemBaubleInvisibilityMantle.setMantleState(p, true);
+				p.addPotionEffect(new PotionEffect(Potion.invisibility.id, tag.getInteger("mantlecd"), 250, true));
+			}
+		}
+		if(!p.isSneaking()) {
+			if(ItemBaubleInvisibilityMantle.isMantleActive(p)) {
+				ItemBaubleInvisibilityMantle.setMantleAbilityState(p, false);
+			}
+			return;
+		}
+		if(tag.getInteger("mantlecd") <= 0) {
+			tag.setInteger("mantlecd", 1200);
+			tag.setBoolean("mantleActive", true);
+			p.worldObj.playSoundAtEntity(p, "dh:mantle." + DHUtils.getRandomInt(1, 3), 1F, 1F);
+		}
+		if(!ItemBaubleInvisibilityMantle.isMantleActive(p)) {
+			return;
+		}
+		ItemBaubleInvisibilityMantle.setMantleAbilityState(p, true);
+		p.fallDistance = 0F;
+		Vec3 vel = p.getLookVec();
+		final double speed = 0.5F;
+		p.motionX = vel.xCoord * speed;
+		p.motionY = vel.yCoord * speed;
+		p.motionZ = vel.zCoord * speed;
+		if(!p.worldObj.isRemote) {
+			DeathlyHallows.LOG.info(p.getCommandSenderName() + " motion [" + p.motionX + "," + p.motionY + "," + p.motionZ + "]");
+		}
+		if(p.ticksExisted % 4 != 0) {
+			return;
+		}
+		@SuppressWarnings("unchecked")
+		List<EntityLivingBase> entities = p.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, p.boundingBox.expand(1, 0, 1));
+		for(EntityLivingBase living : entities) {
+			if(living == p
+					|| living.isEntityInvulnerable()
+					|| living instanceof EntityAbsoluteDeath
+					|| living instanceof EntityPlayer && ((EntityPlayer)living).capabilities.isCreativeMode
+			) {
+				continue;
+			}
+			float health = living.getHealth();
+			float steal = Math.min(health, living.getMaxHealth() * ItemBaubleInvisibilityMantle.HEALTH_STEAL_RATIO);
+			living.setHealth(health - steal);
+			p.heal(steal);
+			int hrt = living.hurtResistantTime;
+			living.hurtResistantTime = 0;
+			living.attackEntityFrom(DamageSource.outOfWorld, 0.1F);
+			living.hurtResistantTime = hrt;
+			if(living.getHealth() <= 0.0F) {
+				living.onDeath(DamageSource.causePlayerDamage(p).setDamageIsAbsolute().setDamageBypassesArmor());
+			}
 		}
 	}
 
