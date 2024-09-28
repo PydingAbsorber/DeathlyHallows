@@ -1,12 +1,12 @@
-package com.pyding.deathlyhallows.rituals;
+package com.pyding.deathlyhallows.multiblocks;
 
-import com.pyding.deathlyhallows.multiblocks.MultiBlock;
 import com.pyding.deathlyhallows.utils.IMultiBlockHandler;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTTagCompound;
 
+// TODO remove legacy API
 public class BlockList implements IMultiBlockHandler {
 	private final MultiBlock mb;
 

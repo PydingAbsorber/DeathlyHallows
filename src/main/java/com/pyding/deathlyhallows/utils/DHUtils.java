@@ -209,17 +209,20 @@ public class DHUtils {
 	public static int getRandomInt(int max) {
 		return UtilsRandom.random.nextInt(max);
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	public static <T extends Entity> List<T> getEntitiesAround(Class<T> clazz, Entity entity, float radius) {
-		return entity.worldObj.getEntitiesWithinAABB(clazz, AxisAlignedBB.getBoundingBox(entity.posX - radius, entity.posY - radius, entity.posZ - radius, entity.posX + radius, entity.posY + radius, entity.posZ + radius));
+		return getEntitiesIn(clazz, entity.worldObj, AxisAlignedBB.getBoundingBox(entity.posX - radius, entity.posY - radius, entity.posZ - radius, entity.posX + radius, entity.posY + radius, entity.posZ + radius));
+	}
+	
+	public static <T extends Entity> List<T> getEntitiesAt(Class<T> clazz, World world, double x, double y, double z, float radius) {
+		return getEntitiesIn(clazz, world, AxisAlignedBB.getBoundingBox(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius));
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends Entity> List<T> getEntitiesAt(Class<T> clazz, World world, double x, double y, double z, float radius) {
-		return world.getEntitiesWithinAABB(clazz, AxisAlignedBB.getBoundingBox(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius));
+	public static <T extends Entity> List<T> getEntitiesIn(Class<T> clazz, World world, AxisAlignedBB boundingBox) {
+		return world.getEntitiesWithinAABB(clazz, boundingBox);
 	}
-
+	
 	public static byte[] getBytesFromTagList(NBTTagList list, int index) {
 		return ((NBTTagByteArray)((NBTTagList)list.copy()).removeTag(index)).func_150292_c();
 	}

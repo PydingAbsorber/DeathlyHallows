@@ -1,4 +1,4 @@
-package com.pyding.deathlyhallows.rituals;
+package com.pyding.deathlyhallows.rituals.steps;
 
 import com.emoniph.witchery.blocks.BlockCircle;
 import com.emoniph.witchery.familiar.Familiar;
@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 public class StepCheckFamiliar extends RitualStep {
 	private final String familiar;
 
-	protected StepCheckFamiliar(String familiar) {
+	public StepCheckFamiliar(String familiar) {
 		super(false);
 		this.familiar = familiar;
 	}

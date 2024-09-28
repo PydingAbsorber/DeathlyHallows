@@ -1,12 +1,11 @@
-package com.pyding.deathlyhallows.rituals.rites;
+package com.pyding.deathlyhallows.rituals.sacrifices;
 
 import com.emoniph.witchery.Witchery;
 import com.emoniph.witchery.common.IPowerSource;
-import com.emoniph.witchery.common.PowerSources;
 import com.emoniph.witchery.ritual.RiteRegistry;
 import com.emoniph.witchery.ritual.RitualStep;
-import com.emoniph.witchery.util.Coord;
 import com.pyding.deathlyhallows.blocks.BlockElderRitual;
+import com.pyding.deathlyhallows.rituals.steps.StepBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
@@ -14,13 +13,12 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class ElderSacrificePower extends ElderSacrifice {
+public class SacrificePower extends SacrificeBase {
 	public final float powerRequired;
 	public final int powerFrequencyInTicks;
 
-	public ElderSacrificePower(float powerRequired, int powerFrequencyInTicks) {
+	public SacrificePower(float powerRequired, int powerFrequencyInTicks) {
 		this.powerRequired = powerRequired;
 		this.powerFrequencyInTicks = powerFrequencyInTicks;
 	}
@@ -34,24 +32,23 @@ public class ElderSacrificePower extends ElderSacrifice {
 	}
 
 	public void addSteps(ArrayList<RitualStep> steps, AxisAlignedBB bounds, int maxDistance) {
-		steps.add(new ElderSacrificePower.SacrificePowerStep(this));
+		steps.add(new SacrificePower.SacrificePowerStep(this));
 	}
 
-	private static class SacrificePowerStep extends ElderRitualStep {
-		private final ElderSacrificePower sacrifice;
-		private static final int POWER_SOURCE_RADIUS = 16;
+	private static class SacrificePowerStep extends StepBase {
+		private final SacrificePower sacrifice;
 
-		public SacrificePowerStep(ElderSacrificePower sacrifice) {
+		public SacrificePowerStep(SacrificePower sacrifice) {
 			super(false);
 			this.sacrifice = sacrifice;
 		}
 
 		@Override
-		public Result elderProcess(World world, int posX, int posY, int posZ, long ticks, BlockElderRitual.TileEntityCircle.ActivatedElderRitual ritual) {
+		public Result elderProcess(World world, int x, int y, int z, long ticks, BlockElderRitual.TileEntityCircle.ActivatedElderRitual ritual) {
 			if(ticks % (long)this.sacrifice.powerFrequencyInTicks != 0L) {
 				return Result.STARTING;
 			}
-			IPowerSource powerSource = this.findNewPowerSource(world, posX, posY, posZ);
+			IPowerSource powerSource = this.findNewPowerSource(world, x, y, z);
 			if(powerSource == null) {
 				RiteRegistry.RiteError("witchery.rite.missingpowersource", ritual.getInitiatingPlayerName(), world);
 				return Result.ABORTED_REFUND;
@@ -64,13 +61,7 @@ public class ElderSacrificePower extends ElderSacrifice {
 				return Result.ABORTED_REFUND;
 			}
 		}
-
-		private IPowerSource findNewPowerSource(World world, int posX, int posY, int posZ) {
-			if(PowerSources.instance() == null) {
-				return null;
-			}
-			List<PowerSources.RelativePowerSource> sources = PowerSources.instance().get(world, new Coord(posX, posY, posZ), POWER_SOURCE_RADIUS);
-			return sources != null && sources.size() > 0 ? sources.get(0).source() : null;
-		}
+		
 	}
+	
 }

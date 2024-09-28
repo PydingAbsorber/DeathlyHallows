@@ -18,8 +18,9 @@ import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.google.common.collect.Lists;
 import com.pyding.deathlyhallows.items.DHItems;
-import com.pyding.deathlyhallows.rituals.ElderRites;
-import com.pyding.deathlyhallows.rituals.rites.ElderRitualStep;
+import com.pyding.deathlyhallows.rituals.DHRituals;
+import com.pyding.deathlyhallows.rituals.RitualBase;
+import com.pyding.deathlyhallows.rituals.steps.StepBase;
 import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -168,11 +169,7 @@ public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 			SoundEffect.NOTE_SNARE.playAtPlayer(world, player);
 			return;
 		}
-
-		boolean isDaytime2 = world.isDaytime();
-		boolean canThunder = world.getBiomeGenForCoords(posX, posZ).canSpawnLightningBolt();
-		boolean isRaining2 = world.isRaining() && canThunder;
-		boolean isThundering2 = world.isThundering();
+		
 		int maxRadius = 7; // PATTERN.length / 2;
 		AxisAlignedBB bounds = AxisAlignedBB.getBoundingBox(posX - maxRadius, posY - maxRadius, posZ - maxRadius, posX + maxRadius, posY + maxRadius, posZ + maxRadius);
 		@SuppressWarnings("unchecked")
@@ -197,8 +194,8 @@ public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 		}
 		boolean success = false;
 		int covenSize = summonCoven ? EntityCovenWitch.getCovenSize(player) : 0;
-		for(ElderRites.ElderRitual o: ElderRites.getSortedRituals()) {
-			if(!o.isMatch(world, posX, posY, posZ, entities, grassperStacks, isDaytime2, isRaining2, isThundering2)) {
+		for(RitualBase o: DHRituals.getSortedRituals()) {
+			if(!o.isMatch(world, posX, posY, posZ, entities, grassperStacks)) {
 				continue;
 			}
 			tileEntity.queueRitual(o, bounds, player, covenSize, summonCoven);
@@ -276,7 +273,7 @@ public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 			}
 			byte[] covens = tag.hasKey("RitualCovens") ? tag.getByteArray("RitualCovens") : null;
 			for(int i = 0; i < ritualIDs.length; ++i) {
-				ElderRites.ElderRitual ritual = ElderRites.getRitual(ritualIDs[i]);
+				RitualBase ritual = DHRituals.getRitual(ritualIDs[i]);
 				if(ritual == null) {
 					continue;
 				}
@@ -285,7 +282,7 @@ public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 				if(ritualSteps.isEmpty()) {
 					continue;
 				}
-				BlockElderRitual.TileEntityCircle.ActivatedElderRitual ActivatedElderRitual = new BlockElderRitual.TileEntityCircle.ActivatedElderRitual(ritual, ritualSteps, s[i], (covens != null) ? covens[i] : 0, null);
+				BlockElderRitual.TileEntityCircle.ActivatedElderRitual ActivatedElderRitual = new BlockElderRitual.TileEntityCircle.ActivatedElderRitual(ritual, ritualSteps, s[i], (covens != null) ? covens[i] : 0);
 				ActivatedElderRitual.setLocation(locations[i]);
 				upkeepRituals.add(ActivatedElderRitual);
 			}
@@ -310,7 +307,7 @@ public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 
 		private void activeRituals() {
 			ActivatedElderRitual ritual = activeRituals.get(0);
-			Result stepResult = ((ElderRitualStep)ritual.steps.get(0)).elderRun(worldObj, xCoord, yCoord, zCoord, ticks, ritual);
+			Result stepResult = ((StepBase)ritual.steps.get(0)).elderRun(worldObj, xCoord, yCoord, zCoord, ticks, ritual);
 			ritual.postProcess(worldObj);
 			if(abortNext) {
 				abortNext = false;
@@ -359,7 +356,7 @@ public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 
 		private void upkeepRituals() {
 			for(ActivatedElderRitual result: upkeepRituals) {
-				Result stepResult = ((ElderRitualStep)result.steps.get(0)).elderRun(worldObj, xCoord, yCoord, zCoord, ticks, result);
+				Result stepResult = ((StepBase)result.steps.get(0)).elderRun(worldObj, xCoord, yCoord, zCoord, ticks, result);
 				if(stepResult != UPKEEP && Config.instance().traceRites()) {
 					Log.instance()
 					   .traceRite(String.format(" - Upkeep ritual=%s, step=%s, result=%s", result.ritual.getUnlocalizedName(), result.steps.get(0)
@@ -400,14 +397,14 @@ public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 			return !activeRituals.isEmpty() || !upkeepRituals.isEmpty();
 		}
 
-		public void queueRitual(ElderRites.ElderRitual ritual, AxisAlignedBB bounds, EntityPlayer player, int covenSize, boolean summonCoven) {
+		public void queueRitual(RitualBase ritual, AxisAlignedBB bounds, EntityPlayer player, int covenSize, boolean summonCoven) {
 			ArrayList<RitualStep> ritualSteps = new ArrayList<>();
 			if(summonCoven) {
 				EntityCovenWitch.summonCoven(ritualSteps, player.worldObj, player, new int[][]{{xCoord - 2, yCoord, zCoord - 2}, {xCoord + 2, yCoord, zCoord - 2}, {xCoord - 2, yCoord, zCoord + 2}, {xCoord + 2, yCoord, zCoord + 2}, {xCoord, yCoord, zCoord + 3}, {xCoord, yCoord, zCoord - 3}});
 			}
 			ritual.addSteps(ritualSteps, bounds);
 			if(!ritualSteps.isEmpty() && !worldObj.isRemote) {
-				activeRituals.add(new BlockElderRitual.TileEntityCircle.ActivatedElderRitual(ritual, ritualSteps, (player != null) ? player.getCommandSenderName() : null, covenSize, null));
+				activeRituals.add(new BlockElderRitual.TileEntityCircle.ActivatedElderRitual(ritual, ritualSteps, (player != null) ? player.getCommandSenderName() : null, covenSize));
 				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1, 3);
 			}
 		}
@@ -425,14 +422,14 @@ public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 		}
 
 		public static class ActivatedElderRitual {
-			public final ElderRites.ElderRitual ritual;
+			public final RitualBase ritual;
 			private final ArrayList<RitualStep> steps;
 			public final String playerName;
 			public final ArrayList<RitualStep.SacrificedItem> sacrificedItems;
 			public final int covenSize;
 			private Coord coord;
 
-			private ActivatedElderRitual(ElderRites.ElderRitual ritual, ArrayList<RitualStep> steps, String playerName, int covenSize) {
+			private ActivatedElderRitual(RitualBase ritual, ArrayList<RitualStep> steps, String playerName, int covenSize) {
 				sacrificedItems = new ArrayList<>();
 				this.ritual = ritual;
 				this.steps = steps;
@@ -463,27 +460,24 @@ public class BlockElderRitual extends BlockBase implements ITileEntityProvider {
 			public void postProcess(World world) {
 				for(int i = 0; i < sacrificedItems.size(); ++i) {
 					RitualStep.SacrificedItem sacrificedItem = sacrificedItems.get(i);
-					if(sacrificedItem != null && sacrificedItem.itemstack != null) {
-						if(sacrificedItem.itemstack.getItem() == Witchery.Items.ARTHANA) {
-							world.spawnEntityInWorld(new EntityItem(world, 0.5 + sacrificedItem.location.x, 0.5 + sacrificedItem.location.y, 0.5 + sacrificedItem.location.z, sacrificedItem.itemstack));
-							sacrificedItems.remove(i);
-							break;
-						}
-						if(sacrificedItem.itemstack.getItem() == Witchery.Items.BOLINE) {
-							world.spawnEntityInWorld(new EntityItem(world, 0.5 + sacrificedItem.location.x, 0.5 + sacrificedItem.location.y, 0.5 + sacrificedItem.location.z, sacrificedItem.itemstack));
-							sacrificedItems.remove(i);
-							break;
-						}
+					if(sacrificedItem == null || sacrificedItem.itemstack == null) {
+						continue;
+					}
+					if(sacrificedItem.itemstack.getItem() == Witchery.Items.ARTHANA) {
+						world.spawnEntityInWorld(new EntityItem(world, 0.5 + sacrificedItem.location.x, 0.5 + sacrificedItem.location.y, 0.5 + sacrificedItem.location.z, sacrificedItem.itemstack));
+						sacrificedItems.remove(i);
+						break;
+					}
+					if(sacrificedItem.itemstack.getItem() == Witchery.Items.BOLINE) {
+						world.spawnEntityInWorld(new EntityItem(world, 0.5 + sacrificedItem.location.x, 0.5 + sacrificedItem.location.y, 0.5 + sacrificedItem.location.z, sacrificedItem.itemstack));
+						sacrificedItems.remove(i);
+						break;
 					}
 				}
 			}
 
 			public int getCurrentStage() {
 				return steps.isEmpty() ? 0 : steps.get(0).getCurrentStage();
-			}
-
-			ActivatedElderRitual(ElderRites.ElderRitual x0, ArrayList<RitualStep> x1, String x2, int x3, Result x4) {
-				this(x0, x1, x2, x3);
 			}
 		}
 	}

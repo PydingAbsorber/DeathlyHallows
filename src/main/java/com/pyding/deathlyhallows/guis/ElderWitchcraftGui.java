@@ -9,9 +9,9 @@ import com.pyding.deathlyhallows.multiblocks.PageMultiBlock;
 import com.pyding.deathlyhallows.multiblocks.structures.DHStructures;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketElderBookPage;
-import com.pyding.deathlyhallows.rituals.ElderRites;
+import com.pyding.deathlyhallows.rituals.DHRituals;
+import com.pyding.deathlyhallows.rituals.RitualBase;
 import com.pyding.deathlyhallows.utils.DHUtils;
-import com.pyding.deathlyhallows.utils.IMultiBlockHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
@@ -63,7 +63,7 @@ public class ElderWitchcraftGui extends GuiScreen {
 		String intro = Witchery.resource("dh.book.rites1");
 		tag.setString("Summary", intro);
 		bookPages.appendTag(tag);
-		for(ElderRites.ElderRitual ritual: ElderRites.getSortedRituals()) {
+		for(RitualBase ritual: DHRituals.getSortedRituals()) {
 			tag = new NBTTagCompound();
 			tag.setString("Summary", ritual.getDescription());
 			tag.setInteger("RitualID", ritual.ritualID);
@@ -116,10 +116,10 @@ public class ElderWitchcraftGui extends GuiScreen {
 		buttonList.add(buttonPreviousIngredientPage = new GuiButtonNext(4, left + 20, top + 154, false));
 		buttonList.add(new GuiButtonVisualize(5, left + 183, top + 155));
 		buttonList.add(new GuiButtonLayer(6, left + 230, top + 26));
-		ElderRites.Category[] values = ElderRites.Category.values();
+		DHRituals.Category[] values = DHRituals.Category.values();
 		int pages = bookTotalPages + 1;
 		for(int i = values.length - 1; i >= 0; --i) {
-			int categorySize = ElderRites.getRituals(values[i]).size();
+			int categorySize = DHRituals.getRituals(values[i]).size();
 			if(categorySize == 0) {
 				continue; // no need to draw category then.
 			}
@@ -239,12 +239,9 @@ public class ElderWitchcraftGui extends GuiScreen {
 			final NBTTagCompound compound = bookPages.getCompoundTagAt(currPage);
 			int ritualID = (compound.getInteger("RitualID"));
 			if(ritualID > 0) {
-				ElderRites.ElderRitual ritual = ElderRites.getRitual(ritualID);
+				RitualBase ritual = DHRituals.getRitual(ritualID);
 				s5 = ritual.getDescription();
-				IMultiBlockHandler[] circles = ritual.circles;
-				for(IMultiBlockHandler c: circles) {
-					mb.mergeMultiBlocks(c.getMultiBlock());
-				}
+				mb = ritual.circle.getMultiBlock();
 			}
 			else {
 				s5 = compound.getString("Summary");

@@ -1,7 +1,8 @@
 package com.pyding.deathlyhallows.multiblocks.structures;
 
+import com.pyding.deathlyhallows.blocks.DHBlocks;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
-import com.pyding.deathlyhallows.rituals.BlockList;
+import com.pyding.deathlyhallows.multiblocks.OctagonPart;
 import com.pyding.deathlyhallows.utils.IMultiBlockHandler;
 
 public class DHStructures {
@@ -34,8 +35,8 @@ public class DHStructures {
 			basik = new StructureBasik();
 		}
 		// not yet implemented
-		mending = new BlockList(new int[]{0, 0, 0}, new String[][][]{});
-		hunt = new BlockList(new int[]{0, 0, 0}, new String[][][]{});
+		mending = new StructureOctagonDrawing(new OctagonPart(DHBlocks.elderGlyph));
+		hunt = new StructureOctagonDrawing(new OctagonPart(DHBlocks.elderGlyph));
 	}
 
 }

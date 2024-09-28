@@ -26,16 +26,20 @@ public abstract class StructureBase implements IMultiBlockHandler {
 			},
 			STAIRS_ROTATOR = (meta, intAngle) -> (HELL_ROTATOR.rotate(((meta + 2) % 4) + 2, intAngle) % 4) + 4 * (meta / 4);
 
-	private final MultiBlock multiBlock = new MultiBlock();
+	private MultiBlock multiBlock = null;
 	
 	public StructureBase() {
-		fillStructure();
 	}
 
 	protected abstract void fillStructure();
 
 	@Override
 	public MultiBlock getMultiBlock() {
+		// lazy init
+		if(multiBlock == null) {
+			multiBlock = new MultiBlock();
+			fillStructure();
+		}
 		return multiBlock;
 	}
 

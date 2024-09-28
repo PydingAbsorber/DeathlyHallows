@@ -1,4 +1,4 @@
-package com.pyding.deathlyhallows.rituals.rites;
+package com.pyding.deathlyhallows.rituals.sacrifices;
 
 import com.emoniph.witchery.ritual.RitualStep;
 import net.minecraft.entity.Entity;
@@ -8,9 +8,9 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 
-public abstract class ElderSacrifice {
+public abstract class SacrificeBase {
 	
-	public ElderSacrifice() {
+	public SacrificeBase() {
 		
 	}
 

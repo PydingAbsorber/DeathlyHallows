@@ -1,4 +1,4 @@
-package com.pyding.deathlyhallows.rituals.rites;
+package com.pyding.deathlyhallows.rituals.sacrifices;
 
 import com.emoniph.witchery.ritual.RitualStep;
 import com.google.common.collect.Lists;
@@ -10,26 +10,26 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ElderSacrificeMultiple extends ElderSacrifice {
-	private final List<ElderSacrifice> sacrifices;
+public class SacrificeMultiple extends SacrificeBase {
+	private final List<SacrificeBase> sacrifices;
 
-	public ElderSacrificeMultiple(ElderSacrifice... sacrifices) {
+	public SacrificeMultiple(SacrificeBase... sacrifices) {
 		this.sacrifices = Lists.newArrayList(sacrifices);
 	}
 	
-	public void add(ElderSacrifice sacrifice) {
+	public void add(SacrificeBase sacrifice) {
 		this.sacrifices.add(sacrifice);
 	}
 
 	public void addDescription(StringBuffer sb) {
-		for(ElderSacrifice sacrifice: sacrifices) {
+		for(SacrificeBase sacrifice: sacrifices) {
 			sacrifice.addDescription(sb);
 		}
 
 	}
 
 	public boolean isMatch(World world, int posX, int posY, int posZ, int maxDistance, ArrayList<Entity> entities, ArrayList<ItemStack> grassperStacks) {
-		for(ElderSacrifice sacrifice: sacrifices) {
+		for(SacrificeBase sacrifice: sacrifices) {
 			if(!sacrifice.isMatch(world, posX, posY, posZ, maxDistance, entities, grassperStacks)) {
 				return false;
 			}
@@ -38,7 +38,7 @@ public class ElderSacrificeMultiple extends ElderSacrifice {
 	}
 
 	public void addSteps(ArrayList<RitualStep> steps, AxisAlignedBB bounds, int maxDistance) {
-		for(ElderSacrifice sacrifice: sacrifices) {
+		for(SacrificeBase sacrifice: sacrifices) {
 			sacrifice.addSteps(steps, bounds, maxDistance);
 		}
 	}

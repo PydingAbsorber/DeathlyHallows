@@ -1,4 +1,4 @@
-package com.pyding.deathlyhallows.rituals;
+package com.pyding.deathlyhallows.rituals.steps;
 
 import com.emoniph.witchery.blocks.BlockCircle;
 import com.emoniph.witchery.ritual.RiteRegistry;
@@ -10,7 +10,7 @@ public class StepCheckCoven extends RitualStep {
 
 	private final int convenRequired;
 
-	protected StepCheckCoven(int convenRequired) {
+	public StepCheckCoven(int convenRequired) {
 		super(false);
 		this.convenRequired = convenRequired;
 	}

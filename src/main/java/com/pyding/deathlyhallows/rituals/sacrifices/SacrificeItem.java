@@ -1,4 +1,4 @@
-package com.pyding.deathlyhallows.rituals.rites;
+package com.pyding.deathlyhallows.rituals.sacrifices;
 
 import com.emoniph.witchery.Witchery;
 import com.emoniph.witchery.blocks.BlockGrassper;
@@ -11,6 +11,7 @@ import com.emoniph.witchery.util.Log;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
 import com.pyding.deathlyhallows.blocks.BlockElderRitual;
+import com.pyding.deathlyhallows.rituals.steps.StepBase;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -28,10 +29,10 @@ import net.minecraftforge.oredict.OreDictionary;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ElderSacrificeItem extends ElderSacrifice {
+public class SacrificeItem extends SacrificeBase {
 	final ItemStack[] stacks;
 
-	public ElderSacrificeItem(ItemStack... stacks) {
+	public SacrificeItem(ItemStack... stacks) {
 		this.stacks = stacks;
 	}
 
@@ -119,7 +120,7 @@ public class ElderSacrificeItem extends ElderSacrifice {
 		}
 	}
 
-	protected static class StepElderSacrificeItem extends ElderRitualStep {
+	protected static class StepElderSacrificeItem extends StepBase {
 		private static final int RADIUS = 16;		
 		protected final ItemStack stack;
 		protected final AxisAlignedBB bounds;
@@ -136,7 +137,7 @@ public class ElderSacrificeItem extends ElderSacrifice {
 
 
 		@Override
-		public Result elderProcess(World world, int posX, int posY, int posZ, long ticks, BlockElderRitual.TileEntityCircle.ActivatedElderRitual ritual) {
+		public Result elderProcess(World world, int posX, int y, int posZ, long ticks, BlockElderRitual.TileEntityCircle.ActivatedElderRitual ritual) {
 			if(ticks % 20L != 0L) {
 				return Result.STARTING;
 			}
@@ -153,13 +154,13 @@ public class ElderSacrificeItem extends ElderSacrifice {
 			List<EntityItem> eis = (List<EntityItem>)world.getEntitiesWithinAABB(EntityItem.class, bounds);
 			if(Config.instance().traceRites()) {
 				for(EntityItem e: eis) {
-					Log.instance().traceRite(String.format(" * found: %s, distance: %f", e.getEntityItem().toString(), ElderSacrifice.distance(e.posX, e.posY, e.posZ, posX, posY, posZ)));
+					Log.instance().traceRite(String.format(" * found: %s, distance: %f", e.getEntityItem().toString(), SacrificeBase.distance(e.posX, e.posY, e.posZ, posX, y, posZ)));
 				}
 			}
 
 			for(EntityItem e: eis) {
 				ItemStack stack = e.getEntityItem();
-				if(!ElderSacrificeItem.isItemEqual(this.stack, stack) || !(ElderSacrifice.distance(e.posX, e.posY, e.posZ, posX, posY, posZ) <= (double)this.maxDistance)) {
+				if(!SacrificeItem.isItemEqual(this.stack, stack) || !(SacrificeBase.distance(e.posX, e.posY, e.posZ, posX, y, posZ) <= (double)this.maxDistance)) {
 					continue;
 				}
 				ItemStack sacrificedItemstack = ItemStack.copyItemStack(stack);
@@ -177,17 +178,17 @@ public class ElderSacrificeItem extends ElderSacrifice {
 			}
 			for(int x = posX - 5; x <= posX + 5; ++x) {
 				for(int z = posZ - 5; z <= posZ + 5; ++z) {
-					Block blockID = world.getBlock(x, posY, z);
+					Block blockID = world.getBlock(x, y, z);
 					if(blockID != Witchery.Blocks.GRASSPER) {
 						continue;
 					}
-					TileEntity tile = world.getTileEntity(x, posY, z);
+					TileEntity tile = world.getTileEntity(x, y, z);
 					if(!(tile instanceof BlockGrassper.TileEntityGrassper)) {
 						continue;
 					}
 					IInventory grassper = (IInventory)tile;
 					ItemStack stack = grassper.getStackInSlot(0);
-					if(stack == null || !ElderSacrificeItem.isItemEqual(this.stack, stack)) {
+					if(stack == null || !SacrificeItem.isItemEqual(this.stack, stack)) {
 						continue;
 					}
 					ItemStack sacrificedItemstack = ItemStack.copyItemStack(stack);
@@ -199,7 +200,7 @@ public class ElderSacrificeItem extends ElderSacrifice {
 					else {
 						grassper.setInventorySlotContents(0, null);
 					}
-					ParticleEffect.EXPLODE.send(SoundEffect.RANDOM_POP, world, 0.5 + (double)x, 0.8 + (double)posY, 0.5 + (double)z, 0.5, 1.0, RADIUS);
+					ParticleEffect.EXPLODE.send(SoundEffect.RANDOM_POP, world, 0.5 + (double)x, 0.8 + (double)y, 0.5 + (double)z, 0.5, 1.0, RADIUS);
 					return Result.COMPLETED;
 				}
 			}
