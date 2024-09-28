@@ -127,9 +127,11 @@ public class EntityNimbus extends EntityBroom {
 			look.yCoord *= forward * 2;
 			look.zCoord *= forward;
 			float strafe = e.moveStrafing;
-			float yaw = (float)Math.PI / 180F * rotationYaw;
-			look.xCoord += MathHelper.cos(yaw) * strafe;
-			look.zCoord += MathHelper.sin(yaw) * strafe;
+			if(strafe * strafe > 0.01F) {
+				float yaw = (float)Math.PI / 180F * rotationYaw;
+				look.xCoord += MathHelper.cos(yaw) * strafe;
+				look.zCoord += MathHelper.sin(yaw) * strafe;
+			}
 			look = look.normalize();
 		}
 		float speed = 0.7F * ItemNimbus.modifier(riddenByEntity);
