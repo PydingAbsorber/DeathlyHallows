@@ -289,7 +289,6 @@ public final class DHRituals {
 					new PurifyRite(8, 40.0f, 0),
 					new ElderSacrificeMultiple(
 							sacrifice,
-							DHIntegration.thaumcraft ? new ElderSacrificeItem(new ItemStack(ConfigItems.itemSanitySoap)) : null,
 							new ElderSacrificePower(DHConfig.purifyCost, 20)
 					),
 					EnumSet.noneOf(RitualTraits.class),

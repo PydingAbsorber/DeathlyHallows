@@ -119,8 +119,12 @@ public class ElderWitchcraftGui extends GuiScreen {
 		ElderRites.Category[] values = ElderRites.Category.values();
 		int pages = bookTotalPages + 1;
 		for(int i = values.length - 1; i >= 0; --i) {
+			int categorySize = ElderRites.getRituals(values[i]).size();
+			if(categorySize == 0) {
+				continue; // no need to draw category then.
+			}
 			// don't ask why. it's just reverse dynamic page calculation, because f*ck static constants
-			pages -= ElderRites.getRituals(values[i]).size();
+			pages -= categorySize;
 			buttonList.add(new GuiButtonJump(7 + i, left + 246 + 10 * (i / 7), top + 18 + 20 * (i % 7), pages, 8 * values[i].ordinal(), 248));
 		}
 	}
