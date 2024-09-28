@@ -294,7 +294,18 @@ public final class DHMultiBlockRenderEvents {
 		glColor4f(red, green, blue, alpha);
 		glTranslated(x + 0.5, y + 0.5, z + 0.5);
 		glRotatef(-90F, 0F, 1F, 0F);
-		blockRender.renderBlockAsItem(block, meta, 1F);
+		try {
+			blockRender.renderBlockAsItem(block, meta, 1F);
+		}
+		catch(Exception e) {
+			try {
+				// stop tesselating 
+				Tessellator.instance.draw();
+			}
+			catch(IllegalStateException ignore) {
+				// but at some point can be not tesselating
+			}
+		}
 	}
 
 	private static void renderTileEntity(int x, int y, int z, MultiBlockComponent comp, Block block, int meta) {
