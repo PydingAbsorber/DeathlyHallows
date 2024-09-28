@@ -146,7 +146,8 @@ public class DHRituals {
 								Items.GENERIC.itemFlyingOintment.createStack(),
 								Items.GENERIC.itemOwletsWing.createStack(),
 								Items.GENERIC.itemBrewOfSoaring.createStack(),
-								new ItemStack(feather)
+								new ItemStack(feather),
+								new ItemStack(DHItems.lightningInBag)
 						),
 						new SacrificePower(15000.0F, 20)
 				),

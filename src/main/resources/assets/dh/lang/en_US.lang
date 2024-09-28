@@ -161,8 +161,8 @@ dh.book.rites1={5{lDark Arts{r{o:|Circles and Structures{r||{0Hello Pyding! Plea
 # Rites
 dh.rite.soup=The mighty soup!{r||Get some nutrients!
 dh.rite.death=§5Rite of Gloomy Rebirth{r||
-dh.rite.nimbus=§5Cloud Chaser{r||This mod is sponsored by Avia sales
-dh.rite.elf=§5Rite of Elven Vanishing{r||Disbecome en elf, but why... Execute only at night
+dh.rite.nimbus=§5Cloud Chaser{r||This mod is sponsored by Avia sales|Must preform during thunderstorm.
+dh.rite.elf=§5Rite of Elven Vanishing{r||Dis-become en elf, but why...|Must preform during night
 dh.rite.castle=§3Ritual of the Ice Castle: Heart Melting{r||Melts even the coldest hearts!
 dh.rite.niceCream=§3Ritual of the Ice Castle: Nicecream{r||Make some delicious Nicecream!
 dh.rite.banka=§5Ritual of the Stinking Bathhouse{r||Covers the player with a Warp Shell, which absorbs damage more effectively the higher the received damage and the higher the player's Thaumcraft Warp level.
