@@ -3,12 +3,18 @@ package com.pyding.deathlyhallows.rituals.rites;
 import com.emoniph.witchery.ritual.RitualStep;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
-public abstract class RiteBase {
+public class RiteBase {
+
+	private final RitualStep[] steps;
 	
-	public RiteBase() {
+	public RiteBase(RitualStep... steps) {
+		this.steps = steps;
 	}
 
-	public abstract void addSteps(ArrayList<RitualStep> steps, int initialStage);
+	public void addSteps(ArrayList<RitualStep> steps, int initialStage) {
+		steps.addAll(Arrays.asList(this.steps));
+	}
 	
 }

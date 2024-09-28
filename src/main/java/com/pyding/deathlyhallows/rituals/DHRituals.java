@@ -21,8 +21,6 @@ import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.multiblocks.OctagonPart;
 import com.pyding.deathlyhallows.multiblocks.structures.DHStructures;
 import com.pyding.deathlyhallows.multiblocks.structures.StructureOctagonDrawing;
-import com.pyding.deathlyhallows.rituals.rites.RiteAction;
-import com.pyding.deathlyhallows.rituals.rites.RiteActionContinuously;
 import com.pyding.deathlyhallows.rituals.rites.RiteBase;
 import com.pyding.deathlyhallows.rituals.rites.RiteCurseSoul;
 import com.pyding.deathlyhallows.rituals.rites.RiteSummonEntity;
@@ -31,6 +29,8 @@ import com.pyding.deathlyhallows.rituals.sacrifices.SacrificeItem;
 import com.pyding.deathlyhallows.rituals.sacrifices.SacrificeLiving;
 import com.pyding.deathlyhallows.rituals.sacrifices.SacrificeMultiple;
 import com.pyding.deathlyhallows.rituals.sacrifices.SacrificePower;
+import com.pyding.deathlyhallows.rituals.steps.StepAction;
+import com.pyding.deathlyhallows.rituals.steps.StepActionContinuously;
 import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.utils.DHUtils;
 import com.pyding.deathlyhallows.utils.ElfUtils;
@@ -76,12 +76,12 @@ public class DHRituals {
 		int id = 1;
 		addRecipe(id++, CIRCLE, 0,
 				"dh.rite.elf",
-				new RiteActionContinuously((rite, world, x, y, z, ticks) -> RiteAction.Action.forEachPlayerInBounds(p -> {
+				new RiteBase(new StepActionContinuously((world, x, y, z, ticks) -> StepAction.Action.forEachPlayerInBounds(p -> {
 					ElfUtils.setElfLevel(p, 0);
 					ParticleEffect.INSTANT_SPELL.send(SoundEffect.NOTE_PLING, p, 1.0, 2.0, 8);
 					ParticleEffect.INSTANT_SPELL.send(SoundEffect.RANDOM_LEVELUP, p, 1.0, 2.0, 8);
 					return false;
-				}, world, x, y, z, 8), 40.0f, 0),
+				}, world, x, y, z, 8), 40.0f, 0)),
 				new SacrificeMultiple(
 						new SacrificeItem(
 								Items.GENERIC.itemBrewOfWasting.createStack(),
@@ -133,10 +133,13 @@ public class DHRituals {
 		);
 		addRecipe(id++, CIRCLE, 20,
 				"dh.rite.nimbus",
-				new RiteAction((rite, world, x, y, z, ticks) -> {
-					world.spawnEntityInWorld(new EntityLightningBolt(world, x + 0.5D, y, z + 0.5D));
-					return RiteAction.Action.summonItem(new ItemStack(DHItems.nimbus), world, x, y, z);
-				}),
+				new RiteBase(
+						new StepAction((world, x, y, z, ticks) -> {
+							world.addWeatherEffect(new EntityLightningBolt(world, x + 0.5D, y, z + 0.5D));
+							return RitualStep.Result.COMPLETED;
+						}),
+						new StepAction((world, x, y, z, ticks) -> StepAction.Action.summonItem(new ItemStack(DHItems.nimbus), world, x, y, z))
+				),
 				new SacrificeMultiple(
 						new SacrificeItem(
 								Items.GENERIC.itemBroomEnchanted.createStack(),
@@ -147,7 +150,7 @@ public class DHRituals {
 						),
 						new SacrificePower(15000.0F, 20)
 				),
-				RitualCondition::isRaining, // night? maybe rain?
+				RitualCondition::isThundering,
 				new StructureOctagonDrawing(
 						new OctagonPart(DHBlocks.elderGlyph),
 						new OctagonPart(Witchery.Blocks.GLYPH_RITUAL, 3),
@@ -158,7 +161,7 @@ public class DHRituals {
 		if(DHConfig.despairSonataCost > -1) {
 			addRecipe(id++, SONATA, 0,
 					"dh.rite.sonata",
-					new RiteActionContinuously((rite, world, x, y, z, ticks) -> {
+					new RiteBase(new StepActionContinuously((world, x, y, z, ticks) -> {
 						if(world.rand.nextDouble() < 0.05) {
 							String randomEntityName = DHUtils.getEntitiesNames().get(world.rand.nextInt(DHUtils.getEntitiesNames().size() - 1));
 							int tries = 0;
@@ -197,7 +200,7 @@ public class DHRituals {
 						ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_BABA_LIVING, world, x + 0.5D, y, z + 0.5D, 1.0, 2.0, 8);
 						ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_IMP_LAUGH, world, x + 0.5D, y, z + 0.5D, 1.0, 2.0, 8);
 						return RitualStep.Result.COMPLETED;
-					}, 40.0f, 0),
+					}, 40.0f, 0)),
 					new SacrificeMultiple(
 							new SacrificeItem(
 									Items.GENERIC.itemCongealedSpirit.createStack(),
@@ -217,14 +220,14 @@ public class DHRituals {
 		if(DHConfig.fishCatchCost > -1) {
 			addRecipe(id++, LAKE, 0,
 					"dh.rite.catch",
-					new RiteActionContinuously((rite, world, x, y, z, ticks) -> {
+					new RiteBase(new StepActionContinuously((world, x, y, z, ticks) -> {
 						for(int i = 0; i < 20; ++i) {
-							RiteAction.Action.summonItem(FishingHooks.getRandomFishable(world.rand, 10, 99, 10), world, x, y, z);
+							StepAction.Action.summonItem(FishingHooks.getRandomFishable(world.rand, 10, 99, 10), world, x, y, z);
 						}
 						return RitualStep.Result.UPKEEP;
 					},
 							40.0f, 0
-					),
+					)),
 					new SacrificeMultiple(
 							new SacrificeItem(
 									new ItemStack(fishing_rod),
@@ -261,20 +264,19 @@ public class DHRituals {
 		if(DHConfig.iceCastleCost > -1) {
 			addRecipe(id++, ICECASTLE, 0,
 					"dh.rite.castle",
-					new RiteAction(
-							(rite, world, x, y, z, ticks) -> {
-								Random random = new Random();
-								List<Item> hearts = new ArrayList<>();
-								for(Item item: DHUtils.getItems()) {
-									if(item.getUnlocalizedName().contains("heart")) {
-										hearts.add(item);
-									}
-								}
-								if(hearts.size() <= 1) {
-									return RitualStep.Result.ABORTED;
-								}
-								return RiteAction.Action.summonItem(new ItemStack(hearts.get(random.nextInt(hearts.size()))), world, x, y, z);
-							}),
+					new RiteBase(new StepAction((world, x, y, z, ticks) -> {
+						Random random = new Random();
+						List<Item> hearts = new ArrayList<>();
+						for(Item item: DHUtils.getItems()) {
+							if(item.getUnlocalizedName().contains("heart")) {
+								hearts.add(item);
+							}
+						}
+						if(hearts.size() <= 1) {
+							return RitualStep.Result.ABORTED;
+						}
+						return StepAction.Action.summonItem(new ItemStack(hearts.get(random.nextInt(hearts.size()))), world, x, y, z);
+					})),
 					new SacrificeMultiple(
 							new SacrificeItem(
 									new ItemStack(Witchery.Blocks.PERPETUAL_ICE),
@@ -291,7 +293,7 @@ public class DHRituals {
 			);
 			addRecipe(id++, ICECASTLE, 10,
 					"dh.rite.niceCream",
-					new RiteAction((rite, world, x, y, z, ticks) -> RiteAction.Action.summonItem(new ItemStack(DHItems.niceCream, 4), world, x, y, z)),
+					new RiteBase(new StepAction((world, x, y, z, ticks) -> StepAction.Action.summonItem(new ItemStack(DHItems.niceCream, 4), world, x, y, z))),
 					new SacrificeMultiple(
 							new SacrificeItem(
 									new ItemStack(Witchery.Blocks.PERPETUAL_ICE),
@@ -314,12 +316,12 @@ public class DHRituals {
 		if(DHIntegration.thaumcraft && DHConfig.bathHouseCost > -1) {
 			addRecipe(id++, INTEGRATION, 0,
 					"dh.rite.banka",
-					new RiteActionContinuously((rite, world, x, y, z, ticks) -> RiteAction.Action.forEachPlayerInBounds(p -> {
+					new RiteBase(new StepActionContinuously((world, x, y, z, ticks) -> StepAction.Action.forEachPlayerInBounds(p -> {
 						DeathlyProperties.get(p).setBanka(System.currentTimeMillis() + 60 * 60 * 1000);
 						ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_BABA_LIVING, p, 1.0, 2.0, 8);
 						ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_IMP_LAUGH, p, 1.0, 2.0, 8);
 						return false;
-					}, world, x, y, z, 8), 80F, 0),
+					}, world, x, y, z, 8), 80F, 0)),
 					new SacrificeMultiple(
 							new SacrificeItem(
 									new ItemStack(DHItems.lightningInBag),
@@ -338,12 +340,12 @@ public class DHRituals {
 		if(DHConfig.huntMagicCreaturesCost > -1) {
 			addRecipe(id++, HUNT, 0,
 					"dh.rite.hunt",
-					new RiteActionContinuously((rite, world, x, y, z, ticks) -> RiteAction.Action.forEachPlayerInBounds(p -> {
+					new RiteBase(new StepActionContinuously((world, x, y, z, ticks) -> StepAction.Action.forEachPlayerInBounds(p -> {
 						DeathlyProperties.get(p).setHunt(System.currentTimeMillis() + 60 * 60 * 1000);
 						ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_BABA_LIVING, p, 1.0, 2.0, 8);
 						ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_IMP_LAUGH, p, 1.0, 2.0, 8);
 						return false;
-					}, world, x, y, z, 8), 80F, 0),
+					}, world, x, y, z, 8), 80F, 0)),
 					new SacrificeMultiple(
 							new SacrificeItem(
 									new ItemStack(DHItems.lightningInBag),
@@ -364,12 +366,12 @@ public class DHRituals {
 		if(DHConfig.healMendingCost > -1) {
 			addRecipe(id++, MENDING, 0,
 					"dh.rite.mending",
-					new RiteActionContinuously((rite, world, x, y, z, ticks) -> RiteAction.Action.forEachPlayerInBounds(p -> {
+					new RiteBase(new StepActionContinuously((world, x, y, z, ticks) -> StepAction.Action.forEachPlayerInBounds(p -> {
 						DeathlyProperties.get(p).setHeal(System.currentTimeMillis() + 60 * 60 * 1000);
 						ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_BABA_LIVING, p, 1.0, 2.0, 8);
 						ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_IMP_LAUGH, p, 1.0, 2.0, 8);
 						return false;
-					}, world, x, y, z, 8), 80F, 0),
+					}, world, x, y, z, 8), 80F, 0)),
 					new SacrificeMultiple(
 							new SacrificeItem(
 									Items.GENERIC.itemSoulOfTheWorld.createStack(),
@@ -402,7 +404,7 @@ public class DHRituals {
 			}
 			addRecipe(id++, PURIFY, 0,
 					"dh.rite.purify",
-					new RiteActionContinuously((rite, world, x, y, z, ticks) -> RiteAction.Action.forEachPlayerInBounds(p -> {
+					new RiteBase(new StepActionContinuously((world, x, y, z, ticks) -> StepAction.Action.forEachPlayerInBounds(p -> {
 						NBTTagCompound tag = p.getEntityData();
 						tag.setInteger("DHMagicAvenger", 0);
 						DeathlyProperties props = DeathlyProperties.get(p);
@@ -420,8 +422,7 @@ public class DHRituals {
 						ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_BABA_LIVING, p, 1.0, 2.0, 8);
 						ParticleEffect.INSTANT_SPELL.send(SoundEffect.WITCHERY_MOB_IMP_LAUGH, p, 1.0, 2.0, 8);
 						return false;
-					}, world, x, y, z, 8),
-							40.0f, 0),
+					}, world, x, y, z, 8), 40.0f, 0)),
 					new SacrificeMultiple(
 							sacrifice,
 							new SacrificePower(DHConfig.purifyCost, 20)
