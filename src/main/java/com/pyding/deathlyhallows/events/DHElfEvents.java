@@ -205,7 +205,7 @@ public final class DHElfEvents {
 		EntityPlayer source = (EntityPlayer)e.source.getEntity();
 		int elfLevel = ElfUtils.getElfLevel(source);
 		if(!e.source.isProjectile()) {
-			if(elfLevel < 1 || e.source.isMagicDamage()) {
+			if(elfLevel < 1 || e.source.isMagicDamage() || isAM2Damage(e.source)) {
 				return;
 			}
 			if(source.getHeldItem() != null && source.getHeldItem().getItem() != DHItems.elderWand) {
@@ -262,6 +262,13 @@ public final class DHElfEvents {
 			e.entityLiving.hurtResistantTime = 0;
 			e.entityLiving.attackEntityFrom(DamageSource.outOfWorld, DHUtils.fuckMagic((EntityPlayer)e.entityLiving, 0.1f));
 		}
+	}
+
+	private static boolean isAM2Damage(DamageSource source) {
+		if(source.damageType == null) {
+			return false;
+		}
+		return source.damageType.contains("am2");
 	}
 
 	private static void handleElfResistance(LivingHurtEvent e) {
