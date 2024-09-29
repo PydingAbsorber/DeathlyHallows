@@ -475,7 +475,7 @@ public final class DHEvents {
 		}
 		final int mantleDisableCD = 600;
 		if(!ItemBaubleInvisibilityMantle.isMantleActive(p)) {
-			if(p.isSneaking() && tag.getInteger("mantlecd") <= 0) {
+			if(p.isSneaking() && tag.getInteger("mantlecd") <= 0 && DHUtils.hasMantle(p)) {
 				tag.setInteger("mantlecd", mantleDisableCD + 600);
 				tag.setBoolean("mantleActive", true);
 				p.worldObj.playSoundAtEntity(p, "dh:mantle." + DHUtils.getRandomInt(1, 3), 1F, 1F);
