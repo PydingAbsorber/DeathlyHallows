@@ -19,7 +19,7 @@ public class DHConfig {
 	public static int elderWandMaxSpells = 10;
 	public static String elderWandBlackList = "";
 	public static boolean shouldRemove = true;
-	public static int[] elfQuestConditions = new int[]{20, 20, -100, 100, 50, 30, 20000, 35000, 100, 1000};
+	public static int[] elfQuestConditions = new int[]{20, 20, -100, 100, 50, 30, 20000, 35000, 100, 100};
 	public static boolean hob = true;
 	public static int
 			screamilyMana = 10000,
@@ -72,7 +72,7 @@ public class DHConfig {
 		betterArrowCost = config.getInt("betterArrowCost", CATEGORY_STAFF, betterArrowCost, 1, Integer.MAX_VALUE, "Infusion cost for Mighty Arrow.");
 		
 		// why not?
-		for(int i: getIntArray("bertieBottsEffectBlacklist", CATEGORY_STAFF, ItemFoodBertieBotts.getDefaultBlackList(), "Blacklisted Potion Effects.")) {
+		for(int i: getIntArray("bertieBottsEffectBlacklist", CATEGORY_STAFF, ItemFoodBertieBotts.getDefaultBlackList(), "Blacklisted Potion IDs.")) {
 			ItemFoodBertieBotts.addToBlackList(i);
 		}
 		// rituals
