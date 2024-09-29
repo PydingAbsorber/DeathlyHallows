@@ -8,6 +8,8 @@ import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.items.ItemElderWand;
+import com.pyding.deathlyhallows.network.DHPacketProcessor;
+import com.pyding.deathlyhallows.network.packets.PacketElderWandListSpell;
 import com.pyding.deathlyhallows.symbols.SymbolEffectBase;
 import com.pyding.deathlyhallows.utils.DHConfig;
 import com.pyding.deathlyhallows.utils.DHUtils;
@@ -34,12 +36,14 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
+import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.awt.*;
+import java.util.List;
 
 import static com.emoniph.witchery.client.PlayerRender.drawString;
 import static com.emoniph.witchery.client.PlayerRender.getStringWidth;
@@ -71,7 +75,50 @@ public final class DHPlayerRenderEvents {
 		MinecraftForge.EVENT_BUS.register(INSTANCE);
 		FMLCommonHandler.instance().bus().register(INSTANCE);
 	}
+	
+	private static int nextSpell = 0;
 
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void onMouseEvent(TickEvent.ClientTickEvent e) {
+		if(nextSpell == 0) {
+			return;
+		}
+		EntityPlayer p = mc.thePlayer;
+		if(p.isSneaking()) {
+			return;
+		}
+		ItemStack stack = p.getCurrentEquippedItem();
+		if(p.isUsingItem() || stack == null || stack.getItem() != DHItems.elderWand || ItemElderWand.getMode(stack) != ItemElderWand.EnumCastingMode.LIST) {
+			nextSpell = 0;
+			return;
+		}
+		int spellsSize = ItemElderWand.getSpells().size();
+		int listSpellIndex = Math.floorMod(ItemElderWand.getListCounter(stack.getTagCompound()) + nextSpell, spellsSize);
+		DHPacketProcessor.sendToServer(new PacketElderWandListSpell(listSpellIndex));
+		nextSpell = 0;
+	}
+	
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void theElderScrolls(MouseEvent e) {
+		int dwheel = e.dwheel;
+		if(dwheel == 0) {
+			return;
+		}
+		EntityPlayer p = mc.thePlayer;
+		ItemStack stack = p.getCurrentEquippedItem();
+		if(!p.isSneaking() || p.isUsingItem() || stack == null || stack.getItem() != DHItems.elderWand || ItemElderWand.getMode(stack) != ItemElderWand.EnumCastingMode.LIST) {
+			return;
+		}
+		nextSpell += dwheel / 120;
+		List<SymbolEffect> spells = ItemElderWand.getSpells();
+		int spellsSize = spells.size();
+		int listSpellIndex = Math.floorMod(ItemElderWand.getListCounter(stack.getTagCompound()) + nextSpell, spellsSize);
+		setTooltip(spells.get(listSpellIndex).getLocalizedName());
+		e.setCanceled(true);
+	}
+	
 	@SideOnly(Side.CLIENT)
 	public static void setTooltip(String tooltip) {
 		if (!tooltip.equals(currentTooltip)) {
@@ -104,6 +151,7 @@ public final class DHPlayerRenderEvents {
 	}
 
 	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
 	public void renderElfEars(RenderPlayerEvent.Specials.Post e) {
 		EntityPlayer p = e.entityPlayer;
 		int elfLevel = ElfUtils.getElfLevel(p);
@@ -152,6 +200,7 @@ public final class DHPlayerRenderEvents {
 		glPopMatrix();
 	}
 
+	@SideOnly(Side.CLIENT)
 	private static void drawEar(double startU, double startV, double u, double v, boolean left) {
 		glPushMatrix();
 		// y-axis is inverted, it points down
@@ -168,6 +217,7 @@ public final class DHPlayerRenderEvents {
 		glPopMatrix();
 	}
 
+	@SideOnly(Side.CLIENT)
 	private static void elfEar(double x, double y, double startU, double startV, double u, double v, boolean invertNormals) {
 		// quads
 		Tessellator t = Tessellator.instance;
@@ -205,10 +255,12 @@ public final class DHPlayerRenderEvents {
 		t.draw();
 	}
 
+	@SideOnly(Side.CLIENT)
 	private static void setEarNormals(Tessellator t, boolean invertNormals) {
 		t.setNormal(invertNormals ? -1F : 1F, 0F, 0F);
 	}
 
+	@SideOnly(Side.CLIENT)
 	private static void quad(Tessellator t, double x, double y, double xLen, double yLen, double minU, double minV, double uLen, double vLen, boolean inverted) {
 		double maxV = minV + vLen;
 		double maxU = minU + uLen;
@@ -225,6 +277,7 @@ public final class DHPlayerRenderEvents {
 		t.addVertexWithUV(x, y + yLen, 0D, minU, maxV);
 	}
 
+	@SideOnly(Side.CLIENT)
 	private static void tris(Tessellator t, double x, double y, double xLen, double yLen, double minU, double minV, double uLen, double vLen, boolean inverted) {
 		double maxV = minV + vLen;
 		double maxU = minU + uLen;
@@ -240,6 +293,7 @@ public final class DHPlayerRenderEvents {
 	}
 
 	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
 	public void cancelRenderWithMantle(RenderLivingEvent.Pre e) {
 		if(e.entity.getEntityData().getBoolean("mantleActive")) {
 			e.setCanceled(true);
@@ -247,6 +301,7 @@ public final class DHPlayerRenderEvents {
 	}
 
 	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
 	public void renderAnimaInteritus(RenderLivingEvent.Post e) {
 		NBTTagCompound tag = e.entity.getEntityData();
 		if(!tag.hasKey("dhcurse")) {
@@ -270,6 +325,7 @@ public final class DHPlayerRenderEvents {
 		glPopMatrix();
 	}
 
+	@SideOnly(Side.CLIENT)
 	private static void drawImage() {
 		Tessellator t = Tessellator.instance;
 		t.startDrawingQuads();
@@ -281,6 +337,7 @@ public final class DHPlayerRenderEvents {
 	}
 
 	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
 	public void onRenderTick(TickEvent.RenderTickEvent e) {
 		if(e.phase == TickEvent.Phase.START) {
 			renderPre();
@@ -291,6 +348,7 @@ public final class DHPlayerRenderEvents {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	private static void renderPre() {
 		if(mc.thePlayer == null || mc.currentScreen != null) {
 			return;
@@ -300,6 +358,7 @@ public final class DHPlayerRenderEvents {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void renderPast() {
 		EntityClientPlayerMP p = mc.thePlayer;
 		if(p == null || mc.currentScreen != null) {
@@ -332,6 +391,7 @@ public final class DHPlayerRenderEvents {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	private static void renderSpells(ScaledResolution scale, EntityPlayer p, int index) {
 		glPushMatrix();
 		try {
@@ -352,6 +412,7 @@ public final class DHPlayerRenderEvents {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	private static void renderHotSpells(ScaledResolution scale, EntityPlayer p, NBTTagList list, int index) {
 		glPushMatrix();
 		try {
@@ -363,7 +424,10 @@ public final class DHPlayerRenderEvents {
 			glTranslatef(x - 42F + 5F, y - 42F + 5F, 0.0F);
 			glScalef(s, s, s);
 			glColor4f(1F, 1F, 1F, 1F);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			drawTexturedModalRect(8, 8, 0, 0, 256, 256);
+			glDisable(GL_BLEND);
 			glPopMatrix();
 			drawSpells(ItemElderWand.getXY(p), list, index, x, y);
 		}
@@ -372,6 +436,7 @@ public final class DHPlayerRenderEvents {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	private static void drawSpells(float[] pointer, NBTTagList list, int index, int x, int y) {
 		final float spellRange = 32F;
 		boolean full = list.tagCount() >= DHConfig.elderWandMaxSpells;
@@ -398,6 +463,7 @@ public final class DHPlayerRenderEvents {
 		drawSpellSlot(list.tagCount() < DHConfig.elderWandMaxSpells && index == list.tagCount() ? null : DHUtils.getBytesFromTagList(list, index), x, y, index * (float)Math.PI * 2F / length, spellRange, 0xFF_FF_FF);
 	}
 
+	@SideOnly(Side.CLIENT)
 	private static void drawPointer(float x, float y) {
 		glColor3f(0F, 0F, 0F);
 		glPushMatrix();
@@ -409,6 +475,7 @@ public final class DHPlayerRenderEvents {
 		glColor3f(1F, 1F, 1F);
 	}
 
+	@SideOnly(Side.CLIENT)
 	private static void drawSpellSlot(byte[] strokes, float x, float y, float angle, float radius, int color) {
 		float sin = -MathHelper.cos(angle), cos = MathHelper.sin(angle); // I know what I'm doing. -cos is just shortcuts for sin(x + pi/2), but it's still Y axis.
 		x += cos * radius;
@@ -440,8 +507,10 @@ public final class DHPlayerRenderEvents {
 		drawString(s, x, y, color);
 	}
 
+	
 	private static final RenderItem drawItems = new RenderItem();
 
+	@SideOnly(Side.CLIENT)
 	private static void drawItem(float x, float y, ItemStack stack) {
 		glEnable(GL_LIGHTING);
 		glEnable(GL_DEPTH_TEST);
@@ -461,6 +530,7 @@ public final class DHPlayerRenderEvents {
 		glDisable(GL_DEPTH_TEST);
 	}
 
+	@SideOnly(Side.CLIENT)
 	private static FontRenderer getFontRenderer(ItemStack stack) {
 		if(stack == null || stack.getItem() == null) {
 			return mc.fontRenderer;
@@ -472,6 +542,7 @@ public final class DHPlayerRenderEvents {
 		return f;
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void renderStrokes(ScaledResolution scale, byte[] strokes) {
 		mc.getTextureManager().bindTexture(STROKES_TEXTURE);
 		glPushMatrix();
@@ -501,11 +572,13 @@ public final class DHPlayerRenderEvents {
 	}
 
 	// draw all texture, but need to specify it sizes
+	@SideOnly(Side.CLIENT)
 	private static void drawTexturedModalRect(double x, double y, double u, double v, double width, double height) {
 		drawTexturedModalRect(x, y, u, v, width, height, width, height);
 	}
 	
 	// draw segment of texture
+	@SideOnly(Side.CLIENT)
 	private static void drawTexturedModalRect(double x, double y, double u, double v, double width, double height, double textureWidth, double textureHeight) {
 		double xPerPixel = 1.0F / textureWidth;
 		double yPerPixel = 1.0F / textureHeight;

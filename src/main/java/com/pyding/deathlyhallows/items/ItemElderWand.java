@@ -3,6 +3,7 @@ package com.pyding.deathlyhallows.items;
 import com.emoniph.witchery.Witchery;
 import com.emoniph.witchery.blocks.BlockPlacedItem;
 import com.emoniph.witchery.infusion.infusions.symbols.EffectRegistry;
+import com.emoniph.witchery.infusion.infusions.symbols.SymbolEffect;
 import com.pyding.deathlyhallows.events.DHPlayerRenderEvents;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
 import com.pyding.deathlyhallows.network.packets.PacketElderWandLastSpell;
@@ -98,12 +99,15 @@ public class ItemElderWand extends ItemBase {
 				setTooltip(mode);
 			}
 			setBinding(p, false);
-			setIndex(-1, stack.getTagCompound());
+			setIndex(stack.getTagCompound(), -1);
 			return stack;
 		}
 		switch(getMode(stack)) {
-			case LIST:
+			case LIST: {
+				p.getEntityData().setInteger("WITCSpellEffectID", getSpells().get(getListCounter(stack.getTagCompound())).getEffectID());
+				Witchery.Items.MYSTIC_BRANCH.onPlayerStoppedUsing(stack, world, p, 0);
 				return stack;
+			}
 			case BIND: {
 				if(isBinding(p)) {
 					setMode(stack, EnumCastingMode.STROKE);
@@ -119,11 +123,11 @@ public class ItemElderWand extends ItemBase {
 				p.setItemInUse(stack, getMaxItemUseDuration(stack));
 				return stack;
 			}
-			default:
 			case STROKE: {
 				return Witchery.Items.MYSTIC_BRANCH.onItemRightClick(stack, world, p);
 			}
 		}
+		return stack;
 	}
 
 	public void onUsingTick(ItemStack stack, EntityPlayer p, int countdown) {
@@ -132,6 +136,9 @@ public class ItemElderWand extends ItemBase {
 		}
 		NBTTagCompound tag = p.getEntityData();
 		switch(getMode(stack)) {
+			case LIST: {
+				return;
+			}
 			case BIND: {
 				if(isBinding(p)) {
 					return;
@@ -147,7 +154,7 @@ public class ItemElderWand extends ItemBase {
 						int index = getIndex(stack.getTagCompound());
 						removeLastSpell(stack, index);
 						DHPacketProcessor.sendToServer(new PacketElderWandLastSpell(index, true));
-						setIndex(-1, stack.getTagCompound());
+						setIndex(stack.getTagCompound(), -1);
 						resetXY(p);
 					}
 					return;
@@ -159,13 +166,10 @@ public class ItemElderWand extends ItemBase {
 					return;
 				}
 				DHPacketProcessor.sendToServer(new PacketElderWandLastSpell(index));
-				setIndex(index, stack.getTagCompound());
+				setIndex(stack.getTagCompound(), index);
 				if(size < DHConfig.elderWandMaxSpells && index == size) {
 					setBinding(p, true);
 				}
-				return;
-			}
-			case LIST: {
 				return;
 			}
 			default:
@@ -180,18 +184,20 @@ public class ItemElderWand extends ItemBase {
 			tag.removeTag(START_Y_TAG);
 		}
 		switch(getMode(stack)) {
+			case LIST: {
+				return;
+			}
 			case BIND: {
 				int size = getLastSpells(stack).tagCount();
 				if(world.isRemote && isBinding(p) && getIndex(stack.getTagCompound()) != size && size < DHConfig.elderWandMaxSpells) {
 					setBinding(p, false);
 					DHPacketProcessor.sendToServer(new PacketElderWandLastSpell(-1));
-					setIndex(-1, stack.getTagCompound());
+					setIndex(stack.getTagCompound(), -1);
 					return;
 				}
-				setIndex(-1, stack.getTagCompound());
+				setIndex(stack.getTagCompound(), -1);
 				if(!world.isRemote && tag.hasKey("WITCSpellEffectID")) {
 					Witchery.Items.MYSTIC_BRANCH.onPlayerStoppedUsing(stack, world, p, countdown);
-					return;
 				}
 				return;
 			}
@@ -215,9 +221,8 @@ public class ItemElderWand extends ItemBase {
 					}
 					return;
 				}
-			}
-			default: // stroke if no binding & list
 				Witchery.Items.MYSTIC_BRANCH.onPlayerStoppedUsing(stack, world, p, countdown);
+			}
 		}
 	}
 
@@ -261,7 +266,11 @@ public class ItemElderWand extends ItemBase {
 		return tag == null || !tag.hasKey(MODE_TAG) ? EnumCastingMode.STROKE : EnumCastingMode.values()[tag.getByte(MODE_TAG)];
 	}
 
-	private static void setListCounter(int index, NBTTagCompound tag) {
+	public static List<SymbolEffect> getSpells() {
+		return EffectRegistry.instance().getEffects();
+	}
+
+	public static void setListCounter(NBTTagCompound tag, int index) {
 		if(tag == null) {
 			return;
 		}
@@ -272,7 +281,7 @@ public class ItemElderWand extends ItemBase {
 		return tag == null ? 0 : tag.getInteger(LIST_COUNTER_TAG);
 	}
 
-	private static void setIndex(int index, NBTTagCompound tag) {
+	private static void setIndex(NBTTagCompound tag, int index) {
 		if(tag == null) {
 			return;
 		}
@@ -314,7 +323,7 @@ public class ItemElderWand extends ItemBase {
 	public static boolean isBinding(EntityPlayer p) {
 		return p.getEntityData().hasKey(LAST_SPELL_BIND_TAG);
 	}
-
+	
 	public static float[] getXY(EntityPlayer p) {
 		NBTTagCompound tag = p.getEntityData();
 		float

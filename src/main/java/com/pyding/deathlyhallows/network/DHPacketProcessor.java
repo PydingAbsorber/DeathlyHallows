@@ -4,6 +4,7 @@ import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.network.packets.PacketDisableFlight;
 import com.pyding.deathlyhallows.network.packets.PacketElderBookPage;
 import com.pyding.deathlyhallows.network.packets.PacketElderWandLastSpell;
+import com.pyding.deathlyhallows.network.packets.PacketElderWandListSpell;
 import com.pyding.deathlyhallows.network.packets.PacketElderWandStrokes;
 import com.pyding.deathlyhallows.network.packets.PacketKeyBindings;
 import com.pyding.deathlyhallows.network.packets.PacketNBTSync;
@@ -36,6 +37,7 @@ public class DHPacketProcessor {
 		channel.registerMessage(PacketElderBookPage.class, PacketElderBookPage.class, id++, Side.SERVER);
 		channel.registerMessage(PacketElderWandStrokes.class, PacketElderWandStrokes.class, id++, Side.SERVER);
 		channel.registerMessage(PacketElderWandLastSpell.class, PacketElderWandLastSpell.class, id++, Side.SERVER);
+		channel.registerMessage(PacketElderWandListSpell.class, PacketElderWandListSpell.class, id++, Side.SERVER);
 	}
 
 	public static void sendToPlayer(IMessage message, EntityPlayer player) {
