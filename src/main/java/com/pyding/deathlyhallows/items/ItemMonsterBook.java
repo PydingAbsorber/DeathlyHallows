@@ -19,23 +19,28 @@ public class ItemMonsterBook extends ItemBase {
 	}
 
 	@Override
-	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity) {
-		DeathlyProperties props = DeathlyProperties.get(player);
-		float damage = 2 + props.getMonstersCount();
-		if(props.getElfLevel() > 0) {
-			damage = 2 + props.getMonstersCount() * (props.getElfLevel() * 10);
+	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer p, Entity target) {
+		DeathlyProperties props = DeathlyProperties.get(p);
+		if(target.canAttackWithItem()) {
+			target.attackEntityFrom(DamageSource.causePlayerDamage(p).setDamageIsAbsolute(), getBookDamage(props) * getElfModifier(props));
 		}
-		entity.attackEntityFrom(DamageSource.causePlayerDamage(player).setDamageIsAbsolute(), damage);
-		return false;
+		return true;
+	}
+
+	public static float getBookDamage(DeathlyProperties props) {
+		return 2 * props.getMonstersCount();
+	}
+
+	public static float getElfModifier(DeathlyProperties props) {
+		return Math.max(1, 2 * props.getElfLevel());
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	protected void addTooltip(ItemStack stack, EntityPlayer p, List<String> l, boolean devMode) {
 		DeathlyProperties props = DeathlyProperties.get(p);
-		float damage = props.getMonstersCount();
 		l.add(StatCollector.translateToLocal("dh.desc.book1"));
-		l.add(StatCollector.translateToLocalFormatted("dh.desc.book2", damage));
+		l.add(StatCollector.translateToLocalFormatted("dh.desc.book2", getBookDamage(DeathlyProperties.get(p))));
 		if(!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 			return;
 		}
@@ -44,5 +49,5 @@ public class ItemMonsterBook extends ItemBase {
 			l.add(StatCollector.translateToLocal("dh.desc.book4"));
 		}
 	}
-	
+
 }

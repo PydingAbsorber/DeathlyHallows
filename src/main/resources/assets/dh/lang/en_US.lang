@@ -113,7 +113,7 @@ dh.desc.broom2=You can press %s for quick summon
 dh.desc.broom3=Can be obtained through ritual "Cloud chaser"
 
 dh.desc.book1=§5Becoming the Owner of this book makes you monster too...
-dh.desc.book2=§5Deals §b%s absolute §5damage currently. Each new killed monster will increase the damage for 1.
+dh.desc.book2=§5Deals additional §b%.0f absolute §5damage. Each unique killed monster will increase the damage.
 dh.desc.book3=Rumor says that the book likes those one, who knows a lot. But who knows a lot? Hmmm...
 dh.desc.book4=Seems like this knowledge doesn't changes situation at all!
 

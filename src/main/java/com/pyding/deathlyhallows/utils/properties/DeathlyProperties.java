@@ -45,7 +45,7 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 			banka,
 			hunt,
 			heal;
-	
+
 	// unsaved
 	public int
 			elfTimeSurvived,
@@ -68,7 +68,7 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 	public static DeathlyProperties get(EntityPlayer player) {
 		return (DeathlyProperties)player.getExtendedProperties(NAME);
 	}
-	
+
 	public static void copy(EntityPlayer from, EntityPlayer to) {
 		NBTTagCompound tag = new NBTTagCompound();
 		get(from).saveNBTData(tag);
@@ -100,9 +100,9 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 		tag.setInteger("DHNiceCream", niceCream);
 		tag.setInteger("DHShots", shots);
 		tag.setString("DHRites", rites);
-		tag.setLong("DHBanka",banka);
-		tag.setLong("DHHunt",hunt);
-		tag.setLong("DHHeal",heal);
+		tag.setLong("DHBanka", banka);
+		tag.setLong("DHHunt", hunt);
+		tag.setLong("DHHeal", heal);
 		int i = 0;
 		for(String food: foodCollection) {
 			tag.setString("DHFood" + i++, food);
@@ -144,15 +144,17 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 			foodCollection.add(i, tag.getString("DHFood" + i));
 		}
 	}
-	
+
 	public void saveCosmeticData(NBTTagCompound tag) {
 		tag.setInteger("ElfLvl", elfLevel);
+		tag.setString("DHMonsters", monsters);
 	}
-	
+
 	public void loadCosmeticData(NBTTagCompound tag) {
 		elfLevel = tag.getInteger("ElfLvl");
+		monsters = tag.getString("DHMonsters");
 	}
-	
+
 	public void setAllNull() {
 		trigger = 0;
 		elfCount = 0;
@@ -174,28 +176,28 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 		}
 		foodCollection.add(name);
 	}
-	
-	public void setBanka(long number){
+
+	public void setBanka(long number) {
 		banka = number;
 	}
-	
-	public long getBanka(){
+
+	public long getBanka() {
 		return banka;
 	}
 
-	public void setHunt(long number){
+	public void setHunt(long number) {
 		hunt = number;
 	}
 
-	public long getHunt(){
+	public long getHunt() {
 		return hunt;
 	}
 
-	public void setHeal(long number){
+	public void setHeal(long number) {
 		heal = number;
 	}
 
-	public long getHeal(){
+	public long getHeal() {
 		return heal;
 	}
 
@@ -216,19 +218,15 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 	}
 
 	public int getMonstersCount() {
-		if(monsters == null) {
-			return 0;
-		}
-		int count = 0;
-		for(String ignored: monsters.split(",")) {
-			count++;
-		}
-		return count;
+		return monsters.split(",").length - 1;
 	}
 
 	public void addMonster(String name) {
-		if(!DHUtils.contains(monsters,name))
-			monsters += name + ",";
+		if(DHUtils.contains(monsters, name)) {
+			return;
+		}
+		monsters += name + ",";
+		DHPacketProcessor.sendToAll(new PacketPropertiesSync.Client(PacketPropertiesSync.Type.COSMETIC, player));
 	}
 
 	public void setAvenger(boolean value) {
@@ -262,12 +260,12 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 	public void setFoodEaten(int count) {
 		foodEaten = count;
 	}
-	
-	public void setNiceCream(int count){
+
+	public void setNiceCream(int count) {
 		niceCream = count;
 	}
-	
-	public int getNiceCream(){
+
+	public int getNiceCream() {
 		return niceCream;
 	}
 
@@ -292,8 +290,9 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 	}
 
 	public void addRite(int riteId) {
-		if(!DHUtils.contains(rites, String.valueOf(riteId)))
+		if(!DHUtils.contains(rites, String.valueOf(riteId))) {
 			rites += riteId + ",";
+		}
 	}
 
 	public int getSpellsUsed() {
@@ -301,8 +300,9 @@ public class DeathlyProperties implements IExtendedEntityProperties {
 	}
 
 	public void addSpell(int spellId) {
-		if(!DHUtils.contains(spells, String.valueOf(spellId)))
+		if(!DHUtils.contains(spells, String.valueOf(spellId))) {
 			spells += spellId + ",";
+		}
 	}
 
 	public void setCurrentDuration(int duration) {
