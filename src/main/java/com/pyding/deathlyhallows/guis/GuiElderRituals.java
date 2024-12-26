@@ -30,7 +30,7 @@ import java.util.List;
 import static org.lwjgl.opengl.GL11.*;
 
 @SideOnly(Side.CLIENT)
-public class ElderWitchcraftGui extends GuiScreen {
+public class GuiElderRituals extends GuiScreen {
 	private static final ResourceLocation TEXTURE = new ResourceLocation(DeathlyHallows.MODID, "textures/gui/bookDouble.png");
 	private final EntityPlayer player;
 	private final ItemStack stack;
@@ -51,10 +51,9 @@ public class ElderWitchcraftGui extends GuiScreen {
 			buttonNextIngredientPage,
 			buttonPreviousIngredientPage;
 	private PageMultiBlock pageMultiBlock;
-
 	private int currentLayer = -1;
 
-	public ElderWitchcraftGui(EntityPlayer player, ItemStack stack) {
+	public GuiElderRituals(EntityPlayer player, ItemStack stack) {
 		this.player = player;
 		this.stack = stack;
 		bookPages = new NBTTagList();

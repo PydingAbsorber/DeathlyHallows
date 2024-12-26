@@ -16,7 +16,9 @@ item.deathShard.name=§8Death Shard
 item.tarotCards.name=Mystic Cards(WIP)
 item.monsterBook.name=§bThe Monster Book of Monsters
 item.trickOrTreat.name=§eTrick Or Treat!
-item.elderBook.name=§5Dark Arts§r: Circles and Structures
+item.elderBook.Rituals.name=§5Dark Arts§r: Circles and Structures
+item.elderBook.Wands.name=§5Dark Arts§r: Unforgivable Curses
+item.elfBook.name=Elven Amalgamation: Molding Infusion
 item.chalkelder.name=§5Elder §rChalk
 item.lightningInBag.name=§bLightning in Bag
 item.focus_mutandis.name=Inferiois Mutandis
@@ -113,7 +115,7 @@ dh.desc.broom2=You can press %s for quick summon
 dh.desc.broom3=Can be obtained through ritual "Cloud chaser"
 
 dh.desc.book1=§5Becoming the Owner of this book makes you monster too...
-dh.desc.book2=§5Deals additional §b%.0f absolute §5damage. Each unique killed monster will increase the damage.
+dh.desc.book2=§5Deals additional §b%s absolute §5damage. Each unique killed monster will increase the damage.
 dh.desc.book3=Rumor says that the book likes those one, who knows a lot. But who knows a lot? Hmmm...
 dh.desc.book4=Seems like this knowledge doesn't changes situation at all!
 
@@ -176,19 +178,46 @@ dh.rite.coven=§9Enlightenment into the Coven{r||Transforms a regular witch into
 # Death messages
 death.attack.adaptive=You died from... §4Absolute Death: me!!!! HAHAHAHAHA
 # Witchery books
+dh.book.wands1=The Elder Wand has 3 modes that can be changed with shift + left mouse button:|1) Stroke mode - standard spell mode by drawing with arrows, like in the mystic branch.|2) Bind mode - select spells with the right mouse button from the pop-up spell wheel, and release right mouse button to cast. To add a spell to the spell wheel, you need to point to an empty book and select it, then draw the desired spell. To remove a spell from the spell wheel, you need to select it by holding down the right mouse button and click the left mouse button.|3) List mode - select spells from the list of all spells via shift + mouse wheel, then activate with a hotkey.||The Elder Wand has 8 special spells that it allows you to use. These spells are purple, among which there are 2 with purple-red color, for which hellish infusion is also needed. All new spells have increased damage, a discount on the cost of use and an additional radius of effect if the player is an Elf for each of its levels. For each level +5% discount, +100% damage and +10% radius. Some spells that deal damage, deal it with an increase in the player's attack attribute. For the spells Horcrux and Anima Interitus you also need to be an Elf.
 witchery.book.materialsRequired=Materials Required:
 # Witchery markup book entries
-dh:elfBook.toc=[next=page1][h1 Elf][br][br][br][green Elf Book demo]
-dh:elfBook.page1=Nya. Nya. Nya. Nya. Buruuuuuu!!! Dori Dori Dori
+dh:elfBook.toc=[next=contents][h1 Elven Amalgamation: Molding Infusion][br][br][br][green A collection of works on elven philosophy, customs and culture]
+dh:elfBook.contents=[next=entry1][h1 Content][br]> [url=entry1 Introduction][br]> [url=reqs1 Trainings][br]> [url=pros1 Abilities][br]
+dh:elfBook.entry1=[next=entry2][h1 Introduction]Elves aren't made, but born, it was so for hundreds of thousands of years until great minds and sorcerers developed witchcraft to its limits. After dozens of emptying and filling your body with magic, like heated clay, you can mold something
+dh:elfBook.entry2=[next=reqs1]greater from your body, than a human, requiring various concoctions and oils to use magic. But such a body will only remotely resemble all the greatness and power of real Elves, which can be fixed by trainings, gradually strengthening and honing your body to its limit.
+dh:elfBook.reqs1=[next=reqs2][h1 Trainings]For level 2: Gain wisdom[br]* Use &req2 different spells.[br][br]For level 3: Learn the secrets of the abyss[br]* Descend to a height of &req3.
+dh:elfBook.reqs2=[next=reqs3]For level 4: Become a master enchanter[br]* Reach a total enchantment level of &req4.[br][br]For level 5: Train your shooting skills[br]Shoot 30 creatures with a single Enchanted Arrow &req5 times.
+dh:elfBook.reqs3=[next=reqs4]For level 6: Know Your Prey[br]* Kill &req6% of build creatures.[br][br]For level 7: Strengthen Your Body[br]* Live &req7 minutes with 10 negative potion effects.
+dh:elfBook.reqs4=[next=pros1]For level 8: Learn the Secrets of the Afterlife[br]* Live &req8 minutes in Astral/Ghost form.[br][br]For level 9: Perfect marksman[br]* Fire &req9 Perfect Shots.[br][br]For level 10: Maximize your magic affinity[br]* Use all Elder Rituals.
+dh:elfBook.pros1=[next=pros2][h1 Abilities]Level 1:[br]Excellent Hunter: When shooting from a bow, you deal 10% more damage for each elf level.[br]Innate Magical Affinity: Infusion regeneration every 5 seconds per elf level and increased resistance to magic damage by 90%.
+dh:elfBook.pros2=[next=pros3]Bad Fighter: Any damage dealt, except for arrows and magic, will be reduced by 95%, any damage received, except for magic, will be increased by 2 times.[br]Long-Lived: Receives +10% to final max HP and healing for each level.
+dh:elfBook.pros3=[next=pros4]Sense of self-importance: despises werewolves and vampires.[br][br]Level 3:[br]Accurate Wound: All damage from arrows is converted to magic.[br]Holding the Bow in Drawn mode for more than 2 seconds will fire an Empowered Arrow for Infusion.
+dh:elfBook.pros4=[next=pros5]Level 5:[br]While holding a Bow, gains a 75% chance to dodge damage.[br][br]Level 6:[br]Art of War: When shooting an enemy, damage will be dealt to all mobs within an 8 block radius of a hit in the amount of 30% of the damage dealt.
+dh:elfBook.pros5=[next=pros6]Level 7:[br]Holding the Bow for more than 4 seconds will fire a Powerful Arrow for Infusion.[br]If you manage to Perfectly fire a Powerful Arrow within 0.15 seconds, it will turn into a Perfect Arrow, which has more damage and radius, and does not require Infusion.
+dh:elfBook.pros6=[next=pros7]After a Perfect Shot, the next 5 shots will be Perfect.[br][br]Level 9:[br]Art of War: Damage radius and % are increased x2.[br]Hatred of Others: Deals x10 damage against vampires and werewolves, prevents the vampire from resurrecting,
+dh:elfBook.pros7=[next=pros8]and draining Elf blood.[br][br]Level 10:[br]Maximum infusion reserve increased by 3 times.[br]Draw time for Enhanced and Powerful Arrow decreased by 2 times, and the time for Ideal Arrow increased by 25%.
+dh:elfBook.pros8=Attacks with magic damage and arrow damage drain all types of magic from the target by 10% (Witchery infusion&modResource) and for each point drained additionally deal Void damage.
+dh:elfBook.modResource_Thaumcraft=, Thaumcraft vis
+dh:elfBook.modResource_Botania=, Botania mana
+dh:elfBook.modResource_arsmagica2=, Ars Magica 2 mana
+dh:elfBook.modResource_AWWayofTime=, BloodMagic LP
 # Witchery symbols
-witchery.pott.dh.animainteritus=§5Anima §cInteritus
-witchery.pott.dh.horcrux=§5Hor§ccrux
-witchery.pott.dh.sectumsempra=§5Sectumsempra
-witchery.pott.dh.lumostempestas=§5Lumos Tempestas
-witchery.pott.dh.bombardamaxima=§5Bombarda Maxima
-witchery.pott.dh.graviole=§5Graviole
-witchery.pott.dh.powerDestruction=§5Decaimiento de la fuerza
-witchery.pott.dh.ophiuchus=§5Ophiuchus
+witchery.pott.dh.animainteritus=§5Anima §cInteritus§r
+witchery.pott.dh.horcrux=§5Hor§ccrux§r
+witchery.pott.dh.sectumsempra=§5Sectumsempra§r
+witchery.pott.dh.lumostempestas=§5Lumos Tempestas§r
+witchery.pott.dh.bombardamaxima=§5Bombarda Maxima§r
+witchery.pott.dh.graviole=§5Graviole§r
+witchery.pott.dh.powerDestruction=§5Decaimiento de la fuerza§r
+witchery.pott.dh.ophiuchus=§5Ophiuchus§r
+witchery.pott.dh.animainteritus.info={0Binds itself and the target in rotten chains that devour the soul.|If the target does not kill the caster within 40 seconds, it is guaranteed to die.|The caster and the bound target cannot leave a certain radius, teleport, change worlds, and will also have a penalty when leaving the game.|The Elf's level affects the narrowing of the radius for the target and the ability to impose chains on several targets at once.
+witchery.pott.dh.horcrux.info={0Reduces max HP by 10 and gives 1 resurrection.|Can be used while max HP is above 10.|Upon resurrection, returns 10 max HP.
+witchery.pott.dh.sectumsempra.info={0Reduces the current max HP of creatures in sight by 15% and can stack.|Cannot reduce max HP below 5.|Elf level increases the % of max HP reduction.
+witchery.pott.dh.lumostempestas.info={0Summons 5 lightning bolts at a random location around the looking point and deals magic damage.|The number of lightning bolts increases with the Elf's level.
+witchery.pott.dh.bombardamaxima.info={0Creates a powerful explosion at the looking point, dealing explosive damage.
+witchery.pott.dh.graviole.info={0Lowers a creature standing in the air to the ground and disables flight for flying creatures for a one-time use.|Deals damage upon falling.
+witchery.pott.dh.powerDestruction.info={0Removes all potion effects from nearby creatures.
+witchery.pott.dh.ophiuchus.info={0Throws all the potions from Leonardo's urn at once.
 # Botania Flowers
 dh.flower.screamily.name=§4Screamily
 botania.entry.screamily=Screamily

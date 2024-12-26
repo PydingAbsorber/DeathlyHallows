@@ -5,6 +5,7 @@ import com.pyding.deathlyhallows.entities.DHEntities;
 import com.pyding.deathlyhallows.events.DHMultiBlockRenderEvents;
 import com.pyding.deathlyhallows.events.DHPlayerRenderEvents;
 import com.pyding.deathlyhallows.items.DHItems;
+import com.pyding.deathlyhallows.utils.BookHelper;
 import com.pyding.deathlyhallows.utils.DHKeys;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -31,6 +32,7 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void postInit(FMLPostInitializationEvent event) {
 		super.postInit(event);
+		BookHelper.init();
 	}
 
 }

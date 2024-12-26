@@ -40,7 +40,14 @@ public class ItemMonsterBook extends ItemBase {
 	protected void addTooltip(ItemStack stack, EntityPlayer p, List<String> l, boolean devMode) {
 		DeathlyProperties props = DeathlyProperties.get(p);
 		l.add(StatCollector.translateToLocal("dh.desc.book1"));
-		l.add(StatCollector.translateToLocalFormatted("dh.desc.book2", getBookDamage(DeathlyProperties.get(p))));
+		float damage = getBookDamage(DeathlyProperties.get(p));
+	
+		l.add(StatCollector.translateToLocalFormatted("dh.desc.book2",
+				damage < 1E10
+						? Math.round(damage)
+						: String.format("%.2e", damage)
+		));
+
 		if(!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 			return;
 		}

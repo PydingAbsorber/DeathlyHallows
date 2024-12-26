@@ -4,6 +4,7 @@ import com.emoniph.witchery.infusion.Infusion;
 import com.emoniph.witchery.infusion.infusions.symbols.SymbolEffect;
 import com.pyding.deathlyhallows.symbols.ElderSymbolTraits;
 import com.pyding.deathlyhallows.symbols.SymbolEffectBase;
+import com.pyding.deathlyhallows.utils.BookHelper;
 import com.pyding.deathlyhallows.utils.ElfUtils;
 import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,11 +12,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
+import java.util.Map;
+import java.util.function.Function;
+
 @SuppressWarnings("unused")
 public final class DHHooks {
-	
+
 	private DHHooks() {
-		
+
 	}
 
 	public static boolean witcheryBranchCanPerform(SymbolEffect effect, World world, EntityPlayer p, int level) {
@@ -31,6 +35,7 @@ public final class DHHooks {
 		}
 		return true;
 	}
+
 	public static int witcheryBranchPerformLevel(int level, SymbolEffect effect, World world, EntityPlayer p) {
 		// put spell in elf quest list
 		DeathlyProperties props = DeathlyProperties.get(p);
@@ -61,12 +66,25 @@ public final class DHHooks {
 
 	public static int witcheryInfuse(Infusion infusion, EntityPlayer p, int charges) {
 		if(p.worldObj.isRemote) {
-			return charges;	
+			return charges;
 		}
 		if(ElfUtils.getElfLevel(p) == 10) {
 			return charges * 2;
 		}
 		return charges;
+	}
+
+	public static String witcheryFormatMarkdownBook(String text, EntityPlayer p) {
+		if(text == null || text.isEmpty()) {
+			return text;
+		}
+		for(Map.Entry<String, Function<EntityPlayer, String>> entry: BookHelper.bookFormatter.entrySet()) {
+			String key = "&" + entry.getKey();
+			if(text.contains(key)) {
+				text = text.replace(key, entry.getValue().apply(p));
+			}
+		}
+		return text;
 	}
 
 }
