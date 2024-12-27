@@ -1,8 +1,6 @@
 package com.pyding.deathlyhallows.multiblocks.structures;
 
-import com.pyding.deathlyhallows.blocks.DHBlocks;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
-import com.pyding.deathlyhallows.multiblocks.OctagonPart;
 import com.pyding.deathlyhallows.utils.IMultiBlockHandler;
 
 public class DHStructures {
@@ -31,12 +29,11 @@ public class DHStructures {
 		purify = new StructurePurify();
 		curse = new StructureCurse();
 		coven = new StructureCoven();
+		mending = new StructureMending();
+		hunt = new StructureHunt();
 		if(DHIntegration.thaumcraft) {
 			basik = new StructureBasik();
 		}
-		// not yet implemented
-		mending = new StructureOctagonDrawing(new OctagonPart(DHBlocks.elderGlyph));
-		hunt = new StructureOctagonDrawing(new OctagonPart(DHBlocks.elderGlyph));
 	}
 
 }
