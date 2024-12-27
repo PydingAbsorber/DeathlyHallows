@@ -3,8 +3,10 @@ package com.pyding.deathlyhallows.recipes;
 import com.emoniph.witchery.Witchery;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
 import com.pyding.deathlyhallows.items.DHItems;
+import com.pyding.deathlyhallows.items.ItemElderBook;
 import com.pyding.deathlyhallows.items.wands.ItemWandCap;
 import com.pyding.deathlyhallows.items.wands.ItemWandRod;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import thaumcraft.common.config.ConfigItems;
 
@@ -23,6 +25,9 @@ public final class DHGrassperRecipes {
 	}
 	
 	public static void init() {
+		addRecipe(new ItemStack(Items.enchanted_book), new ItemStack(Items.bow), new ItemStack(DHItems.elfBook));
+		addRecipe(new ItemStack(Items.enchanted_book), new ItemStack(Witchery.Items.CHALK_RITUAL), new ItemStack(DHItems.elderBook, 1, ItemElderBook.Books.Rituals.ordinal()));
+		addRecipe(new ItemStack(Items.enchanted_book), new ItemStack(Witchery.Items.MYSTIC_BRANCH), new ItemStack(DHItems.elderBook, 1, ItemElderBook.Books.Wands.ordinal()));
 		if(DHIntegration.thaumcraft) {
 			ItemStack mutandis = Witchery.Items.GENERIC.itemMutandis.createStack();
 			addRecipe(new ItemStack(ConfigItems.itemFocusPech), mutandis, new ItemStack(DHItems.inferioisMutandis));
