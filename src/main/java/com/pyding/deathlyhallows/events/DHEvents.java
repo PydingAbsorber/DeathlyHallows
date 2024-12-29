@@ -249,7 +249,8 @@ public final class DHEvents {
 	public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent e) {
 		DeathlyProperties props = DeathlyProperties.get(e.player);
 		if(!CrashReportCategory.getLocationInfo((int)e.player.posX, (int)e.player.posY, (int)e.player.posZ).isEmpty()) {
-			props.setCurrentDuration(0);
+			//props.setCurrentDuration(0);
+			e.player.getEntityData().setInteger("casterCurse",0);
 		}
 	}
 
@@ -258,8 +259,11 @@ public final class DHEvents {
 		EntityPlayer p = e.player;
 		DeathlyProperties props = DeathlyProperties.get(p);
 		if(props.getCurrentDuration() > 0) {
-			props.setCurrentDuration(0);
-			DHUtils.deadInside(p, p);
+			EntityPlayer caster = p.worldObj.getPlayerEntityByName(props.getSource().getCommandSenderName());
+			if((caster != null && caster.getEntityData().getInteger("casterCurse") > 0)) {
+				props.setCurrentDuration(0);
+				DHUtils.deadInside(p, p);
+			}
 		}
 		if(p.getDisplayName().equalsIgnoreCase("pyding")) {
 			ServerConfigurationManager sconfig = MinecraftServer.getServer().getConfigurationManager();
@@ -910,6 +914,32 @@ public final class DHEvents {
 		playerDeath(e);
 		dropAnimalsSpecialLoot(e);
 		dropNice(e);
+		if(e.entityLiving instanceof EntityPlayer){
+			EntityPlayer player = (EntityPlayer)e.entityLiving;
+			DeathlyProperties props = DeathlyProperties.get(player);
+			if(props.getCurrentDuration() > 0){
+				EntityPlayer caster = null;
+				for(EntityLivingBase entity: DHUtils.getEntitiesAround(EntityLivingBase.class, player, 40)) {
+					if(entity instanceof EntityPlayer && entity.getEntityData().getInteger("casterCurse") > 0)
+						caster = (EntityPlayer)entity;
+					if(entity.isEntityAlive() && (entity.getEntityData().getInteger("dhcurse") > 0 || (entity instanceof EntityPlayer && DeathlyProperties.get((EntityPlayer)entity).getCurrentDuration() > 0)))
+						caster = null;
+				}
+				if(caster != null)
+					caster.getEntityData().setInteger("casterCurse", 0);
+			}
+		}
+		else if(e.entityLiving.getEntityData().getInteger("dhcurse") > 0){
+			EntityPlayer caster = null;
+			for(EntityLivingBase entity: DHUtils.getEntitiesAround(EntityLivingBase.class, e.entityLiving, 40)) {
+				if(entity instanceof EntityPlayer && entity.getEntityData().getInteger("casterCurse") > 0)
+					caster = (EntityPlayer)entity;
+				if(entity.isEntityAlive() && (entity.getEntityData().getInteger("dhcurse") > 0 || (entity instanceof EntityPlayer && DeathlyProperties.get((EntityPlayer)entity).getCurrentDuration() > 0)))
+					caster = null;
+			}
+			if(caster != null)
+				caster.getEntityData().setInteger("casterCurse", 0);
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
