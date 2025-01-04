@@ -24,7 +24,7 @@ import java.util.List;
 public class ItemNimbus extends ItemBase implements IItemDyeable {
 
 	private IIcon overlay;
-	
+
 	public ItemNimbus() {
 		super("nimbus", 1);
 	}
@@ -86,7 +86,7 @@ public class ItemNimbus extends ItemBase implements IItemDyeable {
 		nimbus.interactFirst(p);
 		return super.onItemRightClick(stack, world, p);
 	}
-	
+
 	public static boolean canUse(Entity p) {
 		NBTTagCompound tag = p.getEntityData();
 		if(tag.getLong("NimbusDuration") > System.currentTimeMillis()) {
@@ -104,10 +104,10 @@ public class ItemNimbus extends ItemBase implements IItemDyeable {
 	public static void setNumbusDuration(Entity p, int durationSeconds) {
 		NBTTagCompound tag = p.getEntityData();
 		if(tag.getLong("NimbusDuration") < System.currentTimeMillis()) {
-			tag.setLong("NimbusDuration", MathHelper.ceiling_float_int( durationSeconds * 1000 * modifier(p)) + System.currentTimeMillis());
+			tag.setLong("NimbusDuration", MathHelper.ceiling_float_int(durationSeconds * 1000 * modifier(p)) + System.currentTimeMillis());
 		}
 	}
-	
+
 	public static float modifier(Entity e) {
 		if(!(e instanceof EntityPlayer)) {
 			return 1F;
@@ -130,14 +130,14 @@ public class ItemNimbus extends ItemBase implements IItemDyeable {
 		long duration = 0;
 		NBTTagCompound tag = p.getEntityData();
 		if(tag != null) {
-			cd = tag.getLong("NimbusCooldown");
-			duration = tag.getLong("NimbusDuration");
+			cd = (tag.getLong("NimbusCooldown") - System.currentTimeMillis()) / 1000;
+			duration = (tag.getLong("NimbusDuration") - System.currentTimeMillis()) / 1000;
 		}
-		if((duration - System.currentTimeMillis()) > 0) {
-			l.add(StatCollector.translateToLocalFormatted("dh.desc.broom1", (duration - System.currentTimeMillis()) / 1000));
+		if(duration > 0) {
+			l.add(StatCollector.translateToLocalFormatted("dh.desc.broom1", String.format("%d", duration)));
 		}
-		else if(cd > System.currentTimeMillis()) {
-			l.add(StatCollector.translateToLocalFormatted("dh.desc.broom0", (cd - System.currentTimeMillis()) / 1000));
+		else if(cd > 0) {
+			l.add(StatCollector.translateToLocalFormatted("dh.desc.broom0", String.format("%d", cd)));
 		}
 		l.add(StatCollector.translateToLocalFormatted("dh.desc.broom2", Keyboard.getKeyName(DHKeys.BROOM.getKeyCode())));
 		l.add(StatCollector.translateToLocal("dh.desc.broom3"));
@@ -152,10 +152,10 @@ public class ItemNimbus extends ItemBase implements IItemDyeable {
 	public int getItemEnchantability(ItemStack stack) {
 		return 1;
 	}
-	
+
 	@Override
 	public int getDefaultColor(ItemStack stack) {
 		return 0x704020; // default color
 	}
-	
+
 }

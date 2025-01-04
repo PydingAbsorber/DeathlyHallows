@@ -145,7 +145,7 @@ public final class ElfUtils {
 				break;
 			}
 			case 5: {
-				if((DHUtils.getEntitiesNames().size() / props.getMonstersCount()) >= (DHConfig.getElfRequirements(6) / 100)) {
+				if(Math.round(props.getMonstersCount() * 100F / DHUtils.getEntitiesNames().size()) >= (DHConfig.getElfRequirements(6))) {
 					props.setElfLevel(6);
 					messageChatLevelUp(p);
 				}
