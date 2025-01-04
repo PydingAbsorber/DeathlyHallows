@@ -27,7 +27,7 @@ public class ItemWandCastingTransformer extends ClassTransformerBase {
 	}
 
 	public static boolean getConsumptionModifier(MethodNode mnode) {
-		AbstractInsnNode node = getNode(mnode, InsnNodePredicates.Method(INVOKESTATIC,"max"));
+		AbstractInsnNode node = getNode(mnode, InsnNodePredicates.Method(INVOKESTATIC, "max"));
 		if(node == null) {
 			return false;
 		}

@@ -26,7 +26,7 @@ public class GuiScreenMarkupBookTransformer extends ClassTransformerBase {
 	}
 
 	public static boolean constructPage(MethodNode mnode) {
-		AbstractInsnNode node = getNode(mnode, InsnNodePredicates.Method(INVOKESTATIC, "translateToLocal"));
+		AbstractInsnNode node = getNode(mnode, InsnNodePredicates.MethodObf(INVOKESTATIC, "func_74838_a","translateToLocal"));
 		mnode.instructions.insert(node, list(
 				new VarInsnNode(ALOAD, 0),
 				new FieldInsnNode(GETFIELD, "com/emoniph/witchery/client/gui/GuiScreenMarkupBook", "player", "Lnet/minecraft/entity/player/EntityPlayer;"),

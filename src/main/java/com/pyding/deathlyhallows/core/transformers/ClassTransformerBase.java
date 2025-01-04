@@ -21,5 +21,5 @@ public class ClassTransformerBase extends airburn.fasmtel.transformers.ClassTran
 	protected Logger getLogger() {
 		return DeathlyHallows.LOG;
 	}
-	
+
 }
