@@ -1,6 +1,5 @@
 package com.pyding.deathlyhallows.integrations.thaumcraft;
 
-import com.emoniph.witchery.Witchery;
 import com.pyding.deathlyhallows.blocks.BlockVisConverter;
 import com.pyding.deathlyhallows.blocks.DHBlocks;
 import com.pyding.deathlyhallows.blocks.tiles.TileEntityVisConverter;
@@ -12,7 +11,6 @@ import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.items.wands.ItemWandCap;
 import com.pyding.deathlyhallows.items.wands.ItemWandRod;
 import com.pyding.deathlyhallows.items.wands.foci.ItemFocusInferioisMutandis;
-import com.pyding.deathlyhallows.recipes.DHWorkbenchRecipes;
 import net.minecraft.item.ItemStack;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
@@ -59,21 +57,14 @@ public final class DHThaumcraft {
 		wandCapCotton = new DHWandCap(cotton);
 		DHBlocks.register(visConverter = new BlockVisConverter());
 		DHBlocks.registerTile(TileEntityVisConverter.class, "visConverterTile");
+	}
+	
+	public static void postInit() {
+		aspects();
 		DHResearches.init();
 	}
-
-	public static void recipes() {
-		DHWorkbenchRecipes.addShapedRecipe(
-				new ItemStack(visConverter),
-				"BHB",
-				"HSH",
-				"BHB",
-				'B', new ItemStack(Witchery.Items.MYSTIC_BRANCH),
-				'H', Witchery.Items.GENERIC.itemDemonHeart.createStack(),
-				'S', new ItemStack(deathShard));
-	}
-
-	public static void aspects() {
+	
+	private static void aspects() {
 		addAspects(
 				new ItemStack(inferioisMutandis),
 				EXCHANGE, 12,

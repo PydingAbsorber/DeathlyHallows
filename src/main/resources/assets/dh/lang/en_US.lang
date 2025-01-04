@@ -21,7 +21,7 @@ item.elderBook.Wands.name=§5Dark Arts§r: Unforgivable Curses
 item.elfBook.name=Elven Amalgamation: Molding Infusion
 item.chalkelder.name=§5Elder §rChalk
 item.lightningInBag.name=§bLightning in Bag
-item.focus_mutandis.name=Inferiois Mutandis
+item.FocusInferioisMutandis.name=Wand Focus: Inferiois Mutandis
 item.niceCream.name=§3Nicecream
 item.bag.name=Common Bag?
 item.wandCap.koboldite.name=Koboldite Cap
@@ -228,7 +228,14 @@ dh.flower.spawnlesia.name=§dSpawnlesia
 botania.entry.spawnlesia=Spawnlesia
 botania.tagline.spawnlesia=What mobs will lure this smell?
 botania.page.spawnlesiaabobka=A very voracious and patient flower, which, when receiving an abundant amount of mana, begins to exude an extremely specific smell. This strong and pungent smell will attract even anosmics! Finding nearby for a long time is not recommended...
+# Thaumcraft research
+tc.research_category.DeathlyHallows=Dark Arts
+dh.research_name.VISC=Vis and Witch Magic
+dh.research_text.VISC=Viscera Cleanup Detail
+dh.research_page.VISC.1=You finally acknowledge how to transform vis into altar power and back.
+dh.research_name.INFERIOIS_MUTANDIS=Wand Focus: Inferiois Mutandis
+dh.research_text.INFERIOIS_MUTANDIS=Fart smella
+dh.research_page.INFERIOIS_MUTANDIS.1=This focus uses wand Vis to imitate Mutandis and Mutating Sprig.
 # Thaumcraft FocusUpgradeType
 focus.upgrade.dh.extremis.name=Mutandis Extremis
 focus.upgrade.dh.extremis.text=This upgrade increases the mutation abilities of the focus, makes its effect similar to Mutandis Extremis.
-# Thaumcraft wands

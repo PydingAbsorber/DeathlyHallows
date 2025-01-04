@@ -36,7 +36,7 @@ public final class DHBotania {
 
 	}
 
-	public static void init() {
+	public static void postInit() {
 		petalApothecaryRecipes();
 		lexicon();
 	}

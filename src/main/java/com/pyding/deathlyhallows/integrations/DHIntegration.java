@@ -45,11 +45,10 @@ public class DHIntegration {
 
 	public static void postInit() {
 		if(thaumcraft) {
-			DHThaumcraft.recipes();
-			DHThaumcraft.aspects();
+			DHThaumcraft.postInit();
 		}
 		if(DHIntegration.botania) {
-			DHBotania.init();
+			DHBotania.postInit();
 		}
 	}
 

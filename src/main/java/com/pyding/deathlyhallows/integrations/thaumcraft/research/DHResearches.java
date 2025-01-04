@@ -1,14 +1,17 @@
 package com.pyding.deathlyhallows.integrations.thaumcraft.research;
 
 import com.pyding.deathlyhallows.DeathlyHallows;
+import com.pyding.deathlyhallows.blocks.DHBlocks;
 import com.pyding.deathlyhallows.items.DHItems;
 import com.pyding.deathlyhallows.items.wands.ItemWandCap;
 import com.pyding.deathlyhallows.items.wands.ItemWandRod;
+import com.pyding.deathlyhallows.recipes.DHWorkbenchRecipes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.research.ResearchCategories;
 import thaumcraft.api.research.ResearchItem;
+import thaumcraft.api.research.ResearchPage;
 
 import static thaumcraft.api.aspects.Aspect.*;
 
@@ -19,10 +22,11 @@ public class DHResearches {
 
 	public static ResearchItem
 			// entries
-			LORE,
-			// wands
-			ROD_ROWAN,
-			ROD_ALDER, 
+			VISC,
+			INFERIOIS_MUTANDIS,
+	// wands
+	ROD_ROWAN,
+			ROD_ALDER,
 			ROD_HAWTHORN,
 			CAP_KOBOLDITE,
 			CAP_COTTON;
@@ -30,27 +34,39 @@ public class DHResearches {
 	public static void init() {
 		ResearchCategories.registerCategory(CATEGORY_DH,
 				new ResourceLocation(DeathlyHallows.MODID, "textures/misc/r_icon.png"),
-				new ResourceLocation(DeathlyHallows.MODID, "textures/guis/thaumcraft/researchback.png")
+				new ResourceLocation(DeathlyHallows.MODID, "textures/gui/thaumcraft/research_back.png")
 		);
-		/*
-		LORE = new DHGResearchItem(
-				"DeathlyHallows", CATEGORY_DH,
+
+		VISC = new DHGResearchItem(
+				"VISC", CATEGORY_DH,
 				new AspectList()
-						.add(DEATH, 1)
-						.add(MIND, 1)
+						.add(DEATH, 4)
+						.add(ENERGY, 2)
 						.add(MAGIC, 1),
-				0, 0,
+				2, 0,
 				1,
-				new ItemStack(ItemsCommonProxy.arcaneCompendium)
+				new ItemStack(DHBlocks.visConverter)
 		)
-				
-				.setPages(new ResearchPage("dh.research_page.DeathlyHallows.1"), new ResearchPage("dh.research_page.DeathlyHallows.2"))
+				.setPages(new ResearchPage("dh.research_page.VISC.1"), new ResearchPage(DHWorkbenchRecipes.VISC))
 				.setSpecial()
 				.setRound()
 				.setAutoUnlock()
 				.registerResearchItem();
-				
-		 */
+		INFERIOIS_MUTANDIS = new DHGResearchItem(
+				"INFERIOIS_MUTANDIS", CATEGORY_DH,
+				new AspectList()
+						.add(PLANT, 4)
+						.add(EXCHANGE, 2)
+						.add(MAGIC, 1),
+				-2, 0,
+				1,
+				new ItemStack(DHItems.inferioisMutandis)
+		)
+				.setPages(new ResearchPage("dh.research_page.INFERIOIS_MUTANDIS.1"))
+				.setSpecial()
+				.setRound()
+				.setAutoUnlock()
+				.registerResearchItem();
 		CAP_KOBOLDITE = new DHGResearchItem(
 				"CAP_koboldite", CATEGORY_DH,
 				new AspectList()

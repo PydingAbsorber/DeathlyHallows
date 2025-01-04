@@ -74,8 +74,8 @@ public class ItemFocusInferioisMutandis extends ItemFocusPech implements IArchit
 
 	public ItemFocusInferioisMutandis() {
 		// Thaumcraft naming style
-		setUnlocalizedName("focus_mutandis");
-		setTextureName("focus_mutandis");
+		setUnlocalizedName("FocusInferioisMutandis");
+		setTextureName("focus_inferioismutandis");
 		setCreativeTab(tabDeathlyHallows);
 	}
 

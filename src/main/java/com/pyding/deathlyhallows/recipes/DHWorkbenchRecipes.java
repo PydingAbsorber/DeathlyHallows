@@ -1,5 +1,6 @@
 package com.pyding.deathlyhallows.recipes;
 
+import com.emoniph.witchery.Witchery;
 import com.pyding.deathlyhallows.DeathlyHallows;
 import com.pyding.deathlyhallows.integrations.DHArsMagica2;
 import com.pyding.deathlyhallows.integrations.DHIntegration;
@@ -14,9 +15,13 @@ import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import static com.emoniph.witchery.Witchery.Items;
+import static com.pyding.deathlyhallows.blocks.DHBlocks.visConverter;
+import static com.pyding.deathlyhallows.items.DHItems.deathShard;
 import static net.minecraft.init.Items.dye;
 
 public final class DHWorkbenchRecipes {
+	
+	public static IRecipe VISC;
 
 	private DHWorkbenchRecipes() {
 
@@ -47,12 +52,20 @@ public final class DHWorkbenchRecipes {
 			);
 		}
 		if(DHIntegration.thaumcraft) {
-			addShapeledRecipe(
+			addShapedOreRecipe(
 					new ItemStack(DHItems.wandCap, 1, ItemWandCap.Caps.koboldite.ordinal()),
 					"KKK",
 					"K K",
 					'K', Items.GENERIC.itemKobolditeNugget.createStack()
 			);
+			VISC = addShapedRecipe(
+					new ItemStack(visConverter),
+					"BHB",
+					"HSH",
+					"BHB",
+					'B', new ItemStack(Witchery.Items.MYSTIC_BRANCH),
+					'H', Witchery.Items.GENERIC.itemDemonHeart.createStack(),
+					'S', new ItemStack(deathShard));
 		}
 		recipe(new RecipeDyeable(), "dyeable", RecipeSorter.Category.SHAPELESS);
 		recipe(new RecipeUnDyeable(), "undyeable", RecipeSorter.Category.SHAPELESS);
@@ -62,12 +75,14 @@ public final class DHWorkbenchRecipes {
 		GameRegistry.addShapelessRecipe(output, params);
 	}
 
-	public static void addShapedRecipe(ItemStack output, Object... params) {
-		GameRegistry.addShapedRecipe(output, params);
+	public static IRecipe addShapedRecipe(ItemStack output, Object... params) {
+		return GameRegistry.addShapedRecipe(output, params);
 	}
 
-	private static void addShapeledRecipe(ItemStack i, Object... o) {
-		GameRegistry.addRecipe(new ShapedOreRecipe(i, o));
+	private static IRecipe addShapedOreRecipe(ItemStack i, Object... o) {
+		IRecipe recipe = new ShapedOreRecipe(i, o);
+		GameRegistry.addRecipe(recipe);
+		return recipe;
 	}
 
 	private static void recipe(IRecipe recipe, String name, RecipeSorter.Category category) {

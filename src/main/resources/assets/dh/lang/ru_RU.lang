@@ -21,7 +21,7 @@ item.elderBook.Wands.name=§5Темные искусства§r: Непрост�
 item.elfBook.name=Эльфийская Амальгамация: Литьё Инфузией
 item.chalkelder.name=§5Мудрый §rмел
 item.lightningInBag.name=§bМолния в сумке
-item.focus_mutandis.name=Мутандис Худшимис
+item.FocusInferioisMutandis.name=Набалдашник: Мутандис Худшимис
 item.niceCream.name=§3Доброженое
 item.bag.name=Обычная Сумка?
 item.wandCap.koboldite.name=Кобольдитовый наконечник
@@ -209,6 +209,14 @@ dh.flower.spawnlesia.name=§dПризывлезия
 botania.entry.spawnlesia=SdПризывлезия
 botania.tagline.spawnlesia=Каких существ привлечёт этот запах?
 botania.page.spawnlesiaabobka=Весьма прожорливый и терпеливый цветок, который при получении обильного количества маны начинает источать крайне специфичный запах. Этот сильный и резкий запах привлечёт даже аносмиков! Находить рядом в течении долгого времени не рекомендуется...
+# Thaumcraft research
+tc.research_category.DeathlyHallows=Темные искусства
+dh.research_name.VISC=Вис и Ведьмовство
+dh.research_text.VISC=Viscera Cleanup Detail
+dh.research_page.VISC.1=Наконец-то вы поняли, как превращать Вис в энергию алтаря и обратно.
+dh.research_name.INFERIOIS_MUTANDIS=Набалдашник: Мутандис Худшимис
+dh.research_text.INFERIOIS_MUTANDIS=Fart smella
+dh.research_page.INFERIOIS_MUTANDIS.1=Этот набалдашник использует Вис чтобы имитировать Мутандис и Мутировавший сук.
 # Thaumcraft FocusUpgradeType
 focus.upgrade.dh.extremis.name=Мутандис Экстремис
 focus.upgrade.dh.extremis.text=Это улучшение увеличивает способности набалдашника к мутации, делая его эффект таким же, как у Мутандис Экстремис.
