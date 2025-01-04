@@ -11,6 +11,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import static com.pyding.deathlyhallows.symbols.ElderSymbolTraits.ELDER;
@@ -28,9 +29,10 @@ public class SymbolAnimaInteritus extends SymbolEffectBase {
 		// TODO rework
 		int cursedCount = 0;
 		int maxCursed = MathHelper.floor_float(1.5F * level) - 1;
-		float radius = 16F * level;
+		float radius = 3F * level;
 		DeathlyProperties casterProps = DeathlyProperties.get(p);
-		for(EntityLivingBase e: DHUtils.getEntitiesAround(EntityLivingBase.class, p, radius)) {
+		Vec3 look = DHUtils.getLook(p, 48);
+		for(EntityLivingBase e: DHUtils.getEntitiesAt(EntityLivingBase.class, world, look.xCoord, look.yCoord, look.zCoord, radius)) {
 			if(cursedCount > maxCursed) {
 				break;
 			}
@@ -41,7 +43,7 @@ public class SymbolAnimaInteritus extends SymbolEffectBase {
 				continue;
 			}
 			NBTTagCompound tag = e.getEntityData();
-			if(tag.hasKey("dhcurse")) {
+			if(tag.hasKey("dhcurse") && tag.getInteger("dhcurse") > 0) {
 				continue;
 			}
 			++cursedCount;
@@ -52,8 +54,6 @@ public class SymbolAnimaInteritus extends SymbolEffectBase {
 				targetProps.setSource(p);
 				targetProps.setCurrentDuration(1200);
 				targetProps.setCoordinates(e.posX, e.posY, e.posZ, e.dimension);
-				casterProps.setCoordinates(e.posX, e.posY, e.posZ, e.dimension);
-				tag.setInteger("casterCurse", 1200);
 			}
 			else {
 				e.setLastAttacker(p);
@@ -61,6 +61,8 @@ public class SymbolAnimaInteritus extends SymbolEffectBase {
 				tag.setDouble("chainY", e.posY);
 				tag.setDouble("chainZ", e.posZ);
 			}
+			p.getEntityData().setInteger("casterCurse", 1200);
+			casterProps.setCoordinates(e.posX, e.posY, e.posZ, e.dimension);
 			NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(e.dimension, e.posX, e.posY, e.posZ, radius * 1.5D);
 			DHPacketProcessor.sendToAllAround(new PacketNBTSync(tag, e.getEntityId()), targetPoint);
 		}
