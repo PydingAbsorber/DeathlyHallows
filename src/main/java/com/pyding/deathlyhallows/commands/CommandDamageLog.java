@@ -103,40 +103,39 @@ public class CommandDamageLog extends CommandBase {
 					String text = "";
 					switch(elf) {
 						case 1: {
-							text = "you have " + player.experienceLevel + " lvl out of " + DHConfig.getElfRequirements(elf + 1);
+							text = "Use different spells " + props.getSpellsUsed() + "/" + DHConfig.getElfRequirements(elf + 1);
 							break;
 						}
 						case 2: {
-							text = "your height is " + player.posY + " out of " + DHConfig.getElfRequirements(elf + 1);
+							text = "Descend to a height of " + player.posY + "/" + DHConfig.getElfRequirements(elf + 1);
 							break;
 						}
 						case 3: {
-							text = "you have " + ElfUtils.getTotalEnchantmentLevels(player) + " enchantment lvls in total out of " + DHConfig.getElfRequirements(elf + 1);
+							text = "Reach a total enchantment level of " + ElfUtils.getTotalEnchantmentLevels(player) + "/" + DHConfig.getElfRequirements(elf + 1);
 							break;
 						}
 						case 4: {
-							text = "you killed " + props.getMobsKilled() + " creatures by bow out of " + DHConfig.getElfRequirements(elf + 1);
+							text = "Shoot 30 creatures with a single Enchanted Arrow " + props.getMobsKilled() + "/" + DHConfig.getElfRequirements(elf + 1);
 							break;
 						}
 						case 5: {
-							text = "you eaten " + props.getFoodEaten() + " golden apples out of " + DHConfig.getElfRequirements(elf + 1);
+							text = "Kill modpack creatures " + Math.round(props.getMonstersCount() * 100F / DHUtils.getEntitiesNames().size()) + "/" + DHConfig.getElfRequirements(elf + 1);
 							break;
 						}
 						case 6: {
-							text = "you lived " + ElfUtils.getSecondsSurvived(player) + " seconds under 10 debuffs out of " + +DHConfig.getElfRequirements(elf + 1);
+							text = "Live with 10 negative potion effects " + props.elfTimeSurvived + "/" + DHConfig.getElfRequirements(elf + 1);
 							break;
 						}
 						case 7: {
-							text = "you lived " + ElfUtils.getSecondsSurvived(player) + " seconds in astral form out of " + +DHConfig.getElfRequirements(elf + 1);
+							text = "Live in Astral/Ghost form" + props.elfTimeSurvived + "/" + DHConfig.getElfRequirements(elf + 1);
 							break;
 						}
 						case 8: {
-							text = "you consumed " + props.getFoodCollection()
-														  .size() + " items out of " + DHConfig.getElfRequirements(elf + 1);
+							text = "Fire Perfect Shots" + props.getShots() + "/" + DHConfig.getElfRequirements(elf + 1);
 							break;
 						}
 						case 9: {
-							text = "you used " + props.getSpellsUsed() + " violet spells out of " + +DHConfig.getElfRequirements(elf + 1);
+							text = "Use all Elder Rituals " + props.getRites() + "/" + DHConfig.getElfRequirements(elf + 1);
 							break;
 						}
 						case 10: {
