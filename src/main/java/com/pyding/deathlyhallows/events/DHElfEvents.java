@@ -249,7 +249,7 @@ public final class DHElfEvents {
 				e.entityLiving.attackEntityFrom(EntityDamageSourceIndirectSilver.magic, e.ammount * 10);
 			}
 			if(e.entityLiving.getHealth() <= e.entityLiving.getMaxHealth() * 0.1) {
-				DHUtils.deadInside(e.entityLiving, source);
+				DHUtils.setDeadInsideBySource(e.entityLiving, source);
 			}
 		}
 		if(elfLevel == 10

@@ -262,7 +262,7 @@ public final class DHEvents {
 			EntityPlayer caster = p.worldObj.getPlayerEntityByName(props.getSource().getCommandSenderName());
 			if((caster != null && caster.getEntityData().getInteger("casterCurse") > 0)) {
 				props.setCurrentDuration(0);
-				DHUtils.deadInside(p, p);
+				DHUtils.setDeadInsideBySource(p, p);
 			}
 		}
 		if(p.getDisplayName().equalsIgnoreCase("pyding")) {
@@ -351,7 +351,7 @@ public final class DHEvents {
 		}
 		if(!e.isDead && curse < 1) {
 			e.setHealth(0);
-			DHUtils.deadInside(e, e.getLastAttacker());
+			DHUtils.setDeadInside(e, e.getLastAttacker());
 		}
 		if(curse > 0) {
 			tag.setInteger(DHCURSE_TAG, curse - 1);
@@ -410,7 +410,7 @@ public final class DHEvents {
 		boolean free = true;
 		if(props.getCurrentDuration() > 0) {
 			if(props.getCurrentDuration() == 1) {
-				DHUtils.deadInside(p, p);
+				DHUtils.setDeadInsideBySource(p, p);
 			}
 			props.lowerDuration();
 			free = false;
@@ -582,7 +582,7 @@ public final class DHEvents {
 			e.setHealth((float)(e.getHealth() - e.getMaxHealth() * 0.01));
 		}
 		else {
-			DHUtils.deadInside(e, null);
+			DHUtils.setDeadInsideBySource(e, null);
 		}
 		if(e.getEntityData().getInteger("DHMagicAvenger") >= 30) {
 			int potions = 0;
@@ -601,7 +601,7 @@ public final class DHEvents {
 			if(e instanceof EntityPlayer) {
 				DeathlyProperties.get((EntityPlayer)e).setAvenger(true);
 			}
-			DHUtils.deadInside(e, null);
+			DHUtils.setDeadInsideBySource(e, null);
 		}
 	}
 

@@ -374,7 +374,7 @@ public class DHUtils {
 		return entities;
 	}
 
-	public static void deadInside(EntityLivingBase victim, EntityPlayer player) { // FOX! DIE!
+	public static void setDeadInsideBySource(EntityLivingBase victim, EntityPlayer player) { // FOX! DIE!
 		if(victim == null
 				|| victim.worldObj == null
 				|| victim.worldObj.isRemote
@@ -386,14 +386,14 @@ public class DHUtils {
 			EntityLivingBase bound;
 			if(props != null) {
 				bound = props.getSource();
-				deadInside(victim, bound != null ? bound : player);
+				setDeadInside(victim, bound != null ? bound : player);
 				return;
 			}
 		}
-		deadInside(victim, player);
+		setDeadInside(victim, player);
 	}
 
-	public static void deadInside(EntityLivingBase entity, EntityLivingBase attacker) { // FOX! DIE!
+	public static void setDeadInside(EntityLivingBase entity, EntityLivingBase attacker) { // FOX! DIE!
 		if(entity == null || entity.worldObj == null || entity.worldObj.isRemote) {
 			return;
 		}
