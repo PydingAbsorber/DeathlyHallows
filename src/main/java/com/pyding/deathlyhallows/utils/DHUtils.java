@@ -375,10 +375,7 @@ public class DHUtils {
 	}
 
 	public static void setDeadInsideBySource(EntityLivingBase victim, EntityPlayer player) { // FOX! DIE!
-		if(victim == null
-				|| victim.worldObj == null
-				|| victim.worldObj.isRemote
-		) {
+		if(victim == null || victim.worldObj == null || victim.worldObj.isRemote) {
 			return;
 		}
 		if(player != null) {
