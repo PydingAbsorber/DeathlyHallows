@@ -443,14 +443,18 @@ public class DHUtils {
 	}
 
 	public static boolean isHallow(ItemStack stack) {
-		return stack.getItem() == DHItems.resurrectionStone || stack.getItem() == DHItems.elderWand || stack.getItem() == DHItems.invisibilityMantle;
+		if(stack == null) {
+			return false;
+		}
+		Item hallow = stack.getItem();
+		return hallow == DHItems.resurrectionStone || hallow == DHItems.elderWand || hallow == DHItems.invisibilityMantle;
 	}
 
 	public static void removeDuplicatesFromInventory(EntityPlayer p) {
 		int count = 0;
 		for(int i = 0; i < p.inventory.getSizeInventory(); i++) {
 			ItemStack stack = p.inventory.getStackInSlot(i);
-			if(stack == null || !isHallow(stack)) {
+			if(!isHallow(stack)) {
 				continue;
 			}
 			if(!stack.hasTagCompound()) {
@@ -482,8 +486,7 @@ public class DHUtils {
 		IInventory baubles = BaublesApi.getBaubles(p);
 		for(int i = 1; i < baubles.getSizeInventory(); i++) {
 			ItemStack stack = baubles.getStackInSlot(i);
-			if(stack == null
-					|| !isHallow(stack)
+			if(!isHallow(stack)
 					|| !stack.hasTagCompound()
 					|| !stack.getTagCompound().hasKey("dhowner")
 			) {
