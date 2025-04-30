@@ -195,12 +195,19 @@ public final class DHThaumcraft {
 		addAspects(
 				new ItemStack(DHItems.bag),
 				CLOTH, 8,
-				VOID, 1
+				VOID, 1,
+				
+				MAGIC, 4,
+				getAspect("infernus"), 4
 
 		);
 		addAspects(
 				new ItemStack(DHItems.lightningInBag),
 				CLOTH, 8,
+
+				MAGIC, 4,
+				getAspect("infernus"), 4,
+						
 				WEATHER, 8,
 				ENERGY, 8,
 				getAspect("magneto"), 4,
