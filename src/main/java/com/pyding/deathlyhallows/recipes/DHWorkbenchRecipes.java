@@ -9,6 +9,7 @@ import com.pyding.deathlyhallows.items.wands.ItemWandCap;
 import com.pyding.deathlyhallows.recipes.grid.RecipeDyeable;
 import com.pyding.deathlyhallows.recipes.grid.RecipeUnDyeable;
 import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.oredict.RecipeSorter;
@@ -44,6 +45,18 @@ public final class DHWorkbenchRecipes {
 				Items.GENERIC.itemVampireBookPage.createStack(),
 				Items.GENERIC.itemContractTorment.createStack(),
 				Items.GENERIC.itemDarkCloth.createStack()
+		);
+		addShapedRecipe(
+				new ItemStack(DHItems.bag),
+				Items.GENERIC.itemNullifiedLeather.createStack(),
+				Items.GENERIC.itemFancifulThread.createStack(),
+				Items.GENERIC.itemNullifiedLeather.createStack(),
+				Items.GENERIC.itemNullifiedLeather.createStack(),
+				Items.GENERIC.itemDropOfLuck.createStack(),
+				Items.GENERIC.itemNullifiedLeather.createStack(),
+				new ItemStack(net.minecraft.init.Items.leather),
+				Items.GENERIC.itemNullifiedLeather.createStack(),
+				new ItemStack(net.minecraft.init.Items.leather)
 		);
 		if(DHIntegration.arsMagica) {
 			addShapelessRecipe(

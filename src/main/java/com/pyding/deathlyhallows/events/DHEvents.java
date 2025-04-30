@@ -59,6 +59,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
@@ -93,6 +94,7 @@ import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.ConfigItems;
 import thaumcraft.common.items.wands.ItemWandCasting;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -484,7 +486,7 @@ public final class DHEvents {
 				tag.setBoolean("mantleActive", true);
 				p.worldObj.playSoundAtEntity(p, "dh:mantle." + DHUtils.getRandomInt(1, 3), 1F, 1F);
 			}
-			ItemBaubleInvisibilityMantle.setMantleAbilityState(p, false);
+			//ItemBaubleInvisibilityMantle.setMantleAbilityState(p, false);
 			return;
 		}
 		int mantleCD = tag.getInteger("mantlecd") - mantleDisableCD;
@@ -759,10 +761,10 @@ public final class DHEvents {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void lowestHit(LivingHurtEvent e) {
+	public void lowestHit(LivingHurtEvent e) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		if(e.entity instanceof EntityPlayer) {
 			EntityPlayer p = (EntityPlayer)e.entity;
-			float afterDamage = getAbsorption(p, e.source, e.ammount);
+			float afterDamage = getAbsorption(p, e.source, e.ammount); //should fix
 			TryAndGetAbsorptionLog(p, afterDamage);
 			if(p.getEntityData().getBoolean("adaptiveDamage")) {
 				p.getEntityData().setBoolean("adaptiveDamage", false);
@@ -774,12 +776,74 @@ public final class DHEvents {
 				&& e.entity instanceof EntityLivingBase
 		) {
 			EntityPlayer playerSource = (EntityPlayer)e.source.getEntity();
-			TryAndGetAbsorptionLog(playerSource, getAbsorption(playerSource, e.source, e.ammount));
+			TryAndGetAbsorptionLog(playerSource, getAbsorption(playerSource, e.source, e.ammount)); //should fix
 		}
 	}
 
-	private static float getAbsorption(EntityPlayer p, DamageSource source, float amount) {
-		return ISpecialArmor.ArmorProperties.ApplyArmor(p, p.inventory.armorInventory, source, amount);
+	private static float getAbsorption(EntityPlayer p, DamageSource source, float amount) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		float damage = amount*25;
+		ArrayList<ISpecialArmor.ArmorProperties> dmgVals = new ArrayList<ISpecialArmor.ArmorProperties>();
+		for (int x = 0; x < p.inventory.armorInventory.length; x++)
+		{
+			ItemStack stack = p.inventory.armorInventory[x];
+			if (stack == null)
+			{
+				continue;
+			}
+			ISpecialArmor.ArmorProperties prop = null;
+			if (stack.getItem() instanceof ISpecialArmor)
+			{
+				ISpecialArmor armor = (ISpecialArmor)stack.getItem();
+				prop = armor.getProperties(p, stack, source, damage / 25D, x).copy();
+			}
+			else if (stack.getItem() instanceof ItemArmor && !source.isUnblockable())
+			{
+				ItemArmor armor = (ItemArmor)stack.getItem();
+				prop = new ISpecialArmor.ArmorProperties(0, armor.damageReduceAmount / 25D, armor.getMaxDamage() + 1 - stack.getItemDamage());
+			}
+			if (prop != null)
+			{
+				prop.Slot = x;
+				dmgVals.add(prop);
+			}
+		}
+		if (!dmgVals.isEmpty())
+		{
+			ISpecialArmor.ArmorProperties[] props = dmgVals.toArray(new ISpecialArmor.ArmorProperties[dmgVals.size()]);
+			Method stdList = ISpecialArmor.ArmorProperties.class.getDeclaredMethod(
+					"StandardizeList",
+					ISpecialArmor.ArmorProperties[].class,
+					double.class
+			);
+			stdList.setAccessible(true);
+			stdList.invoke(null, props, damage);
+			//StandardizeList(props, damage);
+			int level = props[0].Priority;
+			double ratio = 0;
+			for (ISpecialArmor.ArmorProperties prop : props)
+			{
+				if (level != prop.Priority)
+				{
+					damage -= (float)(damage * ratio);
+					ratio = 0;
+					level = prop.Priority;
+				}
+				ratio += prop.AbsorbRatio;
+
+				double absorb = damage * prop.AbsorbRatio;
+				if (absorb > 0)
+				{
+					ItemStack stack = p.inventory.armorInventory[prop.Slot];
+					int itemDamage = (int)(absorb / 25D < 1 ? 1 : absorb / 25D);
+					if (stack.stackSize <= 0)
+					{
+						p.inventory.armorInventory[prop.Slot] = null;
+					}
+				}
+			}
+			damage -= (float)(damage * ratio);
+		}
+		return damage / 25.0F;
 	}
 
 	private static void TryAndGetAbsorptionLog(EntityPlayer p, float amount) {
