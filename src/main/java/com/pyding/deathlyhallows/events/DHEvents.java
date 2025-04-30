@@ -94,7 +94,6 @@ import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.ConfigItems;
 import thaumcraft.common.items.wands.ItemWandCasting;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -252,7 +251,7 @@ public final class DHEvents {
 		DeathlyProperties props = DeathlyProperties.get(e.player);
 		if(!CrashReportCategory.getLocationInfo((int)e.player.posX, (int)e.player.posY, (int)e.player.posZ).isEmpty()) {
 			//props.setCurrentDuration(0);
-			e.player.getEntityData().setInteger("casterCurse",0);
+			e.player.getEntityData().setInteger("casterCurse", 0);
 		}
 	}
 
@@ -553,7 +552,7 @@ public final class DHEvents {
 			}
 			p.worldObj.playSoundAtEntity(p, "dh:mantle." + DHUtils.getRandomInt(1, 3), 0.5F, 1.5F);
 		}
-		
+
 	}
 
 	private static void updateAvengerPlayer(EntityPlayer p, DeathlyProperties props) {
@@ -761,7 +760,7 @@ public final class DHEvents {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void lowestHit(LivingHurtEvent e) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+	public void lowestHit(LivingHurtEvent e) {
 		if(e.entity instanceof EntityPlayer) {
 			EntityPlayer p = (EntityPlayer)e.entity;
 			float afterDamage = getAbsorption(p, e.source, e.ammount); //should fix
@@ -776,70 +775,45 @@ public final class DHEvents {
 				&& e.entity instanceof EntityLivingBase
 		) {
 			EntityPlayer playerSource = (EntityPlayer)e.source.getEntity();
-			TryAndGetAbsorptionLog(playerSource, getAbsorption(playerSource, e.source, e.ammount)); //should fix
+			TryAndGetAbsorptionLog(playerSource, getAbsorption(playerSource, e.source, e.ammount));
 		}
 	}
 
-	private static float getAbsorption(EntityPlayer p, DamageSource source, float amount) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-		float damage = amount*25;
-		ArrayList<ISpecialArmor.ArmorProperties> dmgVals = new ArrayList<ISpecialArmor.ArmorProperties>();
-		for (int x = 0; x < p.inventory.armorInventory.length; x++)
-		{
+	private static float getAbsorption(EntityPlayer p, DamageSource source, float amount) {
+		float damage = amount * 25;
+		ArrayList<ISpecialArmor.ArmorProperties> dmgVals = new ArrayList<>();
+		for(int x = 0; x < p.inventory.armorInventory.length; x++) {
 			ItemStack stack = p.inventory.armorInventory[x];
-			if (stack == null)
-			{
+			if(stack == null) {
 				continue;
 			}
 			ISpecialArmor.ArmorProperties prop = null;
-			if (stack.getItem() instanceof ISpecialArmor)
-			{
+			if(stack.getItem() instanceof ISpecialArmor) {
 				ISpecialArmor armor = (ISpecialArmor)stack.getItem();
 				prop = armor.getProperties(p, stack, source, damage / 25D, x).copy();
 			}
-			else if (stack.getItem() instanceof ItemArmor && !source.isUnblockable())
-			{
+			else if(stack.getItem() instanceof ItemArmor && !source.isUnblockable()) {
 				ItemArmor armor = (ItemArmor)stack.getItem();
 				prop = new ISpecialArmor.ArmorProperties(0, armor.damageReduceAmount / 25D, armor.getMaxDamage() + 1 - stack.getItemDamage());
 			}
-			if (prop != null)
-			{
+			if(prop != null) {
 				prop.Slot = x;
 				dmgVals.add(prop);
 			}
 		}
-		if (!dmgVals.isEmpty())
-		{
-			ISpecialArmor.ArmorProperties[] props = dmgVals.toArray(new ISpecialArmor.ArmorProperties[dmgVals.size()]);
-			Method stdList = ISpecialArmor.ArmorProperties.class.getDeclaredMethod(
-					"StandardizeList",
-					ISpecialArmor.ArmorProperties[].class,
-					double.class
-			);
-			stdList.setAccessible(true);
-			stdList.invoke(null, props, damage);
-			//StandardizeList(props, damage);
+		if(!dmgVals.isEmpty()) {
+			ISpecialArmor.ArmorProperties[] props = dmgVals.toArray(new ISpecialArmor.ArmorProperties[0]);
+			ISpecialArmor.ArmorProperties.StandardizeList(props, damage);
+
 			int level = props[0].Priority;
 			double ratio = 0;
-			for (ISpecialArmor.ArmorProperties prop : props)
-			{
-				if (level != prop.Priority)
-				{
+			for(ISpecialArmor.ArmorProperties prop: props) {
+				if(level != prop.Priority) {
 					damage -= (float)(damage * ratio);
 					ratio = 0;
 					level = prop.Priority;
 				}
 				ratio += prop.AbsorbRatio;
-
-				double absorb = damage * prop.AbsorbRatio;
-				if (absorb > 0)
-				{
-					ItemStack stack = p.inventory.armorInventory[prop.Slot];
-					int itemDamage = (int)(absorb / 25D < 1 ? 1 : absorb / 25D);
-					if (stack.stackSize <= 0)
-					{
-						p.inventory.armorInventory[prop.Slot] = null;
-					}
-				}
 			}
 			damage -= (float)(damage * ratio);
 		}
@@ -978,31 +952,37 @@ public final class DHEvents {
 		playerDeath(e);
 		dropAnimalsSpecialLoot(e);
 		dropNice(e);
-		if(e.entityLiving instanceof EntityPlayer){
+		if(e.entityLiving instanceof EntityPlayer) {
 			EntityPlayer player = (EntityPlayer)e.entityLiving;
 			DeathlyProperties props = DeathlyProperties.get(player);
-			if(props.getCurrentDuration() > 0){
+			if(props.getCurrentDuration() > 0) {
 				EntityPlayer caster = null;
 				for(EntityLivingBase entity: DHUtils.getEntitiesAround(EntityLivingBase.class, player, 40)) {
-					if(entity instanceof EntityPlayer && entity.getEntityData().getInteger("casterCurse") > 0)
+					if(entity instanceof EntityPlayer && entity.getEntityData().getInteger("casterCurse") > 0) {
 						caster = (EntityPlayer)entity;
-					if(entity.isEntityAlive() && (entity.getEntityData().getInteger("dhcurse") > 0 || (entity instanceof EntityPlayer && DeathlyProperties.get((EntityPlayer)entity).getCurrentDuration() > 0)))
+					}
+					if(entity.isEntityAlive() && (entity.getEntityData().getInteger("dhcurse") > 0 || (entity instanceof EntityPlayer && DeathlyProperties.get((EntityPlayer)entity).getCurrentDuration() > 0))) {
 						caster = null;
+					}
 				}
-				if(caster != null)
+				if(caster != null) {
 					caster.getEntityData().setInteger("casterCurse", 0);
+				}
 			}
 		}
-		else if(e.entityLiving.getEntityData().getInteger("dhcurse") > 0){
+		else if(e.entityLiving.getEntityData().getInteger("dhcurse") > 0) {
 			EntityPlayer caster = null;
 			for(EntityLivingBase entity: DHUtils.getEntitiesAround(EntityLivingBase.class, e.entityLiving, 40)) {
-				if(entity instanceof EntityPlayer && entity.getEntityData().getInteger("casterCurse") > 0)
+				if(entity instanceof EntityPlayer && entity.getEntityData().getInteger("casterCurse") > 0) {
 					caster = (EntityPlayer)entity;
-				if(entity.isEntityAlive() && (entity.getEntityData().getInteger("dhcurse") > 0 || (entity instanceof EntityPlayer && DeathlyProperties.get((EntityPlayer)entity).getCurrentDuration() > 0)))
+				}
+				if(entity.isEntityAlive() && (entity.getEntityData().getInteger("dhcurse") > 0 || (entity instanceof EntityPlayer && DeathlyProperties.get((EntityPlayer)entity).getCurrentDuration() > 0))) {
 					caster = null;
+				}
 			}
-			if(caster != null)
+			if(caster != null) {
 				caster.getEntityData().setInteger("casterCurse", 0);
+			}
 		}
 	}
 
