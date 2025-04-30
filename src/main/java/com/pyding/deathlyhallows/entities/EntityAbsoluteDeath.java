@@ -2,6 +2,7 @@ package com.pyding.deathlyhallows.entities;
 
 import com.emoniph.witchery.entity.EntitySpellEffect;
 import com.emoniph.witchery.util.ChatUtil;
+import com.emoniph.witchery.util.EntityUtil;
 import com.emoniph.witchery.util.IHandleDT;
 import com.emoniph.witchery.util.ParticleEffect;
 import com.emoniph.witchery.util.SoundEffect;
@@ -12,6 +13,7 @@ import com.pyding.deathlyhallows.utils.DHUtils;
 import com.pyding.deathlyhallows.utils.DamageSourceAdaptive;
 import com.pyding.deathlyhallows.utils.properties.DeathlyProperties;
 import net.minecraft.block.Block;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -26,6 +28,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
@@ -40,27 +43,26 @@ import java.util.function.Supplier;
 
 public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, IHandleDT {
 
+	private static final int 
+		DW_AD_TYPE = 21,
+		DW_AD_SCALE = 22;
 	private static final UUID attackingSpeedBoostModifierUUID = UUID.fromString("9c7e6fd9-2913-4c02-a0e9-330f5f3bf211");
 	private static final AttributeModifier attackingSpeedBoostModifier = (new AttributeModifier(attackingSpeedBoostModifierUUID, "Govno", 12.99999809265137D, 0)).setSaved(false);
 	private Entity lastEntityToAttack;
 	private EntityPlayer mvp;
 	private boolean isAggressive;
 	public float
-			baseDamage,
 			bestDamage;
 	private int
 			stareTimer,
 			rage,
-			daun,
-			damageType = 0,
-			absorbedCount = 0;
+			daun;
 
 	public EntityAbsoluteDeath(World w) {
 		super(w);
 		setSize(0.6F, 1.8F);
 		stepHeight = 2.0F;
 		experienceValue = 80000;
-		baseDamage = 33 * DHConfig.deathDifficulty;
 	}
 
 	@Override
@@ -69,11 +71,37 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 	}
 
 	@Override
+	protected void entityInit() {
+		super.entityInit();
+		dataWatcher.addObject(DW_AD_TYPE, (byte)0);
+		dataWatcher.addObject(DW_AD_SCALE, 0);
+	}
+	
+	private	DamageSource getAdaptiveDamageSource() {
+		return getDamageSource(dataWatcher.getWatchableObjectByte(DW_AD_TYPE));
+	}
+
+	private	boolean cycleAdaptiveDamageSource() {
+		int type = (dataWatcher.getWatchableObjectByte(DW_AD_TYPE) + 1) % 10;
+		dataWatcher.updateObject(DW_AD_TYPE, (byte)type);
+		return type < 1; // means it went full cycle
+	}
+
+	private	float getAdaptiveDamage(float damage) {
+		int scale = dataWatcher.getWatchableObjectInt(DW_AD_SCALE);
+		return Math.min(Float.MAX_VALUE, (float)(damage * Math.pow(1f + (DHConfig.deathDifficulty / 3f), scale)));
+	}
+
+	private	void scaleAdaptiveDamage() {
+		dataWatcher.updateObject(DW_AD_SCALE, Math.min(100, dataWatcher.getWatchableObjectInt(DW_AD_SCALE) + 1));
+	}
+
+	@Override
 	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
-		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(2000.0D);
+		getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(2048.0D);
 		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.8D);
-		getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(4000.0D);
+		getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(100.0D);
 	}
 
 	@Override
@@ -127,7 +155,7 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 			this.condition = condition;
 			this.shieldTexture = new ResourceLocation(DeathlyHallows.MODID, "textures/particles/shields/" + name().toLowerCase() + ".png");
 		}
-		
+
 		public boolean isResisted(DamageSource source) {
 			return condition.test(source);
 		}
@@ -139,19 +167,19 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 		public String getDataKey() {
 			return name().toLowerCase() + "block";
 		}
-		
+
 		private static boolean isDamageSourceTypeEquals(DamageSource s1, DamageSource s2) {
 			if(s1 == null) {
 				return s2.damageType.equals(DamageSource.generic.damageType);
 			}
-			return s1 == s2 
-					|| (s1.damageType == null && s2.damageType == null) 
+			return s1 == s2
+					|| (s1.damageType == null && s2.damageType == null)
 					|| s2.damageType != null && s2.damageType.equals(s1.damageType);
 		}
 	}
-	
+
 	private static final String DEATH_RESISTANCES_TAG = "dhDeathResistances";
-	
+
 	public NBTTagCompound getResistsData() {
 		NBTTagCompound entityTag = getEntityData();
 		if(!entityTag.hasKey(DEATH_RESISTANCES_TAG)) {
@@ -159,7 +187,7 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 		}
 		return entityTag.getCompoundTag(DEATH_RESISTANCES_TAG);
 	}
-	
+
 	public void setResists(NBTTagCompound resistsTag) {
 		getEntityData().setTag(DEATH_RESISTANCES_TAG, resistsTag);
 	}
@@ -227,8 +255,8 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 		final int shieldAmount = 90;
 		// filter().count() FUCKING SUCKS!!!!! embrace mapToInt(e -> f(e) ? 1 : 0).sum()!!!!
 		int block = Arrays.stream(EntityAbsoluteDeath.EnumResists.values())
-						   .mapToInt(resist -> getResist(resist) >= shieldAmount ? 1 : 0)
-						   .sum();
+						  .mapToInt(resist -> getResist(resist) >= shieldAmount ? 1 : 0)
+						  .sum();
 		if(block > 3 + DHConfig.deathDifficulty) {
 			for(EntityAbsoluteDeath.EnumResists resist: EntityAbsoluteDeath.EnumResists.values()) {
 				setResist(resist, 0);
@@ -258,20 +286,22 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 		super.onLivingUpdate();
 	}
 
-	public void attackPlayer(EntityPlayer player, int multiplier) {
-		player.getEntityData().setBoolean("adaptiveDamage", true);
-		if(player.getEntityData().getBoolean("absorbedDamage")) {
-			++damageType;
-			damageType %= 10;
-			++absorbedCount;
-			if(absorbedCount > 8 && (baseDamage + (baseDamage * (0.3 * DHConfig.deathDifficulty)) < Float.MAX_VALUE)) {
-				baseDamage = (float)(baseDamage + (baseDamage * (0.3 * DHConfig.deathDifficulty)));
+	// AoE attack
+	public void attackPlayer(EntityPlayer p, int multiplier) {
+		if(!p.isEntityAlive() || p.isEntityInvulnerable()) {
+			return;
+		}
+		p.getEntityData().setBoolean("adaptiveDamage", true);
+		DamageSource aDamageSource = getAdaptiveDamageSource();
+		if(p.getEntityData().getBoolean("absorbedDamage")) {
+			p.getEntityData().setBoolean("absorbedDamage", false);
+			if(cycleAdaptiveDamageSource() ) {
+				scaleAdaptiveDamage();
 			}
 		}
-		DamageSource source = getDamageSource(damageType);
-		damage(player, baseDamage * multiplier, source);
+		damage(p, getAdaptiveDamage(33 * DHConfig.deathDifficulty * multiplier), aDamageSource);
 		if(DHConfig.deathDifficulty > 1) {
-			DHUtils.fuckMagic(player, 0.01f);
+			DHUtils.fuckMagic(p, 0.01f);
 		}
 	}
 
@@ -287,11 +317,17 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 
 
 	public void damage(EntityPlayer player, float amount, DamageSource source) {
+		if(player.getHealth() < amount) {
+			player.attackEntityFrom(source, amount);
+			player.setHealth(0f);
+			player.onDeath(new EntityDamageSource(source.getDamageType(), this));
+			return;
+		}
 		player.attackEntityFrom(source, amount);
 	}
 
 	private boolean wasHitByCreativePlayer = false;
-	
+
 	public void makePainfully() {
 		if(getAITarget() == null || !(getAITarget() instanceof EntityPlayer)) {
 			return;
@@ -448,17 +484,23 @@ public class EntityAbsoluteDeath extends EntityMob implements IBossDisplayData, 
 	}
 
 	@Override
-	protected void attackEntity(Entity entity, float damage) {
-		float damageBonus = (float)this.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
-		if(getEntityData().hasKey("block")) {
-			damage = damageBonus + getEntityData().getInteger("block") * 500;
+	public boolean attackEntityAsMob(Entity e) {
+		if(e != null && e.isEntityInvulnerable()) {
+			return false; // no need for calc
 		}
-		super.attackEntity(entity, damage);
-	}
-
-	@Override
-	public boolean attackEntityAsMob(Entity par1Entity) {
-		return true;
+		// base damage
+		float damage = (float)getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
+		// death max HP bonus
+		if(e instanceof EntityLivingBase) {
+			EntityLivingBase victim = (EntityLivingBase)e;
+			damage += Math.max(victim.getMaxHealth() * 0.2F, 2.0F) + EnchantmentHelper.getEnchantmentModifierLiving(this, victim);
+		}
+		// death block bonus
+		if(getEntityData().hasKey("block")) {
+			damage += getEntityData().getInteger("block") * 500;
+		}
+		// method used to kill unkillable sometimes
+		return EntityUtil.touchOfDeath(e, this, damage);
 	}
 
 	@Override
