@@ -33,7 +33,7 @@ public class DeathlyHallows {
 	public static final String
 			MODID = "dh",
 			NAME = "Deathly Hallows",
-			VERSION = "1.1.1";
+			VERSION = "1.1.5";
 
 	@Mod.Instance("dh")
 	public static DeathlyHallows Instance;
