@@ -752,10 +752,12 @@ public final class DHEvents {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void highestHit(LivingHurtEvent e) {
 		if(e.entity instanceof EntityPlayer) {
-			tryDamageLogFor((EntityPlayer)e.entity, e.source, e.ammount);
+			EntityPlayer p = (EntityPlayer)e.entity;
+			tryDamageLogFor(p, p, e.source, e.ammount);
 		}
-		if(e.source.getEntity() != null && e.source.getEntity() instanceof EntityPlayer) {
-			tryDamageLogFor((EntityPlayer)e.source.getEntity(), e.source, e.ammount);
+		if(e.entityLiving != null && e.source.getEntity() != null && e.source.getEntity() instanceof EntityPlayer) {
+			EntityPlayer p = (EntityPlayer)e.source.getEntity();
+			tryDamageLogFor(p, e.entityLiving, e.source, e.ammount);
 		}
 	}
 
@@ -763,7 +765,7 @@ public final class DHEvents {
 	public void lowestHit(LivingHurtEvent e) {
 		if(e.entity instanceof EntityPlayer) {
 			EntityPlayer p = (EntityPlayer)e.entity;
-			float afterDamage = getAbsorption(p, e.source, e.ammount); //should fix
+			float afterDamage = getAbsorption(p, p.inventory.armorInventory, e.source, e.ammount); //should fix
 			TryAndGetAbsorptionLog(p, afterDamage);
 			if(p.getEntityData().getBoolean("adaptiveDamage")) {
 				p.getEntityData().setBoolean("adaptiveDamage", false);
@@ -772,25 +774,28 @@ public final class DHEvents {
 		}
 		if(e.source.getEntity() != null
 				&& e.source.getEntity() instanceof EntityPlayer
-				&& e.entity instanceof EntityLivingBase
+				&& e.entity instanceof EntityLiving
 		) {
+			EntityLiving target = (EntityLiving)e.entity;
 			EntityPlayer playerSource = (EntityPlayer)e.source.getEntity();
-			TryAndGetAbsorptionLog(playerSource, getAbsorption(playerSource, e.source, e.ammount));
+			ItemStack[] entityArmor = new ItemStack[4];
+			System.arraycopy(target.getLastActiveItems(), 1, entityArmor, 0, 4);
+			TryAndGetAbsorptionLog(playerSource, getAbsorption(target, entityArmor, e.source, e.ammount));
 		}
 	}
 
-	private static float getAbsorption(EntityPlayer p, DamageSource source, float amount) {
+	private static float getAbsorption(EntityLivingBase e, ItemStack[] armorInventory, DamageSource source, float amount) {
 		float damage = amount * 25;
 		ArrayList<ISpecialArmor.ArmorProperties> dmgVals = new ArrayList<>();
-		for(int x = 0; x < p.inventory.armorInventory.length; x++) {
-			ItemStack stack = p.inventory.armorInventory[x];
+		for(int x = 0; x < armorInventory.length; x++) {
+			ItemStack stack = armorInventory[x];
 			if(stack == null) {
 				continue;
 			}
 			ISpecialArmor.ArmorProperties prop = null;
 			if(stack.getItem() instanceof ISpecialArmor) {
 				ISpecialArmor armor = (ISpecialArmor)stack.getItem();
-				prop = armor.getProperties(p, stack, source, damage / 25D, x).copy();
+				prop = armor.getProperties(e, stack, source, damage / 25D, x).copy();
 			}
 			else if(stack.getItem() instanceof ItemArmor && !source.isUnblockable()) {
 				ItemArmor armor = (ItemArmor)stack.getItem();
@@ -827,18 +832,18 @@ public final class DHEvents {
 		}
 	}
 
-	private void tryDamageLogFor(EntityPlayer victim, DamageSource source, float amount) {
-		DeathlyProperties props = DeathlyProperties.get(victim);
+	private void tryDamageLogFor(EntityPlayer p, EntityLivingBase victim, DamageSource source, float amount) {
+		DeathlyProperties props = DeathlyProperties.get(p);
 		if(props == null || !props.getDamageLog()) {
 			return;
 		}
 		if(source.getEntity() == null) {
-			ChatUtil.sendTranslated(victim, "dh.chat.damageLog.victim", source.damageType, victim.getCommandSenderName());
+			ChatUtil.sendTranslated(p, "dh.chat.damageLog.victim", source.damageType, victim.getCommandSenderName());
 		}
 		else {
-			ChatUtil.sendTranslated(victim, "dh.chat.damageLog.victimAndDealer", source.damageType, victim.getCommandSenderName(), source.getEntity().getCommandSenderName());
+			ChatUtil.sendTranslated(p, "dh.chat.damageLog.victimAndDealer", source.damageType, victim.getCommandSenderName(), source.getEntity().getCommandSenderName());
 		}
-		ChatUtil.sendTranslated(victim, "dh.chat.damageLog.damage", amount);
+		ChatUtil.sendTranslated(p, "dh.chat.damageLog.damage", amount);
 	}
 
 	@SubscribeEvent()
