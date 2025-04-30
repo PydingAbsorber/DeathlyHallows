@@ -485,7 +485,6 @@ public final class DHEvents {
 				tag.setBoolean("mantleActive", true);
 				p.worldObj.playSoundAtEntity(p, "dh:mantle." + DHUtils.getRandomInt(1, 3), 1F, 1F);
 			}
-			//ItemBaubleInvisibilityMantle.setMantleAbilityState(p, false);
 			return;
 		}
 		int mantleCD = tag.getInteger("mantlecd") - mantleDisableCD;
@@ -497,6 +496,7 @@ public final class DHEvents {
 			if(invisibility != null && invisibility.getDuration() <= 0) {
 				p.removePotionEffect(Potion.invisibility.id);
 			}
+			return;
 		}
 		else {
 			ItemBaubleInvisibilityMantle.setMantleState(p, true);
