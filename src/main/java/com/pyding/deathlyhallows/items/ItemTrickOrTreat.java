@@ -118,7 +118,6 @@ public class ItemTrickOrTreat extends ItemBase {
 		deathlyHallowItems.add(new ItemStack(DHItems.hobgoblinSoul));
 		deathlyHallowItems.add(new ItemStack(DHItems.nimbus));
 		deathlyHallowItems.add(new ItemStack(DHItems.deathShard));
-		deathlyHallowItems.add(new ItemStack(DHItems.tarotCards));
 		deathlyHallowItems.add(new ItemStack(DHItems.monsterBook));
 		deathlyHallowItems.add(new ItemStack(DHItems.lightningInBag));
 		if(DHIntegration.thaumcraft) {

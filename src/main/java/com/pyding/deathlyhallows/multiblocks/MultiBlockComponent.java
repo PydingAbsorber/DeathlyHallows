@@ -78,13 +78,12 @@ public class MultiBlockComponent {
 			return new ItemStack[]{new ItemStack(block, 1, -1)};
 		}
 		int meta = this.meta == -1 ? 0 : this.meta;
-		ItemStack ret;
+
 		if(Item.getItemFromBlock(block) == null) {
-			ret = new ItemStack(block.getItem(null, 0, 0, 0), 1, meta);
+			return new ItemStack[] {};
 		}
-		else {
-			ret = new ItemStack(block, 1, meta);
-		}
+
+		ItemStack ret = new ItemStack(block, 1, meta);
 		if(!ret.getHasSubtypes()) {
 			ret.setItemDamage(0);
 		}

@@ -35,7 +35,6 @@ public final class DHItems {
 			hobgoblinSoul,
 			nimbus,
 			deathShard,
-			tarotCards,
 			monsterBook,
 			trickOrTreat,
 			elderBook,
@@ -68,7 +67,6 @@ public final class DHItems {
 		register(deadlyPrism = new ItemDeadlyPrism());
 		register(nimbus = new ItemNimbus());
 		register(deathShard = new ItemDeathShard());
-		register(tarotCards = new ItemTarotCards());
 		register(monsterBook = new ItemMonsterBook());
 		register(trickOrTreat = new ItemTrickOrTreat());
 		register(elderBook = new ItemElderBook());

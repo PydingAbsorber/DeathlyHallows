@@ -16,7 +16,10 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumChatFormatting;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 import static com.pyding.deathlyhallows.utils.properties.DeathlyProperties.get;
 
@@ -152,7 +155,7 @@ public final class ElfUtils {
 				break;
 			}
 			case 6: {
-				if(hasAmountOfPotions(p, 10, true) && ++props.elfTimeSurvived > DHConfig.getElfRequirements(7)) {
+				if(hasAmountOfPotions(p) && ++props.elfTimeSurvived > DHConfig.getElfRequirements(7)) {
 					props.elfTimeSurvived = 0;
 					props.setElfLevel(7);
 					messageChatLevelUp(p);
@@ -205,17 +208,22 @@ public final class ElfUtils {
 		}
 		return total;
 	}
+	
+	public static List<Potion> badPotions = new ArrayList<>();
+	
+	public static boolean isBadEffect(Potion potion){
+		return badPotions.contains(potion);
+	}
 
-	private static boolean hasAmountOfPotions(EntityPlayer player, int amount, boolean bad) {
+	private static boolean hasAmountOfPotions(EntityPlayer player) {
 		@SuppressWarnings("unchecked")
 		Collection<PotionEffect> potions = player.getActivePotionEffects();
 		int count = 0;
-		for(PotionEffect effect: potions) {
-			if(Potion.potionTypes[effect.getPotionID()].isBadEffect() == bad) {
+		for(PotionEffect effect: potions) { 
+			if(badPotions.contains(Potion.potionTypes[effect.getPotionID()]))
 				count++;
-			}
 		}
-		return count >= amount;
+		return count >= 10;
 	}
 
 }

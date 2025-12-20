@@ -51,7 +51,6 @@ public class ItemBaubleResurrectionStone extends ItemBaubleBase {
 			}
 			setPlayer(stack, pName);
 			ChatUtil.sendTranslated(p, "dh.desc.resurrectionStone1", pName);
-			DeathlyHallows.LOG.info("Chosen Player: " + pName);
 			return super.onItemRightClick(stack, world, p);
 		}
 		

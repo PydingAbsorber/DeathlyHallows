@@ -26,6 +26,8 @@ import com.pyding.deathlyhallows.items.ItemDeadlyPrism;
 import com.pyding.deathlyhallows.items.baubles.ItemBaubleInvisibilityMantle;
 import com.pyding.deathlyhallows.items.baubles.ItemBaubleResurrectionStone;
 import com.pyding.deathlyhallows.network.DHPacketProcessor;
+import com.pyding.deathlyhallows.network.packets.AbobaPacket;
+import com.pyding.deathlyhallows.network.packets.PacketElderWandStrokes;
 import com.pyding.deathlyhallows.network.packets.PacketNBTSync;
 import com.pyding.deathlyhallows.network.packets.PacketPropertiesSync;
 import com.pyding.deathlyhallows.recipes.DHGrassperRecipes;
@@ -155,6 +157,12 @@ public final class DHEvents {
 				PacketPropertiesSync.Type.COSMETIC,
 				target
 		));
+		ElfUtils.badPotions.clear();
+		for(Potion potion: Potion.potionTypes){
+			if(potion != null && potion.isBadEffect())
+				ElfUtils.badPotions.add(potion);
+		}
+		DHPacketProcessor.sendToServer(new AbobaPacket());
 	}
 
 	@SubscribeEvent

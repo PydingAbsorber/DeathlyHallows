@@ -84,13 +84,6 @@ public final class DHThaumcraft {
 				ORDER, 2
 		);
 		addAspects(
-				new ItemStack(DHItems.tarotCards),
-				SENSES, 6,
-				GREED, 4,
-				MAGIC, 2,
-				MIND, 2
-		);
-		addAspects(
 				new ItemStack(DHItems.trickOrTreat),
 				GREED, 12,
 				EXCHANGE, 8,
